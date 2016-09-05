@@ -1,0 +1,1 @@
+<JDBCModel address="jdbc:hsqldb:mem:test" user="user"></JDBCModel>
