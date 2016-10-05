@@ -42,19 +42,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.foundation.OpenflexoTestCase;
 import org.openflexo.model.exceptions.ModelDefinitionException;
-import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.test.OrderedRunner;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -65,20 +61,6 @@ import static org.junit.Assert.fail;
  */
 @RunWith(OrderedRunner.class)
 public class TestJDBCModel extends OpenflexoTestCase {
-
-    /** Requests through SQL the list of table for one connection */
-    private List<String> getTables(Connection connection) throws SQLException {
-        String request = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA='PUBLIC'";
-        CallableStatement call = connection.prepareCall(request);
-        call.execute();
-
-        ResultSet resultSet = call.getResultSet();
-        ArrayList<String> tables = new ArrayList<>();
-        while (resultSet.next()) {
-            tables.add(resultSet.getString("TABLE_NAME"));
-        }
-        return tables;
-    }
 
     /** Creates through SQL a table for one connection */
     private void createTable(Connection connection, String name, String[] ... attributes) throws SQLException {
@@ -117,8 +99,8 @@ public class TestJDBCModel extends OpenflexoTestCase {
         createTable(connection, "test2", id, name, lastName, description, portrait);
     }
 
-    private Connection createAndPrepareConnection() throws SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:test", "sa", "");
+    private Connection createAndPrepareConnection(String db, String user) throws SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:"+db, user, "");
 
         // creates table
         createTableTest1(connection);
@@ -134,14 +116,16 @@ public class TestJDBCModel extends OpenflexoTestCase {
 	public void testJdbcFactory() {
 
 		try {
-            ModelFactory modelFactory = new ModelFactory(JDBCModel.class);
+			JDBCFactory modelFactory = new JDBCFactory(null, null);
             final JDBCModelImpl jdbcObject = (JDBCModelImpl) modelFactory.newInstance(JDBCModel.class);
 
-            Connection connection = createAndPrepareConnection();
+            Connection connection = createAndPrepareConnection("test", "sa");
 
             // show existing tables
-            List<String> tables = getTables(connection);
+            /*
+            List<String> tables = SQLHelper.getTables(connection);
             System.out.println(tables);
+            */
 
             //jdbcObject.setResource(this);
 
@@ -192,10 +176,12 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
     public void testLoad1() throws Exception {
+		createAndPrepareConnection("testLoad1", "user");
+
         JDBCFactory factory = new JDBCFactory(null, null);
         try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.xml"))) {
-            Object result = factory.deserialize(stream);
-            System.out.println(result);
+            JDBCModel result = (JDBCModel) factory.deserialize(stream);
+			assertEquals(2, result.getSchema().getTables().size());
         }
     }
 
