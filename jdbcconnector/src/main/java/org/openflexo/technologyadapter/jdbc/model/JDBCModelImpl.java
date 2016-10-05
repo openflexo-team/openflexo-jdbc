@@ -23,20 +23,29 @@ package org.openflexo.technologyadapter.jdbc.model;
 import org.openflexo.foundation.FlexoServiceManager;
 import org.openflexo.foundation.resource.FlexoResource;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
+import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
- * Abstract Simple implementation. Using Pamela.
+ * Abstract JDBCModel implementation using Pamela.
  * 
- * @author SomeOne
+ * @author charlie
  * 
  */
 public abstract class JDBCModelImpl implements JDBCModel {
 
+    private Connection connection;
+
     public JDBCModelImpl() {
     }
 
-    public JDBCTechnologyAdapter getTechnologyAdapter() {
+	public JDBCTechnologyAdapter getTechnologyAdapter() {
         FlexoResource<JDBCModel> resource = getResource();
         if (resource != null && resource.getServiceManager() != null) {
             FlexoServiceManager serviceManager = resource.getServiceManager();
@@ -45,4 +54,35 @@ public abstract class JDBCModelImpl implements JDBCModel {
         return null;
     }
 
+	@Override
+	public JDBCSchema getSchema() throws SQLException {
+		JDBCSchema schema = (JDBCSchema) performSuperGetter(SCHEMA);
+		if (schema == null) {
+			Connection connection = getConnection();
+
+			ModelFactory factory = null;
+			try {
+				factory = new ModelFactory(JDBCModel.class);
+			} catch (ModelDefinitionException e) {
+				e.printStackTrace();
+			}
+			// JDBCFactory factory = ((JDBCResource) getResource()).getFactory();
+
+
+			schema = factory.newInstance(JDBCSchema.class);
+			schema.setTables(SQLHelper.getTables(connection, factory));
+
+			//performSuperSetter(SCHEMA, newSchema);
+
+		}
+		return schema;
+	}
+
+	@Override
+    public Connection getConnection() throws SQLException {
+		if (connection == null) {
+			connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
+		}
+        return connection;
+    }
 }

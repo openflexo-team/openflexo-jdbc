@@ -39,15 +39,14 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.fge.FGEModelFactoryImpl;
-import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.PamelaResourceModelFactory;
-import org.openflexo.foundation.action.FlexoUndoManager;
-import org.openflexo.foundation.resource.PamelaResourceImpl.IgnoreLoadingEdits;
 import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
+import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 /**
@@ -62,15 +61,13 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 	private static final Logger logger = Logger.getLogger(JDBCFactory.class.getPackage().getName());
 
 	private final JDBCResource resource;
-	private IgnoreLoadingEdits ignoreHandler = null;
-	private FlexoUndoManager undoManager = null;
 
 	public JDBCFactory(JDBCResource resource, EditingContext editingContext) throws ModelDefinitionException {
-		super(JDBCModel.class/*, DiagramShape.class, DiagramConnector.class*/);
+		super(JDBCModel.class);
 		this.resource = resource;
 		setEditingContext(editingContext);
 		if(resource!=null){
-			addConverter(new RelativePathResourceConverter(resource.getFlexoIODelegate().getParentPath()));
+			addConverter(new RelativePathResourceConverter(resource));
 		}
 	}
 
@@ -79,47 +76,31 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 		return resource;
 	}
 
-	public JDBCModel makeNewModel() {
-		return newInstance(JDBCModel.class);
-	}
-
-	public JDBCModel makeNewModel(String address) {
+	public JDBCModel makeNewModel(String address, String user, String password) {
 		JDBCModel returned = newInstance(JDBCModel.class);
-		returned.setAddress(address);
+		returned.init(address, user, password);
 		return returned;
 	}
 
-	@Override
-	public synchronized void startDeserializing() {
-		EditingContext editingContext = getResource().getServiceManager().getEditingContext();
+	public JDBCModel retrieveModel(final String address) throws SQLException {
+        return retrieveModel(address);
+    }
 
-		if (editingContext != null && editingContext.getUndoManager() instanceof FlexoUndoManager) {
-			undoManager = (FlexoUndoManager) editingContext.getUndoManager();
-			undoManager.addToIgnoreHandlers(ignoreHandler = new IgnoreLoadingEdits(resource));
-			// System.out.println("@@@@@@@@@@@@@@@@ START LOADING RESOURCE " + resource.getURI());
+
+    public JDBCSchema retrieveSchema(final JDBCSchema schema, JDBCModel model) throws SQLException {
+        for (JDBCTable table : SQLHelper.getTables(model.getConnection(), this)) {
+			System.out.println("[JDBC] read table " + table);
 		}
+        return schema;
+    }
 
+	@Override
+	public void startDeserializing() {
+		System.out.println("[JDBC] start deserializer");
 	}
 
 	@Override
-	public synchronized void stopDeserializing() {
-		if (ignoreHandler != null) {
-			undoManager.removeFromIgnoreHandlers(ignoreHandler);
-			// System.out.println("@@@@@@@@@@@@@@@@ END LOADING RESOURCE " + resource.getURI());
-		}
-
+	public void stopDeserializing() {
+		System.out.println("[JDBC] stop deserializer");
 	}
-
-	@Override
-	public <I> void objectHasBeenDeserialized(I newlyCreatedObject, Class<I> implementedInterface) {
-		super.objectHasBeenDeserialized(newlyCreatedObject, implementedInterface);
-		if (newlyCreatedObject instanceof FlexoObject) {
-			if (getResource() != null) {
-				getResource().setLastID(((FlexoObject) newlyCreatedObject).getFlexoID());
-			} else {
-				logger.warning("Could not access resource being deserialized");
-			}
-		}
-	}
-
 }

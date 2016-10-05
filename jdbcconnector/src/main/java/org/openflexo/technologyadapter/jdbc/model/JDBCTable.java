@@ -25,7 +25,7 @@ public interface JDBCTable {
     void setName(String name);
 
     @Getter(value = COLUMNS, cardinality = Cardinality.LIST)
-    List<JDBCTable> getColumns();
+    List<JDBCColumn> getColumns();
 
     @Setter(COLUMNS)
     void setColumns(List<JDBCColumn> columns);
