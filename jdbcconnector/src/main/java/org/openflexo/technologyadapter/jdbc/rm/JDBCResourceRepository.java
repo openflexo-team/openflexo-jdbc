@@ -21,21 +21,19 @@
 package org.openflexo.technologyadapter.jdbc.rm;
 
 import org.openflexo.foundation.resource.FlexoResourceCenter;
-import org.openflexo.foundation.technologyadapter.TechnologyAdapterFileResourceRepository;
+import org.openflexo.foundation.technologyadapter.TechnologyAdapterResourceRepository;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
 
-public class JDBCResourceRepository extends TechnologyAdapterFileResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCModel> {
 
-    public JDBCResourceRepository(JDBCTechnologyAdapter adapter, FlexoResourceCenter<?> resourceCenter) {
+public class JDBCResourceRepository<I> extends
+        TechnologyAdapterResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCModel, I>
+{
+
+    public JDBCResourceRepository(JDBCTechnologyAdapter adapter, FlexoResourceCenter<I> resourceCenter) {
         super(adapter, resourceCenter);
     }
 
     private static final String DEFAULT_BASE_URI = "http://www.openflexo.org/JDBCTechnologyAdapter/Models";
-
-    @Override
-    public String getDefaultBaseURI() {
-        return DEFAULT_BASE_URI;
-    }
 
 }
