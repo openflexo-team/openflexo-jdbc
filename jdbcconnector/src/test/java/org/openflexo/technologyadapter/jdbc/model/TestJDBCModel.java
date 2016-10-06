@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -181,7 +182,9 @@ public class TestJDBCModel extends OpenflexoTestCase {
         JDBCFactory factory = new JDBCFactory(null, null);
         try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.xml"))) {
             JDBCModel result = (JDBCModel) factory.deserialize(stream);
-			assertEquals(2, result.getSchema().getTables().size());
+			JDBCSchema schema = result.getSchema();
+			List<JDBCTable> tables = schema.getTables();
+			assertEquals(2, tables.size());
         }
     }
 

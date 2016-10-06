@@ -42,6 +42,8 @@ public abstract class JDBCModelImpl implements JDBCModel {
 
     private Connection connection;
 
+	private JDBCSchema schema;
+
     public JDBCModelImpl() {
     }
 
@@ -56,10 +58,10 @@ public abstract class JDBCModelImpl implements JDBCModel {
 
 	@Override
 	public JDBCSchema getSchema() throws SQLException {
-		JDBCSchema schema = (JDBCSchema) performSuperGetter(SCHEMA);
 		if (schema == null) {
 			Connection connection = getConnection();
 
+			// Find the correct factory
 			ModelFactory factory = null;
 			try {
 				factory = new ModelFactory(JDBCModel.class);
@@ -68,12 +70,8 @@ public abstract class JDBCModelImpl implements JDBCModel {
 			}
 			// JDBCFactory factory = ((JDBCResource) getResource()).getFactory();
 
-
 			schema = factory.newInstance(JDBCSchema.class);
 			schema.setTables(SQLHelper.getTables(connection, factory));
-
-			//performSuperSetter(SCHEMA, newSchema);
-
 		}
 		return schema;
 	}

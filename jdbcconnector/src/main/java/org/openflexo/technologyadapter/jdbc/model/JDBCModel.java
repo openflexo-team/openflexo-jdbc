@@ -25,6 +25,8 @@ import org.openflexo.foundation.resource.ResourceData;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
+import org.openflexo.model.annotations.Import;
+import org.openflexo.model.annotations.Imports;
 import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
@@ -38,12 +40,12 @@ import java.sql.SQLException;
 @ModelEntity
 @ImplementationClass(value = JDBCModelImpl.class)
 @XMLElement
+@Imports(@Import(JDBCSchema.class))
 public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCModel>{
 
     String ADDRESS = "address";
     String USER = "user";
     String PASSWORD = "password";
-    String SCHEMA = "schema";
 
     @Initializer
     void init(@Parameter(ADDRESS) String address,
@@ -59,7 +61,6 @@ public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, Reso
     @Getter(PASSWORD) @XMLAttribute
     String getPassword();
 
-    @Getter(SCHEMA)
     JDBCSchema getSchema() throws SQLException;
 
     Connection getConnection() throws SQLException;

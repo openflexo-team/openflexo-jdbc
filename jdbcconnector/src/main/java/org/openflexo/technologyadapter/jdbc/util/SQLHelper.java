@@ -25,8 +25,9 @@ public class SQLHelper {
         ResultSet resultSet = call.getResultSet();
         ArrayList<JDBCTable> tables = new ArrayList<>();
         while (resultSet.next()) {
-            String tableName = resultSet.getString("TABLE_NAME");
-            tables.add(factory.newInstance(JDBCTable.class));
+            JDBCTable table = factory.newInstance(JDBCTable.class);
+            table.setName(resultSet.getString("TABLE_NAME"));
+            tables.add(table);
         }
         return tables;
     }
