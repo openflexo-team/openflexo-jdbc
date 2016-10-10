@@ -1,0 +1,4 @@
+rootProject.name = 'database'
+
+include 'jdbcconnector'
+include 'jdbcconnector-ui'

@@ -1,0 +1,30 @@
+subprojects {
+    group='org.openflexo'
+    apply plugin: 'java'
+
+    project.buildDir = 'target'
+
+    repositories {
+        maven {
+            url "https://maven.openflexo.org/artifactory/openflexo-deps"
+        }
+    }
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.+'
+    }
+}
+
+apply plugin: 'maven'
+
+archivesBaseName = rootProject.name
+group = 'org.openflexo'
+version = '1.8.0-SNAPSHOT'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'file:./maven')
+        }
+    }
+}

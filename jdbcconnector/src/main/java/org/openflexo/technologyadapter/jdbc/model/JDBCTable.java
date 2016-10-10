@@ -1,39 +1,56 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
-import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
-import org.openflexo.model.annotations.Getter.Cardinality;
+import org.openflexo.model.annotations.ImplementationClass;
+import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.Remover;
-import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.Parameter;
+import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  * JDBC connector table description
  */
 @ModelEntity
+@ImplementationClass(JDBCTable.JDBCTableImpl.class)
 public interface JDBCTable {
 
     String NAME = "name";
-    String COLUMNS = "columns";
+    String SCHEMA = "schema";
 
-    @Getter(NAME)
+	@Initializer
+	void init(@Parameter(SCHEMA) JDBCSchema schema, @Parameter(NAME) String name);
+
+	@Getter(NAME)
     String getName();
 
-    @Setter(NAME)
-    void setName(String name);
+	@Getter(SCHEMA)
+    JDBCSchema getSchema();
 
-    @Getter(value = COLUMNS, cardinality = Cardinality.LIST)
     List<JDBCColumn> getColumns();
 
-    @Setter(COLUMNS)
-    void setColumns(List<JDBCColumn> columns);
+	abstract class JDBCTableImpl implements JDBCTable {
 
-    @Adder(COLUMNS)
-    void addToColumns(JDBCColumn aColumn);
+		private List<JDBCColumn> columns;
 
-    @Remover(COLUMNS)
-    void removeFromColumns(JDBCColumn aColumn);
+		@Override
+		public List<JDBCColumn> getColumns() {
+			if (columns == null) {
+				try {
+					JDBCModel model = getSchema().getModel();
+					columns = SQLHelper.getTableColumns(getName(), model.getConnection(), SQLHelper.getFactory(model));
+				} catch (SQLException e) {
+					columns = null;
+				}
+			}
+			return columns;
+		}
 
+		@Override
+		public String toString() {
+			return "[Table] " + getName() + "("+ getColumns().size() +")";
+		}
+	}
 }

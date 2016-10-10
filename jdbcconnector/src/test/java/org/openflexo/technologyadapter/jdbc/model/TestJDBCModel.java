@@ -38,21 +38,22 @@
 
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.foundation.OpenflexoTestCase;
-import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.test.OrderedRunner;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * Test JDBC model
@@ -110,43 +111,25 @@ public class TestJDBCModel extends OpenflexoTestCase {
         return connection;
     }
 
-	/**
-	 * Test the diagram factory
-	 */
 	@Test
-	public void testJdbcFactory() {
+	public void test111() throws SQLException {
+		Connection connection = createAndPrepareConnection("test1111", "user");
 
-		try {
-			JDBCFactory modelFactory = new JDBCFactory(null, null);
-            final JDBCModelImpl jdbcObject = (JDBCModelImpl) modelFactory.newInstance(JDBCModel.class);
+		// COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT
+		Object query = new QueryRunner().query(connection, "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?", new ResultSetHandler<Object>() {
+			@Override
+			public Object handle(ResultSet rs) throws SQLException {
+				System.out.println(rs.getMetaData().getColumnCount());
+				while (rs.next()) {
+					System.out.println("- " + rs.getString(1) + "[" + rs.getString(2) + "]" );
+				}
 
-            Connection connection = createAndPrepareConnection("test", "sa");
 
-            // show existing tables
-            /*
-            List<String> tables = SQLHelper.getTables(connection);
-            System.out.println(tables);
-            */
+				return null;
+			}
+		}, "TEST1");
 
-            //jdbcObject.setResource(this);
-
-            /*
-			DiagramFactory factory = new DiagramFactory(null, null);
-
-			ModelEntity<Diagram> diagramEntity = factory.getModelContext().getModelEntity(Diagram.class);
-			ModelEntity<DiagramShape> shapeEntity = factory.getModelContext().getModelEntity(DiagramShape.class);
-			ModelEntity<DiagramConnector> connectorEntity = factory.getModelContext().getModelEntity(DiagramConnector.class);
-
-			assertNotNull(diagramEntity);
-			assertNotNull(shapeEntity);
-			assertNotNull(connectorEntity);
-            */
-
-		} catch (SQLException | ModelDefinitionException e) {
-			e.printStackTrace();
-			fail();
-        }
-    }
+	}
 
 
     /**
@@ -182,10 +165,17 @@ public class TestJDBCModel extends OpenflexoTestCase {
         JDBCFactory factory = new JDBCFactory(null, null);
         try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.xml"))) {
             JDBCModel result = (JDBCModel) factory.deserialize(stream);
+			result.connect();
 			JDBCSchema schema = result.getSchema();
+			System.out.println(schema);
+
 			List<JDBCTable> tables = schema.getTables();
 			assertEquals(2, tables.size());
-        }
+
+			JDBCTable table = tables.get(0);
+			System.out.println(table);
+			assertEquals(2, table.getColumns().size());
+		}
     }
 
 }

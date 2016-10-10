@@ -27,8 +27,8 @@ public class JDBCResourceFactory
 
     @Override
     public JDBCModel makeEmptyResourceData(JDBCResource resource) {
-        return resource.getFactory().makeNewModel("", "", "");
-    }
+		return resource.getFactory().makeEmptyModel();
+	}
 
     @Override
     public <I> boolean isValidArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {

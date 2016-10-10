@@ -44,14 +44,11 @@ import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
-import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
-import java.sql.SQLException;
 import java.util.logging.Logger;
 
 /**
- * JDBC model factory<br>
- * One instance of this class should be used for each JDBCResource
+ * one JDBFa
  * 
  * @author charlie
  * 
@@ -76,23 +73,19 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 		return resource;
 	}
 
+	/**
+	 * Creates empty model that needs to be initialized
+	 * @return the created model
+	 */
+	public JDBCModel makeEmptyModel() {
+		return newInstance(JDBCModel.class);
+	}
+
 	public JDBCModel makeNewModel(String address, String user, String password) {
 		JDBCModel returned = newInstance(JDBCModel.class);
 		returned.init(address, user, password);
 		return returned;
 	}
-
-	public JDBCModel retrieveModel(final String address) throws SQLException {
-        return retrieveModel(address);
-    }
-
-
-    public JDBCSchema retrieveSchema(final JDBCSchema schema, JDBCModel model) throws SQLException {
-        for (JDBCTable table : SQLHelper.getTables(model.getConnection(), this)) {
-			System.out.println("[JDBC] read table " + table);
-		}
-        return schema;
-    }
 
 	@Override
 	public void startDeserializing() {

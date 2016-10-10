@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':jdbcconnector')
+    compile group: 'org.openflexo', name: 'flexo-ui', version:"1.+"
+}

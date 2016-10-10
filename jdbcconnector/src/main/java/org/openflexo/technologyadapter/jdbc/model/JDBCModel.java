@@ -40,8 +40,8 @@ import java.sql.SQLException;
 @ModelEntity
 @ImplementationClass(value = JDBCModelImpl.class)
 @XMLElement
-@Imports(@Import(JDBCSchema.class))
-public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCModel>{
+@Imports({ @Import(JDBCSchema.class), @Import(JDBCTable.class), @Import(JDBCColumn.class)})
+public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCModel> {
 
     String ADDRESS = "address";
     String USER = "user";
@@ -51,6 +51,8 @@ public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, Reso
     void init(@Parameter(ADDRESS) String address,
 			  @Parameter(USER) String user,
 			  @Parameter(PASSWORD) String password);
+
+    void connect() throws SQLException;
 
     @Getter(ADDRESS) @XMLAttribute
     String getAddress();
@@ -63,5 +65,5 @@ public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, Reso
 
     JDBCSchema getSchema() throws SQLException;
 
-    Connection getConnection() throws SQLException;
+    Connection getConnection();
 }

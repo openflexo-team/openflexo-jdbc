@@ -26,7 +26,6 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -47,6 +46,11 @@ public abstract class JDBCModelImpl implements JDBCModel {
     public JDBCModelImpl() {
     }
 
+	@Override
+	public void connect() throws SQLException {
+		connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
+	}
+
 	public JDBCTechnologyAdapter getTechnologyAdapter() {
         FlexoResource<JDBCModel> resource = getResource();
         if (resource != null && resource.getServiceManager() != null) {
@@ -59,8 +63,6 @@ public abstract class JDBCModelImpl implements JDBCModel {
 	@Override
 	public JDBCSchema getSchema() throws SQLException {
 		if (schema == null) {
-			Connection connection = getConnection();
-
 			// Find the correct factory
 			ModelFactory factory = null;
 			try {
@@ -71,16 +73,13 @@ public abstract class JDBCModelImpl implements JDBCModel {
 			// JDBCFactory factory = ((JDBCResource) getResource()).getFactory();
 
 			schema = factory.newInstance(JDBCSchema.class);
-			schema.setTables(SQLHelper.getTables(connection, factory));
+			schema.init(this);
 		}
 		return schema;
 	}
 
 	@Override
-    public Connection getConnection() throws SQLException {
-		if (connection == null) {
-			connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
-		}
+    public Connection getConnection() {
         return connection;
     }
 }
