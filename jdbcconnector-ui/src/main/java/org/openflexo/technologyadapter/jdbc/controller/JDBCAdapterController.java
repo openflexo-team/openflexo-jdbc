@@ -24,6 +24,7 @@ import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.gina.utils.InspectorGroup;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcModelInitializer;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
 import org.openflexo.technologyadapter.jdbc.view.JDBCModuleView;
@@ -34,7 +35,7 @@ import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.TechnologyAdapterController;
 import org.openflexo.view.controller.model.FlexoPerspective;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.util.logging.Logger;
 
 public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechnologyAdapter> {
@@ -52,6 +53,7 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	    actionInitializer.getController().getModuleInspectorController()
                 .loadDirectory(ResourceLocator.locateResource("Inspectors/JDBC"), getTechnologyAdapter().getLocales());
         */
+		new CreateJdbcModelInitializer(actionInitializer);
 	}
 
     @Override

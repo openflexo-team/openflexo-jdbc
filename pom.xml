@@ -6,10 +6,10 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.openflexo.database</groupId>
-    <artifactId>database</artifactId>
+    <groupId>org.openflexo.jdbc</groupId>
+    <artifactId>openflexo-jdbc</artifactId>
     <version>1.8.0-SNAPSHOT</version>
-    <name>Database</name>
+    <name>OpenFlexo-JDBC</name>
     <packaging>pom</packaging>
     <modules>
         <module>jdbcconnector</module>
