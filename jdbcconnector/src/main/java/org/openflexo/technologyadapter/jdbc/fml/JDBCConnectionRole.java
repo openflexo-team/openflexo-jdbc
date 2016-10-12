@@ -41,7 +41,7 @@ public interface JDBCConnectionRole extends FlexoRole<JDBCConnection> {
 
     JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
 
-    abstract static class JDBCConnectionRoleImpl extends FlexoRoleImpl<JDBCConnection> implements JDBCConnectionRole {
+    abstract class JDBCConnectionRoleImpl extends FlexoRoleImpl<JDBCConnection> implements JDBCConnectionRole {
 
         public JDBCConnectionRoleImpl() {
             super();
