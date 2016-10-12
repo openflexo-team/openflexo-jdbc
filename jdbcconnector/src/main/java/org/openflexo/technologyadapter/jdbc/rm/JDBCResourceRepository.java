@@ -23,11 +23,11 @@ package org.openflexo.technologyadapter.jdbc.rm;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterResourceRepository;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
 
 public class JDBCResourceRepository<I> extends
-        TechnologyAdapterResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCModel, I>
+        TechnologyAdapterResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCConnection, I>
 {
 
     public JDBCResourceRepository(JDBCTechnologyAdapter adapter, FlexoResourceCenter<I> resourceCenter) {

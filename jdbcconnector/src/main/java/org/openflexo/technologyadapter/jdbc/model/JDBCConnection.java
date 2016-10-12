@@ -37,10 +37,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @ModelEntity
-@ImplementationClass(value = JDBCModelImpl.class)
+@ImplementationClass(value = JDBCConnectionImpl.class)
 @XMLElement
 @Imports({ @Import(JDBCSchema.class), @Import(JDBCTable.class), @Import(JDBCColumn.class)})
-public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCModel> {
+public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCConnection> {
 
     String ADDRESS = "address";
     String USER = "user";

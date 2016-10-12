@@ -39,7 +39,7 @@ public interface JDBCTable {
 		public List<JDBCColumn> getColumns() {
 			if (columns == null) {
 				try {
-					JDBCModel model = getSchema().getModel();
+					JDBCConnection model = getSchema().getModel();
 					columns = SQLHelper.getTableColumns(getName(), model.getConnection(), SQLHelper.getFactory(model));
 				} catch (SQLException e) {
 					columns = null;

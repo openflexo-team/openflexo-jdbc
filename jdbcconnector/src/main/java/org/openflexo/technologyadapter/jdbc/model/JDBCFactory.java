@@ -60,7 +60,7 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 	private final JDBCResource resource;
 
 	public JDBCFactory(JDBCResource resource, EditingContext editingContext) throws ModelDefinitionException {
-		super(JDBCModel.class);
+		super(JDBCConnection.class);
 		this.resource = resource;
 		setEditingContext(editingContext);
 		if(resource!=null){
@@ -77,12 +77,12 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 	 * Creates empty model that needs to be initialized
 	 * @return the created model
 	 */
-	public JDBCModel makeEmptyModel() {
-		return newInstance(JDBCModel.class);
+	public JDBCConnection makeEmptyModel() {
+		return newInstance(JDBCConnection.class);
 	}
 
-	public JDBCModel makeNewModel(String address, String user, String password) {
-		JDBCModel returned = newInstance(JDBCModel.class);
+	public JDBCConnection makeNewModel(String address, String user, String password) {
+		JDBCConnection returned = newInstance(JDBCConnection.class);
 		returned.setAddress(address);
 		returned.setUser(user);
 		returned.setPassword(password);

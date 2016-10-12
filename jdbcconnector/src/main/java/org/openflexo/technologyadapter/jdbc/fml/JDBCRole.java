@@ -30,18 +30,18 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCRole.JDBCRoleImpl;
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
 import java.lang.reflect.Type;
 
 @ModelEntity
 @ImplementationClass(value = JDBCRoleImpl.class)
 @XMLElement
-public interface JDBCRole extends FlexoRole<JDBCModel> {
+public interface JDBCRole extends FlexoRole<JDBCConnection> {
 
     public JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
 
-    public abstract static class JDBCRoleImpl extends FlexoRoleImpl<JDBCModel> implements JDBCRole {
+    public abstract static class JDBCRoleImpl extends FlexoRoleImpl<JDBCConnection> implements JDBCRole {
 
         public JDBCRoleImpl() {
             super();
@@ -52,7 +52,7 @@ public interface JDBCRole extends FlexoRole<JDBCModel> {
          */
         @Override
         public Type getType() {
-            return JDBCModel.class;
+            return JDBCConnection.class;
         }
 
         /* (non-Javadoc)
@@ -61,7 +61,7 @@ public interface JDBCRole extends FlexoRole<JDBCModel> {
         /*
         @Override
         public String getPreciseType() {
-            return JDBCModel.class.getSimpleName();
+            return JDBCConnection.class.getSimpleName();
         }
         */
 
@@ -85,9 +85,9 @@ public interface JDBCRole extends FlexoRole<JDBCModel> {
          * @see org.openflexo.foundation.viewpoint.FlexoRole.FlexoRoleImpl#makeActorReference(java.lang.Object, org.openflexo.foundation.view.FlexoConceptInstance)
          */
         @Override
-        public ActorReference<JDBCModel> makeActorReference(final JDBCModel object, final FlexoConceptInstance epi) {
+        public ActorReference<JDBCConnection> makeActorReference(final JDBCConnection object, final FlexoConceptInstance epi) {
             final VirtualModelInstanceModelFactory factory = (VirtualModelInstanceModelFactory) epi.getFactory();
-            final ModelObjectActorReference<JDBCModel> returned = factory.newInstance(ModelObjectActorReference.class);
+            final ModelObjectActorReference<JDBCConnection> returned = factory.newInstance(ModelObjectActorReference.class);
             returned.setFlexoRole(this);
             returned.setFlexoConceptInstance(epi);
             returned.setModellingElement(object);

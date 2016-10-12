@@ -5,7 +5,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCSchema;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
@@ -27,7 +27,7 @@ public class SQLHelper {
     public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
 
 
-	public static ModelFactory getFactory(JDBCModel model) {
+	public static ModelFactory getFactory(JDBCConnection model) {
 		// Find the correct factory
 		ModelFactory factory = null;
 
@@ -35,7 +35,7 @@ public class SQLHelper {
 			return ((JDBCResource) model.getResource()).getFactory();
 		} else {
 			try {
-				return new ModelFactory(JDBCModel.class);
+				return new ModelFactory(JDBCConnection.class);
 			} catch (ModelDefinitionException e) {
 				return null;
 			}

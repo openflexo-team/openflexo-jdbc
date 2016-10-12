@@ -50,7 +50,7 @@ import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.localization.LocalizedDelegate;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 
@@ -151,7 +151,7 @@ public class CreateJdbcModel extends FlexoAction<CreateJdbcModel, RepositoryFold
 			JDBCResourceFactory resourceFactory = technologyAdapter.getResourceFactory(JDBCResourceFactory.class);
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager = (TechnologyContextManager<JDBCTechnologyAdapter>) technologyAdapter.getTechnologyContextManager();
 			JDBCResource resource = resourceFactory.makeJDBCResource(resourceName, getFocusedObject(), technologyContextManager);
-			JDBCModel model = resource.getResourceData(null);
+			JDBCConnection model = resource.getResourceData(null);
 			model.setAddress(getAddress());
 			model.setUser(getUser());
 			model.setPassword(getPassword());

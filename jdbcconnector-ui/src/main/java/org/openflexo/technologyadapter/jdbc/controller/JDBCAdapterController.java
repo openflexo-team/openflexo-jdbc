@@ -26,7 +26,7 @@ import org.openflexo.gina.utils.InspectorGroup;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcModelInitializer;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.view.JDBCModuleView;
 import org.openflexo.view.EmptyPanel;
 import org.openflexo.view.ModuleView;
@@ -95,8 +95,8 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	@Override
 	public ModuleView<?> createModuleViewForObject(final TechnologyObject<JDBCTechnologyAdapter> object, final FlexoController controller, final FlexoPerspective perspective) {
 		// TODO Auto-generated method stub : update your moduleView code to have somethig represented
-		if (object instanceof JDBCModel){
-			return new JDBCModuleView((JDBCModel) object, controller, perspective);
+		if (object instanceof JDBCConnection){
+			return new JDBCModuleView((JDBCConnection) object, controller, perspective);
 		}
 		return new EmptyPanel<TechnologyObject<JDBCTechnologyAdapter>>(controller, perspective, object);
 	}
@@ -117,7 +117,7 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	public boolean hasModuleViewForObject(
 			TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
 		// TODO Auto-generated method stub
-		return obj instanceof JDBCModel;
+		return obj instanceof JDBCConnection;
 	}
 }
 

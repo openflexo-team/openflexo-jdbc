@@ -164,7 +164,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
         JDBCFactory factory = new JDBCFactory(null, null);
         try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.jdbc"))) {
-            JDBCModel result = (JDBCModel) factory.deserialize(stream);
+            JDBCConnection result = (JDBCConnection) factory.deserialize(stream);
 			result.connect();
 			JDBCSchema schema = result.getSchema();
 			System.out.println(schema);

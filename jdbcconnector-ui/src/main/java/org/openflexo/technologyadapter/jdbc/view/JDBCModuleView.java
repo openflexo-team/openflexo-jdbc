@@ -20,31 +20,31 @@
 
 package org.openflexo.technologyadapter.jdbc.view;
 
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.view.ModuleView;
 import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.model.FlexoPerspective;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  * Module view is typed with generally the resource data, but can be done with any TechnologyObject.
  */
-public class JDBCModuleView extends JPanel implements ModuleView<JDBCModel>{
+public class JDBCModuleView extends JPanel implements ModuleView<JDBCConnection>{
 
 	private final FlexoController controller;
 
-	private final JDBCModel representedObject;
+	private final JDBCConnection representedObject;
 
 	private final FlexoPerspective perspective;
 	/**
 	 * Initialize needed attribute. All are final.
 	 *
 	 * @param controller The flexo controller
-	 * @param representedObject JDBCModel object that will be represented
+	 * @param representedObject JDBCConnection object that will be represented
 	 * @param perspective
 	 */
-	public JDBCModuleView(JDBCModel representedObject, FlexoController controller, FlexoPerspective perspective) {
+	public JDBCModuleView(JDBCConnection representedObject, FlexoController controller, FlexoPerspective perspective) {
 		this.controller = controller;
 		this.representedObject = representedObject;
 		this.perspective = perspective;
@@ -95,7 +95,7 @@ public class JDBCModuleView extends JPanel implements ModuleView<JDBCModel>{
 	}
 
 	@Override
-	public JDBCModel getRepresentedObject() {
+	public JDBCConnection getRepresentedObject() {
 		return representedObject;
 	}
 

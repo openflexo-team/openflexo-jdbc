@@ -30,17 +30,17 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyContextManager;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
 
 @ModelEntity
 @ImplementationClass(JDBCResourceImpl.class)
 @XMLElement
 public interface JDBCResource
 extends
-        PamelaResource<JDBCModel, JDBCFactory>,
-        FlexoResource<JDBCModel>,
-        TechnologyAdapterResource<JDBCModel, JDBCTechnologyAdapter>
+        PamelaResource<JDBCConnection, JDBCFactory>,
+        FlexoResource<JDBCConnection>,
+        TechnologyAdapterResource<JDBCConnection, JDBCTechnologyAdapter>
 {
     
     String TECHNOLOGY_CONTEXT_MANAGER = "technologyContextManager";
@@ -53,5 +53,5 @@ extends
 
     // TODO connect to model
     @Getter("model")
-    JDBCModel getModel();
+    JDBCConnection getModel();
 }

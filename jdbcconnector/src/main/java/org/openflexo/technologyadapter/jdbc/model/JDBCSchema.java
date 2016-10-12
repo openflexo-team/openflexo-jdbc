@@ -21,10 +21,10 @@ public interface JDBCSchema extends AccessibleProxyObject {
 	String MODEL = "model";
 
 	@Initializer
-	void init(@Parameter(MODEL) JDBCModel model) throws SQLException;
+	void init(@Parameter(MODEL) JDBCConnection model) throws SQLException;
 
 	@Getter(MODEL)
-	JDBCModel getModel();
+	JDBCConnection getModel();
 
     List<JDBCTable> getTables();
 
@@ -36,7 +36,7 @@ public interface JDBCSchema extends AccessibleProxyObject {
 		public List<JDBCTable> getTables() {
 			if (tables == null) {
 				try {
-					JDBCModel model = getModel();
+					JDBCConnection model = getModel();
 					tables = SQLHelper.getTables(this, model.getConnection(), SQLHelper.getFactory(model));
 				} catch (SQLException e) {
 					tables = null;

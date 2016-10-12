@@ -33,18 +33,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Abstract JDBCModel implementation using Pamela.
+ * Abstract JDBCConnection implementation using Pamela.
  * 
  * @author charlie
  * 
  */
-public abstract class JDBCModelImpl extends FlexoObject.FlexoObjectImpl implements JDBCModel {
+public abstract class JDBCConnectionImpl extends FlexoObject.FlexoObjectImpl implements JDBCConnection {
 
     private Connection connection = null;
 
 	private JDBCSchema schema;
 
-    public JDBCModelImpl() {
+    public JDBCConnectionImpl() {
     }
 
 	@Override
@@ -77,7 +77,7 @@ public abstract class JDBCModelImpl extends FlexoObject.FlexoObjectImpl implemen
 	}
 
 	public JDBCTechnologyAdapter getTechnologyAdapter() {
-        FlexoResource<JDBCModel> resource = getResource();
+        FlexoResource<JDBCConnection> resource = getResource();
         if (resource != null && resource.getServiceManager() != null) {
             FlexoServiceManager serviceManager = resource.getServiceManager();
             return serviceManager.getService(TechnologyAdapterService.class).getTechnologyAdapter(JDBCTechnologyAdapter.class);
@@ -91,7 +91,7 @@ public abstract class JDBCModelImpl extends FlexoObject.FlexoObjectImpl implemen
 			// Find the correct factory
 			ModelFactory factory = null;
 			try {
-				factory = new ModelFactory(JDBCModel.class);
+				factory = new ModelFactory(JDBCConnection.class);
 			} catch (ModelDefinitionException e) {
 				e.printStackTrace();
 			}

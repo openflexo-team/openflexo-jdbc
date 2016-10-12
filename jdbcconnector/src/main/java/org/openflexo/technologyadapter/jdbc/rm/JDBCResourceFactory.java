@@ -7,15 +7,15 @@ import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
-import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
 import org.openflexo.toolbox.StringUtils;
 
 /**
  *
  */
 public class JDBCResourceFactory
-    extends PamelaResourceFactory<JDBCResource, JDBCModel, JDBCTechnologyAdapter, JDBCFactory>
+    extends PamelaResourceFactory<JDBCResource, JDBCConnection, JDBCTechnologyAdapter, JDBCFactory>
 {
 
     public static final String JDBC_EXTENSION = ".jdbc";
@@ -30,7 +30,7 @@ public class JDBCResourceFactory
     }
 
     @Override
-    public JDBCModel makeEmptyResourceData(JDBCResource resource) {
+    public JDBCConnection makeEmptyResourceData(JDBCResource resource) {
 		return resource.getFactory().makeEmptyModel();
 	}
 
