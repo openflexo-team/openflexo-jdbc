@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel id="0" darkLevel="0" useScrollBar="false" protectContent="false"
-	opaque="false" layout="gridbag"
-	controllerClassName="org.openflexo.view.controller.FlexoFIBController"
-	border="empty" trackViewPortWidth="true"
-	dataClassName="org.openflexo.technologyadapter.jdbc.model.JDBCConnection"
-	titleFont="Lucida Grande,0,13" trackViewPortHeight="true">
-	<Label id="2" manageDynamicModel="false" useScrollBar="false"
-		index="1" localize="true" align="right"
-		constraints="gridbag(anchor=east;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=0;padX=0;padY=0;weightX=0.0;weightY=0.0)"
-		label="name" readOnly="false" />
+<Panel id="0" borderLeft="0" sizeAdjustment="OriginalSize" opaque="false" controllerClassName="org.openflexo.view.controller.FlexoFIBController" borderRight="0" border="empty" trackViewPortWidth="true" align="left" borderBottom="0" titleFont="Lucida Grande,0,13" borderTop="0" trackViewPortHeight="true" layout="border">
+	<Panel id="1" borderLeft="0" sizeAdjustment="OriginalSize" borderRight="0" border="titled" trackViewPortWidth="true" align="left" constraints="border(location=north)" borderBottom="0" borderTitle="Connection" titleFont="SansSerif,0,10" borderTop="0" trackViewPortHeight="true" layout="border" name="northPanel">
+		<FIBReferencedComponent id="2" name="ReferencedComponent" constraints="border(location=center)" />
+	</Panel>
+	<Panel id="3" borderLeft="0" sizeAdjustment="OriginalSize" borderRight="0" border="titled" trackViewPortWidth="true" align="left" constraints="border(location=center)" borderBottom="0" borderTitle="Tables" titleFont="SansSerif,0,10" borderTop="0" trackViewPortHeight="true" layout="border" name="centerPanel" />
+	<FIBVariable id="4" name="data" type="org.openflexo.technologyadapter.jdbc.model.JDBCConnection" />
+	<LocalizedDictionary id="5" />
 </Panel>
