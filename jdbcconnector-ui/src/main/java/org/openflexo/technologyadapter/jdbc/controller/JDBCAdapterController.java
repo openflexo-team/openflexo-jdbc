@@ -98,7 +98,7 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 		if (object instanceof JDBCConnection){
 			return new JDBCModuleView((JDBCConnection) object, controller, perspective);
 		}
-		return new EmptyPanel<TechnologyObject<JDBCTechnologyAdapter>>(controller, perspective, object);
+		return new EmptyPanel<>(controller, perspective, object);
 	}
 
     @Override

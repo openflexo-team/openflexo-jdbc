@@ -20,88 +20,31 @@
 
 package org.openflexo.technologyadapter.jdbc.view;
 
+import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
+import org.openflexo.rm.Resource;
+import org.openflexo.rm.ResourceLocator;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.view.ModuleView;
+import org.openflexo.view.FIBModuleView;
 import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.model.FlexoPerspective;
-
-import javax.swing.*;
 
 /**
  * Module view is typed with generally the resource data, but can be done with any TechnologyObject.
  */
-public class JDBCModuleView extends JPanel implements ModuleView<JDBCConnection>{
+public class JDBCModuleView extends FIBModuleView<JDBCConnection> {
 
-	private final FlexoController controller;
+	public static Resource JDBC_MODULE_VIEW_FIB = ResourceLocator.locateResource("Fib/JdbcModuleView.fib");
 
-	private final JDBCConnection representedObject;
 
 	private final FlexoPerspective perspective;
-	/**
-	 * Initialize needed attribute. All are final.
-	 *
-	 * @param controller The flexo controller
-	 * @param representedObject JDBCConnection object that will be represented
-	 * @param perspective
-	 */
-	public JDBCModuleView(JDBCConnection representedObject, FlexoController controller, FlexoPerspective perspective) {
-		this.controller = controller;
-		this.representedObject = representedObject;
+
+	public JDBCModuleView(JDBCConnection connection, FlexoController controller, FlexoPerspective perspective) {
+		super(connection, controller, JDBC_MODULE_VIEW_FIB, controller.getTechnologyAdapter(FMLRTTechnologyAdapter.class).getLocales());
 		this.perspective = perspective;
 	}
 
 	@Override
-	public void show(FlexoController flexoController, FlexoPerspective flexoPerspective) {
-		// If you want to add right and left panels to your module view, do it here. Un comment following code with your component.
-		// SwingUtilities.invokeLater(new Runnable() {
-		//		@Override
-		//		public void run() {
-		//			perspective.setTopRightView(customJComponent);
-		//			controller.getControllerModel().setRightViewVisible(true);
-		//			}
-		// });
-	}
-
-	/**
-	 * Remove ModuleView from controller.
-	 */
-	@Override
-	public void deleteModuleView() {
-		this.controller.removeModuleView(this);
-	}
-
-	/**
-	 * @return perspective given during construction of ModuleView.
-	 */
-	@Override
 	public FlexoPerspective getPerspective() {
-		return this.perspective;
-	}
-
-	/**
-	 * Nothing done on this ModuleView
-	 */
-	@Override
-	public void willShow() {
-		// Nothing to implement by default, empty body
-	}
-
-	/**
-	 * Nothing done on this ModuleView
-	 */
-	@Override
-	public void willHide() {
-		// Nothing to implement by default, empty body
-	}
-
-	@Override
-	public JDBCConnection getRepresentedObject() {
-		return representedObject;
-	}
-
-	@Override
-	public boolean isAutoscrolled() {
-		// If you want to handle scrollable by yourself instead of letting Openflexo doing it, change return to true.
-		return false;
+		return perspective;
 	}
 }

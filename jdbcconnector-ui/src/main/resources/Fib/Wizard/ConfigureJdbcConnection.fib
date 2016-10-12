@@ -3,7 +3,7 @@
 	opaque="false" layout="gridbag"
 	controllerClassName="org.openflexo.view.controller.FlexoFIBController"
 	border="empty" trackViewPortWidth="true"
-	dataClassName="org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcModelWizard$ConfigureNewConcept"
+	dataClassName="org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcConnectionWizard.ConfigureJdbcConnection"
 	titleFont="Lucida Grande,0,13" trackViewPortHeight="true">
 	<Label id="2" manageDynamicModel="false" useScrollBar="false"
 		index="1" localize="true" align="right"

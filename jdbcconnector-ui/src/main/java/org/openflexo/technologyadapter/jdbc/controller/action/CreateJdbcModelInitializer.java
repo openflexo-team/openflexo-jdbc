@@ -69,7 +69,7 @@ public class CreateJdbcModelInitializer extends ActionInitializer<CreateJdbcMode
 		return new FlexoActionInitializer<CreateJdbcModel>() {
 			@Override
 			public boolean run(EventObject e, CreateJdbcModel action) {
-				Wizard wizard = new CreateJdbcModelWizard(action, getController());
+				Wizard wizard = new CreateJdbcConnectionWizard(action, getController());
 				WizardDialog dialog = new WizardDialog(wizard, getController());
 				dialog.showDialog();
 				if (dialog.getStatus() != FIBController.Status.VALIDATED) {

@@ -54,19 +54,19 @@ import org.openflexo.view.controller.FlexoController;
 import java.awt.*;
 import java.util.logging.Logger;
 
-public class CreateJdbcModelWizard extends FlexoWizard {
+public class CreateJdbcConnectionWizard extends FlexoWizard {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CreateJdbcModelWizard.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(CreateJdbcConnectionWizard.class.getPackage().getName());
 
 	private final CreateJdbcModel action;
 
-	private final ConfigureNewConcept configureNewConcept;
+	private final ConfigureJdbcConnection configureJdbcConnection;
 
-	public CreateJdbcModelWizard(CreateJdbcModel action, FlexoController controller) {
+	public CreateJdbcConnectionWizard(CreateJdbcModel action, FlexoController controller) {
 		super(controller);
 		this.action = action;
-		addStep(configureNewConcept = new ConfigureNewConcept());
+		addStep(configureJdbcConnection = new ConfigureJdbcConnection());
 	}
 
 	@Override
@@ -79,8 +79,8 @@ public class CreateJdbcModelWizard extends FlexoWizard {
 		return IconFactory.getImageIcon(FMLIconLibrary.FLEXO_CONCEPT_BIG_ICON, IconLibrary.NEW_32_32).getImage();
 	}
 
-	public ConfigureNewConcept getConfigureNewConcept() {
-		return configureNewConcept;
+	public ConfigureJdbcConnection getConfigureJdbcConnection() {
+		return configureJdbcConnection;
 	}
 
 	/**
@@ -89,8 +89,8 @@ public class CreateJdbcModelWizard extends FlexoWizard {
 	 * @author sylvain
 	 *
 	 */
-	@FIBPanel("Fib/Wizard/ConfigureJdbcModel.fib")
-	public class ConfigureNewConcept extends WizardStep {
+	@FIBPanel("Fib/Wizard/ConfigureJdbcConnection.fib")
+	public class ConfigureJdbcConnection extends WizardStep {
 
 		public ApplicationContext getServiceManager() {
 			return getController().getApplicationContext();
