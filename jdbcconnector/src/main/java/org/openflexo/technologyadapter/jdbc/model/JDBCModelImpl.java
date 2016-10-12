@@ -20,6 +20,7 @@
 
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoServiceManager;
 import org.openflexo.foundation.resource.FlexoResource;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
@@ -37,9 +38,9 @@ import java.sql.SQLException;
  * @author charlie
  * 
  */
-public abstract class JDBCModelImpl implements JDBCModel {
+public abstract class JDBCModelImpl extends FlexoObject.FlexoObjectImpl implements JDBCModel {
 
-    private Connection connection;
+    private Connection connection = null;
 
 	private JDBCSchema schema;
 
@@ -47,8 +48,32 @@ public abstract class JDBCModelImpl implements JDBCModel {
     }
 
 	@Override
+	public void setAddress(String address) {
+		performSuperSetter(ADDRESS, address);
+		close();
+	}
+
+	@Override
+	public void setUser(String user) {
+		performSuperSetter(USER, user);
+		close();
+	}
+
+	@Override
+	public void setPassword(String password) {
+		performSuperSetter(PASSWORD, password);
+		close();
+	}
+
+	public void close() {
+		connection = null;
+	}
+
+	@Override
 	public void connect() throws SQLException {
-		connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
+		if (connection != null) {
+			connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
+		}
 	}
 
 	public JDBCTechnologyAdapter getTechnologyAdapter() {
@@ -80,6 +105,7 @@ public abstract class JDBCModelImpl implements JDBCModel {
 
 	@Override
     public Connection getConnection() {
+		if (connection == null) throw new IllegalStateException("JDBC connection not initialized");
         return connection;
     }
 }

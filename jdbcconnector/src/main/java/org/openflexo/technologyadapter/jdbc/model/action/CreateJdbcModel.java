@@ -45,13 +45,16 @@ import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.action.FlexoActionType;
 import org.openflexo.foundation.resource.RepositoryFolder;
+import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.localization.LocalizedDelegate;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.model.JDBCModel;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 
+import java.io.FileNotFoundException;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -72,10 +75,9 @@ public class CreateJdbcModel extends FlexoAction<CreateJdbcModel, RepositoryFold
 
 		@Override
 		public boolean isVisibleForSelection(RepositoryFolder object, Vector<FlexoObject> globalSelection) {
-			//if (object != null && object.getResourceRepository() instanceof JDBCResourceRepository) {
-				return true;
-			//}
-			//return false;
+			// TODO check what should be done
+			//return object != null && object.getResourceRepository() instanceof JDBCResourceRepository;
+			return true;
 		}
 
 		@Override
@@ -149,9 +151,12 @@ public class CreateJdbcModel extends FlexoAction<CreateJdbcModel, RepositoryFold
 			JDBCResourceFactory resourceFactory = technologyAdapter.getResourceFactory(JDBCResourceFactory.class);
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager = (TechnologyContextManager<JDBCTechnologyAdapter>) technologyAdapter.getTechnologyContextManager();
 			JDBCResource resource = resourceFactory.makeJDBCResource(resourceName, getFocusedObject(), technologyContextManager);
-			resource.getModel().init(address, user, password);
+			JDBCModel model = resource.getResourceData(null);
+			model.setAddress(getAddress());
+			model.setUser(getUser());
+			model.setPassword(getPassword());
 
-		} catch (ModelDefinitionException e) {
+		} catch (ModelDefinitionException | FileNotFoundException | ResourceLoadingCancelledException e) {
 			throw new FlexoException(e);
 		}
 

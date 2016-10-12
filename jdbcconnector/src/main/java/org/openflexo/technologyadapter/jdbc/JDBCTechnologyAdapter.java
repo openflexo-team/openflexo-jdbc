@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  * 
  */
 @DeclareModelSlots({JDBCModelSlot.class})
-@DeclareResourceTypes({ JDBCResourceFactory.class})
+@DeclareResourceTypes({JDBCResourceFactory.class})
 public class JDBCTechnologyAdapter extends TechnologyAdapter {
 
 

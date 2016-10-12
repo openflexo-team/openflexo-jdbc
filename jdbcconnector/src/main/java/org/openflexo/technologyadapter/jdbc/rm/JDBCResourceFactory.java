@@ -20,7 +20,7 @@ public class JDBCResourceFactory
 
     public static final String JDBC_EXTENSION = ".jdbc";
 
-    protected JDBCResourceFactory() throws ModelDefinitionException {
+    public JDBCResourceFactory() throws ModelDefinitionException {
         super(JDBCResource.class);
     }
 

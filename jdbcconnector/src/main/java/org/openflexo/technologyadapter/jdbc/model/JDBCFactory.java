@@ -83,7 +83,9 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 
 	public JDBCModel makeNewModel(String address, String user, String password) {
 		JDBCModel returned = newInstance(JDBCModel.class);
-		returned.init(address, user, password);
+		returned.setAddress(address);
+		returned.setUser(user);
+		returned.setPassword(password);
 		return returned;
 	}
 

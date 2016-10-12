@@ -27,9 +27,8 @@ import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Import;
 import org.openflexo.model.annotations.Imports;
-import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.Parameter;
+import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -47,21 +46,25 @@ public interface JDBCModel extends TechnologyObject<JDBCTechnologyAdapter>, Reso
     String USER = "user";
     String PASSWORD = "password";
 
-    @Initializer
-    void init(@Parameter(ADDRESS) String address,
-			  @Parameter(USER) String user,
-			  @Parameter(PASSWORD) String password);
-
     void connect() throws SQLException;
 
     @Getter(ADDRESS) @XMLAttribute
     String getAddress();
 
+    @Setter(ADDRESS)
+    void setAddress(String address);
+
     @Getter(USER) @XMLAttribute
     String getUser();
 
+    @Setter(USER)
+    void setUser(String user);
+
     @Getter(PASSWORD) @XMLAttribute
     String getPassword();
+
+    @Setter(PASSWORD)
+    void setPassword(String pass);
 
     JDBCSchema getSchema() throws SQLException;
 

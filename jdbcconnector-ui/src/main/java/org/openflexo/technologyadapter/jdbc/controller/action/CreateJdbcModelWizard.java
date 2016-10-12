@@ -117,6 +117,19 @@ public class CreateJdbcModelWizard extends FlexoWizard {
 
 		}
 
+		public String getResourceName() {
+			return action.getResourceName();
+		}
+
+		public void setResourceName(String newResourceName) {
+			if (!newResourceName.equals(getResourceName())) {
+				String oldValue = getResourceName();
+				action.setResourceName(newResourceName);
+				getPropertyChangeSupport().firePropertyChange("resourceName", oldValue, newResourceName);
+				checkValidity();
+			}
+		}
+
 		public String getAddress() {
 			return action.getAddress();
 		}
@@ -130,6 +143,30 @@ public class CreateJdbcModelWizard extends FlexoWizard {
 			}
 		}
 
-	}
+		public String getUser() {
+			return action.getUser();
+		}
 
+		public void setUser(String newUser) {
+			if (!newUser.equals(getUser())) {
+				String oldValue = getUser();
+				action.setUser(newUser);
+				getPropertyChangeSupport().firePropertyChange("user", oldValue, newUser);
+				checkValidity();
+			}
+		}
+
+		public String getPassword() {
+			return action.getPassword();
+		}
+
+		public void setPassword(String newPassword) {
+			if (!newPassword.equals(getPassword())) {
+				String oldValue = getPassword();
+				action.setPassword(newPassword);
+				getPropertyChangeSupport().firePropertyChange("password", oldValue, newPassword);
+				checkValidity();
+			}
+		}
+	}
 }
