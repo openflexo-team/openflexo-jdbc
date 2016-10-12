@@ -29,61 +29,39 @@ import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCRole.JDBCRoleImpl;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCConnectionRole.JDBCConnectionRoleImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
 import java.lang.reflect.Type;
 
 @ModelEntity
-@ImplementationClass(value = JDBCRoleImpl.class)
+@ImplementationClass(value = JDBCConnectionRoleImpl.class)
 @XMLElement
-public interface JDBCRole extends FlexoRole<JDBCConnection> {
+public interface JDBCConnectionRole extends FlexoRole<JDBCConnection> {
 
-    public JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
+    JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
 
-    public abstract static class JDBCRoleImpl extends FlexoRoleImpl<JDBCConnection> implements JDBCRole {
+    abstract static class JDBCConnectionRoleImpl extends FlexoRoleImpl<JDBCConnection> implements JDBCConnectionRole {
 
-        public JDBCRoleImpl() {
+        public JDBCConnectionRoleImpl() {
             super();
         }
 
-        /* (non-Javadoc)
-         * @see org.openflexo.foundation.viewpoint.FlexoRole.FlexoRoleImpl#getType()
-         */
         @Override
         public Type getType() {
             return JDBCConnection.class;
         }
 
-        /* (non-Javadoc)
-         * @see org.openflexo.foundation.viewpoint.FlexoRole.FlexoRoleImpl#getPreciseType()
-         */
-        /*
-        @Override
-        public String getPreciseType() {
-            return JDBCConnection.class.getSimpleName();
-        }
-        */
-
-        /* (non-Javadoc)
-         * @see org.openflexo.foundation.viewpoint.FlexoRole#defaultCloningStrategy()
-         */
         @Override
         public RoleCloningStrategy defaultCloningStrategy() {
             return RoleCloningStrategy.Reference;
         }
 
-        /* (non-Javadoc)
-         * @see org.openflexo.foundation.viewpoint.FlexoRole.FlexoRoleImpl#defaultBehaviourIsToBeDeleted()
-         */
         @Override
         public boolean defaultBehaviourIsToBeDeleted() {
             return false;
         }
 
-        /* (non-Javadoc)
-         * @see org.openflexo.foundation.viewpoint.FlexoRole.FlexoRoleImpl#makeActorReference(java.lang.Object, org.openflexo.foundation.view.FlexoConceptInstance)
-         */
         @Override
         public ActorReference<JDBCConnection> makeActorReference(final JDBCConnection object, final FlexoConceptInstance epi) {
             final VirtualModelInstanceModelFactory factory = (VirtualModelInstanceModelFactory) epi.getFactory();
@@ -94,10 +72,6 @@ public interface JDBCRole extends FlexoRole<JDBCConnection> {
             return returned;
         }
 
-        /**
-         * 
-         * @return JDBC technology adapter in service manager.
-         */
         @Override
         public JDBCTechnologyAdapter getModelSlotTechnologyAdapter() {
             return getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class);

@@ -26,9 +26,9 @@ import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstance;
 import org.openflexo.foundation.technologyadapter.FreeModelSlotInstanceConfiguration;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
-public class JDBCModelSlotInstanceConfiguration extends FreeModelSlotInstanceConfiguration<JDBCConnection, JDBCModelSlot> {
+public class JDBCConnectionSlotInstanceConfiguration extends FreeModelSlotInstanceConfiguration<JDBCConnection, JDBCConnectionSlot> {
 
-    protected JDBCModelSlotInstanceConfiguration(JDBCModelSlot ms, AbstractVirtualModelInstance<?, ?> virtualModelInstance, FlexoProject project) {
+    protected JDBCConnectionSlotInstanceConfiguration(JDBCConnectionSlot ms, AbstractVirtualModelInstance<?, ?> virtualModelInstance, FlexoProject project) {
         super(ms, virtualModelInstance, project);
     }
 

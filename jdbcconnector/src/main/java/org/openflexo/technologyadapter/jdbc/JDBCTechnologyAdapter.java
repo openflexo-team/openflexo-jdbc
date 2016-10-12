@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * @author SomeOne
  * 
  */
-@DeclareModelSlots({JDBCModelSlot.class})
+@DeclareModelSlots({JDBCConnectionSlot.class})
 @DeclareResourceTypes({JDBCResourceFactory.class})
 public class JDBCTechnologyAdapter extends TechnologyAdapter {
 
