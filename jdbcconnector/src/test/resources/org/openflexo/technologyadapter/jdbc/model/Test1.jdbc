@@ -1,1 +1,1 @@
-<JDBCModel address="jdbc:hsqldb:mem:testLoad1" user="user"></JDBCModel>
+<JDBCConnection address="jdbc:hsqldb:mem:testLoad1" user="user"></JDBCConnection>

@@ -40,9 +40,9 @@ import java.sql.SQLException;
  */
 public abstract class JDBCConnectionImpl extends FlexoObject.FlexoObjectImpl implements JDBCConnection {
 
-    private Connection connection = null;
-
 	private JDBCSchema schema;
+
+	private Connection connection;
 
     public JDBCConnectionImpl() {
     }
@@ -50,30 +50,23 @@ public abstract class JDBCConnectionImpl extends FlexoObject.FlexoObjectImpl imp
 	@Override
 	public void setAddress(String address) {
 		performSuperSetter(ADDRESS, address);
-		close();
+		reinitConnection();
 	}
 
 	@Override
 	public void setUser(String user) {
 		performSuperSetter(USER, user);
-		close();
+		reinitConnection();
 	}
 
 	@Override
 	public void setPassword(String password) {
 		performSuperSetter(PASSWORD, password);
-		close();
+		reinitConnection();
 	}
 
-	public void close() {
-		connection = null;
-	}
-
-	@Override
-	public void connect() throws SQLException {
-		if (connection != null) {
-			connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
-		}
+	private void reinitConnection() {
+		// TODO reinit
 	}
 
 	public JDBCTechnologyAdapter getTechnologyAdapter() {
@@ -86,7 +79,7 @@ public abstract class JDBCConnectionImpl extends FlexoObject.FlexoObjectImpl imp
     }
 
 	@Override
-	public JDBCSchema getSchema() throws SQLException {
+	public JDBCSchema getSchema()  {
 		if (schema == null) {
 			// Find the correct factory
 			ModelFactory factory = null;
@@ -99,13 +92,21 @@ public abstract class JDBCConnectionImpl extends FlexoObject.FlexoObjectImpl imp
 
 			schema = factory.newInstance(JDBCSchema.class);
 			schema.init(this);
+			getPropertyChangeSupport().firePropertyChange(SCHEMA, null, schema);
 		}
 		return schema;
 	}
 
 	@Override
     public Connection getConnection() {
-		if (connection == null) throw new IllegalStateException("JDBC connection not initialized");
+		if (connection == null) {
+			try {
+				connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
+				getPropertyChangeSupport().firePropertyChange(CONNECTION, null, connection);
+			} catch (SQLException e) {
+				throw new IllegalStateException("JDBC connection can't be initialized", e);
+			}
+		}
         return connection;
     }
 }

@@ -21,7 +21,7 @@ public interface JDBCSchema extends AccessibleProxyObject {
 	String MODEL = "model";
 
 	@Initializer
-	void init(@Parameter(MODEL) JDBCConnection model) throws SQLException;
+	void init(@Parameter(MODEL) JDBCConnection model);
 
 	@Getter(MODEL)
 	JDBCConnection getModel();
