@@ -35,7 +35,6 @@ public class JDBCModuleView extends FIBModuleView<JDBCConnection> {
 
 	public static Resource JDBC_MODULE_VIEW_FIB = ResourceLocator.locateResource("Fib/JdbcModuleView.fib");
 
-
 	private final FlexoPerspective perspective;
 
 	public JDBCModuleView(JDBCConnection connection, FlexoController controller, FlexoPerspective perspective) {
