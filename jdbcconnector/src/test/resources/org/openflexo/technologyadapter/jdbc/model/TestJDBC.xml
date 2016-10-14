@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ViewPoint id="0" userID="FLX" modelVersion="1.0" version="0.1" flexoID="3" name="TestJDBC" uri="http://testJDBC">
+  <Inspector id="1" flexoID="2" userID="FLX" inspectorTitle="TestJDBC" />
+  <ModelSlot_JDBCModelSlot id="2" flexoID="10" isRequired="true" userID="FLX" name="connection" cloningStrategy="Reference" cardinality="ZeroOne">
+    <JDBCModelSlot idref="2" />
+  </ModelSlot_JDBCModelSlot>
+  <ActionScheme id="3" userID="FLX" width="800" label="displayTables" height="600" flexoID="11" description="here" name="displayTables">
+    <BehaviourControlGraph_IterationAction id="4" iteratorName="table" userID="FLX" flexoID="14">
+      <ControlGraph_LogAction id="5" flexoID="19" ownerContext="controlGraph" logString="(&quot;Found: &quot; + table.name)" logLevel="INFO" userID="FLX" />
+      <Iteration_SelectJDBCTable id="6" flexoID="17" ownerContext="iterationControlGraph" userID="FLX" />
+    </BehaviourControlGraph_IterationAction>
+  </ActionScheme>
+  <CreationScheme id="7" userID="FLX" width="800" label="create" height="600" flexoID="20" name="create">
+    <BehaviourControlGraph_AssignationAction id="8" userID="FLX" flexoID="24" assign="connection">
+      <AssignableAction_ExpressionAction id="9" expression="parameters.connection" flexoID="23" userID="FLX" />
+    </BehaviourControlGraph_AssignationAction>
+    <FlexoResourceParameter id="10" userID="FLX" label="connection" technologyAdapterResourceType="org.openflexo.technologyadapter.jdbc.rm.JDBCResource" flexoID="21" name="connection" />
+  </CreationScheme>
+</ViewPoint>
