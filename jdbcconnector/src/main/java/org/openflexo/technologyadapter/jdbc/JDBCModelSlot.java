@@ -21,14 +21,22 @@
 package org.openflexo.technologyadapter.jdbc;
 
 import org.openflexo.foundation.fml.FlexoRole;
+import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
 import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
 import org.openflexo.foundation.fml.annotations.DeclareFetchRequests;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoRoles;
+import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.View;
+import org.openflexo.foundation.fml.rt.action.ModelSlotInstanceConfiguration;
+import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.FreeModelSlot;
+import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCConnectionRole;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCTableActorReference;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
+import org.openflexo.technologyadapter.jdbc.fml.SelectJDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
 import java.lang.reflect.Type;
@@ -40,18 +48,19 @@ import java.lang.reflect.Type;
  * @author SomeOne
  * 
  */
-@DeclareFlexoRoles({JDBCConnectionRole.class})
+@DeclareActorReferences({ JDBCTableActorReference.class})
+@DeclareFlexoRoles({JDBCTableRole.class})
 @DeclareEditionActions({})
-@DeclareFetchRequests({})
+@DeclareFetchRequests({ SelectJDBCTable.class})
 @ModelEntity
-@ImplementationClass(JDBCConnectionSlot.JDBCConnectionSlotImpl.class)
+@ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
 @XMLElement
-public interface JDBCConnectionSlot extends FreeModelSlot<JDBCConnection> {
+public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 
     @Override
     JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
 
-    abstract class JDBCConnectionSlotImpl extends FreeModelSlotImpl<JDBCConnection> implements JDBCConnectionSlot {
+    abstract class JDBCModelSlotImpl extends FreeModelSlotImpl<JDBCConnection> implements JDBCModelSlot {
 
         @Override
         public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
@@ -60,7 +69,7 @@ public interface JDBCConnectionSlot extends FreeModelSlot<JDBCConnection> {
 
         @Override
         public <PR extends FlexoRole<?>> String defaultFlexoRoleName(Class<PR> patternRoleClass) {
-            if (JDBCConnectionRole.class.isAssignableFrom(patternRoleClass)) {
+            if (JDBCTableRole.class.isAssignableFrom(patternRoleClass)) {
                 return "Object";
         	}
             return "";
@@ -76,5 +85,14 @@ public interface JDBCConnectionSlot extends FreeModelSlot<JDBCConnection> {
             return (JDBCTechnologyAdapter) super.getModelSlotTechnologyAdapter();
         }
 
+        @Override
+        public ModelSlotInstanceConfiguration<? extends FreeModelSlot<JDBCConnection>, JDBCConnection> createConfiguration(AbstractVirtualModelInstance<?, ?> virtualModelInstance, FlexoResourceCenter<?> rc) {
+            return new JDBCModelSlotInstanceConfiguration(this, virtualModelInstance, rc);
+        }
+
+        @Override
+        public TechnologyAdapterResource<JDBCConnection, ?> createProjectSpecificEmptyResource(View view, String filename, String modelUri) {
+            return null;
+        }
     }
 }

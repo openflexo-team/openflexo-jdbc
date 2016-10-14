@@ -102,6 +102,9 @@ public abstract class JDBCConnectionImpl extends FlexoObject.FlexoObjectImpl imp
 		if (connection == null) {
 			try {
 				connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
+				createTableTest1(connection);
+				createTableTest2(connection);
+
 				getPropertyChangeSupport().firePropertyChange(CONNECTION, null, connection);
 			} catch (SQLException e) {
 				throw new IllegalStateException("JDBC connection can't be initialized", e);
@@ -109,4 +112,42 @@ public abstract class JDBCConnectionImpl extends FlexoObject.FlexoObjectImpl imp
 		}
         return connection;
     }
+
+	/** Creates through SQL a table for one connection */
+	private void createTable(Connection connection, String name, String[] ... attributes) throws SQLException {
+		StringBuilder request = new StringBuilder("CREATE TABLE ");
+		request.append(name);
+		request.append(" (");
+		int length = request.length();
+
+		for (String[] attribute : attributes) {
+			if (length < request.length()) request.append(", ");
+
+			int localLength = request.length();
+			for (String part : attribute) {
+				if (localLength < request.length()) request.append(" ");
+				request.append(part);
+			}
+		}
+		request.append(")");
+
+		connection.prepareCall(request.toString()).execute();
+	}
+
+
+	private void createTableTest1(Connection connection) throws SQLException {
+		String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
+		String[] name = {"name", "VARCHAR(100)"};
+		createTable(connection, "test1", id, name);
+	}
+
+	private void createTableTest2(Connection connection) throws SQLException {
+		String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
+		String[] name = {"name", "VARCHAR(100)"};
+		String[] lastName = {"lastname", "VARCHAR(100)"};
+		String[] description = {"description", "VARCHAR(500)"};
+		String[] portrait = {"portrait", "VARCHAR(200)"};
+		createTable(connection, "test2", id, name, lastName, description, portrait);
+	}
+
 }

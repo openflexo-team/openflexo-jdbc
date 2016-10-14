@@ -23,27 +23,27 @@ package org.openflexo.technologyadapter.jdbc.fml;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.rt.ActorReference;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.ModelObjectActorReference;
 import org.openflexo.foundation.fml.rt.VirtualModelInstanceModelFactory;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCConnectionRole.JDBCConnectionRoleImpl;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole.JDBCTableRoleImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 import java.lang.reflect.Type;
 
 @ModelEntity
-@ImplementationClass(value = JDBCConnectionRoleImpl.class)
+@ImplementationClass(value = JDBCTableRoleImpl.class)
 @XMLElement
-public interface JDBCConnectionRole extends FlexoRole<JDBCConnection> {
+public interface JDBCTableRole extends FlexoRole<JDBCTable> {
 
     JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
 
-    abstract class JDBCConnectionRoleImpl extends FlexoRoleImpl<JDBCConnection> implements JDBCConnectionRole {
+    abstract class JDBCTableRoleImpl extends FlexoRoleImpl<JDBCTable> implements JDBCTableRole {
 
-        public JDBCConnectionRoleImpl() {
+        public JDBCTableRoleImpl() {
             super();
         }
 
@@ -63,9 +63,9 @@ public interface JDBCConnectionRole extends FlexoRole<JDBCConnection> {
         }
 
         @Override
-        public ActorReference<JDBCConnection> makeActorReference(final JDBCConnection object, final FlexoConceptInstance epi) {
+        public ActorReference<JDBCTable> makeActorReference(final JDBCTable object, final FlexoConceptInstance epi) {
             final VirtualModelInstanceModelFactory factory = (VirtualModelInstanceModelFactory) epi.getFactory();
-            final ModelObjectActorReference<JDBCConnection> returned = factory.newInstance(ModelObjectActorReference.class);
+            final JDBCActorReference<JDBCTable> returned = factory.newInstance(JDBCTableActorReference.class);
             returned.setFlexoRole(this);
             returned.setFlexoConceptInstance(epi);
             returned.setModellingElement(object);

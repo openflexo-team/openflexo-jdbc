@@ -10,6 +10,7 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * JDBC Schema. It contains table description for the connected JDBC resource.
@@ -28,6 +29,8 @@ public interface JDBCSchema extends AccessibleProxyObject {
 
     List<JDBCTable> getTables();
 
+	JDBCTable getTable(String name);
+
 	abstract class JDBCSchemaImpl implements JDBCSchema {
 
 		private List<JDBCTable> tables;
@@ -43,6 +46,14 @@ public interface JDBCSchema extends AccessibleProxyObject {
 				}
 			}
 			return tables;
+		}
+
+		@Override
+		public JDBCTable getTable(String name) {
+			for (JDBCTable table : getTables()) {
+				if (Objects.equals(name, table.getName())) return table;
+			}
+			return null;
 		}
 
 		@Override

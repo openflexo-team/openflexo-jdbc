@@ -21,22 +21,22 @@
 
 package org.openflexo.technologyadapter.jdbc;
 
-import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstance;
+import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.FreeModelSlotInstanceConfiguration;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
-public class JDBCConnectionSlotInstanceConfiguration extends FreeModelSlotInstanceConfiguration<JDBCConnection, JDBCConnectionSlot> {
+public class JDBCModelSlotInstanceConfiguration extends FreeModelSlotInstanceConfiguration<JDBCConnection, JDBCModelSlot> {
 
-    protected JDBCConnectionSlotInstanceConfiguration(JDBCConnectionSlot ms, AbstractVirtualModelInstance<?, ?> virtualModelInstance, FlexoProject project) {
-        super(ms, virtualModelInstance, project);
+    protected JDBCModelSlotInstanceConfiguration(JDBCModelSlot ms, AbstractVirtualModelInstance<?, ?> virtualModelInstance, FlexoResourceCenter<?> rc) {
+        super(ms, virtualModelInstance, rc);
     }
 
 
     @Override
     public void setOption(ModelSlotInstanceConfigurationOption option) {
         super.setOption(option);
-        // TODO : add specific options here
+        // TODO : add specific options here address, user and password (watch before)
     }
 
 }
