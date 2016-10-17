@@ -13,6 +13,8 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * JDBC Schema. It contains table description for the connected JDBC resource.
@@ -66,14 +68,19 @@ public interface JDBCSchema {
 
 	abstract class JDBCSchemaImpl implements AccessibleProxyObject, JDBCSchema {
 
+		private static final Logger LOGGER = Logger.getLogger(JDBCSchema.class.getPackage().getName());
+
+		private boolean tablesInitialized = false;
+
 		@Override
 		public List<JDBCTable> getTables() {
 			List<JDBCTable> tables = (List<JDBCTable>) performSuperGetter(TABLES);
-			if (tables == null) {
+			if (!tablesInitialized) {
+				tablesInitialized = true;
 				try {
 					tables = SQLHelper.getTables(this, SQLHelper.getFactory(getModel()));
 				} catch (SQLException e) {
-					tables = null;
+					LOGGER.log(Level.WARNING, "Can't read tables on database '"+ getModel().getAddress() +"'", e);
 				}
 			}
 			return tables;
@@ -88,6 +95,7 @@ public interface JDBCSchema {
 				addTable(table);
 				return table;
 			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't create table "+ tableName +" on database '"+ getModel().getAddress() +"'", e);
 				return null;
 			}
 		}
@@ -101,6 +109,7 @@ public interface JDBCSchema {
 					removeTable(table);
 					return true;
 				} catch (SQLException e) {
+					LOGGER.log(Level.WARNING, "Can't drop table "+ tableName +" on database '"+ getModel().getAddress() +"'", e);
 					return false;
 				}
 			}

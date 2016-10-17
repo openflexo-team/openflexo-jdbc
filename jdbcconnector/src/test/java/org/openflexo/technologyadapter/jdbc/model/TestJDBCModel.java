@@ -57,14 +57,16 @@ import static org.junit.Assert.*;
 @RunWith(OrderedRunner.class)
 public class TestJDBCModel extends OpenflexoTestCase {
 
+	// TODO: test drop table
+	// TODO: test drop column
 
-    private boolean createTableTest1(JDBCSchema schema) {
+    private JDBCTable createTableTest1(JDBCSchema schema) {
         String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
         String[] name = {"name", "VARCHAR(100)"};
 		return schema.createTable("TEST1", id, name);
     }
 
-    private boolean createTableTest2(JDBCSchema schema) {
+    private JDBCTable createTableTest2(JDBCSchema schema) {
         String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
         String[] name = {"name", "VARCHAR(100)"};
         String[] lastName = {"lastname", "VARCHAR(100)"};
@@ -76,25 +78,44 @@ public class TestJDBCModel extends OpenflexoTestCase {
 	@Test
     public void testTables1() throws Exception {
 
-        JDBCFactory factory = new JDBCFactory(null, null);
-        try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.jdbc"))) {
-            JDBCConnection result = (JDBCConnection) factory.deserialize(stream);
+		JDBCFactory factory = new JDBCFactory(null, null);
+		try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.jdbc"))) {
+			JDBCConnection result = (JDBCConnection) factory.deserialize(stream);
 			JDBCSchema schema = result.getSchema();
 
 			assertEquals(0, schema.getTables().size());
 
-			assertTrue(createTableTest1(schema));
+			assertNotNull(createTableTest1(schema));
 			assertEquals(1, schema.getTables().size());
 			assertEquals(2, schema.getTable("TEST1").getColumns().size());
 
 			// can't create table with small case name
-			assertFalse(schema.createTable("smallCaseName"));
+			assertNull(schema.createTable("smallCaseName"));
 
-			assertTrue(createTableTest2(schema));
+			assertNotNull(createTableTest2(schema));
 			assertEquals(2, schema.getTables().size());
 			assertEquals(5, schema.getTable("TEST2").getColumns().size());
-
 		}
     }
+
+    @Test
+	public void testColumns1() throws Exception {
+		JDBCFactory factory = new JDBCFactory(null, null);
+
+		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
+		connection.setAddress("jdbc:hsqldb:mem:testColumns1");
+		connection.setUser("user");
+
+		JDBCSchema schema = connection.getSchema();
+		String[] id = { "id", "INT", "PRIMARY KEY", "NOT NULL" };
+		JDBCTable table1 = schema.createTable("TABLE1", id);
+		assertNotNull(table1);
+
+		JDBCColumn column = table1.createColumn("name", "VARCHAR(100)");
+		assertNotNull(column);
+
+
+
+	}
 
 }
