@@ -19,7 +19,7 @@ import java.util.List;
  */
 @ModelEntity
 @ImplementationClass(JDBCSchema.JDBCSchemaImpl.class)
-public interface JDBCSchema extends AccessibleProxyObject {
+public interface JDBCSchema {
 
 	String MODEL = "model";
 	String TABLES = "tables";
@@ -36,24 +36,35 @@ public interface JDBCSchema extends AccessibleProxyObject {
 	@Finder(collection = TABLES, attribute = JDBCTable.NAME)
 	JDBCTable getTable(String name);
 
+	/**
+	 * Only adds table in the model <b>not</b> in the linked database.
+	 */
 	@Adder(TABLES)
 	void addTable(JDBCTable table);
 
+	/**
+	 * Only removes table from the model <b>not</b> in the linked database.
+	 */
 	@Remover(TABLES)
 	void removeTable(JDBCTable table);
 
 	/**
-	 * Creates a table in the schema and the linked database.
+	 * Creates a table in the model and the linked database.
 	 *
 	 * @param tableName new table name, must be uppercase.
 	 * @param attributes list of column attributes
-	 * @return true if the database has been created, false otherwise (SQL problem, already exists or incorrect name).
+	 * @return the created table or null if the creation failed (SQL problem, already exists, incorrect name, ...).
 	 */
-	boolean createTable(String tableName, String[] ... attributes);
+	JDBCTable createTable(String tableName, String[] ... attributes);
 
+	/**
+	 * Drops a table in the model and the linked database.
+	 * @param tableName table name to drop
+	 * @return true if the table has been dropped, false otherwise (SQL problem, doesn't exist, ...).
+	 */
 	boolean dropTable(String tableName);
 
-	abstract class JDBCSchemaImpl implements JDBCSchema {
+	abstract class JDBCSchemaImpl implements AccessibleProxyObject, JDBCSchema {
 
 		@Override
 		public List<JDBCTable> getTables() {
@@ -69,15 +80,15 @@ public interface JDBCSchema extends AccessibleProxyObject {
 		}
 
 		@Override
-		public boolean createTable(String tableName, String[] ... attributes) {
-			if (!SQLHelper.isUpperCase(tableName)) return false;
+		public JDBCTable createTable(String tableName, String[] ... attributes) {
+			if (!SQLHelper.isUpperCase(tableName)) return null;
 
 			try {
 				JDBCTable table = SQLHelper.createTable(this, SQLHelper.getFactory(getModel()), tableName, attributes);
 				addTable(table);
-				return true;
+				return table;
 			} catch (SQLException e) {
-				return false;
+				return null;
 			}
 		}
 
