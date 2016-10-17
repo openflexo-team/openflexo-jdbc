@@ -1,16 +1,19 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.model.annotations.Adder;
+import org.openflexo.model.annotations.Finder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
+import org.openflexo.model.annotations.Remover;
+import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * JDBC Schema. It contains table description for the connected JDBC resource.
@@ -20,6 +23,7 @@ import java.util.Objects;
 public interface JDBCSchema extends AccessibleProxyObject {
 
 	String MODEL = "model";
+	String TABLES = "tables";
 
 	@Initializer
 	void init(@Parameter(MODEL) JDBCConnection model);
@@ -27,20 +31,31 @@ public interface JDBCSchema extends AccessibleProxyObject {
 	@Getter(MODEL)
 	JDBCConnection getModel();
 
-    List<JDBCTable> getTables();
+	@Getter(value = TABLES, cardinality = Getter.Cardinality.LIST)
+	List<JDBCTable> getTables();
 
+	@Setter(TABLES)
+	void setTables(List<JDBCTable> tables);
+
+	@Adder(TABLES)
+	void addToTables(JDBCTable table);
+
+	@Remover(TABLES)
+	void removeFromTables(List<JDBCTable> table);
+
+	@Finder(collection = TABLES, attribute = JDBCTable.NAME)
 	JDBCTable getTable(String name);
+
 
 	abstract class JDBCSchemaImpl implements JDBCSchema {
 
-		private List<JDBCTable> tables;
-
 		@Override
 		public List<JDBCTable> getTables() {
+			List<JDBCTable> tables = (List<JDBCTable>) performSuperGetter(TABLES);
 			if (tables == null) {
 				try {
 					JDBCConnection model = getModel();
-					tables = SQLHelper.getTables(this, model.getConnection(), SQLHelper.getFactory(model));
+					tables = SQLHelper.getTables(this, SQLHelper.getFactory(model));
 				} catch (SQLException e) {
 					tables = null;
 				}
@@ -48,13 +63,7 @@ public interface JDBCSchema extends AccessibleProxyObject {
 			return tables;
 		}
 
-		@Override
-		public JDBCTable getTable(String name) {
-			for (JDBCTable table : getTables()) {
-				if (Objects.equals(name, table.getName())) return table;
-			}
-			return null;
-		}
+
 
 		@Override
 		public String toString() {

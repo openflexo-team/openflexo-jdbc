@@ -31,6 +31,8 @@ public interface JDBCTable {
 
     List<JDBCColumn> getColumns();
 
+	JDBCColumn getColumn(String columnId);
+
 	abstract class JDBCTableImpl implements JDBCTable {
 
 		private List<JDBCColumn> columns;
@@ -40,7 +42,7 @@ public interface JDBCTable {
 			if (columns == null) {
 				try {
 					JDBCConnection model = getSchema().getModel();
-					columns = SQLHelper.getTableColumns(getName(), model.getConnection(), SQLHelper.getFactory(model));
+					columns = SQLHelper.getTableColumns(this, SQLHelper.getFactory(model));
 				} catch (SQLException e) {
 					columns = null;
 				}

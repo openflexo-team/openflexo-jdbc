@@ -44,8 +44,9 @@ public class SQLHelper {
 
     /** Requests through SQL the list of table for one connection */
     public static List<JDBCTable> getTables(
-    		final JDBCSchema schema, final Connection connection, final ModelFactory factory
+    		final JDBCSchema schema, final ModelFactory factory
 	) throws SQLException {
+		Connection connection = schema.getModel().getConnection();
         return new QueryRunner().query(connection, SELECT_TABLES, new ResultSetHandler<List<JDBCTable>>() {
 			@Override
 			public List<JDBCTable> handle(ResultSet resultSet) throws SQLException {
@@ -62,7 +63,8 @@ public class SQLHelper {
 
     }
 
-    public static List<JDBCColumn> getTableColumns(String tableName, Connection connection, final ModelFactory factory) throws SQLException {
+    public static List<JDBCColumn> getTableColumns(JDBCTable table, final ModelFactory factory) throws SQLException {
+		Connection connection = table.getSchema().getModel().getConnection();
 		return new QueryRunner().query(connection, SELECT_COLUMNS, new ResultSetHandler<List<JDBCColumn>>() {
 			@Override
 			public List<JDBCColumn> handle(ResultSet resultSet) throws SQLException {
@@ -75,8 +77,13 @@ public class SQLHelper {
 
 				return columns;
 			}
-		}, tableName);
+		}, table.getName());
     }
 
+    public static void dropTable(
+    		final JDBCTable table, final ModelFactory factory
+	) throws SQLException {
+
+	}
 
 }
