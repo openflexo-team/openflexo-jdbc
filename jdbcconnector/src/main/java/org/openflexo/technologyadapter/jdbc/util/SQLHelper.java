@@ -26,6 +26,14 @@ public class SQLHelper {
     public static final String SELECT_TABLES = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA='PUBLIC'";
     public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
 
+	public static final String DROP_TABLE = "DROP TABLE ?";
+
+	private static ResultSetHandler<Object> NO_OP = new ResultSetHandler<Object>() {
+		@Override
+		public Object handle(ResultSet rs) throws SQLException {
+			return null;
+		}
+	};
 
 	public static ModelFactory getFactory(JDBCConnection model) {
 		// Find the correct factory
@@ -52,8 +60,8 @@ public class SQLHelper {
 			public List<JDBCTable> handle(ResultSet resultSet) throws SQLException {
 				ArrayList<JDBCTable> tables = new ArrayList<>();
 				while (resultSet.next()) {
-					JDBCTable table = factory.newInstance(JDBCTable.class);
 					String tableName = resultSet.getString("TABLE_NAME");
+					JDBCTable table = factory.newInstance(JDBCTable.class);
 					table.init(schema, tableName);
 					tables.add(table);
 				}
@@ -74,16 +82,58 @@ public class SQLHelper {
 					column.init(resultSet.getString(1), resultSet.getString(2));
 					columns.add(column);
 				}
-
 				return columns;
 			}
 		}, table.getName());
     }
 
-    public static void dropTable(
-    		final JDBCTable table, final ModelFactory factory
-	) throws SQLException {
+    public static JDBCTable createTable(final JDBCSchema schema, final ModelFactory factory, final String tableName, String[] ... attributes) throws SQLException {
+		Connection connection = schema.getModel().getConnection();
+		String request = createTableRequest(tableName, attributes);
+		return new QueryRunner().insert(connection, request, new ResultSetHandler<JDBCTable>() {
+			@Override
+			public JDBCTable handle(ResultSet resultSet) throws SQLException {
+				JDBCTable table = factory.newInstance(JDBCTable.class);
+				table.init(schema, tableName);
+				return table;
+			}
+		});
+	}
 
+	/** Creates through SQL a table for one connection */
+	private static String createTableRequest(String name, String[] ... attributes) throws SQLException {
+		StringBuilder request = new StringBuilder("CREATE TABLE ");
+		request.append(name);
+		request.append(" (");
+		int length = request.length();
+
+		for (String[] attribute : attributes) {
+			if (length < request.length()) request.append(", ");
+
+			int localLength = request.length();
+			for (String part : attribute) {
+				if (localLength < request.length()) request.append(" ");
+				request.append(part);
+			}
+		}
+		request.append(")");
+
+		return request.toString();
+	}
+
+
+	public static void dropTable(
+    		final JDBCSchema schema, final String tableName
+	) throws SQLException {
+		Connection connection = schema.getModel().getConnection();
+		new QueryRunner().query(connection, DROP_TABLE, NO_OP, tableName);
+	}
+
+	public static boolean isUpperCase(String name) {
+		for (char c : name.toCharArray()) {
+			if (Character.isLetter(c) && !Character.isUpperCase(c)) return false;
+		}
+		return true;
 	}
 
 }

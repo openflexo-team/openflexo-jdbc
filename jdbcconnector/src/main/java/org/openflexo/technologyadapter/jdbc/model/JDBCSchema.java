@@ -8,7 +8,6 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Remover;
-import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
@@ -34,18 +33,25 @@ public interface JDBCSchema extends AccessibleProxyObject {
 	@Getter(value = TABLES, cardinality = Getter.Cardinality.LIST)
 	List<JDBCTable> getTables();
 
-	@Setter(TABLES)
-	void setTables(List<JDBCTable> tables);
-
-	@Adder(TABLES)
-	void addToTables(JDBCTable table);
-
-	@Remover(TABLES)
-	void removeFromTables(List<JDBCTable> table);
-
 	@Finder(collection = TABLES, attribute = JDBCTable.NAME)
 	JDBCTable getTable(String name);
 
+	@Adder(TABLES)
+	void addTable(JDBCTable table);
+
+	@Remover(TABLES)
+	void removeTable(JDBCTable table);
+
+	/**
+	 * Creates a table in the schema and the linked database.
+	 *
+	 * @param tableName new table name, must be uppercase.
+	 * @param attributes list of column attributes
+	 * @return true if the database has been created, false otherwise (SQL problem, already exists or incorrect name).
+	 */
+	boolean createTable(String tableName, String[] ... attributes);
+
+	boolean dropTable(String tableName);
 
 	abstract class JDBCSchemaImpl implements JDBCSchema {
 
@@ -54,8 +60,7 @@ public interface JDBCSchema extends AccessibleProxyObject {
 			List<JDBCTable> tables = (List<JDBCTable>) performSuperGetter(TABLES);
 			if (tables == null) {
 				try {
-					JDBCConnection model = getModel();
-					tables = SQLHelper.getTables(this, SQLHelper.getFactory(model));
+					tables = SQLHelper.getTables(this, SQLHelper.getFactory(getModel()));
 				} catch (SQLException e) {
 					tables = null;
 				}
@@ -63,7 +68,33 @@ public interface JDBCSchema extends AccessibleProxyObject {
 			return tables;
 		}
 
+		@Override
+		public boolean createTable(String tableName, String[] ... attributes) {
+			if (!SQLHelper.isUpperCase(tableName)) return false;
 
+			try {
+				JDBCTable table = SQLHelper.createTable(this, SQLHelper.getFactory(getModel()), tableName, attributes);
+				addTable(table);
+				return true;
+			} catch (SQLException e) {
+				return false;
+			}
+		}
+
+		@Override
+		public boolean dropTable(String tableName) {
+			JDBCTable table = getTable(tableName);
+			if (table != null) {
+				try {
+					SQLHelper.dropTable(this, tableName);
+					removeTable(table);
+					return true;
+				} catch (SQLException e) {
+					return false;
+				}
+			}
+			return false;
+		}
 
 		@Override
 		public String toString() {
