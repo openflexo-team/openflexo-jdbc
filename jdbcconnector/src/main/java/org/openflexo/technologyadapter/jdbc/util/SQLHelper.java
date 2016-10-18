@@ -150,6 +150,11 @@ public class SQLHelper {
 		new QueryRunner().insert(connection, DROP_COLUMN, NO_OP, table.getName(), columnName);
 	}
 
+	public static void grant(JDBCConnection connection, String access, String on) throws SQLException {
+		String grantAll = "GRANT "+ access +" ON " + on + " TO " + connection.getUser()+ "";
+		new QueryRunner().insert(connection.getConnection(),grantAll, NO_OP);
+	}
+
 	public static boolean isUpperCase(String name) {
 		for (char c : name.toCharArray()) {
 			if (Character.isLetter(c) && !Character.isUpperCase(c)) return false;

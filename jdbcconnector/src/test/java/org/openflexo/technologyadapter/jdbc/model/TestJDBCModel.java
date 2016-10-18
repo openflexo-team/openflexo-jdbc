@@ -21,7 +21,7 @@
  *
  *          If you modify this Program, or any covered work, by linking or 
  *          combining it with software containing parts covered by the terms 
- *          of EPL 1.0, the licensors of this Program grant you additional permission
+ *          of EPL 1.0, the licensors of this Program grantAllOn you additional permission
  *          to convey the resulting work. * 
  * 
  * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
@@ -103,19 +103,18 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		JDBCFactory factory = new JDBCFactory(null, null);
 
 		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
-		connection.setAddress("jdbc:hsqldb:mem:testColumns1");
-		connection.setUser("user");
+		connection.setAddress("jdbc:hsqldb:mem:.");
+		connection.setUser("sa");
 
 		JDBCSchema schema = connection.getSchema();
 		String[] id = { "id", "INT", "PRIMARY KEY", "NOT NULL" };
 		JDBCTable table1 = schema.createTable("TABLE1", id);
 		assertNotNull(table1);
 
+		assertTrue(connection.grantOn("ALL", table1));
+
 		JDBCColumn column = table1.createColumn("name", "VARCHAR(100)");
 		assertNotNull(column);
-
-
-
 	}
 
 }
