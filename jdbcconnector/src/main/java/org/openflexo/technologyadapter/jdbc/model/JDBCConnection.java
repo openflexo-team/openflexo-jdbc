@@ -37,12 +37,10 @@ import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ModelEntity
@@ -80,8 +78,6 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 
     @Getter(value = CONNECTION, ignoreType = true)
     Connection getConnection();
-
-	boolean grantOn(String access, JDBCTable table);
 
     /**
 	 * Abstract JDBCConnection implementation using Pamela.
@@ -163,17 +159,6 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 				}
 			}
 			return connection;
-		}
-
-		@Override
-		public boolean grantOn(String access, JDBCTable table) {
-			try {
-				SQLHelper.grant(this, access, table.getName());
-				return true;
-			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't grant 'ALL' on '"+ table.getName() +"' for '"+ getAddress() +"'", e);
-				return false;
-			}
 		}
 	}
 }

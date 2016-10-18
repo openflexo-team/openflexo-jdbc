@@ -100,21 +100,35 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
     @Test
 	public void testColumns1() throws Exception {
+		String[] id = { "id", "INT", "PRIMARY KEY", "NOT NULL" };
+		String[] name = { "name", "VARCHAR(100)" };
+		String tableName = "TABLE1";
+
 		JDBCFactory factory = new JDBCFactory(null, null);
 
 		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
-		connection.setAddress("jdbc:hsqldb:mem:.");
-		connection.setUser("sa");
+		connection.setAddress("jdbc:hsqldb:hsql://localhost/");
+		connection.setUser("SA");
 
 		JDBCSchema schema = connection.getSchema();
-		String[] id = { "id", "INT", "PRIMARY KEY", "NOT NULL" };
-		JDBCTable table1 = schema.createTable("TABLE1", id);
+
+		//JDBCTable table1 = schema.createTable(tableName, id);
+		JDBCTable table1 = schema.getTable(tableName);
+		if (table1 == null) {
+			table1 = schema.createTable(tableName, id, name);
+		}
 		assertNotNull(table1);
 
-		assertTrue(connection.grantOn("ALL", table1));
+		assertTrue(table1.grant("ALL", connection.getUser()));
+		table1.dropColumn(table1.getColumn("NAME"));
 
+		/*
 		JDBCColumn column = table1.createColumn("name", "VARCHAR(100)");
 		assertNotNull(column);
+		*/
+
+		assertTrue(schema.dropTable(table1));
+
 	}
 
 }

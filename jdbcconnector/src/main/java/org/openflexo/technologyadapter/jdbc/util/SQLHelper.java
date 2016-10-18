@@ -26,7 +26,7 @@ public class SQLHelper {
     public static final String SELECT_TABLES = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA='PUBLIC'";
     public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
 
-	public static final String DROP_TABLE = "DROP TABLE ?";
+	public static final String DROP_TABLE = "DROP TABLE ";
 
 	public static final String ADD_COLUMN = "ALTER TABLE ? ADD ? ?";
 	public static final String DROP_COLUMN = "ALTER TABLE ? DROP COLUMN ?";
@@ -40,8 +40,6 @@ public class SQLHelper {
 
 	public static ModelFactory getFactory(JDBCConnection model) {
 		// Find the correct factory
-		ModelFactory factory = null;
-
 		if (model.getResource() instanceof JDBCResource) {
 			return ((JDBCResource) model.getResource()).getFactory();
 		} else {
@@ -128,7 +126,7 @@ public class SQLHelper {
     		final JDBCSchema schema, final String tableName
 	) throws SQLException {
 		Connection connection = schema.getModel().getConnection();
-		new QueryRunner().query(connection, DROP_TABLE, NO_OP, tableName);
+		new QueryRunner().insert(connection, DROP_TABLE + tableName, NO_OP);
 	}
 
 	public static JDBCColumn createColumn(
@@ -150,8 +148,8 @@ public class SQLHelper {
 		new QueryRunner().insert(connection, DROP_COLUMN, NO_OP, table.getName(), columnName);
 	}
 
-	public static void grant(JDBCConnection connection, String access, String on) throws SQLException {
-		String grantAll = "GRANT "+ access +" ON " + on + " TO " + connection.getUser()+ "";
+	public static void grant(JDBCConnection connection, String access, String on, String user) throws SQLException {
+		String grantAll = "GRANT "+ access +" ON " + on + " TO " + user + "";
 		new QueryRunner().insert(connection.getConnection(),grantAll, NO_OP);
 	}
 

@@ -1,7 +1,6 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.model.annotations.Adder;
-import org.openflexo.model.annotations.Finder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Initializer;
@@ -35,7 +34,7 @@ public interface JDBCSchema {
 	@Getter(value = TABLES, cardinality = Getter.Cardinality.LIST)
 	List<JDBCTable> getTables();
 
-	@Finder(collection = TABLES, attribute = JDBCTable.NAME)
+	//@Finder(collection = TABLES, attribute = JDBCTable.NAME)
 	JDBCTable getTable(String name);
 
 	/**
@@ -61,10 +60,10 @@ public interface JDBCSchema {
 
 	/**
 	 * Drops a table in the model and the linked database.
-	 * @param tableName table name to drop
+	 * @param table table to drop
 	 * @return true if the table has been dropped, false otherwise (SQL problem, doesn't exist, ...).
 	 */
-	boolean dropTable(String tableName);
+	boolean dropTable(JDBCTable table);
 
 	abstract class JDBCSchemaImpl implements AccessibleProxyObject, JDBCSchema {
 
@@ -78,12 +77,20 @@ public interface JDBCSchema {
 			if (!tablesInitialized) {
 				tablesInitialized = true;
 				try {
-					tables = SQLHelper.getTables(this, SQLHelper.getFactory(getModel()));
+					tables.addAll(SQLHelper.getTables(this, SQLHelper.getFactory(getModel())));
 				} catch (SQLException e) {
 					LOGGER.log(Level.WARNING, "Can't read tables on database '"+ getModel().getAddress() +"'", e);
 				}
 			}
 			return tables;
+		}
+
+		@Override
+		public JDBCTable getTable(String name) {
+			for (JDBCTable table : getTables()) {
+				if (table.getName().equals(name)) return table;
+			}
+			return null;
 		}
 
 		@Override
@@ -101,19 +108,15 @@ public interface JDBCSchema {
 		}
 
 		@Override
-		public boolean dropTable(String tableName) {
-			JDBCTable table = getTable(tableName);
-			if (table != null) {
-				try {
-					SQLHelper.dropTable(this, tableName);
-					removeTable(table);
-					return true;
-				} catch (SQLException e) {
-					LOGGER.log(Level.WARNING, "Can't drop table "+ tableName +" on database '"+ getModel().getAddress() +"'", e);
-					return false;
-				}
+		public boolean dropTable(JDBCTable table) {
+			try {
+				SQLHelper.dropTable(this, table.getName());
+				removeTable(table);
+				return true;
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't drop table "+ table.getName() +" on database '"+ getModel().getAddress() +"'", e);
+				return false;
 			}
-			return false;
 		}
 
 		@Override
@@ -124,7 +127,7 @@ public interface JDBCSchema {
 				if (text.length() > length) text.append(", ");
 				text.append(table);
 			}
-			return "[Schema]";
+			return text.toString();
 		}
 	}
 }

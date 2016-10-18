@@ -1,7 +1,6 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.model.annotations.Adder;
-import org.openflexo.model.annotations.Finder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Initializer;
@@ -39,7 +38,7 @@ public interface JDBCTable {
 	@Getter(value = COLUMNS, cardinality = Getter.Cardinality.LIST)
 	List<JDBCColumn> getColumns();
 
-	@Finder(collection = COLUMNS, attribute = JDBCColumn.NAME)
+	//@Finder(collection = COLUMNS, attribute = JDBCColumn.NAME)
 	JDBCColumn getColumn(String name);
 
 	/**
@@ -65,10 +64,18 @@ public interface JDBCTable {
 
 	/**
 	 * Drops a table in the model and the linked database.
-	 * @param columnName column name to drop
+	 * @param column column to drop
 	 * @return true if the column has been dropped, false otherwise (SQL problem, doesn't exist, ...).
 	 */
-	boolean dropColumn(String columnName);
+	boolean dropColumn(JDBCColumn column);
+
+	/**
+	 * Grant access for a user
+	 * @param access access type
+	 * @param user user to grand
+	 * @return true if grant is accepted
+	 */
+	boolean grant(String access, String user);
 
 	abstract class JDBCTableImpl implements AccessibleProxyObject, JDBCTable {
 
@@ -92,6 +99,14 @@ public interface JDBCTable {
 		}
 
 		@Override
+		public JDBCColumn getColumn(String name) {
+			for (JDBCColumn column : getColumns()) {
+				if (column.getName().equals(name)) return column;
+			}
+			return null;
+		}
+
+		@Override
 		public JDBCColumn createColumn(String columnName, String type) {
 			try {
 				JDBCColumn column = SQLHelper.createColumn(this, SQLHelper.getFactory(getSchema().getModel()), columnName, type);
@@ -104,24 +119,32 @@ public interface JDBCTable {
 		}
 
 		@Override
-		public boolean dropColumn(String columnName) {
-			JDBCColumn table = getColumn(columnName);
-			if (table != null) {
-				try {
-					SQLHelper.dropColumn(this, columnName);
-					removeColumn(table);
-					return true;
-				} catch (SQLException e) {
-					LOGGER.log(Level.WARNING, "Can't drop column '"+ columnName +"' on table '"+ getName()+"'", e);
-					return false;
-				}
+		public boolean dropColumn(JDBCColumn column) {
+			try {
+				SQLHelper.dropColumn(this, column.getName());
+				removeColumn(column);
+				return true;
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't drop column '"+ column.getName() +"' on table '"+ getName()+"'", e);
+				return false;
 			}
-			return false;
+		}
+
+		@Override
+		public boolean grant(String access, String user) {
+			JDBCConnection connection = getSchema().getModel();
+			try {
+				SQLHelper.grant(connection, access, getName(), user);
+				return true;
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't grant '" + access +"' on '"+ getName() +"' for user '"+ user +"' in '"+ connection.getAddress() +"'", e);
+				return false;
+			}
 		}
 
 		@Override
 		public String toString() {
-			return "[Column] " + getName() + "("+ getColumns().size() +")";
+			return "[Table] " + getName() + "("+ getColumns().size() +")";
 		}
 	}
 }
