@@ -34,8 +34,10 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableActorReference;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
+import org.openflexo.technologyadapter.jdbc.fml.SelectJDBCColumn;
 import org.openflexo.technologyadapter.jdbc.fml.SelectJDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
@@ -49,9 +51,9 @@ import java.lang.reflect.Type;
  * 
  */
 @DeclareActorReferences({ JDBCTableActorReference.class})
-@DeclareFlexoRoles({JDBCTableRole.class})
+@DeclareFlexoRoles({JDBCTableRole.class, JDBCColumnRole.class})
 @DeclareEditionActions({})
-@DeclareFetchRequests({ SelectJDBCTable.class})
+@DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class })
 @ModelEntity
 @ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
 @XMLElement
@@ -92,6 +94,7 @@ public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 
         @Override
         public TechnologyAdapterResource<JDBCConnection, ?> createProjectSpecificEmptyResource(View view, String filename, String modelUri) {
+            // TODO create empty resource
             return null;
         }
     }
