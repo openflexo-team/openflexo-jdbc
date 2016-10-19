@@ -24,31 +24,27 @@ import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole.JDBCTableRoleImpl;
-import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 import java.lang.reflect.Type;
 
 @ModelEntity
-@ImplementationClass(value = JDBCTableRoleImpl.class)
+@ImplementationClass(value = JDBCColumnRole.JDBCColumnRoleImpl.class)
 @XMLElement
-public interface JDBCTableRole extends FlexoRole<JDBCTable> {
+public interface JDBCColumnRole extends FlexoRole<JDBCColumn> {
 
-    abstract class JDBCTableRoleImpl extends JDBCRole<JDBCTable> implements JDBCTableRole {
-
-        public JDBCTableRoleImpl() {
-            super();
-        }
+    abstract class JDBCColumnRoleImpl extends JDBCRole<JDBCColumn> implements JDBCColumnRole {
 
         @Override
         public Type getType() {
-            return JDBCConnection.class;
+            return JDBCTable.class;
         }
 
         @Override
-        public Class<? extends JDBCActorReference<JDBCTable>> getActorReferenceClass() {
-            return JDBCTableActorReference.class;
+        public Class<? extends JDBCActorReference<JDBCColumn>> getActorReferenceClass() {
+            return JDBCColumnActorReference.class;
         }
     }
+
 }
