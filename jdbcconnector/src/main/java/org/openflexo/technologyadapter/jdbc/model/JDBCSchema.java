@@ -34,7 +34,6 @@ public interface JDBCSchema {
 	@Getter(value = TABLES, cardinality = Getter.Cardinality.LIST)
 	List<JDBCTable> getTables();
 
-	//@Finder(collection = TABLES, attribute = JDBCTable.NAME)
 	JDBCTable getTable(String name);
 
 	/**

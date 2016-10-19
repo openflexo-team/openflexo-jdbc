@@ -38,7 +38,6 @@ public interface JDBCTable {
 	@Getter(value = COLUMNS, cardinality = Getter.Cardinality.LIST)
 	List<JDBCColumn> getColumns();
 
-	//@Finder(collection = COLUMNS, attribute = JDBCColumn.NAME)
 	JDBCColumn getColumn(String name);
 
 	/**
