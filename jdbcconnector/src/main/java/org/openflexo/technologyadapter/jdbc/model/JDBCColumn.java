@@ -10,10 +10,13 @@ import org.openflexo.model.annotations.Parameter;
  */
 @ModelEntity public interface JDBCColumn {
 
+	String TABLE = "table";
 	String NAME = "name";
 	String TYPE = "type";
 
-	@Initializer void init(@Parameter(NAME) String name, @Parameter(TYPE) String type);
+	@Initializer void init(@Parameter(TABLE) JDBCTable table, @Parameter(NAME) String name, @Parameter(TYPE) String type);
+
+	@Getter(TABLE) JDBCTable getTable();
 
 	@Getter(NAME) String getName();
 

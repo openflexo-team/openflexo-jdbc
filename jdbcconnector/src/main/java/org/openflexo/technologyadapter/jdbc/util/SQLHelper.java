@@ -60,7 +60,7 @@ public class SQLHelper {
 
     }
 
-    public static List<JDBCColumn> getTableColumns(JDBCTable table, final ModelFactory factory) throws SQLException {
+    public static List<JDBCColumn> getTableColumns(final JDBCTable table, final ModelFactory factory) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();
 		return new QueryRunner().query(connection, SELECT_COLUMNS, new ResultSetHandler<List<JDBCColumn>>() {
 			@Override
@@ -68,7 +68,7 @@ public class SQLHelper {
 				ArrayList<JDBCColumn> columns = new ArrayList<>();
 				while (resultSet.next()) {
 					JDBCColumn column = factory.newInstance(JDBCColumn.class);
-					column.init(resultSet.getString(1), resultSet.getString(2));
+					column.init(table, resultSet.getString(1), resultSet.getString(2));
 					columns.add(column);
 				}
 				return columns;
@@ -125,7 +125,7 @@ public class SQLHelper {
 		new QueryRunner().update(connection, addColumn);
 
 		JDBCColumn column = factory.newInstance(JDBCColumn.class);
-		column.init(columnName, type);
+		column.init(table, columnName, type);
 		return column;
 	}
 
