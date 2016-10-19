@@ -1,6 +1,7 @@
 package org.openflexo.technologyadapter.jdbc.fml;
 
 import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLElement;
@@ -12,6 +13,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
  */
 @ModelEntity
 @XMLElement
+@ImplementationClass(JDBCTableActorReference.JDBCTableActorReferenceImpl.class)
 public interface JDBCTableActorReference extends JDBCActorReference<JDBCTable> {
 
 	String TABLE_ID = "tableId";
@@ -22,7 +24,7 @@ public interface JDBCTableActorReference extends JDBCActorReference<JDBCTable> {
 	@Setter(TABLE_ID)
 	void setTableId(String newId);
 
-	abstract class JDBCTableActionReferenceImpl extends JDBCActorReferenceImpl<JDBCTable> implements JDBCTableActorReference {
+	abstract class JDBCTableActorReferenceImpl extends JDBCActorReferenceImpl<JDBCTable> implements JDBCTableActorReference {
 
 		private JDBCTable table;
 
