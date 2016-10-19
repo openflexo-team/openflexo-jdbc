@@ -26,18 +26,6 @@ public class SQLHelper {
     public static final String SELECT_TABLES = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA='PUBLIC'";
     public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
 
-	public static final String DROP_TABLE = "DROP TABLE ";
-
-	public static final String ADD_COLUMN = "ALTER TABLE ? ADD ? ?";
-	public static final String DROP_COLUMN = "ALTER TABLE ? DROP COLUMN ?";
-
-	private static ResultSetHandler<Object> NO_OP = new ResultSetHandler<Object>() {
-		@Override
-		public Object handle(ResultSet rs) throws SQLException {
-			return null;
-		}
-	};
-
 	public static ModelFactory getFactory(JDBCConnection model) {
 		// Find the correct factory
 		if (model.getResource() instanceof JDBCResource) {
@@ -85,7 +73,7 @@ public class SQLHelper {
 				}
 				return columns;
 			}
-		}, table.getName());
+		}, sqlName(table.getName()));
     }
 
     public static JDBCTable createTable(final JDBCSchema schema, final ModelFactory factory, final String tableName, String[] ... attributes) throws SQLException {
@@ -103,7 +91,7 @@ public class SQLHelper {
 
 	private static String createTableRequest(String name, String[] ... attributes) throws SQLException {
 		StringBuilder request = new StringBuilder("CREATE TABLE ");
-		request.append(name);
+		request.append(sqlName(name));
 		request.append(" (");
 		int length = request.length();
 
@@ -113,7 +101,7 @@ public class SQLHelper {
 			int localLength = request.length();
 			for (String part : attribute) {
 				if (localLength < request.length()) request.append(" ");
-				request.append(part);
+				request.append(sqlName(part));
 			}
 		}
 		request.append(")");
@@ -126,30 +114,33 @@ public class SQLHelper {
     		final JDBCSchema schema, final String tableName
 	) throws SQLException {
 		Connection connection = schema.getModel().getConnection();
-		new QueryRunner().insert(connection, DROP_TABLE + tableName, NO_OP);
+		new QueryRunner().update(connection, "DROP TABLE " + sqlName(tableName));
 	}
 
 	public static JDBCColumn createColumn(
 			final JDBCTable table, final ModelFactory factory, final String columnName, final String type
 	) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();
-		return new QueryRunner().insert(connection, ADD_COLUMN, new ResultSetHandler<JDBCColumn>() {
-			@Override
-			public JDBCColumn handle(ResultSet resultSet) throws SQLException {
-				JDBCColumn column = factory.newInstance(JDBCColumn.class);
-				column.init(columnName, type);
-				return column;
-			}
-		}, table.getName(), columnName, type);
+		String addColumn = "ALTER TABLE "+ sqlName(table.getName()) +" ADD "+ sqlName(columnName) + " " + type;
+		new QueryRunner().update(connection, addColumn);
+
+		JDBCColumn column = factory.newInstance(JDBCColumn.class);
+		column.init(columnName, type);
+		return column;
 	}
 
 	public static void dropColumn(final JDBCTable table, final String columnName) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();
-		new QueryRunner().insert(connection, DROP_COLUMN, NO_OP, table.getName(), columnName);
+		String dropColumn = "ALTER TABLE "+ sqlName(table.getName()) +" DROP COLUMN " + sqlName(columnName);
+		new QueryRunner().update(connection, dropColumn);
 	}
 
 	public static void grant(JDBCConnection connection, String access, String on, String user) throws SQLException {
-		String grantAll = "GRANT "+ access +" ON " + on + " TO " + user + "";
-		new QueryRunner().insert(connection.getConnection(),grantAll, NO_OP);
+		String grant = "GRANT "+ access +" ON " + sqlName(on) + " TO " + sqlName(user) + "";
+		new QueryRunner().update(connection.getConnection(),grant);
+	}
+
+	public static String sqlName(String name) {
+		return name.toUpperCase();
 	}
 }

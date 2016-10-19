@@ -41,6 +41,7 @@ package org.openflexo.technologyadapter.jdbc.model;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.foundation.OpenflexoTestCase;
+import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.test.OrderedRunner;
 
 import java.io.BufferedInputStream;
@@ -60,20 +61,28 @@ public class TestJDBCModel extends OpenflexoTestCase {
 	// TODO: test drop table
 	// TODO: test drop column
 
-    private JDBCTable createTableTest1(JDBCSchema schema) {
+    private JDBCTable createTable1(String tableName, JDBCSchema schema) {
         String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
         String[] name = {"name", "VARCHAR(100)"};
-		return schema.createTable("TEST1", id, name);
+		return schema.createTable(tableName, id, name);
     }
 
-    private JDBCTable createTableTest2(JDBCSchema schema) {
+    private JDBCTable createTable2(String tableName, JDBCSchema schema) {
         String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
         String[] name = {"name", "VARCHAR(100)"};
         String[] lastName = {"lastname", "VARCHAR(100)"};
         String[] description = {"description", "VARCHAR(500)"};
         String[] portrait = {"portrait", "VARCHAR(200)"};
-        return schema.createTable("TEST2", id, name, lastName, description, portrait);
+        return schema.createTable(tableName, id, name, lastName, description, portrait);
     }
+
+	private JDBCConnection createJDBCMemoryConnection(String name) throws ModelDefinitionException {
+		JDBCFactory factory = new JDBCFactory(null, null);
+		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
+		connection.setAddress("jdbc:hsqldb:mem:" + name);
+		connection.setUser("SA");
+		return connection;
+	}
 
 	@Test
     public void testTables1() throws Exception {
@@ -85,50 +94,62 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 			assertEquals(0, schema.getTables().size());
 
-			assertNotNull(createTableTest1(schema));
+			String tableName1 = "test1";
+			assertNotNull(createTable1(tableName1, schema));
 			assertEquals(1, schema.getTables().size());
-			assertEquals(2, schema.getTable("TEST1").getColumns().size());
+			assertEquals(2, schema.getTable(tableName1).getColumns().size());
 
-			// can't create table with small case name
-			assertNull(schema.createTable("smallCaseName"));
-
-			assertNotNull(createTableTest2(schema));
+			String tableName2 = "TEST2";
+			assertNotNull(createTable2(tableName2, schema));
 			assertEquals(2, schema.getTables().size());
-			assertEquals(5, schema.getTable("TEST2").getColumns().size());
+			assertEquals(5, schema.getTable(tableName2).getColumns().size());
 		}
     }
 
     @Test
-	public void testColumns1() throws Exception {
+	public void testCreateColumns() throws Exception {
 		String[] id = { "id", "INT", "PRIMARY KEY", "NOT NULL" };
 		String[] name = { "name", "VARCHAR(100)" };
-		String tableName = "TABLE1";
+		String[] description = { "description", "VARCHAR(1512)" };
+		String tableName = "testCreateColumns_table1";
 
-		JDBCFactory factory = new JDBCFactory(null, null);
-
-		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
-		connection.setAddress("jdbc:hsqldb:hsql://localhost/");
-		connection.setUser("SA");
+		JDBCConnection connection = createJDBCMemoryConnection("createColumns//localhost/");
 
 		JDBCSchema schema = connection.getSchema();
 
-		//JDBCTable table1 = schema.createTable(tableName, id);
-		JDBCTable table1 = schema.getTable(tableName);
-		if (table1 == null) {
-			table1 = schema.createTable(tableName, id, name);
-		}
+		JDBCTable table1 = schema.createTable(tableName, id, name, description);
+		assertNotNull(table1);
+
+
+		assertTrue(table1.grant("ALL", connection.getUser()));
+
+		assertNotNull(table1.createColumn("other", "VARCHAR(100)"));
+		assertNotNull(table1.createColumn("other2", "INT"));
+	}
+
+	@Test
+	public void testDropColumns() throws Exception {
+		String[] id = { "id", "INT", "PRIMARY KEY", "NOT NULL" };
+		String[] name = { "name", "VARCHAR(100)" };
+		String[] description = { "description", "VARCHAR(1512)" };
+		String tableName = "testDropColumns_table1";
+
+		JDBCConnection connection = createJDBCMemoryConnection("dropColumns");
+
+		JDBCSchema schema = connection.getSchema();
+
+		JDBCTable table1 = schema.createTable(tableName, id, name, description);
 		assertNotNull(table1);
 
 		assertTrue(table1.grant("ALL", connection.getUser()));
-		table1.dropColumn(table1.getColumn("NAME"));
 
-		/*
-		JDBCColumn column = table1.createColumn("name", "VARCHAR(100)");
+		JDBCColumn column = table1.getColumn("name");
 		assertNotNull(column);
-		*/
+		assertTrue(table1.dropColumn(column));
 
-		assertTrue(schema.dropTable(table1));
+		column = table1.getColumn("description");
+		assertNotNull(column);
+		assertTrue(table1.dropColumn(column));
 
 	}
-
 }
