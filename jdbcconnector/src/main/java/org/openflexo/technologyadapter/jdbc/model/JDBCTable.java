@@ -90,7 +90,7 @@ public interface JDBCTable {
 				columnsInitialized = true;
 				try {
 					JDBCConnection model = getSchema().getModel();
-					columns = SQLHelper.getTableColumns(this, SQLHelper.getFactory(model));
+					columns.addAll(SQLHelper.getTableColumns(this, SQLHelper.getFactory(model)));
 				} catch (SQLException e) {
 					LOGGER.log(Level.WARNING, "Can't read columns on table '"+ getName()+"'", e);
 				}
@@ -101,7 +101,7 @@ public interface JDBCTable {
 		@Override
 		public JDBCColumn getColumn(String name) {
 			for (JDBCColumn column : getColumns()) {
-				if (column.getName().equals(name)) return column;
+				if (column.getName().equalsIgnoreCase(name)) return column;
 			}
 			return null;
 		}
@@ -144,7 +144,7 @@ public interface JDBCTable {
 
 		@Override
 		public String toString() {
-			return "[Table] " + getName() + "("+ getColumns().size() +")";
+			return "[Table] " + getName() + "("+ /*getColumns().size() +*/")";
 		}
 	}
 }

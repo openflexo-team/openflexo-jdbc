@@ -152,12 +152,4 @@ public class SQLHelper {
 		String grantAll = "GRANT "+ access +" ON " + on + " TO " + user + "";
 		new QueryRunner().insert(connection.getConnection(),grantAll, NO_OP);
 	}
-
-	public static boolean isUpperCase(String name) {
-		for (char c : name.toCharArray()) {
-			if (Character.isLetter(c) && !Character.isUpperCase(c)) return false;
-		}
-		return true;
-	}
-
 }

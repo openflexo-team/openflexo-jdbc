@@ -88,14 +88,14 @@ public interface JDBCSchema {
 		@Override
 		public JDBCTable getTable(String name) {
 			for (JDBCTable table : getTables()) {
-				if (table.getName().equals(name)) return table;
+				if (table.getName().equalsIgnoreCase(name)) return table;
 			}
 			return null;
 		}
 
 		@Override
 		public JDBCTable createTable(String tableName, String[] ... attributes) {
-			if (!SQLHelper.isUpperCase(tableName)) return null;
+			//if (!SQLHelper.isUpperCase(tableName)) return null;
 
 			try {
 				JDBCTable table = SQLHelper.createTable(this, SQLHelper.getFactory(getModel()), tableName, attributes);
