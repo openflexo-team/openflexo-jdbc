@@ -34,6 +34,7 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.technologyadapter.jdbc.fml.AddJDBCTable;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableActorReference;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
@@ -52,7 +53,7 @@ import java.lang.reflect.Type;
  */
 @DeclareActorReferences({ JDBCTableActorReference.class})
 @DeclareFlexoRoles({JDBCTableRole.class, JDBCColumnRole.class})
-@DeclareEditionActions({})
+@DeclareEditionActions({ AddJDBCTable.class})
 @DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class })
 @ModelEntity
 @ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
