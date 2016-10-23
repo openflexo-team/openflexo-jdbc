@@ -8,6 +8,7 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Remover;
 import org.openflexo.model.factory.AccessibleProxyObject;
+import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
@@ -76,6 +77,12 @@ public interface JDBCTable {
 	 */
 	boolean grant(String access, String user);
 
+	JDBCResultSet selectAll();
+
+	JDBCResultSet select(String where);
+
+	JDBCResultSet select(String where, String order, int limit, int offset);
+
 	abstract class JDBCTableImpl implements AccessibleProxyObject, JDBCTable {
 
 		private static final Logger LOGGER = Logger.getLogger(JDBCTable.class.getPackage().getName());
@@ -138,6 +145,28 @@ public interface JDBCTable {
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't grant '" + access +"' on '"+ getName() +"' for user '"+ user +"' in '"+ connection.getAddress() +"'", e);
 				return false;
+			}
+		}
+
+		@Override
+		public JDBCResultSet selectAll() {
+			return select(null);
+		}
+
+		@Override
+		public JDBCResultSet select(String where) {
+			return select(where, null, -1, 0);
+		}
+
+		@Override
+		public JDBCResultSet select(String where, String order, int limit, int offset) {
+			JDBCConnection model = this.getSchema().getModel();
+			try {
+				ModelFactory factory = SQLHelper.getFactory(model);
+				return SQLHelper.select(model, factory, this, where, order, limit, offset);
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't selectAll from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
+				return JDBCResultSet.empty;
 			}
 		}
 

@@ -41,7 +41,6 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ModelEntity
@@ -82,12 +81,6 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 
     @Getter(value = CONNECTION, ignoreType = true)
     Connection getConnection();
-
-	JDBCResultSet select(JDBCTable from);
-
-	JDBCResultSet select(JDBCTable from, String where);
-
-	JDBCResultSet select(JDBCTable from, String where, String order, int limit, int offset);
 
     /**
 	 * Abstract JDBCConnection implementation using Pamela.
@@ -148,27 +141,6 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 				getPropertyChangeSupport().firePropertyChange(SCHEMA, null, schema);
 			}
 			return schema;
-		}
-
-		@Override
-		public JDBCResultSet select(JDBCTable from) {
-			return select(from, null);
-		}
-
-		@Override
-		public JDBCResultSet select(JDBCTable from, String where) {
-			return select(from, where, null, -1, 0);
-		}
-
-		@Override
-		public JDBCResultSet select(JDBCTable from, String where, String order, int limit, int offset) {
-			try {
-				ModelFactory factory = SQLHelper.getFactory(this);
-				return SQLHelper.select(this, factory, from, where, order, limit, offset);
-			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't select from '"+ from.getName() +"' on '"+ getAddress() +"'", e);
-				return JDBCResultSet.empty;
-			}
 		}
 
 		@Override
