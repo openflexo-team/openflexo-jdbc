@@ -42,6 +42,9 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
     
 	static final Logger LOGGER = Logger.getLogger(JDBCAdapterController.class.getPackage().getName());
 
+	private InspectorGroup jdbcInspectorGroup;
+
+
 	@Override
 	public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
 		return JDBCTechnologyAdapter.class;
@@ -49,21 +52,20 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public void initializeActions(ControllerActionInitializer actionInitializer) {
-		/* TODO adds inspector
-	    actionInitializer.getController().getModuleInspectorController()
-                .loadDirectory(ResourceLocator.locateResource("Inspectors/JDBC"), getTechnologyAdapter().getLocales());
-        */
 		new CreateJdbcModelInitializer(actionInitializer);
 	}
 
     @Override
     protected void initializeInspectors(FlexoController controller) {
-        System.out.println("Initialize");
-    }
+		//jdbcInspectorGroup = controller.loadInspectorGroup("JDBC", getTechnologyAdapter().getLocales(), getFMLTechnologyAdapterInspectorGroup());
+
+		jdbcInspectorGroup = controller.loadInspectorGroup("JDBC", getTechnologyAdapter().getLocales(), getFMLTechnologyAdapterInspectorGroup());
+
+	}
 
     @Override
     public InspectorGroup getTechnologyAdapterInspectorGroup() {
-        return null;
+        return jdbcInspectorGroup;
     }
 
     @Override
@@ -88,7 +90,6 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public ImageIcon getIconForTechnologyObject(final Class<? extends TechnologyObject<?>> objectClass) {
-		// TODO Auto-generated method stub
 		return JDBCIconLibrary.JDBC_TECHNOLOGY_ICON;
 	}
 
@@ -107,15 +108,13 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
     }
 
 	@Override
-	public String getWindowTitleforObject(
-			TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
+	public String getWindowTitleforObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
 		// TODO Auto-generated method stub
 		return "";
 	}
 
 	@Override
-	public boolean hasModuleViewForObject(
-			TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
+	public boolean hasModuleViewForObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
 		// TODO Auto-generated method stub
 		return obj instanceof JDBCConnection;
 	}
