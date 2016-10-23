@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.technologyadapter.jdbc.fml;
+package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;

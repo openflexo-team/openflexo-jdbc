@@ -6,12 +6,16 @@ import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
+import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
 import org.openflexo.technologyadapter.jdbc.model.JDBCSchema;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,5 +146,62 @@ public class SQLHelper {
 
 	public static String sqlName(String name) {
 		return name.toUpperCase();
+	}
+
+	public static JDBCResultSet select(JDBCConnection connection, final ModelFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
+			throws SQLException {
+		String request = createSelectRequest(from, where, orderBy, limit, offset);
+		return new QueryRunner().query(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
+			@Override
+			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
+				ResultSetMetaData metaData = resultSet.getMetaData();
+				// searches for columns
+				int columnCount = metaData.getColumnCount();
+				JDBCColumn[] columns = new JDBCColumn[columnCount];
+				for (int i = 1; i <= columnCount; i++) {
+					columns[i-1] = from.getColumn(metaData.getColumnName(i));
+				}
+
+				List<JDBCLine> lines = new ArrayList<>();
+				while (resultSet.next()) {
+					List<JDBCValue> values = new ArrayList<JDBCValue>();
+					for (int i = 1; i <= columnCount; i++) {
+						JDBCValue value = factory.newInstance(JDBCValue.class);
+						value.init(columns[i-1], resultSet.getString(i));
+						values.add(value);
+					}
+					JDBCLine line = factory.newInstance(JDBCLine.class);
+					line.init(from, values);
+					lines.add(line);
+				}
+
+				JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
+				result.init(from, lines);
+				return result;
+			}
+		});
+	}
+
+	private static String createSelectRequest(final JDBCTable from, String where, String orderBy, int limit, int offset) {
+		StringBuilder result = new StringBuilder();
+		result.append("SELECT * FROM ");
+		result.append(from.getName());
+		if (where != null) {
+			result.append(" WHERE ");
+			result.append(where);
+		}
+		if (orderBy != null) {
+			result.append(" ORDER BY ");
+			result.append(orderBy);
+		}
+		if (limit > 0) {
+			result.append(" LIMIT ");
+			result.append(limit);
+		}
+		if (offset > 0) {
+			result.append(" OFFSET ");
+			result.append(offset);
+		}
+		return result.toString();
 	}
 }

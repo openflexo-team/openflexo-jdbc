@@ -34,12 +34,12 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.fml.AddJDBCTable;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableActorReference;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
-import org.openflexo.technologyadapter.jdbc.fml.SelectJDBCColumn;
-import org.openflexo.technologyadapter.jdbc.fml.SelectJDBCTable;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.AddJDBCTable;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCColumn;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
 import java.lang.reflect.Type;

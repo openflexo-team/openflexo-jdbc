@@ -36,40 +36,62 @@
  * 
  */
 
-package org.openflexo.technologyadapter.jdbc.fml;
+package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.FetchRequest;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
+import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.PropertyIdentifier;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
+import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ModelEntity
-@ImplementationClass(SelectJDBCTable.SelectJDBCTableImpl.class)
+@ImplementationClass(SelectJDBCColumn.SelectJDBCColumnImpl.class)
 @XMLElement
-@FML("SelectJDBCTable")
-public interface SelectJDBCTable extends FetchRequest<JDBCModelSlot, JDBCTable> {
+@FML("SelectJDBCColumn")
+public interface SelectJDBCColumn extends FetchRequest<JDBCModelSlot, JDBCColumn> {
 
-	abstract class SelectJDBCTableImpl extends FetchRequestImpl<JDBCModelSlot, JDBCTable> implements SelectJDBCTable {
+	@PropertyIdentifier(type = DataBinding.class)
+	String TABLE_KEY = "table";
 
-		private static final Logger logger = Logger.getLogger(SelectJDBCTable.class.getPackage().getName());
+	@Getter(TABLE_KEY)
+	@XMLAttribute
+	DataBinding<JDBCTable> getTable();
+
+	@Setter(TABLE_KEY)
+	void setTable(DataBinding<JDBCTable> table);
+
+	abstract class SelectJDBCColumnImpl extends FetchRequestImpl<JDBCModelSlot, JDBCColumn> implements SelectJDBCColumn {
+
+		private static final Logger logger = Logger.getLogger(SelectJDBCColumn.class.getPackage().getName());
+
+		private DataBinding<JDBCTable> table;
 
 		@Override
 		public Type getFetchedType() {
-			return JDBCTable.class;
+			return JDBCColumn.class;
 		}
 
 		@Override
-		public List<JDBCTable> execute(RunTimeEvaluationContext evaluationContext) {
+		public List<JDBCColumn> execute(RunTimeEvaluationContext evaluationContext) {
 
 			if (getModelSlotInstance(evaluationContext) == null) {
 				logger.warning("Could not access model slot instance. Abort.");
@@ -81,8 +103,41 @@ public interface SelectJDBCTable extends FetchRequest<JDBCModelSlot, JDBCTable> 
 			}
 
 			JDBCConnection connection = (JDBCConnection) getModelSlotInstance(evaluationContext).getAccessedResourceData();
-			List<JDBCTable> result = new ArrayList<>(connection.getSchema().getTables());
-			return filterWithConditions(result, evaluationContext);
+
+			List<JDBCColumn> columns = new ArrayList<JDBCColumn>();
+			JDBCTable table;
+			try {
+				table = getTable().getBindingValue(evaluationContext);
+
+				if (table != null) {
+					columns.addAll(table.getColumns());
+				}
+			} catch (TypeMismatchException| NullReferenceException | InvocationTargetException e) {
+				logger.log(Level.WARNING, "Can't evaluate table", e);
+			}
+
+			return filterWithConditions(columns, evaluationContext);
+
+		}
+
+		@Override
+		public DataBinding<JDBCTable> getTable() {
+			if (table == null) {
+				table = new DataBinding<>(this, JDBCTable.class, DataBinding.BindingDefinitionType.GET);
+				table.setBindingName("table");
+			}
+			return table;
+		}
+
+		@Override
+		public void setTable(DataBinding<JDBCTable> table) {
+			if (table != null) {
+				table.setOwner(this);
+				table.setDeclaredType(JDBCTable.class);
+				table.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				table.setBindingName("table");
+			}
+			this.table = table;
 		}
 	}
 }
