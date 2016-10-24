@@ -31,10 +31,7 @@ public class SQLHelper {
 	// TODO complete with http://dev.mysql.com/doc/refman/5.7/en/tables-table.html
     public static final String SELECT_TABLES = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA='PUBLIC'";
 
-	public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DTD_IDENTIFIER FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
-
-	// Older request using DATA_TYPE
-	//public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
+	public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DTD_IDENTIFIER FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=? ORDER BY ORDINAL_POSITION";
 
 	public static final String SELECT_PRIMARY_KEY = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME=?";
 
@@ -248,10 +245,7 @@ public class SQLHelper {
 		length = result.length();
 		for (JDBCValue value : line.getValues()) {
 			if (length < result.length()) result.append(",");
-			boolean needsQuotes = needsQuotes(value.getColumn().getType());
-			if (needsQuotes) result.append("'");
-			result.append(value.getValue());
-			if (needsQuotes) result.append("'");
+			result.append(sqlValue(value.getColumn().getType(), value.getValue()));
 		}
 		result.append(")");
 		return result.toString();
@@ -301,10 +295,7 @@ public class SQLHelper {
 		result.append(column.getName());
 		result.append(" = ");
 
-		boolean needsQuotes = needsQuotes(value.getColumn().getType());
-		if (needsQuotes) result.append("'");
-		result.append(newValue);
-		if (needsQuotes) result.append("'");
+		result.append(sqlValue(value.getColumn().getType(), newValue));
 
 		result.append(" WHERE ");
 		int length = result.length();
@@ -315,13 +306,18 @@ public class SQLHelper {
 
 				result.append(whereColumn.getName());
 				result.append( " = ");
-
-				needsQuotes = needsQuotes(whereColumn.getType());
-				if (needsQuotes) result.append("'");
-				result.append(line.getValue(whereColumn).getValue());
-				if (needsQuotes) result.append("'");
+				result.append(sqlValue(whereColumn.getType(), line.getValue(whereColumn).getValue()));
 			}
 		}
+		return result.toString();
+	}
+
+	public static String sqlValue(String type, String value) {
+		StringBuilder result = new StringBuilder();
+		boolean needsQuotes = needsQuotes(type);
+		if (needsQuotes) result.append("'");
+		result.append(value);
+		if (needsQuotes) result.append("'");
 		return result.toString();
 	}
 

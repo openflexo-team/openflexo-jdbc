@@ -13,6 +13,7 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,6 +80,24 @@ public interface JDBCTable {
 	 */
 	boolean grant(String access, String user);
 
+	/**
+	 * Finds the line for the given keys
+	 * @param keys keys to find on line in the order of the keys in the table
+	 * @return the line if it can be found, null if it doesn't exist
+	 */
+	JDBCLine find(String ... keys);
+
+	/**
+	 * Finds the line for the given keys
+	 * @param keys keys to find on line in the order of the keys in the table
+	 * @return the line if it can be found, null if it doesn't exist
+	 */
+	JDBCLine find(List<String> keys);
+
+	/**
+	 * Selects all lines for the table.
+	 * @return a result set contains all line.
+	 */
 	JDBCResultSet selectAll();
 
 	JDBCResultSet select(String where);
@@ -152,6 +171,28 @@ public interface JDBCTable {
 				LOGGER.log(Level.WARNING, "Can't grant '" + access +"' on '"+ getName() +"' for user '"+ user +"' in '"+ connection.getAddress() +"'", e);
 				return false;
 			}
+		}
+
+		@Override
+		public JDBCLine find(String ... keys) {
+			return find(Arrays.asList(keys));
+		}
+
+		@Override
+		public JDBCLine find(List<String> keys) {
+			StringBuilder where = new StringBuilder();
+			int index = 0;
+			for (JDBCColumn column : getColumns()) {
+				if (column.isPrimaryKey()) {
+					if (where.length() > 0) where.append(" AND ");
+					where.append(column.getName());
+					where.append("=");
+					where.append(SQLHelper.sqlValue(column.getType(), keys.get(index)));
+					index += 1;
+				}
+			}
+			JDBCResultSet resultSet = select(where.toString(), null, 1, 0);
+			return resultSet.getLines().isEmpty() ? null : resultSet.getLines().get(0);
 		}
 
 		@Override

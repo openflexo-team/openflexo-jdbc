@@ -193,7 +193,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		JDBCTable table1 = createTable1("table1", connection.getSchema());
 		assertTrue(table1.insert(new String[]{"ID", "1"}, new String[]{"NAME", "toto1"}));
 
-		JDBCValue value = table1.select("name='toto1'").getLines().get(0).getValues().get(1);
+		JDBCValue value = table1.find("1").getValues().get(1);
 		assertEquals("toto1", value.getValue());
 		assertTrue(value.setValue("test2"));
 		assertEquals("test2", value.getValue());
