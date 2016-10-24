@@ -19,6 +19,8 @@ public interface JDBCLine {
 
 	List<JDBCValue> getValues();
 
+	JDBCValue getValue(JDBCColumn column);
+
 	abstract class JDBCLineImpl implements JDBCLine, AccessibleProxyObject {
 
 		private JDBCTable table;
@@ -38,6 +40,14 @@ public interface JDBCLine {
 		@Override
 		public List<JDBCValue> getValues() {
 			return values;
+		}
+
+		@Override
+		public JDBCValue getValue(JDBCColumn column) {
+			for (JDBCValue value : values) {
+				if (value.getColumn() == column) return value;
+			}
+			return null;
 		}
 	}
 

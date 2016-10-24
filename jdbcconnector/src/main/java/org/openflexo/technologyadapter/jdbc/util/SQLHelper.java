@@ -18,7 +18,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * SQL request helper
@@ -28,7 +30,13 @@ public class SQLHelper {
 
 	// TODO complete with http://dev.mysql.com/doc/refman/5.7/en/tables-table.html
     public static final String SELECT_TABLES = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA='PUBLIC'";
-    public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
+
+	public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DTD_IDENTIFIER FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
+
+	// Older request using DATA_TYPE
+	//public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=?";
+
+	public static final String SELECT_PRIMARY_KEY = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME=?";
 
 	public static ModelFactory getFactory(JDBCConnection model) {
 		// Find the correct factory
@@ -66,19 +74,35 @@ public class SQLHelper {
 
     public static List<JDBCColumn> getTableColumns(final JDBCTable table, final ModelFactory factory) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();
+		final Set<String> keys = getKeys(table);
 		return new QueryRunner().query(connection, SELECT_COLUMNS, new ResultSetHandler<List<JDBCColumn>>() {
 			@Override
 			public List<JDBCColumn> handle(ResultSet resultSet) throws SQLException {
 				ArrayList<JDBCColumn> columns = new ArrayList<>();
 				while (resultSet.next()) {
 					JDBCColumn column = factory.newInstance(JDBCColumn.class);
-					column.init(table, resultSet.getString(1), resultSet.getString(2));
+					String name = resultSet.getString(1);
+					column.init(table, keys.contains(name), name, resultSet.getString(2));
 					columns.add(column);
 				}
 				return columns;
 			}
 		}, sqlName(table.getName()));
     }
+
+    private static Set<String> getKeys(final JDBCTable table) throws SQLException {
+		Connection connection = table.getSchema().getModel().getConnection();
+		return new QueryRunner().query(connection, SELECT_PRIMARY_KEY, new ResultSetHandler<Set<String>>() {
+			@Override
+			public Set<String> handle(ResultSet resultSet) throws SQLException {
+				Set<String> keys = new HashSet<>();
+				while (resultSet.next()) {
+					keys.add(resultSet.getString(1));
+				}
+				return keys;
+			}
+		}, sqlName(table.getName()));
+	}
 
     public static JDBCTable createTable(final JDBCSchema schema, final ModelFactory factory, final String tableName, String[] ... attributes) throws SQLException {
 		Connection connection = schema.getModel().getConnection();
@@ -122,15 +146,29 @@ public class SQLHelper {
 	}
 
 	public static JDBCColumn createColumn(
-			final JDBCTable table, final ModelFactory factory, final String columnName, final String type
+			final JDBCTable table, final ModelFactory factory, final String columnName, final String type, boolean key
 	) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();
-		String addColumn = "ALTER TABLE "+ sqlName(table.getName()) +" ADD "+ sqlName(columnName) + " " + type;
+		String addColumn = createAddColumnRequest(table, columnName, type, key);
 		new QueryRunner().update(connection, addColumn);
 
 		JDBCColumn column = factory.newInstance(JDBCColumn.class);
-		column.init(table, columnName, type);
+		column.init(table, key, columnName, type);
 		return column;
+	}
+
+	private static String createAddColumnRequest(JDBCTable table, String columnName, String type, boolean key) {
+		StringBuilder result = new StringBuilder();
+		result.append("ALTER TABLE ");
+		result.append(sqlName(table.getName()));
+		result.append(" ADD ");
+		result.append(sqlName(columnName));
+		result.append(" ");
+		result.append(type);
+		if (key) {
+			result.append(" PRIMARY KEY");
+		}
+		return result.toString();
 	}
 
 	public static void dropColumn(final JDBCTable table, final String columnName) throws SQLException {
@@ -184,7 +222,8 @@ public class SQLHelper {
 		return result.toString();
 	}
 
-	public static JDBCResultSet insert(final JDBCConnection connection, final JDBCLine line) throws SQLException {
+	public static JDBCResultSet insert(final JDBCLine line) throws SQLException {
+		final JDBCConnection connection = line.getTable().getSchema().getModel();
 		String request = createInsertRequest(line);
 		return new QueryRunner().insert(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
@@ -209,7 +248,10 @@ public class SQLHelper {
 		length = result.length();
 		for (JDBCValue value : line.getValues()) {
 			if (length < result.length()) result.append(",");
+			boolean needsQuotes = needsQuotes(value.getColumn().getType());
+			if (needsQuotes) result.append("'");
 			result.append(value.getValue());
+			if (needsQuotes) result.append("'");
 		}
 		result.append(")");
 		return result.toString();
@@ -227,19 +269,64 @@ public class SQLHelper {
 
 		List<JDBCLine> lines = new ArrayList<>();
 		while (resultSet.next()) {
+			JDBCLine line = factory.newInstance(JDBCLine.class);
 			List<JDBCValue> values = new ArrayList<>();
 			for (int i = 1; i <= columnCount; i++) {
 				JDBCValue value = factory.newInstance(JDBCValue.class);
-				value.init(columns[i-1], resultSet.getString(i));
+				value.init(line, columns[i-1], resultSet.getString(i));
 				values.add(value);
 			}
-			JDBCLine line = factory.newInstance(JDBCLine.class);
 			line.init(from, values);
 			lines.add(line);
+
 		}
 
 		JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
 		result.init(from, lines);
 		return result;
+	}
+
+	public static void update(JDBCValue value, String newValue) throws SQLException {
+		Connection connection = value.getLine().getTable().getSchema().getModel().getConnection();
+		String request = createUpdateRequest(value, newValue);
+		new QueryRunner().update(connection, request);
+	}
+
+	private static String createUpdateRequest(JDBCValue value, String newValue) {
+		StringBuilder result = new StringBuilder();
+		JDBCColumn column = value.getColumn();
+		result.append("UPDATE ");
+		result.append(column.getTable().getName());
+		result.append(" SET ");
+		result.append(column.getName());
+		result.append(" = ");
+
+		boolean needsQuotes = needsQuotes(value.getColumn().getType());
+		if (needsQuotes) result.append("'");
+		result.append(newValue);
+		if (needsQuotes) result.append("'");
+
+		result.append(" WHERE ");
+		int length = result.length();
+		JDBCLine line = value.getLine();
+		for (JDBCColumn whereColumn : line.getTable().getColumns()) {
+			if (whereColumn.isPrimaryKey()) {
+				if (length < result.length()) result.append(" AND ");
+
+				result.append(whereColumn.getName());
+				result.append( " = ");
+
+				needsQuotes = needsQuotes(whereColumn.getType());
+				if (needsQuotes) result.append("'");
+				result.append(line.getValue(whereColumn).getValue());
+				if (needsQuotes) result.append("'");
+			}
+		}
+		return result.toString();
+	}
+
+	public static boolean needsQuotes(String type) {
+		type = type.toUpperCase();
+		return type.startsWith("CHAR") || type.startsWith("VARCHAR") || type.startsWith("CLOB");
 	}
 }

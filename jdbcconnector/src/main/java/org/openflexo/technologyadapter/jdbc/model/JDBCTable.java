@@ -59,9 +59,10 @@ public interface JDBCTable {
 	 *
 	 * @param columnName new column name, must be uppercase.
 	 * @param type column type
+	 * @param key true if the column is the primary key
 	 * @return the created column or null if the creation failed (SQL problem, already exists, incorrect name, ...).
 	 */
-	JDBCColumn createColumn(String columnName, String type);
+	JDBCColumn createColumn(String columnName, String type, boolean key);
 
 	/**
 	 * Drops a table in the model and the linked database.
@@ -118,9 +119,9 @@ public interface JDBCTable {
 		}
 
 		@Override
-		public JDBCColumn createColumn(String columnName, String type) {
+		public JDBCColumn createColumn(String columnName, String type, boolean key) {
 			try {
-				JDBCColumn column = SQLHelper.createColumn(this, SQLHelper.getFactory(getSchema().getModel()), columnName, type);
+				JDBCColumn column = SQLHelper.createColumn(this, SQLHelper.getFactory(getSchema().getModel()), columnName, type, key);
 				addColumn(column);
 				return column;
 			} catch (SQLException e) {
@@ -182,7 +183,7 @@ public interface JDBCTable {
 			List<JDBCValue> jdbcValues = new ArrayList<>();
 			for (String[] value : values) {
 				JDBCValue jdbcValue = factory.newInstance(JDBCValue.class);
-				jdbcValue.init(getColumn(value[0]), value[1]);
+				jdbcValue.init(line, getColumn(value[0]), value[1]);
 				jdbcValues.add(jdbcValue);
 			}
 			line.init(this, jdbcValues);
@@ -193,7 +194,7 @@ public interface JDBCTable {
 		public boolean insert(JDBCLine line) {
 			JDBCConnection model = getSchema().getModel();
 			try {
-				SQLHelper.insert(model, line);
+				SQLHelper.insert(line);
 				return true;
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ model.getAddress() +"'", e);

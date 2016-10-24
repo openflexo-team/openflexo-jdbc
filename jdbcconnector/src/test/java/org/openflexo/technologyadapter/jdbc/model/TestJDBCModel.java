@@ -1,39 +1,39 @@
 /**
- * 
+ *
  * Copyright (c) 2014, Openflexo
- * 
- * This file is part of Flexodiagram, a component of the software infrastructure 
+ *
+ * This file is part of Flexodiagram, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ *
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ *
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
  *
  *          Additional permission under GNU GPL version 3 section 7
  *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
  *          of EPL 1.0, the licensors of this Program grantAllOn you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ *
+ *
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.technologyadapter.jdbc.model;
@@ -51,9 +51,9 @@ import static org.junit.Assert.*;
 
 /**
  * Test JDBC model
- * 
+ *
  * @author charlie
- * 
+ *
  */
 @RunWith(OrderedRunner.class)
 public class TestJDBCModel extends OpenflexoTestCase {
@@ -98,7 +98,13 @@ public class TestJDBCModel extends OpenflexoTestCase {
 			String tableName1 = "test1";
 			assertNotNull(createTable1(tableName1, schema));
 			assertEquals(1, schema.getTables().size());
-			assertEquals(2, schema.getTable(tableName1).getColumns().size());
+			JDBCTable table = schema.getTable(tableName1);
+			assertEquals(2, table.getColumns().size());
+
+			JDBCColumn column = table.getColumn("id");
+			assertNotNull(column);
+			assertEquals("ID", column.getName());
+			assertTrue(column.isPrimaryKey());
 
 			String tableName2 = "TEST2";
 			assertNotNull(createTable2(tableName2, schema));
@@ -124,8 +130,8 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 		assertTrue(table1.grant("ALL", connection.getUser()));
 
-		assertNotNull(table1.createColumn("other", "VARCHAR(100)"));
-		assertNotNull(table1.createColumn("other2", "INT"));
+		assertNotNull(table1.createColumn("other", "VARCHAR(100)", false));
+		assertNotNull(table1.createColumn("other2", "INT", false));
 	}
 
 	@Test
@@ -159,13 +165,13 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		JDBCTable table1 = createTable1("table1", connection.getSchema());
 
 		// insert some values
-		assertTrue(table1.insert(new String[]{"ID", "1"}, new String[]{"NAME", "'toto1'"}));
-		assertTrue(table1.insert(new String[]{"ID", "2"}, new String[]{"NAME", "'toto2'"}));
-		assertTrue(table1.insert(new String[]{"ID", "3"}, new String[]{"NAME", "'toto3'"}));
-		assertTrue(table1.insert(new String[]{"ID", "4"}, new String[]{"NAME", "'toto4'"}));
+		assertTrue(table1.insert(new String[]{"ID", "1"}, new String[]{"NAME", "toto1"}));
+		assertTrue(table1.insert(new String[]{"ID", "2"}, new String[]{"NAME", "toto2"}));
+		assertTrue(table1.insert(new String[]{"ID", "3"}, new String[]{"NAME", "toto3"}));
+		assertTrue(table1.insert(new String[]{"ID", "4"}, new String[]{"NAME", "toto4"}));
 
 		// insert existing value, must fail
-		assertFalse(table1.insert(new String[]{"ID", "2"}, new String[]{"NAME", "'TOTO'"}));
+		assertFalse(table1.insert(new String[]{"ID", "2"}, new String[]{"NAME", "toto"}));
 
 		JDBCResultSet result = table1.selectAll();
 		assertNotNull(result);
@@ -179,6 +185,22 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		assertEquals(2, line.getValues().size());
 		JDBCValue value = line.getValues().get(1);
 		assertEquals("toto1", value.getValue());
+	}
+
+	@Test
+	public void testUpdateValues() throws Exception {
+		JDBCConnection connection = createJDBCMemoryConnection("updateValues");
+		JDBCTable table1 = createTable1("table1", connection.getSchema());
+		assertTrue(table1.insert(new String[]{"ID", "1"}, new String[]{"NAME", "toto1"}));
+
+		JDBCValue value = table1.select("name='toto1'").getLines().get(0).getValues().get(1);
+		assertEquals("toto1", value.getValue());
+		assertTrue(value.setValue("test2"));
+		assertEquals("test2", value.getValue());
+
+		// selects the value again
+		value = table1.select("id=1").getLines().get(0).getValues().get(1);
+		assertEquals("test2", value.getValue());
 
 	}
 }
