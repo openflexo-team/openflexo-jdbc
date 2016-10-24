@@ -26,16 +26,16 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole.JDBCTableRoleImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 
 import java.lang.reflect.Type;
 
 @ModelEntity
 @ImplementationClass(value = JDBCTableRoleImpl.class)
 @XMLElement
-public interface JDBCTableRole extends FlexoRole<JDBCTable> {
+public interface JDBCLineRole extends FlexoRole<JDBCLine> {
 
-    abstract class JDBCTableRoleImpl extends JDBCRole<JDBCTable> implements JDBCTableRole {
+    abstract class JDBCLineRoleImpl extends JDBCRole<JDBCLine> implements JDBCLineRole {
 
         @Override
         public Type getType() {
@@ -43,8 +43,8 @@ public interface JDBCTableRole extends FlexoRole<JDBCTable> {
         }
 
         @Override
-        public Class<? extends JDBCActorReference<JDBCTable>> getActorReferenceClass() {
-            return JDBCTableActorReference.class;
+        public Class<? extends JDBCActorReference<JDBCLine>> getActorReferenceClass() {
+            return JDBCLineActorReference.class;
         }
     }
 }
