@@ -12,6 +12,7 @@ import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,6 +83,10 @@ public interface JDBCTable {
 	JDBCResultSet select(String where);
 
 	JDBCResultSet select(String where, String order, int limit, int offset);
+
+	boolean insert(String[] ... values);
+
+	boolean insert(JDBCLine line);
 
 	abstract class JDBCTableImpl implements AccessibleProxyObject, JDBCTable {
 
@@ -165,14 +170,40 @@ public interface JDBCTable {
 				ModelFactory factory = SQLHelper.getFactory(model);
 				return SQLHelper.select(model, factory, this, where, order, limit, offset);
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't selectAll from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
 				return JDBCResultSet.empty;
 			}
 		}
 
 		@Override
+		public boolean insert(String[] ... values) {
+			ModelFactory factory = SQLHelper.getFactory(getSchema().getModel());
+			JDBCLine line = factory.newInstance(JDBCLine.class);
+			List<JDBCValue> jdbcValues = new ArrayList<>();
+			for (String[] value : values) {
+				JDBCValue jdbcValue = factory.newInstance(JDBCValue.class);
+				jdbcValue.init(getColumn(value[0]), value[1]);
+				jdbcValues.add(jdbcValue);
+			}
+			line.init(this, jdbcValues);
+			return insert(line);
+		}
+
+		@Override
+		public boolean insert(JDBCLine line) {
+			JDBCConnection model = getSchema().getModel();
+			try {
+				SQLHelper.insert(model, line);
+				return true;
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ model.getAddress() +"'", e);
+				return false;
+			}
+		}
+
+		@Override
 		public String toString() {
-			return "[Table] " + getName() + "("+ /*getColumns().size() +*/")";
+			return "[Table] " + getName() + "("+ getColumns().size() +")";
 		}
 	}
 }

@@ -58,9 +58,6 @@ import static org.junit.Assert.*;
 @RunWith(OrderedRunner.class)
 public class TestJDBCModel extends OpenflexoTestCase {
 
-	// TODO: test drop table
-	// TODO: test drop column
-
     private JDBCTable createTable1(String tableName, JDBCSchema schema) {
         String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
         String[] name = {"name", "VARCHAR(100)"};
@@ -77,9 +74,13 @@ public class TestJDBCModel extends OpenflexoTestCase {
     }
 
 	private JDBCConnection createJDBCMemoryConnection(String name) throws ModelDefinitionException {
+		return createJDBCConnection("mem:" + name);
+	}
+
+	private JDBCConnection createJDBCConnection(String protocolAndName) throws ModelDefinitionException {
 		JDBCFactory factory = new JDBCFactory(null, null);
 		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
-		connection.setAddress("jdbc:hsqldb:mem:" + name);
+		connection.setAddress("jdbc:hsqldb:" + protocolAndName);
 		connection.setUser("SA");
 		return connection;
 	}
@@ -150,6 +151,34 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		column = table1.getColumn("description");
 		assertNotNull(column);
 		assertTrue(table1.dropColumn(column));
+	}
+
+	@Test
+	public void testInsertAndSelectLines1() throws Exception {
+		JDBCConnection connection = createJDBCMemoryConnection("insertLine");
+		JDBCTable table1 = createTable1("table1", connection.getSchema());
+
+		// insert some values
+		assertTrue(table1.insert(new String[]{"ID", "1"}, new String[]{"NAME", "'toto1'"}));
+		assertTrue(table1.insert(new String[]{"ID", "2"}, new String[]{"NAME", "'toto2'"}));
+		assertTrue(table1.insert(new String[]{"ID", "3"}, new String[]{"NAME", "'toto3'"}));
+		assertTrue(table1.insert(new String[]{"ID", "4"}, new String[]{"NAME", "'toto4'"}));
+
+		// insert existing value, must fail
+		assertFalse(table1.insert(new String[]{"ID", "2"}, new String[]{"NAME", "'TOTO'"}));
+
+		JDBCResultSet result = table1.selectAll();
+		assertNotNull(result);
+
+		assertEquals(4, result.getLines().size());
+
+		JDBCResultSet toto1Result = table1.select("name='toto1'");
+		assertNotNull(toto1Result);
+		assertEquals(1, toto1Result.getLines().size());
+		JDBCLine line = toto1Result.getLines().get(0);
+		assertEquals(2, line.getValues().size());
+		JDBCValue value = line.getValues().get(1);
+		assertEquals("toto1", value.getValue());
 
 	}
 }

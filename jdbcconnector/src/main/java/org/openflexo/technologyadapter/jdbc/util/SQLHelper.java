@@ -148,36 +148,15 @@ public class SQLHelper {
 		return name.toUpperCase();
 	}
 
-	public static JDBCResultSet select(JDBCConnection connection, final ModelFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
-			throws SQLException {
+	public static JDBCResultSet select(
+		JDBCConnection connection, final ModelFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
+		throws SQLException
+	{
 		String request = createSelectRequest(from, where, orderBy, limit, offset);
 		return new QueryRunner().query(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
 			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				ResultSetMetaData metaData = resultSet.getMetaData();
-				// searches for columns
-				int columnCount = metaData.getColumnCount();
-				JDBCColumn[] columns = new JDBCColumn[columnCount];
-				for (int i = 1; i <= columnCount; i++) {
-					columns[i-1] = from.getColumn(metaData.getColumnName(i));
-				}
-
-				List<JDBCLine> lines = new ArrayList<>();
-				while (resultSet.next()) {
-					List<JDBCValue> values = new ArrayList<JDBCValue>();
-					for (int i = 1; i <= columnCount; i++) {
-						JDBCValue value = factory.newInstance(JDBCValue.class);
-						value.init(columns[i-1], resultSet.getString(i));
-						values.add(value);
-					}
-					JDBCLine line = factory.newInstance(JDBCLine.class);
-					line.init(from, values);
-					lines.add(line);
-				}
-
-				JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
-				result.init(from, lines);
-				return result;
+				return constructJdbcResult(factory, resultSet, from);
 			}
 		});
 	}
@@ -203,5 +182,64 @@ public class SQLHelper {
 			result.append(offset);
 		}
 		return result.toString();
+	}
+
+	public static JDBCResultSet insert(final JDBCConnection connection, final JDBCLine line) throws SQLException {
+		String request = createInsertRequest(line);
+		return new QueryRunner().insert(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
+			@Override
+			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
+				ModelFactory factory = getFactory(connection);
+				return constructJdbcResult(factory, resultSet, line.getTable());
+			}
+		});
+	}
+
+	private static String createInsertRequest(JDBCLine line) {
+		StringBuilder result = new StringBuilder();
+		result.append("INSERT INTO ");
+		result.append(line.getTable().getName());
+		result.append(" (");
+		int length = result.length();
+		for (JDBCValue value : line.getValues()) {
+			if (length < result.length()) result.append(",");
+			result.append(value.getColumn().getName());
+		}
+		result.append(") VAlUES (");
+		length = result.length();
+		for (JDBCValue value : line.getValues()) {
+			if (length < result.length()) result.append(",");
+			result.append(value.getValue());
+		}
+		result.append(")");
+		return result.toString();
+	}
+
+	/** Create JDBCResultSet from a ResultSet */
+	private static JDBCResultSet constructJdbcResult(ModelFactory factory, ResultSet resultSet, JDBCTable from) throws SQLException {
+		ResultSetMetaData metaData = resultSet.getMetaData();
+		// searches for columns
+		int columnCount = metaData.getColumnCount();
+		JDBCColumn[] columns = new JDBCColumn[columnCount];
+		for (int i = 1; i <= columnCount; i++) {
+			columns[i-1] = from.getColumn(metaData.getColumnName(i));
+		}
+
+		List<JDBCLine> lines = new ArrayList<>();
+		while (resultSet.next()) {
+			List<JDBCValue> values = new ArrayList<>();
+			for (int i = 1; i <= columnCount; i++) {
+				JDBCValue value = factory.newInstance(JDBCValue.class);
+				value.init(columns[i-1], resultSet.getString(i));
+				values.add(value);
+			}
+			JDBCLine line = factory.newInstance(JDBCLine.class);
+			line.init(from, values);
+			lines.add(line);
+		}
+
+		JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
+		result.init(from, lines);
+		return result;
 	}
 }
