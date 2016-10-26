@@ -25,7 +25,6 @@ import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole.JDBCTableRoleImpl;
-import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 import java.lang.reflect.Type;
@@ -39,7 +38,7 @@ public interface JDBCTableRole extends FlexoRole<JDBCTable> {
 
         @Override
         public Type getType() {
-            return JDBCConnection.class;
+            return JDBCTable.class;
         }
 
         @Override
