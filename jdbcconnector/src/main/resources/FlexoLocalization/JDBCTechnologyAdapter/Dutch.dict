@@ -1,1 +1,2 @@
 configure_jdbc_connection=Configure jdbc connection
+no_connection_address_defined=No connection address defined
