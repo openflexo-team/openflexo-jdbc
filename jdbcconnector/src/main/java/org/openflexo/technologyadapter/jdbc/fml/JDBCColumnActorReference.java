@@ -4,6 +4,7 @@ import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -20,13 +21,13 @@ public interface JDBCColumnActorReference extends JDBCActorReference<JDBCColumn>
 	String TABLE_ID = "tableId";
 	String COLUMN_ID = "columnId";
 
-	@Getter(TABLE_ID)
+	@Getter(TABLE_ID) @XMLAttribute
 	String getTableId();
 
 	@Setter(TABLE_ID)
 	void setTableId(String newId);
 
-	@Getter(COLUMN_ID)
+	@Getter(COLUMN_ID) @XMLAttribute
 	String getColumnId();
 
 	@Setter(COLUMN_ID)
