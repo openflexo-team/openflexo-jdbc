@@ -92,8 +92,8 @@ public class CreateJdbcModel extends FlexoAction<CreateJdbcModel, RepositoryFold
 	}
 
 	private String resourceName = "test.jdbc";
-	private String address = "jdbc:hsqldb:mem:testLoad1";
-	private String user = "user";
+	private String address = "jdbc:hsqldb:hsql://localhost/";
+	private String user = "SA";
 	private String password = "";
 
 	public String getResourceName() {
