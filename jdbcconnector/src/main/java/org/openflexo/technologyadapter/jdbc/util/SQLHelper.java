@@ -18,8 +18,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -48,26 +51,60 @@ public class SQLHelper {
 		}
 	}
 
-    /** Requests through SQL the list of table for one connection */
-    public static List<JDBCTable> getTables(
-    		final JDBCSchema schema, final ModelFactory factory
-	) throws SQLException {
+	/**
+	 * Updates the list of tables for the given schema.
+	 * @param schema the schema
+	 * @param tables the table list to update
+	 * @param factory the factory used to create the new tables if needed
+	 */
+    public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final ModelFactory factory) throws SQLException {
 		Connection connection = schema.getModel().getConnection();
-        return new QueryRunner().query(connection, SELECT_TABLES, new ResultSetHandler<List<JDBCTable>>() {
+
+		// prepare case ignoring map to match tables
+		final Map<String, JDBCTable> sortedTables = new HashMap<>();
+		for (JDBCTable table : tables) {
+			sortedTables.put(table.getName().toLowerCase(), table);
+		}
+
+		// query the tables to find new and removed ones
+		final Set<JDBCTable> added = new LinkedHashSet<>();
+		final Set<JDBCTable> matched = new LinkedHashSet<>();
+		new QueryRunner().query(connection, SELECT_TABLES, new ResultSetHandler<Object>() {
 			@Override
-			public List<JDBCTable> handle(ResultSet resultSet) throws SQLException {
-				ArrayList<JDBCTable> tables = new ArrayList<>();
+			public Object handle(ResultSet resultSet) throws SQLException {
 				while (resultSet.next()) {
 					String tableName = resultSet.getString("TABLE_NAME");
-					JDBCTable table = factory.newInstance(JDBCTable.class);
-					table.init(schema, tableName);
-					tables.add(table);
+					JDBCTable table = sortedTables.get(tableName.toLowerCase());
+					if (table == null) {
+						// new table, add it to the list
+						table = factory.newInstance(JDBCTable.class);
+						table.init(schema, tableName);
+						added.add(table);
+					} else {
+						matched.add(table);
+					}
 				}
-				return tables;
+				return null;
 			}
 		});
 
-    }
+		// gets tables to remove
+		Set<JDBCTable> removed = new HashSet<>();
+		for (JDBCTable table : tables) {
+			if (!matched.contains(table)) removed.add(table);
+		}
+
+		// clears the tables of the removed ones
+		// using schema adder and removed fires notifications
+		for (JDBCTable table : removed) {
+			schema.removeTable(table);
+		}
+		// adds new tables
+		for (JDBCTable table : added) {
+			schema.addTable(table);
+		}
+	}
+
 
     public static List<JDBCColumn> getTableColumns(final JDBCTable table, final ModelFactory factory) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();

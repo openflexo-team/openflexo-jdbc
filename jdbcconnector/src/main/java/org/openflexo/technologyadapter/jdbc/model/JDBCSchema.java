@@ -68,17 +68,19 @@ public interface JDBCSchema {
 
 		private static final Logger LOGGER = Logger.getLogger(JDBCSchema.class.getPackage().getName());
 
-		private boolean tablesInitialized = false;
+		/** Internal counter to avoid too many SQL requests */
+		private long lastTableUpdate = -1l;
 
 		@Override
 		public List<JDBCTable> getTables() {
 			List<JDBCTable> tables = (List<JDBCTable>) performSuperGetter(TABLES);
-			if (!tablesInitialized) {
-				tablesInitialized = true;
+			long currentTimeMillis = System.currentTimeMillis();
+			if (lastTableUpdate < currentTimeMillis - 200) {
 				try {
-					tables.addAll(SQLHelper.getTables(this, SQLHelper.getFactory(getModel())));
+					lastTableUpdate = currentTimeMillis;
+					SQLHelper.updateTables(this, tables, SQLHelper.getFactory(getModel()));
 				} catch (SQLException e) {
-					LOGGER.log(Level.WARNING, "Can't read tables on database '"+ getModel().getAddress() +"'", e);
+					LOGGER.log(Level.WARNING, "Can't read tables on database '" + getModel().getAddress() + "'", e);
 				}
 			}
 			return tables;
