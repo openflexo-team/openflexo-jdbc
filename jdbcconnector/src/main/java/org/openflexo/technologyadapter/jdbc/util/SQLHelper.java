@@ -105,24 +105,64 @@ public class SQLHelper {
 		}
 	}
 
-
-    public static List<JDBCColumn> getTableColumns(final JDBCTable table, final ModelFactory factory) throws SQLException {
+	/**
+	 * Updates the list of columns for the given table.
+	 * @param table the table
+	 * @param columns the table list to update
+	 * @param factory the factory used to create the new columns if needed
+	 */
+	public static void updateColumns(final JDBCTable table, List<JDBCColumn> columns, final ModelFactory factory) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();
+
+		// retrieves keys
 		final Set<String> keys = getKeys(table);
-		return new QueryRunner().query(connection, SELECT_COLUMNS, new ResultSetHandler<List<JDBCColumn>>() {
+
+		// prepare case ignoring map to match columns
+		final Map<String, JDBCColumn> sortedColumns = new HashMap<>();
+		for (JDBCColumn column : columns) {
+			sortedColumns.put(column.getName().toLowerCase(), column);
+		}
+
+		// query the columns to find new and removed ones
+		final Set<JDBCColumn> added = new LinkedHashSet<>();
+		final Set<JDBCColumn> matched = new LinkedHashSet<>();
+		new QueryRunner().query(connection, SELECT_COLUMNS, new ResultSetHandler<Object>() {
 			@Override
-			public List<JDBCColumn> handle(ResultSet resultSet) throws SQLException {
+			public Object handle(ResultSet resultSet) throws SQLException {
 				ArrayList<JDBCColumn> columns = new ArrayList<>();
 				while (resultSet.next()) {
-					JDBCColumn column = factory.newInstance(JDBCColumn.class);
 					String name = resultSet.getString(1);
-					column.init(table, keys.contains(name), name, resultSet.getString(2));
-					columns.add(column);
+
+					JDBCColumn column = sortedColumns.get(name.toLowerCase());
+					if (column == null) {
+						// new column, add it to the list
+						column = factory.newInstance(JDBCColumn.class);
+						column.init(table, keys.contains(name), name, resultSet.getString(2));
+						added.add(column);
+					} else {
+						matched.add(column);
+					}
 				}
-				return columns;
+				return null;
 			}
 		}, sqlName(table.getName()));
-    }
+
+		// gets columns to remove
+		Set<JDBCColumn> removed = new HashSet<>();
+		for (JDBCColumn column : columns) {
+			if (!matched.contains(column)) removed.add(column);
+		}
+
+		// clears the columns of the removed ones
+		// using table adder and removed fires notifications
+		for (JDBCColumn column : removed) {
+			table.removeColumn(column);
+		}
+		// adds new columns
+		for (JDBCColumn column : added) {
+			table.addColumn(column);
+		}
+	}
 
     private static Set<String> getKeys(final JDBCTable table) throws SQLException {
 		Connection connection = table.getSchema().getModel().getConnection();

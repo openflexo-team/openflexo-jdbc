@@ -112,16 +112,17 @@ public interface JDBCTable {
 
 		private static final Logger LOGGER = Logger.getLogger(JDBCTable.class.getPackage().getName());
 
-		private boolean columnsInitialized = false;
+		/** Internal counter to avoid too many SQL requests */
+		private long lastColumnsUpdate = -1l;
 
 		@Override
 		public List<JDBCColumn> getColumns() {
 			List<JDBCColumn> columns = (List<JDBCColumn>) performSuperGetter(COLUMNS);
-			if (!columnsInitialized) {
-				columnsInitialized = true;
+			long currentTimeMillis = System.currentTimeMillis();
+			if (lastColumnsUpdate < currentTimeMillis - 200) {
 				try {
-					JDBCConnection model = getSchema().getModel();
-					columns.addAll(SQLHelper.getTableColumns(this, SQLHelper.getFactory(model)));
+					lastColumnsUpdate = currentTimeMillis;
+					SQLHelper.updateColumns(this, columns, SQLHelper.getFactory(getSchema().getModel()));
 				} catch (SQLException e) {
 					LOGGER.log(Level.WARNING, "Can't read columns on table '"+ getName()+"'", e);
 				}
