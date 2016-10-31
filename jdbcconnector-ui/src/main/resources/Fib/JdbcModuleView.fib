@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Panel id="0" borderLeft="0" sizeAdjustment="OriginalSize" opaque="false" controllerClassName="org.openflexo.view.controller.FlexoFIBController" borderRight="0" border="empty" trackViewPortWidth="true" align="left" borderBottom="0" titleFont="Lucida Grande,0,13" borderTop="0" trackViewPortHeight="true" layout="border">
-  <Panel id="1" borderLeft="0" sizeAdjustment="OriginalSize" borderRight="0" border="titled" trackViewPortWidth="true" align="left" constraints="border(location=north)" borderBottom="0" borderTitle="Connection" titleFont="SansSerif,0,10" borderTop="0" trackViewPortHeight="true" layout="gridbag" name="northPanel">
-    <Label id="2" name="AddressLabel" localize="true" align="right" constraints="gridbag(anchor=center;fill=horizontal;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=north;padX=0;padY=0;weightX=0.2;weightY=0.0)" label="address" />
-    <TextField id="3" columns="7" name="TextField" data="data.address" constraints="gridbag(anchor=center;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=south;padX=0;padY=0;weightX=0.8;weightY=0.0)" />
+  <Panel id="1" borderLeft="0" sizeAdjustment="OriginalSize" borderRight="0" border="titled" trackViewPortWidth="true" align="left" constraints="border(location=north)" borderBottom="0" borderTitle="Connection" titleFont="SansSerif,0,10" borderTop="0" trackViewPortHeight="true" layout="border" name="northPanel">
+    <FIBReferencedComponent id="2" componentFile="JDBCConnectionProperties.fib" name="ReferencedComponent" data="data" constraints="border(anchor=center;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=center;padX=0;padY=0;weightX=0.0;weightY=0.0)" />
   </Panel>
-  <Panel id="4" borderLeft="0" sizeAdjustment="OriginalSize" borderRight="0" border="titled" trackViewPortWidth="true" align="left" constraints="border(location=center)" borderBottom="0" borderTitle="Tables" titleFont="SansSerif,0,10" borderTop="0" trackViewPortHeight="true" layout="border" name="centerPanel">
-    <Browser id="5" showFooter="true" showRootsHandle="true" root="data.schema" manageDynamicModel="true" height="100" selectionMode="DiscontiguousTreeSelection" width="100" constraints="border(location=center)" visibleRowCount="3" rowHeight="18" textSelectionColor="255,255,255" iteratorClassName="java.lang.Object" backgroundSelectionColor="9,80,208" backgroundNonSelectionColor="255,255,255" name="Browser" textNonSelectionColor="0,0,0" rootVisible="true" backgroundSecondarySelectionColor="178,215,255">
-      <BrowserElement id="6" label="&quot;[Schema]&quot;" imageIconResource="../Icons/jdbc-text.gif" dataClassName="org.openflexo.technologyadapter.jdbc.model.JDBCSchema" name="schema" isEditable="false">
-        <Children id="7" name="tables" data="schema.tables" />
+  <Panel id="3" borderLeft="0" sizeAdjustment="OriginalSize" borderRight="0" border="titled" trackViewPortWidth="true" align="left" constraints="border(location=center)" borderBottom="0" borderTitle="Tables" titleFont="SansSerif,0,10" borderTop="0" trackViewPortHeight="true" layout="border" name="centerPanel">
+    <Browser id="4" showFooter="true" showRootsHandle="true" root="data.schema" manageDynamicModel="true" height="100" selectionMode="DiscontiguousTreeSelection" width="100" constraints="border(location=center)" visibleRowCount="3" rowHeight="18" textSelectionColor="255,255,255" iteratorClassName="java.lang.Object" backgroundSelectionColor="9,80,208" backgroundNonSelectionColor="255,255,255" name="Browser" textNonSelectionColor="0,0,0" rootVisible="true" backgroundSecondarySelectionColor="178,215,255">
+      <BrowserElement id="5" label="&quot;[Schema]&quot;" imageIconResource="../Icons/jdbc-text.gif" dataClassName="org.openflexo.technologyadapter.jdbc.model.JDBCSchema" name="schema" isEditable="false">
+        <Children id="6" name="tables" data="schema.tables" />
       </BrowserElement>
-      <BrowserElement id="8" label="table.name" imageIconResource="../Icons/jdbc-table.png" dataClassName="org.openflexo.technologyadapter.jdbc.model.JDBCTable" name="table" isEditable="false">
-        <Children id="9" name="columns" data="table.columns" />
+      <BrowserElement id="7" label="table.name" imageIconResource="../Icons/jdbc-table.png" dataClassName="org.openflexo.technologyadapter.jdbc.model.JDBCTable" name="table" isEditable="false">
+        <Children id="8" name="columns" data="table.columns" />
       </BrowserElement>
-      <BrowserElement id="10" label="(((column.name + &quot;[&quot;) + column.type) + &quot;]&quot;)" imageIconResource="../Icons/jdbc-column.png" dataClassName="org.openflexo.technologyadapter.jdbc.model.JDBCColumn" name="column" isEditable="false" />
+      <BrowserElement id="9" label="(((column.name + &quot;[&quot;) + column.type) + &quot;]&quot;)" imageIconResource="../Icons/jdbc-column.png" dataClassName="org.openflexo.technologyadapter.jdbc.model.JDBCColumn" name="column" isEditable="false" />
     </Browser>
   </Panel>
-  <FIBVariable id="11" name="data" type="org.openflexo.technologyadapter.jdbc.model.JDBCConnection" />
-  <LocalizedDictionary id="12">
-    <Localized id="13" value="Address" lang="English" key="address" />
-    <Localized id="14" value="Address" lang="Dutch" key="address" />
-    <Localized id="15" value="address" lang="French" key="address" />
-    <Localized id="16" value="Connection" lang="English" key="Connection" />
-    <Localized id="17" value="Connection" lang="Dutch" key="Connection" />
-    <Localized id="18" value="Connection" lang="French" key="Connection" />
-    <Localized id="19" value="Tables" lang="English" key="Tables" />
-    <Localized id="20" value="Tables" lang="Dutch" key="Tables" />
-    <Localized id="21" value="Tables" lang="French" key="Tables" />
+  <FIBVariable id="10" name="data" type="org.openflexo.technologyadapter.jdbc.model.JDBCConnection" />
+  <LocalizedDictionary id="11">
+    <Localized id="12" value="Address" lang="English" key="address" />
+    <Localized id="13" value="Address" lang="Dutch" key="address" />
+    <Localized id="14" value="address" lang="French" key="address" />
+    <Localized id="15" value="Connection" lang="English" key="Connection" />
+    <Localized id="16" value="Connection" lang="Dutch" key="Connection" />
+    <Localized id="17" value="Connection" lang="French" key="Connection" />
+    <Localized id="18" value="Tables" lang="English" key="Tables" />
+    <Localized id="19" value="Tables" lang="Dutch" key="Tables" />
+    <Localized id="20" value="Tables" lang="French" key="Tables" />
   </LocalizedDictionary>
 </Panel>
