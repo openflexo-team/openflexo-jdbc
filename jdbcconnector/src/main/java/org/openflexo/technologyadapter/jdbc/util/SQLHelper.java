@@ -195,15 +195,19 @@ public class SQLHelper {
 		StringBuilder request = new StringBuilder("CREATE TABLE ");
 		request.append(sqlName(name));
 		request.append(" (");
-		int length = request.length();
 
-		for (String[] attribute : attributes) {
-			if (length < request.length()) request.append(", ");
+		if (attributes != null) {
+			int length = request.length();
+			for (String[] attribute : attributes) {
+				if (length < request.length())
+					request.append(", ");
 
-			int localLength = request.length();
-			for (String part : attribute) {
-				if (localLength < request.length()) request.append(" ");
-				request.append(sqlName(part));
+				int localLength = request.length();
+				for (String part : attribute) {
+					if (localLength < request.length())
+						request.append(" ");
+					request.append(sqlName(part));
+				}
 			}
 		}
 		request.append(")");
