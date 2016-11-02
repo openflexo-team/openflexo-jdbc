@@ -24,7 +24,7 @@ import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.rm.ResourceLocator;
 import org.openflexo.toolbox.ImageIconResource;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.util.logging.Logger;
 
 
@@ -34,6 +34,10 @@ public class JDBCIconLibrary {
 	public static final ImageIcon JDBC_TECHNOLOGY_BIG_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-text_big.gif"));
 	public static final ImageIcon JDBC_TECHNOLOGY_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-text.gif"));
 	public static final ImageIcon JDBC_FILE_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-text.gif"));
+
+	public static final ImageIcon JDBC_SCHEMA_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-text.gif"));
+	public static final ImageIcon JDBC_TABLE_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-table.png"));
+	public static final ImageIcon JDBC_COLUMN_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-column.png"));
 
 	public static ImageIcon iconForObject(Class<? extends TechnologyObject> objectClass) {
 		return JDBC_TECHNOLOGY_ICON;
