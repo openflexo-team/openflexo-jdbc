@@ -1,10 +1,9 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.factory.AccessibleProxyObject;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,7 +11,7 @@ import java.util.List;
  */
 @ModelEntity
 @ImplementationClass(JDBCResultSet.JDBCResultSetImpl.class)
-public interface JDBCResultSet {
+public interface JDBCResultSet extends FlexoObject {
 
 	void init(JDBCTable table, List<JDBCLine> lines);
 
@@ -20,7 +19,7 @@ public interface JDBCResultSet {
 
 	List<JDBCLine> getLines();
 
-	abstract class JDBCResultSetImpl implements JDBCResultSet, AccessibleProxyObject {
+	abstract class JDBCResultSetImpl extends FlexoObjectImpl implements JDBCResultSet {
 
 		private JDBCTable table;
 		private List<JDBCLine> lines;
@@ -32,31 +31,14 @@ public interface JDBCResultSet {
 		}
 
 		@Override
+		public JDBCTable getTable() {
+			return table;
+		}
+
+		@Override
 		public List<JDBCLine> getLines() {
 			return lines;
 		}
 	}
-
-	JDBCResultSet empty = new JDBCResultSet() {
-
-		@Override
-		public void init(JDBCTable table, List<JDBCLine> lines) {
-		}
-
-		@Override
-		public JDBCTable getTable() {
-			return null;
-		}
-
-		@Override
-		public List<JDBCLine> getLines() {
-			return Collections.emptyList();
-		}
-
-		@Override
-		public String toString() {
-			return "[Result] empty";
-		}
-	};
 
 }

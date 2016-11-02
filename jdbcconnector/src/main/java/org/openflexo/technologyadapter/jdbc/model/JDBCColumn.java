@@ -1,5 +1,6 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
@@ -9,7 +10,7 @@ import org.openflexo.model.annotations.Parameter;
  * JDBC connector column description
  */
 @ModelEntity
-public interface JDBCColumn {
+public interface JDBCColumn extends FlexoObject {
 
 	String TABLE = "table";
 	String PRIMARY_KEY = "primaryKey";

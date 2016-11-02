@@ -1,8 +1,8 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.factory.AccessibleProxyObject;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 @ModelEntity
 @ImplementationClass(JDBCLine.JDBCLineImpl.class)
-public interface JDBCLine {
+public interface JDBCLine extends FlexoObject {
 
 	void init(JDBCTable table, List<JDBCValue> values);
 
@@ -21,7 +21,7 @@ public interface JDBCLine {
 
 	JDBCValue getValue(JDBCColumn column);
 
-	abstract class JDBCLineImpl implements JDBCLine, AccessibleProxyObject {
+	abstract class JDBCLineImpl extends FlexoObjectImpl implements JDBCLine {
 
 		private JDBCTable table;
 		private List<JDBCValue> values;

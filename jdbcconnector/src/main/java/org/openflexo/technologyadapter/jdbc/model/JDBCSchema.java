@@ -1,5 +1,6 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -7,7 +8,6 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Remover;
-import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  */
 @ModelEntity
 @ImplementationClass(JDBCSchema.JDBCSchemaImpl.class)
-public interface JDBCSchema {
+public interface JDBCSchema extends FlexoObject {
 
 	String MODEL = "model";
 	String TABLES = "tables";
@@ -64,7 +64,7 @@ public interface JDBCSchema {
 	 */
 	boolean dropTable(JDBCTable table);
 
-	abstract class JDBCSchemaImpl implements AccessibleProxyObject, JDBCSchema {
+	abstract class JDBCSchemaImpl extends FlexoObjectImpl implements JDBCSchema {
 
 		private static final Logger LOGGER = Logger.getLogger(JDBCSchema.class.getPackage().getName());
 
@@ -96,8 +96,6 @@ public interface JDBCSchema {
 
 		@Override
 		public JDBCTable createTable(String tableName, String[] ... attributes) {
-			//if (!SQLHelper.isUpperCase(tableName)) return null;
-
 			try {
 				JDBCTable table = SQLHelper.createTable(this, SQLHelper.getFactory(getModel()), tableName, attributes);
 				addTable(table);

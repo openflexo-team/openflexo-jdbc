@@ -1,5 +1,6 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -7,13 +8,13 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Remover;
-import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 @ModelEntity
 @ImplementationClass(JDBCTable.JDBCTableImpl.class)
-public interface JDBCTable {
+public interface JDBCTable extends FlexoObject {
 
     String NAME = "name";
     String SCHEMA = "schema";
@@ -108,7 +109,7 @@ public interface JDBCTable {
 
 	boolean insert(JDBCLine line);
 
-	abstract class JDBCTableImpl implements AccessibleProxyObject, JDBCTable {
+	abstract class JDBCTableImpl extends FlexoObjectImpl implements JDBCTable {
 
 		private static final Logger LOGGER = Logger.getLogger(JDBCTable.class.getPackage().getName());
 
@@ -209,12 +210,14 @@ public interface JDBCTable {
 		@Override
 		public JDBCResultSet select(String where, String order, int limit, int offset) {
 			JDBCConnection model = this.getSchema().getModel();
+			ModelFactory factory = SQLHelper.getFactory(model);
 			try {
-				ModelFactory factory = SQLHelper.getFactory(model);
 				return SQLHelper.select(model, factory, this, where, order, limit, offset);
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
-				return JDBCResultSet.empty;
+				JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
+				result.init(this, Collections.<JDBCLine>emptyList());
+				return result;
 			}
 		}
 
