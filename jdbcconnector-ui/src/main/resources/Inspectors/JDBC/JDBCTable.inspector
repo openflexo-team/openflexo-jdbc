@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Inspector xmlns:p="http://www.openflexo.org/pamela/" id="0" p:modelEntity="org.openflexo.gina.utils.FIBInspector" borderLeft="0" sizeAdjustment="OriginalSize" controllerClassName="org.openflexo.inspector.FIBInspectorController" borderRight="0" border="empty" trackViewPortWidth="true" font="SansSerif,0,12" align="left" borderBottom="0" titleFont="SansSerif,0,12" borderTop="0" trackViewPortHeight="true" layout="border" name="Inspector">
+  <TabPanel id="1" name="Tab" constraints="border(location=center)">
+    <Tab id="2" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" borderLeft="0" sizeAdjustment="OriginalSize" border="empty" borderRight="0" trackViewPortWidth="true" index="0" font="SansSerif,0,11" align="left" borderBottom="0" titleFont="SansSerif,0,11" borderTop="0" trackViewPortHeight="true" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" useScrollBar="true" title="Basic" layout="gridbag" name="BasicTab">
+      <Label id="3" name="NameLabel" align="right" constraints="gridbag(anchor=center;fill=horizontal;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;padX=0;padY=0;weightX=0.0;weightY=0.0)" label="name" />
+      <TextField id="4" columns="7" name="NameTextField" data="data.name" constraints="gridbag(anchor=center;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;padX=0;padY=0;weightX=0.8;weightY=0.0)" readOnly="true" />
+      <Label id="5" name="ColumnLabel" align="right" constraints="gridbag(anchor=center;fill=horizontal;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;padX=0;padY=0;weightX=0.2;weightY=0.0)" label="columns" />
+      <List id="6" layoutOrientation="vertical" selectionMode="MultipleIntervalSelection" constraints="gridbag(anchor=center;fill=both;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;padX=0;padY=0;weightX=0.8;weightY=0.0)" visibleRowCount="3" format="object.name" showText="true" iteratorClassName="org.openflexo.technologyadapter.jdbc.model.JDBCColumn" showIcon="false" staticList="Item-1 ,Item-2 ,Item-3 " autoSelectFirstRow="true" name="ColumnList" list="data.columns" />
+    </Tab>
+    <Tab id="7" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" borderLeft="0" sizeAdjustment="OriginalSize" border="empty" borderRight="0" trackViewPortWidth="true" index="2" font="SansSerif,0,11" align="left" borderBottom="0" titleFont="SansSerif,0,11" borderTop="0" trackViewPortHeight="true" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" useScrollBar="true" title="Advanced" layout="twocols" name="AdvancedTab" />
+  </TabPanel>
+  <FIBVariable id="8" name="data" type="org.openflexo.technologyadapter.jdbc.model.JDBCTable" />
+  <LocalizedDictionary id="9" />
+</Inspector>
