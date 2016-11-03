@@ -1,6 +1,7 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
  */
 @ModelEntity
 @ImplementationClass(JDBCSchema.JDBCSchemaImpl.class)
-public interface JDBCSchema extends FlexoObject {
+public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnection> {
 
 	String MODEL = "model";
 	String TABLES = "tables";
@@ -75,7 +76,11 @@ public interface JDBCSchema extends FlexoObject {
 		public List<JDBCTable> getTables() {
 			List<JDBCTable> tables = (List<JDBCTable>) performSuperGetter(TABLES);
 			long currentTimeMillis = System.currentTimeMillis();
-			if (lastTableUpdate < currentTimeMillis - 200) {
+
+			// TODO adds to preferences
+			int tempo = 200;
+
+			if (lastTableUpdate < currentTimeMillis - tempo) {
 				try {
 					lastTableUpdate = currentTimeMillis;
 					SQLHelper.updateTables(this, tables, SQLHelper.getFactory(getModel()));
@@ -116,6 +121,11 @@ public interface JDBCSchema extends FlexoObject {
 				LOGGER.log(Level.WARNING, "Can't drop table "+ table.getName() +" on database '"+ getModel().getAddress() +"'", e);
 				return false;
 			}
+		}
+
+		@Override
+		public JDBCConnection getResourceData() {
+			return getModel();
 		}
 
 		@Override

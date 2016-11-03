@@ -1,5 +1,7 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
+import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Initializer;
@@ -16,7 +18,7 @@ import java.sql.SQLException;
  */
 @ModelEntity
 @ImplementationClass(JDBCValue.JDBCValueImpl.class)
-public interface JDBCValue {
+public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection> {
 
 	String LINE = "line";
 	String COLUMN = "column";
@@ -47,6 +49,11 @@ public interface JDBCValue {
 			} catch (SQLException e) {
 				return false;
 			}
+		}
+
+		@Override
+		public JDBCConnection getResourceData() {
+			return getColumn().getTable().getSchema().getModel();
 		}
 	}
 }

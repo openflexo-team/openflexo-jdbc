@@ -1,6 +1,7 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
  */
 @ModelEntity
 @ImplementationClass(JDBCTable.JDBCTableImpl.class)
-public interface JDBCTable extends FlexoObject {
+public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection> {
 
     String NAME = "name";
     String SCHEMA = "schema";
@@ -212,7 +213,7 @@ public interface JDBCTable extends FlexoObject {
 			JDBCConnection model = this.getSchema().getModel();
 			ModelFactory factory = SQLHelper.getFactory(model);
 			try {
-				return SQLHelper.select(model, factory, this, where, order, limit, offset);
+				return SQLHelper.select(factory, this, where, order, limit, offset);
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
 				JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
@@ -245,6 +246,11 @@ public interface JDBCTable extends FlexoObject {
 				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ model.getAddress() +"'", e);
 				return false;
 			}
+		}
+
+		@Override
+		public JDBCConnection getResourceData() {
+			return getSchema().getModel();
 		}
 
 		@Override

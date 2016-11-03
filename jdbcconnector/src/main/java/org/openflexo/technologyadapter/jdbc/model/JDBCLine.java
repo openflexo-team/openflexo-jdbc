@@ -1,6 +1,7 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 
@@ -11,7 +12,7 @@ import java.util.List;
  */
 @ModelEntity
 @ImplementationClass(JDBCLine.JDBCLineImpl.class)
-public interface JDBCLine extends FlexoObject {
+public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection> {
 
 	void init(JDBCTable table, List<JDBCValue> values);
 
@@ -48,6 +49,11 @@ public interface JDBCLine extends FlexoObject {
 				if (value.getColumn() == column) return value;
 			}
 			return null;
+		}
+
+		@Override
+		public JDBCConnection getResourceData() {
+			return getTable().getSchema().getModel();
 		}
 	}
 

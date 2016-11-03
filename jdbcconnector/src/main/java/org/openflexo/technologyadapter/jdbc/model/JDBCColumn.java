@@ -1,7 +1,9 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
@@ -10,7 +12,8 @@ import org.openflexo.model.annotations.Parameter;
  * JDBC connector column description
  */
 @ModelEntity
-public interface JDBCColumn extends FlexoObject {
+@ImplementationClass(JDBCColumn.JDBCColumnImpl.class)
+public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnection> {
 
 	String TABLE = "table";
 	String PRIMARY_KEY = "primaryKey";
@@ -31,4 +34,11 @@ public interface JDBCColumn extends FlexoObject {
 
 	@Getter(TYPE) String getType();
 
+	abstract class JDBCColumnImpl implements JDBCColumn {
+
+		@Override
+		public JDBCConnection getResourceData() {
+			return getTable().getSchema().getModel();
+		}
+	}
 }

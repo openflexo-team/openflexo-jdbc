@@ -58,7 +58,7 @@ public class SQLHelper {
 	 * @param factory the factory used to create the new tables if needed
 	 */
     public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final ModelFactory factory) throws SQLException {
-		Connection connection = schema.getModel().getConnection();
+		Connection connection = schema.getResourceData().getConnection();
 
 		// prepare case ignoring map to match tables
 		final Map<String, JDBCTable> sortedTables = new HashMap<>();
@@ -112,7 +112,7 @@ public class SQLHelper {
 	 * @param factory the factory used to create the new columns if needed
 	 */
 	public static void updateColumns(final JDBCTable table, List<JDBCColumn> columns, final ModelFactory factory) throws SQLException {
-		Connection connection = table.getSchema().getModel().getConnection();
+		Connection connection = table.getResourceData().getConnection();
 
 		// retrieves keys
 		final Set<String> keys = getKeys(table);
@@ -165,7 +165,7 @@ public class SQLHelper {
 	}
 
     private static Set<String> getKeys(final JDBCTable table) throws SQLException {
-		Connection connection = table.getSchema().getModel().getConnection();
+		Connection connection = table.getResourceData().getConnection();
 		return new QueryRunner().query(connection, SELECT_PRIMARY_KEY, new ResultSetHandler<Set<String>>() {
 			@Override
 			public Set<String> handle(ResultSet resultSet) throws SQLException {
@@ -179,7 +179,7 @@ public class SQLHelper {
 	}
 
     public static JDBCTable createTable(final JDBCSchema schema, final ModelFactory factory, final String tableName, String[] ... attributes) throws SQLException {
-		Connection connection = schema.getModel().getConnection();
+		Connection connection = schema.getResourceData().getConnection();
 		String request = createTableRequest(tableName, attributes);
 		return new QueryRunner().insert(connection, request, new ResultSetHandler<JDBCTable>() {
 			@Override
@@ -219,14 +219,14 @@ public class SQLHelper {
 	public static void dropTable(
     		final JDBCSchema schema, final String tableName
 	) throws SQLException {
-		Connection connection = schema.getModel().getConnection();
+		Connection connection = schema.getResourceData().getConnection();
 		new QueryRunner().update(connection, "DROP TABLE " + sqlName(tableName));
 	}
 
 	public static JDBCColumn createColumn(
 			final JDBCTable table, final ModelFactory factory, final String columnName, final String type, boolean key
 	) throws SQLException {
-		Connection connection = table.getSchema().getModel().getConnection();
+		Connection connection = table.getResourceData().getConnection();
 		String addColumn = createAddColumnRequest(table, columnName, type, key);
 		new QueryRunner().update(connection, addColumn);
 
@@ -250,7 +250,7 @@ public class SQLHelper {
 	}
 
 	public static void dropColumn(final JDBCTable table, final String columnName) throws SQLException {
-		Connection connection = table.getSchema().getModel().getConnection();
+		Connection connection = table.getResourceData().getConnection();
 		String dropColumn = "ALTER TABLE "+ sqlName(table.getName()) +" DROP COLUMN " + sqlName(columnName);
 		new QueryRunner().update(connection, dropColumn);
 	}
@@ -265,11 +265,12 @@ public class SQLHelper {
 	}
 
 	public static JDBCResultSet select(
-		JDBCConnection connection, final ModelFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
+		final ModelFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
 		throws SQLException
 	{
+		Connection connection = from.getResourceData().getConnection();
 		String request = createSelectRequest(from, where, orderBy, limit, offset);
-		return new QueryRunner().query(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
+		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
 			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
 				return constructJdbcResult(factory, resultSet, from);
@@ -301,7 +302,7 @@ public class SQLHelper {
 	}
 
 	public static JDBCResultSet insert(final JDBCLine line) throws SQLException {
-		final JDBCConnection connection = line.getTable().getSchema().getModel();
+		final JDBCConnection connection = line.getResourceData();
 		String request = createInsertRequest(line);
 		return new QueryRunner().insert(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
@@ -362,7 +363,7 @@ public class SQLHelper {
 	}
 
 	public static void update(JDBCValue value, String newValue) throws SQLException {
-		Connection connection = value.getLine().getTable().getSchema().getModel().getConnection();
+		Connection connection = value.getResourceData().getConnection();
 		String request = createUpdateRequest(value, newValue);
 		new QueryRunner().update(connection, request);
 	}
