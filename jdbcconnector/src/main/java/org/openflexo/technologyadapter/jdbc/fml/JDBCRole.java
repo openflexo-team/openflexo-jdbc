@@ -4,12 +4,13 @@ import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.rt.ActorReference;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstanceModelFactory;
+import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 
 /**
  * Abstract class for all JDBC Roles
  */
-public abstract class JDBCRole<T> extends FlexoRole.FlexoRoleImpl<T> implements FlexoRole<T> {
+public abstract class JDBCRole<T> extends FlexoRole.FlexoRoleImpl<T>implements FlexoRole<T> {
 
 	@Override
 	public FlexoRole.RoleCloningStrategy defaultCloningStrategy() {
@@ -36,4 +37,10 @@ public abstract class JDBCRole<T> extends FlexoRole.FlexoRoleImpl<T> implements 
 	}
 
 	public abstract Class<? extends JDBCActorReference<T>> getActorReferenceClass();
+
+	@Override
+	public Class<? extends TechnologyAdapter> getRoleTechnologyAdapterClass() {
+		return JDBCTechnologyAdapter.class;
+	}
+
 }
