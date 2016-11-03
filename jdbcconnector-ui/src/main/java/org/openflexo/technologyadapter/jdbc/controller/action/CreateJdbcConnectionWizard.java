@@ -76,6 +76,7 @@ public class CreateJdbcConnectionWizard extends FlexoWizard {
 
 	@Override
 	public Image getDefaultPageImage() {
+		// TODO change icon
 		return IconFactory.getImageIcon(FMLIconLibrary.FLEXO_CONCEPT_BIG_ICON, IconLibrary.NEW_32_32).getImage();
 	}
 
