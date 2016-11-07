@@ -47,7 +47,7 @@ import org.openflexo.gina.annotation.FIBPanel;
 import org.openflexo.icon.FMLIconLibrary;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
-import org.openflexo.technologyadapter.jdbc.model.action.CreateJdbcModel;
+import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCConnection;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
@@ -59,11 +59,11 @@ public class CreateJdbcConnectionWizard extends FlexoWizard {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CreateJdbcConnectionWizard.class.getPackage().getName());
 
-	private final CreateJdbcModel action;
+	private final CreateJDBCConnection action;
 
 	private final ConfigureJdbcConnection configureJdbcConnection;
 
-	public CreateJdbcConnectionWizard(CreateJdbcModel action, FlexoController controller) {
+	public CreateJdbcConnectionWizard(CreateJDBCConnection action, FlexoController controller) {
 		super(controller);
 		this.action = action;
 		addStep(configureJdbcConnection = new ConfigureJdbcConnection());
@@ -97,7 +97,7 @@ public class CreateJdbcConnectionWizard extends FlexoWizard {
 			return getController().getApplicationContext();
 		}
 
-		public CreateJdbcModel getAction() {
+		public CreateJDBCConnection getAction() {
 			return action;
 		}
 

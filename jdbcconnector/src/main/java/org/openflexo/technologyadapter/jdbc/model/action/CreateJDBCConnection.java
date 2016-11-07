@@ -58,19 +58,19 @@ import java.io.FileNotFoundException;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-public class CreateJdbcModel extends FlexoAction<CreateJdbcModel, RepositoryFolder, FlexoObject> {
+public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, RepositoryFolder, FlexoObject> {
 
-	private static final Logger logger = Logger.getLogger(CreateJdbcModel.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(CreateJDBCConnection.class.getPackage().getName());
 
-	public static FlexoActionType<CreateJdbcModel, RepositoryFolder, FlexoObject> actionType = new FlexoActionType<CreateJdbcModel, RepositoryFolder, FlexoObject>(
+	public static FlexoActionType<CreateJDBCConnection, RepositoryFolder, FlexoObject> actionType = new FlexoActionType<CreateJDBCConnection, RepositoryFolder, FlexoObject>(
 			"create_jdbc_model", FlexoActionType.newMenu, FlexoActionType.defaultGroup, FlexoActionType.ADD_ACTION_TYPE) {
 
 		/**
 		 * Factory method
 		 */
 		@Override
-		public CreateJdbcModel makeNewAction(RepositoryFolder focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
-			return new CreateJdbcModel(focusedObject, globalSelection, editor);
+		public CreateJDBCConnection makeNewAction(RepositoryFolder focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
+			return new CreateJDBCConnection(focusedObject, globalSelection, editor);
 		}
 
 		@Override
@@ -88,7 +88,7 @@ public class CreateJdbcModel extends FlexoAction<CreateJdbcModel, RepositoryFold
 	};
 
 	static {
-		FlexoObjectImpl.addActionForClass(CreateJdbcModel.actionType, RepositoryFolder.class);
+		FlexoObjectImpl.addActionForClass(CreateJDBCConnection.actionType, RepositoryFolder.class);
 	}
 
 	private String resourceName = "test.jdbc";
@@ -128,7 +128,7 @@ public class CreateJdbcModel extends FlexoAction<CreateJdbcModel, RepositoryFold
 		this.password = password;
 	}
 
-	CreateJdbcModel(RepositoryFolder focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
+	CreateJDBCConnection(RepositoryFolder focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 

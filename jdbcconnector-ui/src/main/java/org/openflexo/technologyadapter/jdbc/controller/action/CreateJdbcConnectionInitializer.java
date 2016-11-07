@@ -48,7 +48,7 @@ import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.gina.controller.FIBController;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
-import org.openflexo.technologyadapter.jdbc.model.action.CreateJdbcModel;
+import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCConnection;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
@@ -56,19 +56,19 @@ import javax.swing.*;
 import java.util.EventObject;
 import java.util.logging.Logger;
 
-public class CreateJdbcModelInitializer extends ActionInitializer<CreateJdbcModel, RepositoryFolder, FlexoObject> {
+public class CreateJdbcConnectionInitializer extends ActionInitializer<CreateJDBCConnection, RepositoryFolder, FlexoObject> {
 
 	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
 
-	public CreateJdbcModelInitializer(ControllerActionInitializer actionInitializer) {
-		super(CreateJdbcModel.actionType, actionInitializer);
+	public CreateJdbcConnectionInitializer(ControllerActionInitializer actionInitializer) {
+		super(CreateJDBCConnection.actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionInitializer<CreateJdbcModel> getDefaultInitializer() {
-		return new FlexoActionInitializer<CreateJdbcModel>() {
+	protected FlexoActionInitializer<CreateJDBCConnection> getDefaultInitializer() {
+		return new FlexoActionInitializer<CreateJDBCConnection>() {
 			@Override
-			public boolean run(EventObject e, CreateJdbcModel action) {
+			public boolean run(EventObject e, CreateJDBCConnection action) {
 				Wizard wizard = new CreateJdbcConnectionWizard(action, getController());
 				WizardDialog dialog = new WizardDialog(wizard, getController());
 				dialog.showDialog();
@@ -82,20 +82,20 @@ public class CreateJdbcModelInitializer extends ActionInitializer<CreateJdbcMode
 	}
 
 	@Override
-	protected FlexoActionFinalizer<CreateJdbcModel> getDefaultFinalizer() {
-		return new FlexoActionFinalizer<CreateJdbcModel>() {
+	protected FlexoActionFinalizer<CreateJDBCConnection> getDefaultFinalizer() {
+		return new FlexoActionFinalizer<CreateJDBCConnection>() {
 			@Override
-			public boolean run(EventObject e, CreateJdbcModel action) {
+			public boolean run(EventObject e, CreateJDBCConnection action) {
 				return true;
 			}
 		};
 	}
 
 	@Override
-	protected FlexoExceptionHandler<CreateJdbcModel> getDefaultExceptionHandler() {
-		return new FlexoExceptionHandler<CreateJdbcModel>() {
+	protected FlexoExceptionHandler<CreateJDBCConnection> getDefaultExceptionHandler() {
+		return new FlexoExceptionHandler<CreateJDBCConnection>() {
 			@Override
-			public boolean handleException(FlexoException exception, CreateJdbcModel action) {
+			public boolean handleException(FlexoException exception, CreateJDBCConnection action) {
 				return false;
 			}
 		};
