@@ -36,6 +36,8 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 	@Getter(VALUE)
 	String getValue();
 
+	int getIntValue();
+
 	@Setter(VALUE)
 	boolean setValue(String value);
 
@@ -48,6 +50,16 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 				return true;
 			} catch (SQLException e) {
 				return false;
+			}
+		}
+
+		@Override
+		public int getIntValue() {
+			String value = getValue();
+			try {
+				return Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				return 0;
 			}
 		}
 

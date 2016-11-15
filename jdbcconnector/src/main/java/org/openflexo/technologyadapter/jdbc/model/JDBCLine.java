@@ -20,6 +20,8 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 
 	List<JDBCValue> getValues();
 
+	JDBCValue getValue(String columnName);
+
 	JDBCValue getValue(JDBCColumn column);
 
 	abstract class JDBCLineImpl extends FlexoObjectImpl implements JDBCLine {
@@ -41,6 +43,13 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 		@Override
 		public List<JDBCValue> getValues() {
 			return values;
+		}
+
+		@Override
+		public JDBCValue getValue(String columnName) {
+			JDBCColumn column = getTable().getColumn(columnName);
+			if (column == null) return null;
+			return getValue(column);
 		}
 
 		@Override
