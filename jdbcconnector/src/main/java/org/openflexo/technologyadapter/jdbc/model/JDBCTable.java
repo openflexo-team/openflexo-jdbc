@@ -9,14 +9,11 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Remover;
-import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper.JoinType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,20 +79,6 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	 * @return true if grant is accepted
 	 */
 	boolean grant(String access, String user);
-
-	/**
-	 * Finds the line for the given keys
-	 * @param keys keys to find on line in the order of the keys in the table
-	 * @return the line if it can be found, null if it doesn't exist
-	 */
-	JDBCLine find(String ... keys);
-
-	/**
-	 * Finds the line for the given keys
-	 * @param keys keys to find on line in the order of the keys in the table
-	 * @return the line if it can be found, null if it doesn't exist
-	 */
-	JDBCLine find(List<String> keys);
 
 	/**
 	 * Selects all lines for the table.
@@ -184,7 +167,18 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	 */
 	JDBCResultSet selectWithJoin(JoinType joinType, JDBCTable join, String on, String where, String order, int limit, int offset);
 
-	boolean insert(String[] ... values);
+	/**
+	 * Insert one line into the table using a string array alternating column name and value.
+	 *
+	 * Examples:
+	 * <pre>
+	 *     table1.insert(new String[]{"ID", "1", "NAME", "toto1"})
+	 * </pre>
+	 *
+	 * @param values an array of strings where alternating the column name and the value for all values to insert.
+	 * @return true if the value was successfully inserted, false otherwise.
+	 */
+	boolean insert(String[] values);
 
 	boolean insert(JDBCLine line);
 
@@ -254,26 +248,9 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			}
 		}
 
-		@Override
-		public JDBCLine find(String ... keys) {
-			return find(Arrays.asList(keys));
-		}
-
-		@Override
-		public JDBCLine find(List<String> keys) {
-			StringBuilder where = new StringBuilder();
-			int index = 0;
-			for (JDBCColumn column : getColumns()) {
-				if (column.isPrimaryKey()) {
-					if (where.length() > 0) where.append(" AND ");
-					where.append(column.getName());
-					where.append("=");
-					where.append(SQLHelper.sqlValue(column.getType(), keys.get(index)));
-					index += 1;
-				}
-			}
-			JDBCResultSet resultSet = select(where.toString(), null, 1, 0);
-			return resultSet.getLines().isEmpty() ? null : resultSet.getLines().get(0);
+		public JDBCResultSet request(String requestKey) {
+			// TODO implement request from it's key
+			return null;
 		}
 
 		@Override
@@ -289,14 +266,12 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		@Override
 		public JDBCResultSet select(String where, String order, int limit, int offset) {
 			JDBCConnection model = this.getSchema().getModel();
-			ModelFactory factory = SQLHelper.getFactory(model);
+			JDBCFactory factory = SQLHelper.getFactory(model);
 			try {
 				return SQLHelper.select(factory, this, where, order, limit, offset);
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
-				JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
-				result.init(this, Collections.<JDBCLine>emptyList());
-				return result;
+				return factory.emptyResultSet(getResourceData());
 			}
 		}
 
@@ -329,40 +304,38 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		@Override
 		public JDBCResultSet selectWithJoin(JoinType joinType, JDBCTable join, String on, String where, String order, int limit, int offset) {
 			JDBCConnection model = this.getSchema().getModel();
-			ModelFactory factory = SQLHelper.getFactory(model);
+			JDBCFactory factory = SQLHelper.getFactory(model);
 			try {
 				return SQLHelper.select(factory, this, joinType, join, on, where, order, limit, offset);
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
-				JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
-				result.init(this, Collections.<JDBCLine>emptyList());
-				return result;
+				return factory.emptyResultSet(getResourceData());
 			}
 
 		}
 
 		@Override
-		public boolean insert(String[] ... values) {
-			ModelFactory factory = SQLHelper.getFactory(getSchema().getModel());
+		public boolean insert(String[] values) {
+			JDBCFactory factory = SQLHelper.getFactory(getSchema().getModel());
 			JDBCLine line = factory.newInstance(JDBCLine.class);
 			List<JDBCValue> jdbcValues = new ArrayList<>();
-			for (String[] value : values) {
+			for (int i = 0; i < values.length; i+=2) {
 				JDBCValue jdbcValue = factory.newInstance(JDBCValue.class);
-				jdbcValue.init(line, getColumn(value[0]), value[1]);
+				jdbcValue.init(line, getColumn(values[i]), values[i+1]);
 				jdbcValues.add(jdbcValue);
 			}
-			line.init(this, jdbcValues);
+			line.init(null, jdbcValues);
 			return insert(line);
 		}
 
 		@Override
 		public boolean insert(JDBCLine line) {
-			JDBCConnection model = getSchema().getModel();
+			JDBCSchema schema = getSchema();
 			try {
-				SQLHelper.insert(line);
+				SQLHelper.insert(line, this);
 				return true;
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ model.getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ schema.getModel().getAddress() +"'", e);
 				return false;
 			}
 		}

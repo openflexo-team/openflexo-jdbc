@@ -6,8 +6,10 @@ import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
+import org.openflexo.technologyadapter.jdbc.model.JDBCResultSetDescription;
 import org.openflexo.technologyadapter.jdbc.model.JDBCSchema;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
@@ -15,7 +17,6 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,13 +39,13 @@ public class SQLHelper {
 
 	public static final String SELECT_PRIMARY_KEY = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME=?";
 
-	public static ModelFactory getFactory(JDBCConnection model) {
+	public static JDBCFactory getFactory(JDBCConnection model) {
 		// Find the correct factory
 		if (model.getResource() instanceof JDBCResource) {
 			return ((JDBCResource) model.getResource()).getFactory();
 		} else {
 			try {
-				return new ModelFactory(JDBCConnection.class);
+				return new JDBCFactory();
 			} catch (ModelDefinitionException e) {
 				return null;
 			}
@@ -178,7 +179,7 @@ public class SQLHelper {
 		}, sqlName(table.getName()));
 	}
 
-    public static JDBCTable createTable(final JDBCSchema schema, final ModelFactory factory, final String tableName, String[] ... attributes) throws SQLException {
+    public static JDBCTable createTable(final JDBCSchema schema, final JDBCFactory factory, final String tableName, String[] ... attributes) throws SQLException {
 		Connection connection = schema.getResourceData().getConnection();
 		String request = createTableRequest(tableName, attributes);
 		return new QueryRunner().insert(connection, request, new ResultSetHandler<JDBCTable>() {
@@ -224,7 +225,7 @@ public class SQLHelper {
 	}
 
 	public static JDBCColumn createColumn(
-			final JDBCTable table, final ModelFactory factory, final String columnName, final String type, boolean key
+			final JDBCTable table, final JDBCFactory factory, final String columnName, final String type, boolean key
 	) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
 		String addColumn = createAddColumnRequest(table, columnName, type, key);
@@ -293,93 +294,109 @@ public class SQLHelper {
 	}
 
 	public static JDBCResultSet select(
-		final ModelFactory factory, final JDBCTable from,
+		final JDBCFactory factory, final JDBCTable from,
 		String where, String orderBy, int limit, int offset
 	)
 		throws SQLException
 	{
 		Connection connection = from.getResourceData().getConnection();
-		String request = createSelectRequest(from, JoinType.NoJoin, null, null, where, orderBy, limit, offset);
+		final JDBCResultSetDescription description = factory.makeResultSetDescription(
+				from.getResourceData(), from.getName(), JoinType.NoJoin, null, null, where, orderBy, limit, offset
+		);
+		String request = createSelectRequest(description);
 		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
 			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				return constructJdbcResult(factory, resultSet, from);
+				return factory.makeJDBCResult(description, resultSet, from.getSchema());
 			}
 		});
 	}
 
 	public static JDBCResultSet select(
-		final ModelFactory factory, final JDBCTable from,
+		final JDBCFactory factory, final JDBCTable from,
 		JoinType joinType, JDBCTable join, String on,
 		String where, String orderBy, int limit, int offset
 	)
 		throws SQLException
 	{
 		Connection connection = from.getResourceData().getConnection();
-		String request = createSelectRequest(from, joinType, join, on, where, orderBy, limit, offset);
+		final JDBCResultSetDescription description = factory.makeResultSetDescription(
+				from.getResourceData(), from.getName(), joinType, join.getName(), on, where, orderBy, limit, offset
+		);
+		String request = createSelectRequest(description);
 		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
 			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				return constructJdbcResult(factory, resultSet, from);
+				return factory.makeJDBCResult(description, resultSet, from.getSchema());
 			}
 		});
 	}
 
-	private static String createSelectRequest(
-		final JDBCTable from, JoinType joinType, JDBCTable join, String on,
-		String where, String orderBy, int limit, int offset
-	) {
+	public static JDBCResultSet select(final JDBCFactory factory, final JDBCResultSetDescription description) throws SQLException {
+		final Connection connection = description.getResourceData().getConnection();
+		String request = createSelectRequest(description);
+		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
+			@Override
+			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
+				return factory.makeJDBCResult(description, resultSet, description.getResourceData().getSchema());
+			}
+		});
+	}
+
+	private static String createSelectRequest(JDBCResultSetDescription description) {
 		StringBuilder result = new StringBuilder();
 		result.append("SELECT * FROM ");
-		result.append(from.getName());
-		if (joinType != null && joinType != JoinType.NoJoin && join != null) {
+		result.append(description.getFrom());
+		JoinType joinType = description.getJoinType();
+		if (joinType != null && joinType != JoinType.NoJoin && description.getJoin() != null) {
 			result.append(" ");
 			result.append(joinType);
 
 			result.append(" ");
-			result.append(join.getName());
+			result.append(description.getJoin());
 
-			if (on != null) {
+			if (description.getOn() != null) {
 				result.append(" ON ");
-				result.append(on);
+				result.append(description.getOffset());
 			}
 		}
 
-		if (where != null) {
+		if (description.getWhere() != null) {
 			result.append(" WHERE ");
-			result.append(where);
+			result.append(description.getWhere());
 		}
-		if (orderBy != null) {
+		if (description.getOrderBy() != null) {
 			result.append(" ORDER BY ");
-			result.append(orderBy);
+			result.append(description.getOrderBy());
 		}
-		if (limit > 0) {
+		if (description.getLimit() > 0) {
 			result.append(" LIMIT ");
-			result.append(limit);
+			result.append(description.getLimit());
 		}
-		if (offset > 0) {
+		if (description.getOffset() > 0) {
 			result.append(" OFFSET ");
-			result.append(offset);
+			result.append(description.getOffset());
 		}
 		return result.toString();
 	}
 
-	public static JDBCResultSet insert(final JDBCLine line) throws SQLException {
-		final JDBCConnection connection = line.getResourceData();
-		String request = createInsertRequest(line);
+	public static JDBCResultSet insert(final JDBCLine line, final JDBCTable table) throws SQLException {
+		final JDBCConnection connection = table.getResourceData();
+		String request = createInsertRequest(line, table);
 		return new QueryRunner().insert(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
 			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				ModelFactory factory = getFactory(connection);
-				return constructJdbcResult(factory, resultSet, line.getTable());
+				JDBCFactory factory = getFactory(connection);
+				// TODO check for request definition
+				return factory.makeJDBCResult(null, resultSet, table.getSchema());
 			}
 		});
 	}
 
-	private static String createInsertRequest(JDBCLine line) {
+	private static String createInsertRequest(JDBCLine line, JDBCTable table) {
 		StringBuilder result = new StringBuilder();
 		result.append("INSERT INTO ");
-		result.append(line.getTable().getName());
+		result.append(table.getName());
 		result.append(" (");
 		int length = result.length();
 		for (JDBCValue value : line.getValues()) {
@@ -394,35 +411,6 @@ public class SQLHelper {
 		}
 		result.append(")");
 		return result.toString();
-	}
-
-	/** Create JDBCResultSet from a ResultSet */
-	private static JDBCResultSet constructJdbcResult(ModelFactory factory, ResultSet resultSet, JDBCTable from) throws SQLException {
-		ResultSetMetaData metaData = resultSet.getMetaData();
-		// searches for columns
-		int columnCount = metaData.getColumnCount();
-		JDBCColumn[] columns = new JDBCColumn[columnCount];
-		for (int i = 1; i <= columnCount; i++) {
-			columns[i-1] = from.getColumn(metaData.getColumnName(i));
-		}
-
-		List<JDBCLine> lines = new ArrayList<>();
-		while (resultSet.next()) {
-			JDBCLine line = factory.newInstance(JDBCLine.class);
-			List<JDBCValue> values = new ArrayList<>();
-			for (int i = 1; i <= columnCount; i++) {
-				JDBCValue value = factory.newInstance(JDBCValue.class);
-				value.init(line, columns[i-1], resultSet.getString(i));
-				values.add(value);
-			}
-			line.init(from, values);
-			lines.add(line);
-
-		}
-
-		JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
-		result.init(from, lines);
-		return result;
 	}
 
 	public static void update(JDBCValue value, String newValue) throws SQLException {
@@ -445,13 +433,14 @@ public class SQLHelper {
 		result.append(" WHERE ");
 		int length = result.length();
 		JDBCLine line = value.getLine();
-		for (JDBCColumn whereColumn : line.getTable().getColumns()) {
+		for (JDBCValue otherValue: line.getValues()) {
+			JDBCColumn whereColumn = otherValue.getColumn();
 			if (whereColumn.isPrimaryKey()) {
 				if (length < result.length()) result.append(" AND ");
 
 				result.append(whereColumn.getName());
 				result.append( " = ");
-				result.append(sqlValue(whereColumn.getType(), line.getValue(whereColumn).getValue()));
+				result.append(sqlValue(whereColumn.getType(), value.getValue()));
 			}
 		}
 		return result.toString();
@@ -470,4 +459,5 @@ public class SQLHelper {
 		type = type.toUpperCase();
 		return type.startsWith("CHAR") || type.startsWith("VARCHAR") || type.startsWith("CLOB");
 	}
+
 }

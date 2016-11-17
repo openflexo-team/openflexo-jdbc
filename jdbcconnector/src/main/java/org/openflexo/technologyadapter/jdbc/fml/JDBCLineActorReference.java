@@ -10,7 +10,8 @@ import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
-import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
+import org.openflexo.technologyadapter.jdbc.model.JDBCResultSetDescription;
 import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
 
 import java.util.ArrayList;
@@ -25,15 +26,15 @@ import java.util.Map;
 @ImplementationClass(JDBCLineActorReference.JDBCLineActorReferenceImpl.class)
 public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 
-	String TABLE_ID = "tableId";
+	String RESULTSET_DESCRIPTION = "resultsetDescription";
 
 	String KEYS = "keys";
 
-	@Getter(TABLE_ID) @XMLAttribute
-	String getTableId();
+	@Getter(RESULTSET_DESCRIPTION) @XMLAttribute
+	JDBCResultSetDescription getResultSetDescription();
 
-	@Setter(TABLE_ID)
-	void setTableId(String newId);
+	@Setter(RESULTSET_DESCRIPTION)
+	void setResultSetDescription(JDBCResultSetDescription resultRestDescription);
 
 	@Getter(value=KEYS, cardinality = Getter.Cardinality.LIST) @XMLAttribute
 	List<String> getKeys();
@@ -50,9 +51,9 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 		private Map<String, String> keys;
 
 		@Override
-		public String getTableId() {
-			if (line != null) return line.getTable().getName();
-			return (String) performSuperGetter(TABLE_ID);
+		public JDBCResultSetDescription getResultSetDescription() {
+			if (line != null) return line.getResultSet().getResultSetDescription();
+			return (JDBCResultSetDescription) performSuperGetter(RESULTSET_DESCRIPTION);
 		}
 
 		@Override
@@ -72,9 +73,10 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 		@Override
 		public JDBCLine getModellingElement() {
 			if (line == null) {
-				String tableId = getTableId();
-				JDBCTable table = ((JDBCConnection) getModelSlotInstance().getAccessedResourceData()).getSchema().getTable(tableId);
-				line = table.find(getKeys());
+				JDBCResultSetDescription description= getResultSetDescription();
+				JDBCConnection connection = (JDBCConnection) getModelSlotInstance().getAccessedResourceData();
+				JDBCResultSet resultSet = connection.select(description);
+				line = resultSet.find(getKeys());
 			}
 			return line;
 		}

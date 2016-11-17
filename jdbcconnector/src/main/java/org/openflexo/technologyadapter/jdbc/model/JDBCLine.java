@@ -14,29 +14,29 @@ import java.util.List;
 @ImplementationClass(JDBCLine.JDBCLineImpl.class)
 public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection> {
 
-	void init(JDBCTable table, List<JDBCValue> values);
+	void init(JDBCResultSet resultSet, List<JDBCValue> values);
 
-	JDBCTable getTable();
+	JDBCResultSet getResultSet();
 
 	List<JDBCValue> getValues();
 
-	JDBCValue getValue(String columnName);
+	JDBCValue getValue(String tableName, String columnName);
 
 	JDBCValue getValue(JDBCColumn column);
 
 	abstract class JDBCLineImpl extends FlexoObjectImpl implements JDBCLine {
 
-		private JDBCTable table;
+		private JDBCResultSet table;
 		private List<JDBCValue> values;
 
 		@Override
-		public void init(JDBCTable table, List<JDBCValue> values) {
+		public void init(JDBCResultSet table, List<JDBCValue> values) {
 			this.table = table;
 			this.values = values;
 		}
 
 		@Override
-		public JDBCTable getTable() {
+		public JDBCResultSet getResultSet() {
 			return table;
 		}
 
@@ -46,8 +46,10 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 		}
 
 		@Override
-		public JDBCValue getValue(String columnName) {
-			JDBCColumn column = getTable().getColumn(columnName);
+		public JDBCValue getValue(String tableName, String columnName) {
+			JDBCTable table = getResourceData().getSchema().getTable(tableName);
+			if (table == null) return null;
+			JDBCColumn column = table.getColumn(columnName);
 			if (column == null) return null;
 			return getValue(column);
 		}
@@ -62,7 +64,7 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 
 		@Override
 		public JDBCConnection getResourceData() {
-			return getTable().getSchema().getModel();
+			return getResultSet().getResourceData();
 		}
 	}
 

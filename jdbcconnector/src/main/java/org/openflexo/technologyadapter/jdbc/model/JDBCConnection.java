@@ -34,13 +34,13 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ModelEntity
@@ -48,7 +48,8 @@ import java.util.logging.Logger;
 @XMLElement
 @Imports({
 	@Import(JDBCSchema.class), @Import(JDBCTable.class), @Import(JDBCColumn.class),
-	@Import(JDBCResultSet.class), @Import(JDBCLine.class), @Import(JDBCValue.class)
+	@Import(JDBCResultSet.class), @Import(JDBCLine.class), @Import(JDBCValue.class),
+	@Import(JDBCResultSetDescription.class)
 })
 public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCConnection> {
 
@@ -82,6 +83,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
     @Getter(value = CONNECTION, ignoreType = true)
     Connection getConnection();
 
+	JDBCResultSet select(JDBCResultSetDescription description);
     /**
 	 * Abstract JDBCConnection implementation using Pamela.
 	 *
@@ -135,7 +137,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 		@Override
 		public JDBCSchema getSchema()  {
 			if (schema == null) {
-				ModelFactory factory = SQLHelper.getFactory(this);
+				JDBCFactory factory = SQLHelper.getFactory(this);
 				schema = factory.newInstance(JDBCSchema.class);
 				schema.init(this);
 				getPropertyChangeSupport().firePropertyChange(SCHEMA, null, schema);
@@ -154,6 +156,18 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 				}
 			}
 			return connection;
+		}
+
+		@Override
+		public JDBCResultSet select(JDBCResultSetDescription description) {
+			JDBCConnection model = this.getSchema().getModel();
+			JDBCFactory factory = SQLHelper.getFactory(model);
+			try {
+				return SQLHelper.select(factory, description);
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't select from '"+ description.getFrom() +"' on '"+ model.getAddress() +"'", e);
+				return factory.emptyResultSet(this);
+			}
 		}
 	}
 }

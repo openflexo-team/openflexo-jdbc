@@ -12,6 +12,8 @@ import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A value inside a JDBCLine
@@ -23,6 +25,8 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 	String LINE = "line";
 	String COLUMN = "column";
 	String VALUE = "value";
+
+	// TODO add **readonly** attribute
 
 	@Initializer
 	void init(@Parameter(LINE) JDBCLine line, @Parameter(COLUMN) JDBCColumn column, @Parameter(VALUE) String value);
@@ -42,6 +46,8 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 	boolean setValue(String value);
 
 	abstract class JDBCValueImpl implements JDBCValue, AccessibleProxyObject {
+		private static final Logger LOGGER = Logger.getLogger(JDBCTable.class.getPackage().getName());
+
 		@Override
 		public boolean setValue(String value) {
 			try {
@@ -49,6 +55,7 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 				performSuperSetter(VALUE, value);
 				return true;
 			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't update value on column '"+ getColumn().getName() + "." + getColumn().getTable().getName()+"'", e);
 				return false;
 			}
 		}
@@ -65,7 +72,7 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 
 		@Override
 		public JDBCConnection getResourceData() {
-			return getColumn().getTable().getSchema().getModel();
+			return getLine().getResourceData();
 		}
 	}
 }

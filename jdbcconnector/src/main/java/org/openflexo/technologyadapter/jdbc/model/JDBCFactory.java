@@ -44,11 +44,18 @@ import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
+import org.openflexo.technologyadapter.jdbc.util.SQLHelper.JoinType;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * one JDBFa
+ * one JDBCFactory
  * 
  * @author charlie
  * 
@@ -58,6 +65,10 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 	private static final Logger logger = Logger.getLogger(JDBCFactory.class.getPackage().getName());
 
 	private final JDBCResource resource;
+
+	public JDBCFactory() throws ModelDefinitionException {
+		this(null, null);
+	}
 
 	public JDBCFactory(JDBCResource resource, EditingContext editingContext) throws ModelDefinitionException {
 		super(JDBCConnection.class);
@@ -89,13 +100,65 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 		return returned;
 	}
 
+	public JDBCResultSet emptyResultSet(JDBCConnection connection) {
+		JDBCResultSet result = newInstance(JDBCResultSet.class);
+		result.init(connection, null, Collections.<JDBCLine>emptyList());
+		return result;
+	}
+
+	private JDBCColumn findColumn(int index, ResultSetMetaData metaData, JDBCSchema schema) throws SQLException {
+		String tableName = metaData.getTableName(index);
+		String columnName = metaData.getColumnName(index);
+		return schema.getTable(tableName).getColumn(columnName);
+	}
+
+	/** Create JDBCResultSet from a ResultSet */
+	public JDBCResultSet makeJDBCResult(JDBCResultSetDescription description, ResultSet resultSet, JDBCSchema schema) throws
+			SQLException {
+		JDBCResultSet result = newInstance(JDBCResultSet.class);
+
+		ResultSetMetaData metaData = resultSet.getMetaData();
+		// searches for columns
+		int columnCount = metaData.getColumnCount();
+		JDBCColumn[] columns = new JDBCColumn[columnCount];
+		for (int i = 1; i <= columnCount; i++) {
+			columns[i-1] = findColumn(i, metaData, schema);
+		}
+
+		List<JDBCLine> lines = new ArrayList<>();
+		while (resultSet.next()) {
+			JDBCLine line = newInstance(JDBCLine.class);
+			List<JDBCValue> values = new ArrayList<>();
+			for (int i = 1; i <= columnCount; i++) {
+				JDBCValue value = newInstance(JDBCValue.class);
+				value.init(line, columns[i-1], resultSet.getString(i));
+				values.add(value);
+			}
+			line.init(result, values);
+			lines.add(line);
+
+		}
+
+		result.init(schema.getModel(), description, lines);
+		return result;
+	}
+
+	public JDBCResultSetDescription makeResultSetDescription(
+			JDBCConnection connection,
+			String from, JoinType joinType, String join, String on,
+			String where, String orderBy, int limit, int offset
+	) {
+		JDBCResultSetDescription description = newInstance(JDBCResultSetDescription.class);
+		description.init(connection, from, joinType, join, on, where, orderBy, limit, offset);
+		return description;
+	}
+
 	@Override
 	public void startDeserializing() {
-		System.out.println("[JDBC] start deserializer");
 	}
 
 	@Override
 	public void stopDeserializing() {
-		System.out.println("[JDBC] stop deserializer");
+
 	}
 }
