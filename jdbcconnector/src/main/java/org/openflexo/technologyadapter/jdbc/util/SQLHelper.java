@@ -440,7 +440,7 @@ public class SQLHelper {
 
 				result.append(whereColumn.getName());
 				result.append( " = ");
-				result.append(sqlValue(whereColumn.getType(), value.getValue()));
+				result.append(sqlValue(whereColumn.getType(), otherValue.getValue()));
 			}
 		}
 		return result.toString();

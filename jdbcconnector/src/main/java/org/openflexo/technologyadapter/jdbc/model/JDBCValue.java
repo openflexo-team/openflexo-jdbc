@@ -55,7 +55,7 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 				performSuperSetter(VALUE, value);
 				return true;
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't update value on column '"+ getColumn().getName() + "." + getColumn().getTable().getName()+"'", e);
+				LOGGER.log(Level.WARNING, "Can't update value on column '"+ getColumn().getTable().getName() + "." + getColumn().getName()+"'", e);
 				return false;
 			}
 		}
