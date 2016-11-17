@@ -264,12 +264,42 @@ public class SQLHelper {
 		return name.toUpperCase();
 	}
 
+	public enum JoinType {
+		NoJoin, InnerJoin, CrossJoin, LeftJoin, RightJoin, FullJoin, SelfJoin, NaturalJoin, UnionJoin;
+
+		@Override
+		public String toString() {
+			switch (this) {
+				case InnerJoin:
+					return "INNER JOIN";
+				case CrossJoin:
+					return "CROSS JOIN";
+				case LeftJoin:
+					return "LEFT JOIN";
+				case RightJoin:
+					return "RIGHT JOIN";
+				case FullJoin:
+					return "FULL JOIN";
+				case SelfJoin:
+					return "SELF JOIN";
+				case NaturalJoin:
+					return "NATURAL JOIN";
+				case UnionJoin:
+					return "UNION JOIN";
+				default:
+					return "";
+			}
+		}
+	}
+
 	public static JDBCResultSet select(
-		final ModelFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
+		final ModelFactory factory, final JDBCTable from,
+		String where, String orderBy, int limit, int offset
+	)
 		throws SQLException
 	{
 		Connection connection = from.getResourceData().getConnection();
-		String request = createSelectRequest(from, where, orderBy, limit, offset);
+		String request = createSelectRequest(from, JoinType.NoJoin, null, null, where, orderBy, limit, offset);
 		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
 			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
@@ -278,10 +308,43 @@ public class SQLHelper {
 		});
 	}
 
-	private static String createSelectRequest(final JDBCTable from, String where, String orderBy, int limit, int offset) {
+	public static JDBCResultSet select(
+		final ModelFactory factory, final JDBCTable from,
+		JoinType joinType, JDBCTable join, String on,
+		String where, String orderBy, int limit, int offset
+	)
+		throws SQLException
+	{
+		Connection connection = from.getResourceData().getConnection();
+		String request = createSelectRequest(from, joinType, join, on, where, orderBy, limit, offset);
+		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
+			@Override
+			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
+				return constructJdbcResult(factory, resultSet, from);
+			}
+		});
+	}
+
+	private static String createSelectRequest(
+		final JDBCTable from, JoinType joinType, JDBCTable join, String on,
+		String where, String orderBy, int limit, int offset
+	) {
 		StringBuilder result = new StringBuilder();
 		result.append("SELECT * FROM ");
 		result.append(from.getName());
+		if (joinType != null && joinType != JoinType.NoJoin && join != null) {
+			result.append(" ");
+			result.append(joinType);
+
+			result.append(" ");
+			result.append(join.getName());
+
+			if (on != null) {
+				result.append(" ON ");
+				result.append(on);
+			}
+		}
+
 		if (where != null) {
 			result.append(" WHERE ");
 			result.append(where);

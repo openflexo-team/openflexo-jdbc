@@ -11,6 +11,7 @@ import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Remover;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
+import org.openflexo.technologyadapter.jdbc.util.SQLHelper.JoinType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -102,9 +103,86 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	 */
 	JDBCResultSet selectAll();
 
+	/**
+	 * Selects line in the table that matches the where close.
+	 * @param where a SQL where close for the select query
+	 * @return the {@link JDBCResultSet} for this request
+	 */
 	JDBCResultSet select(String where);
 
+	/**
+	 * Select line in the table that matches the where close in the given order and limited in size.
+	 * @param where a SQL where close for the select query
+	 * @param order a SQL order close for the select query
+	 * @param limit the limit of result lines
+	 * @param offset the offset to start result lines
+	 * @return the {@link JDBCResultSet} for this request
+	 */
 	JDBCResultSet select(String where, String order, int limit, int offset);
+
+	/**
+	 * Select all lines with join in the table.
+	 * @param joinType type of join.
+	 * @param thisOn column for this table to join on
+	 * @param otherOn column for another table to join on
+	 * @return the {@link JDBCResultSet} for this request
+	 */
+	JDBCResultSet selectAllWithJoin(JoinType joinType, JDBCColumn thisOn, JDBCColumn otherOn);
+
+	/**
+	 * Select lines with join in the table that matches the where close.
+	 * @param joinType type of join.
+	 * @param thisOn column for this table to join on
+	 * @param otherOn column for another table to join on
+	 * @param where a SQL where close for the select query
+	 * @return the {@link JDBCResultSet} for this request
+	 */
+	JDBCResultSet selectWithJoin(JoinType joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where);
+
+	/**
+	 * Select line with join in the table that matches the where close in the given order and limited in size.
+	 * @param joinType type of join.
+	 * @param thisOn column for this table to join on
+	 * @param otherOn column for another table to join on
+	 * @param where a SQL where close for the select query
+	 * @param order a SQL order close for the select query
+	 * @param limit the limit of result lines
+	 * @param offset the offset to start result lines
+	 * @return the {@link JDBCResultSet} for this request
+	 */
+	JDBCResultSet selectWithJoin(JoinType joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where, String order, int limit, int offset);
+
+	/**
+	 * Select all line with join in the table.
+	 * @param joinType type of join.
+	 * @param join table to join with.
+	 * @param on a SQL on close for the select query
+	 * @return the {@link JDBCResultSet} for this request
+	 */
+	JDBCResultSet selectAllWithJoin(JoinType joinType, JDBCTable join, String on);
+
+	/**
+	 * Select line with join in the table that matches the where close.
+	 * @param joinType type of join.
+	 * @param join table to join with.
+	 * @param on a SQL on close for the select query
+	 * @param where a SQL where close for the select query
+	 * @return the {@link JDBCResultSet} for this request
+	 */
+	JDBCResultSet selectWithJoin(JoinType joinType, JDBCTable join, String on, String where);
+
+	/**
+	 * Select line with join in the table that matches the where close in the given order and limited in size.
+	 * @param joinType type of join.
+	 * @param join table to join with.
+	 * @param on a SQL on close for the select query
+	 * @param where a SQL where close for the select query
+	 * @param order a SQL order close for the select query
+	 * @param limit the limit of result lines
+	 * @param offset the offset to start result lines
+	 * @return the {@link JDBCResultSet} for this request
+	 */
+	JDBCResultSet selectWithJoin(JoinType joinType, JDBCTable join, String on, String where, String order, int limit, int offset);
 
 	boolean insert(String[] ... values);
 
@@ -220,6 +298,47 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 				result.init(this, Collections.<JDBCLine>emptyList());
 				return result;
 			}
+		}
+
+		@Override
+		public JDBCResultSet selectAllWithJoin(JoinType joinType, JDBCColumn thisOn, JDBCColumn otherOn) {
+			return selectWithJoin(joinType, thisOn, otherOn, null, null, -1, -1);
+		}
+
+		@Override
+		public JDBCResultSet selectWithJoin(JoinType joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where) {
+			return selectWithJoin(joinType, thisOn, otherOn, where, null, -1, -1);
+		}
+
+		@Override
+		public JDBCResultSet selectWithJoin(JoinType joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where, String order, int limit, int offset) {
+			String on = thisOn.getTable().getName() + "." + thisOn.getName() + " = " + otherOn.getTable().getName() + "." + otherOn.getName();
+			return selectWithJoin(joinType, otherOn.getTable(), on, where, order, limit, offset);
+		}
+
+		@Override
+		public JDBCResultSet selectAllWithJoin(JoinType joinType, JDBCTable join, String on) {
+			return selectWithJoin(joinType, join, on, null, null, -1, -1);
+		}
+
+		@Override
+		public JDBCResultSet selectWithJoin(JoinType joinType, JDBCTable join, String on, String where) {
+			return selectWithJoin(joinType, join, on, where, null, -1, -1);
+		}
+
+		@Override
+		public JDBCResultSet selectWithJoin(JoinType joinType, JDBCTable join, String on, String where, String order, int limit, int offset) {
+			JDBCConnection model = this.getSchema().getModel();
+			ModelFactory factory = SQLHelper.getFactory(model);
+			try {
+				return SQLHelper.select(factory, this, joinType, join, on, where, order, limit, offset);
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
+				JDBCResultSet result = factory.newInstance(JDBCResultSet.class);
+				result.init(this, Collections.<JDBCLine>emptyList());
+				return result;
+			}
+
 		}
 
 		@Override
