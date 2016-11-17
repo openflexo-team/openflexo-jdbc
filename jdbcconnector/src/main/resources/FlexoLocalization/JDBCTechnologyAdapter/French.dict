@@ -1,2 +1,3 @@
 configure_jdbc_connection=configure_jdbc_connection
+connection=connection
 no_connection_address_defined=no_connection_address_defined
