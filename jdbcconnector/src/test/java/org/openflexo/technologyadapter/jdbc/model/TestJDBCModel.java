@@ -101,7 +101,6 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.jdbc"))) {
 			JDBCConnection result = (JDBCConnection) factory.deserialize(stream);
 			assertNotNull(result);
-			JDBCSchema schema = result.getSchema();
 		}
     }
 
@@ -218,12 +217,11 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		t2.insert(new String[]{"ID", "10", "C1", "value10", "C2", "string10", "OTHER_ID", "2"});
 
 		JDBCResultSet resultSet = t1.selectAllWithJoin(JoinType.InnerJoin, t1.getColumn("id"), t2.getColumn("other_id"));
-		for (JDBCLine line : resultSet.getLines()) {
-			System.out.print("- ");
-			for (JDBCValue value : line.getValues()) {
-				System.out.print("[" + value.getColumn().getTable().getName() + "." + value.getColumn().getName() + "] " + value.getValue() + ", ");
-			}
-			System.out.println();
-		}
+		assertNotNull(resultSet);
+		assertEquals(10, resultSet.getLines().size());
+
+		resultSet = t1.selectWithJoin(JoinType.InnerJoin, t1.getColumn("id"), t2.getColumn("other_id"), "t1.id = 1");
+		assertNotNull(resultSet);
+		assertEquals(5, resultSet.getLines().size());
 	}
 }
