@@ -66,6 +66,16 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 		public JDBCConnection getResourceData() {
 			return getResultSet().getResourceData();
 		}
+
+		@Override
+		public String toString() {
+			StringBuilder string = new StringBuilder();
+			for (JDBCValue value : getValues()) {
+				if (string.length() > 0) string.append(", ");
+				string.append(value);
+			}
+			return string.toString();
+		}
 	}
 
 }

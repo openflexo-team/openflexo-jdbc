@@ -74,5 +74,22 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 		public JDBCConnection getResourceData() {
 			return getLine().getResourceData();
 		}
+
+		@Override
+		public String toString() {
+			StringBuilder columnDescription = new StringBuilder();
+			JDBCColumn column = getColumn();
+			if (column != null) {
+				JDBCTable table = column.getTable();
+				if (table != null) {
+					columnDescription.append(table.getName());
+					columnDescription.append(".");
+				}
+				columnDescription.append(column.getName());
+			} else {
+				columnDescription.append("none");
+			}
+			return "[" + columnDescription + "] " + getValue();
+		}
 	}
 }
