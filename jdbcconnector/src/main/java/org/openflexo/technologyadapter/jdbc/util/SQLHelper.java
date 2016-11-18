@@ -357,7 +357,7 @@ public class SQLHelper {
 
 			if (description.getOn() != null) {
 				result.append(" ON ");
-				result.append(description.getOffset());
+				result.append(description.getOn());
 			}
 		}
 
