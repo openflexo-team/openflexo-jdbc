@@ -94,35 +94,14 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		return connection;
 	}
 
-	// TODO check what's happening
-	// @Test
-    public void testTables1() throws Exception {
+	@Test
+    public void testLoad() throws Exception {
 
 		JDBCFactory factory = new JDBCFactory(null, null);
 		try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.jdbc"))) {
 			JDBCConnection result = (JDBCConnection) factory.deserialize(stream);
+			assertNotNull(result);
 			JDBCSchema schema = result.getSchema();
-
-			assertEquals(0, schema.getTables().size());
-
-			String tableName1 = "test1";
-			assertNotNull(createTable1(tableName1, schema));
-			assertEquals(1, schema.getTables().size());
-
-
-			JDBCTable table = schema.getTable(tableName1);
-			assertEquals(2, table.getColumns().size());
-			JDBCColumn column = table.getColumn("id");
-			assertNotNull(column);
-			assertEquals("ID", column.getName());
-			assertTrue(column.isPrimaryKey());
-
-
-			String tableName2 = "TEST2";
-			assertNotNull(createTable2(tableName2, schema));
-			assertEquals(2, schema.getTables().size());
-			assertEquals(5, schema.getTable(tableName2).getColumns().size());
-
 		}
     }
 
