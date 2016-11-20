@@ -1,6 +1,7 @@
 package org.openflexo.technologyadapter.jdbc.fml;
 
 import org.openflexo.model.annotations.Adder;
+import org.openflexo.model.annotations.Embedded;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
@@ -16,7 +17,6 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Actor reference for a Table
@@ -36,7 +36,7 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 	@Setter(RESULTSET_DESCRIPTION)
 	void setResultSetDescription(JDBCResultSetDescription resultRestDescription);
 
-	@Getter(value=KEYS, cardinality = Getter.Cardinality.LIST) @XMLAttribute
+	@Getter(value=KEYS, cardinality = Getter.Cardinality.LIST) @Embedded
 	List<String> getKeys();
 
 	@Adder(KEYS)
@@ -48,7 +48,6 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 	abstract class JDBCLineActorReferenceImpl extends JDBCActorReferenceImpl<JDBCLine> implements JDBCLineActorReference {
 
 		private JDBCLine line;
-		private Map<String, String> keys;
 
 		@Override
 		public JDBCResultSetDescription getResultSetDescription() {

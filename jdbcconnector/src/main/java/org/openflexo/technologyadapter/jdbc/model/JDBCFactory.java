@@ -44,7 +44,6 @@ import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
-import org.openflexo.technologyadapter.jdbc.util.SQLHelper.JoinType;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -145,7 +144,7 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 
 	public JDBCResultSetDescription makeResultSetDescription(
 			JDBCConnection connection,
-			String from, JoinType joinType, String join, String on,
+			String from, String joinType, String join, String on,
 			String where, String orderBy, int limit, int offset
 	) {
 		JDBCResultSetDescription description = newInstance(JDBCResultSetDescription.class);

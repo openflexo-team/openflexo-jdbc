@@ -301,7 +301,7 @@ public class SQLHelper {
 	{
 		Connection connection = from.getResourceData().getConnection();
 		final JDBCResultSetDescription description = factory.makeResultSetDescription(
-				from.getResourceData(), from.getName(), JoinType.NoJoin, null, null, where, orderBy, limit, offset
+				from.getResourceData(), from.getName(), null, null, null, where, orderBy, limit, offset
 		);
 		String request = createSelectRequest(description);
 		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
@@ -314,7 +314,7 @@ public class SQLHelper {
 
 	public static JDBCResultSet select(
 		final JDBCFactory factory, final JDBCTable from,
-		JoinType joinType, JDBCTable join, String on,
+		String joinType, JDBCTable join, String on,
 		String where, String orderBy, int limit, int offset
 	)
 		throws SQLException
@@ -347,8 +347,8 @@ public class SQLHelper {
 		StringBuilder result = new StringBuilder();
 		result.append("SELECT * FROM ");
 		result.append(description.getFrom());
-		JoinType joinType = description.getJoinType();
-		if (joinType != null && joinType != JoinType.NoJoin && description.getJoin() != null) {
+		JoinType joinType = description.decodeJoinType();
+		if (joinType != JoinType.NoJoin && description.getJoin() != null) {
 			result.append(" ");
 			result.append(joinType);
 

@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.foundation.OpenflexoTestCase;
 import org.openflexo.model.exceptions.ModelDefinitionException;
-import org.openflexo.technologyadapter.jdbc.util.SQLHelper.JoinType;
 import org.openflexo.test.OrderedRunner;
 
 import java.io.BufferedInputStream;
@@ -216,11 +215,11 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		t2.insert(new String[]{"ID", "9", "C1", "value9", "C2", "string9", "OTHER_ID", "1"});
 		t2.insert(new String[]{"ID", "10", "C1", "value10", "C2", "string10", "OTHER_ID", "2"});
 
-		JDBCResultSet resultSet = t1.selectAllWithJoin(JoinType.InnerJoin, t1.getColumn("id"), t2.getColumn("other_id"));
+		JDBCResultSet resultSet = t1.selectAllWithJoin("InnerJoin", t1.getColumn("id"), t2.getColumn("other_id"));
 		assertNotNull(resultSet);
 		assertEquals(10, resultSet.getLines().size());
 
-		resultSet = t1.selectWithJoin(JoinType.InnerJoin, t1.getColumn("id"), t2.getColumn("other_id"), "t1.id = 1");
+		resultSet = t1.selectWithJoin("InnerJoin", t1.getColumn("id"), t2.getColumn("other_id"), "t1.id = 1");
 		assertNotNull(resultSet);
 		assertEquals(5, resultSet.getLines().size());
 	}

@@ -5,6 +5,7 @@ import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +20,10 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 	JDBCResultSet getResultSet();
 
 	List<JDBCValue> getValues();
+
+	List<String> getKeys();
+
+	JDBCValue getValue(String columnName);
 
 	JDBCValue getValue(String tableName, String columnName);
 
@@ -40,9 +45,25 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 			return table;
 		}
 
+		public List<String> getKeys() {
+			List<String> keys = new ArrayList<>();
+			for (JDBCValue value : values) {
+				if (value.getColumn().isPrimaryKey()) {
+					keys.add(value.getValue());
+				}
+			}
+			return keys;
+		}
+
 		@Override
 		public List<JDBCValue> getValues() {
 			return values;
+		}
+
+		@Override
+		public JDBCValue getValue(String columnName) {
+			String tableName = getResultSet().getResultSetDescription().getFrom();
+			return getValue(tableName, columnName);
 		}
 
 		@Override

@@ -2,6 +2,7 @@ package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InnerResourceData;
+import org.openflexo.model.annotations.Embedded;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 
@@ -24,6 +25,7 @@ public interface JDBCResultSet extends FlexoObject, InnerResourceData<JDBCConnec
 
 	JDBCConnection getConnection();
 
+	/*@Getter("resultSetDescription")*/ @Embedded
 	JDBCResultSetDescription getResultSetDescription();
 
 	List<JDBCLine> getLines();

@@ -35,7 +35,7 @@ public interface JDBCResultSetDescription extends FlexoObject, InnerResourceData
 	@Initializer
 	void init(
 			@Parameter(CONNECTION) JDBCConnection connection,
-			@Parameter(FROM) String from, @Parameter(JOIN_TYPE) JoinType joinType,
+			@Parameter(FROM) String from, @Parameter(JOIN_TYPE) String joinType,
 			@Parameter(JOIN) String join, @Parameter(ON) String on,
 			@Parameter(WHERE) String where, @Parameter(ORDER_BY) String orderBy,
 			@Parameter(LIMIT) int limit, @Parameter(OFFSET) int offset
@@ -48,7 +48,9 @@ public interface JDBCResultSetDescription extends FlexoObject, InnerResourceData
 	String getFrom();
 
 	@Getter(JOIN_TYPE) @XMLAttribute
-	JoinType getJoinType();
+	String getJoinType();
+
+	JoinType decodeJoinType();
 
 	@Getter(JOIN) @XMLAttribute
 	String getJoin();
@@ -73,6 +75,16 @@ public interface JDBCResultSetDescription extends FlexoObject, InnerResourceData
 		@Override
 		public JDBCConnection getResourceData() {
 			return getConnection();
+		}
+
+		public JoinType decodeJoinType() {
+			String joinType = getJoinType();
+			if (joinType == null) return JoinType.NoJoin;
+			try {
+				return JoinType.valueOf(joinType);
+			} catch (IllegalArgumentException e) {
+				return JoinType.NoJoin;
+			}
 		}
 	}
 }
