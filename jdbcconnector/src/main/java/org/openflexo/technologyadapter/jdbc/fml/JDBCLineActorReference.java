@@ -7,7 +7,6 @@ import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Remover;
 import org.openflexo.model.annotations.Setter;
-import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
@@ -30,7 +29,7 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 
 	String KEYS = "keys";
 
-	@Getter(RESULTSET_DESCRIPTION) @XMLAttribute
+	@Getter(RESULTSET_DESCRIPTION) @Embedded
 	JDBCResultSetDescription getResultSetDescription();
 
 	@Setter(RESULTSET_DESCRIPTION)
