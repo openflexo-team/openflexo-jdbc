@@ -1,7 +1,6 @@
 package org.openflexo.technologyadapter.jdbc.fml;
 
 import org.openflexo.model.annotations.Adder;
-import org.openflexo.model.annotations.Embedded;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
@@ -29,13 +28,14 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 
 	String KEYS = "keys";
 
-	@Getter(RESULTSET_DESCRIPTION) @Embedded
+	@Getter(RESULTSET_DESCRIPTION) @XMLElement(xmlTag = "resultSet")
+
 	JDBCResultSetDescription getResultSetDescription();
 
 	@Setter(RESULTSET_DESCRIPTION)
 	void setResultSetDescription(JDBCResultSetDescription resultRestDescription);
 
-	@Getter(value=KEYS, cardinality = Getter.Cardinality.LIST) @Embedded
+	@Getter(value=KEYS, cardinality = Getter.Cardinality.LIST) @XMLElement(xmlTag = "keys")
 	List<String> getKeys();
 
 	@Adder(KEYS)
