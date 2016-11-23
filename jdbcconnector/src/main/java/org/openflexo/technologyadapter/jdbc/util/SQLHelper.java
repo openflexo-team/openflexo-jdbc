@@ -332,13 +332,12 @@ public class SQLHelper {
 		});
 	}
 
-	public static JDBCResultSet select(final JDBCFactory factory, final JDBCResultSetDescription description) throws SQLException {
-		final Connection connection = description.getResourceData().getConnection();
+	public static JDBCResultSet select(final JDBCFactory factory, final JDBCConnection connection, final JDBCResultSetDescription description) throws SQLException {
 		String request = createSelectRequest(description);
-		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
+		return new QueryRunner().query(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
 			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				return factory.makeJDBCResult(description, resultSet, description.getResourceData().getSchema());
+				return factory.makeJDBCResult(description, resultSet, connection.getSchema());
 			}
 		});
 	}

@@ -7,7 +7,6 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCResultSetActorReference.JDBCResultSetActorReferenceImpl;
-import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSetDescription;
 
@@ -40,8 +39,7 @@ public interface JDBCResultSetActorReference extends JDBCActorReference<JDBCResu
 		@Override
 		public JDBCResultSet getModellingElement() {
 			if (resultSet == null) {
-				JDBCConnection connection = (JDBCConnection) getModelSlotInstance().getAccessedResourceData();
-				resultSet = connection.select(getResultSetDescription());
+				resultSet = getConnection().select(getResultSetDescription());
 			}
 			return resultSet;
 		}

@@ -160,12 +160,11 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 
 		@Override
 		public JDBCResultSet select(JDBCResultSetDescription description) {
-			JDBCConnection model = this.getSchema().getModel();
-			JDBCFactory factory = SQLHelper.getFactory(model);
+			JDBCFactory factory = SQLHelper.getFactory(this);
 			try {
-				return SQLHelper.select(factory, description);
+				return SQLHelper.select(factory, this, description);
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't select from '"+ description.getFrom() +"' on '"+ model.getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't select from '"+ description.getFrom() +"' on '"+ this.getAddress() +"'", e);
 				return factory.emptyResultSet(this);
 			}
 		}

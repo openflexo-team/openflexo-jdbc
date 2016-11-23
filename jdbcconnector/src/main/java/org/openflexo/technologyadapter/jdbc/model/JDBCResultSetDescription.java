@@ -1,7 +1,6 @@
 package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.foundation.FlexoObject;
-import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Initializer;
@@ -17,7 +16,7 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper.JoinType;
  */
 @ModelEntity @XMLElement
 @ImplementationClass(JDBCResultSetDescriptionImpl.class)
-public interface JDBCResultSetDescription extends FlexoObject, InnerResourceData<JDBCConnection> {
+public interface JDBCResultSetDescription extends FlexoObject {
 
 	String CONNECTION = "connection";
 
@@ -71,11 +70,6 @@ public interface JDBCResultSetDescription extends FlexoObject, InnerResourceData
 	int getOffset();
 
 	abstract class JDBCResultSetDescriptionImpl implements JDBCResultSetDescription {
-
-		@Override
-		public JDBCConnection getResourceData() {
-			return getConnection();
-		}
 
 		public JoinType decodeJoinType() {
 			String joinType = getJoinType();

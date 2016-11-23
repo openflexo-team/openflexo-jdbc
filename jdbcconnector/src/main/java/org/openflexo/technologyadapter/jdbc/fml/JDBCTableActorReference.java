@@ -6,7 +6,6 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 /**
@@ -39,7 +38,7 @@ public interface JDBCTableActorReference extends JDBCActorReference<JDBCTable> {
 		public JDBCTable getModellingElement() {
 			if (table == null) {
 				String tableId = getTableId();
-				table = ((JDBCConnection) getModelSlotInstance().getAccessedResourceData()).getSchema().getTable(tableId);
+				table = getConnection().getSchema().getTable(tableId);
 			}
 			return table;
 		}

@@ -7,7 +7,6 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Remover;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSetDescription;
@@ -71,9 +70,7 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 		@Override
 		public JDBCLine getModellingElement() {
 			if (line == null) {
-				JDBCResultSetDescription description= getResultSetDescription();
-				JDBCConnection connection = (JDBCConnection) getModelSlotInstance().getAccessedResourceData();
-				JDBCResultSet resultSet = connection.select(description);
+				JDBCResultSet resultSet = getConnection().select(getResultSetDescription());
 				line = resultSet.find(getKeys());
 			}
 			return line;
