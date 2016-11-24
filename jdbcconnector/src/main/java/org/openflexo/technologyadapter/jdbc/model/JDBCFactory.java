@@ -159,6 +159,15 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 
 	@Override
 	public void startDeserializing() {
+		startIgnoringEdits();
+	}
+
+	@Override
+	public void stopDeserializing() {
+		stopIgnoringEdits();
+	}
+
+	public void startIgnoringEdits() {
 		EditingContext editingContext = getResource().getServiceManager().getEditingContext();
 
 		if (editingContext != null && editingContext.getUndoManager() instanceof FlexoUndoManager) {
@@ -169,8 +178,7 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 		}
 	}
 
-	@Override
-	public void stopDeserializing() {
+	public void stopIgnoringEdits() {
 		if (ignoreHandler != null) {
 			undoManager.removeFromIgnoreHandlers(ignoreHandler);
 			ignoreHandler = null;

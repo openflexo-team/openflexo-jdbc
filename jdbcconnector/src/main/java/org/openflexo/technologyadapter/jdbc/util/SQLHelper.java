@@ -3,7 +3,6 @@ package org.openflexo.technologyadapter.jdbc.util;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.openflexo.model.exceptions.ModelDefinitionException;
-import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
@@ -58,7 +57,7 @@ public class SQLHelper {
 	 * @param tables the table list to update
 	 * @param factory the factory used to create the new tables if needed
 	 */
-    public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final ModelFactory factory) throws SQLException {
+    public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final JDBCFactory factory) throws SQLException {
 		Connection connection = schema.getResourceData().getConnection();
 
 		// prepare case ignoring map to match tables
@@ -112,7 +111,7 @@ public class SQLHelper {
 	 * @param columns the table list to update
 	 * @param factory the factory used to create the new columns if needed
 	 */
-	public static void updateColumns(final JDBCTable table, List<JDBCColumn> columns, final ModelFactory factory) throws SQLException {
+	public static void updateColumns(final JDBCTable table, List<JDBCColumn> columns, final JDBCFactory factory) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
 
 		// retrieves keys
