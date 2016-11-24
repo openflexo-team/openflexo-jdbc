@@ -40,6 +40,8 @@ package org.openflexo.technologyadapter.jdbc.model;
 
 import org.openflexo.fge.FGEModelFactoryImpl;
 import org.openflexo.foundation.PamelaResourceModelFactory;
+import org.openflexo.foundation.action.FlexoUndoManager;
+import org.openflexo.foundation.resource.PamelaResourceImpl.IgnoreLoadingEdits;
 import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
@@ -55,15 +57,18 @@ import java.util.logging.Logger;
 
 /**
  * one JDBCFactory
- * 
+ *
  * @author charlie
- * 
+ *
  */
 public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceModelFactory<JDBCResource> {
 
 	private static final Logger logger = Logger.getLogger(JDBCFactory.class.getPackage().getName());
 
 	private final JDBCResource resource;
+
+	private FlexoUndoManager undoManager = null;
+	private IgnoreLoadingEdits ignoreHandler = null;
 
 	public JDBCFactory() throws ModelDefinitionException {
 		this(null, null);
@@ -154,10 +159,22 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 
 	@Override
 	public void startDeserializing() {
+		EditingContext editingContext = getResource().getServiceManager().getEditingContext();
+
+		if (editingContext != null && editingContext.getUndoManager() instanceof FlexoUndoManager) {
+			undoManager = (FlexoUndoManager) editingContext.getUndoManager();
+			ignoreHandler = new IgnoreLoadingEdits(resource);
+
+			undoManager.addToIgnoreHandlers(ignoreHandler);
+		}
 	}
 
 	@Override
 	public void stopDeserializing() {
-
+		if (ignoreHandler != null) {
+			undoManager.removeFromIgnoreHandlers(ignoreHandler);
+			ignoreHandler = null;
+		}
 	}
+
 }
