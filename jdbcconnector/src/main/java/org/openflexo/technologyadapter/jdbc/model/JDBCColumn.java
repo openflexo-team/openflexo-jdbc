@@ -8,6 +8,8 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 
+import java.util.Objects;
+
 /**
  * JDBC connector column description
  */
@@ -39,6 +41,16 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 		@Override
 		public JDBCConnection getResourceData() {
 			return getTable().getSchema().getModel();
+		}
+
+		public boolean equals(Object other) {
+			if (other instanceof JDBCColumn) {
+				JDBCColumn two = (JDBCColumn) other;
+				if (!Objects.equals(getName(), two.getName())) return false;
+				if (getTable() == null) return two.getTable() == null;
+				return Objects.equals(getTable().getName(), two.getTable().getName());
+			}
+			return false;
 		}
 	}
 }

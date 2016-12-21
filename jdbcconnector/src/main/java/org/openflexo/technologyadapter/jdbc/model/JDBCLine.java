@@ -69,16 +69,20 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 		@Override
 		public JDBCValue getValue(String tableName, String columnName) {
 			JDBCTable table = getResourceData().getSchema().getTable(tableName);
-			if (table == null) return null;
+			if (table == null) {
+				return null;
+			}
 			JDBCColumn column = table.getColumn(columnName);
-			if (column == null) return null;
+			if (column == null) {
+				return null;
+			}
 			return getValue(column);
 		}
 
 		@Override
 		public JDBCValue getValue(JDBCColumn column) {
 			for (JDBCValue value : values) {
-				if (value.getColumn() == column) return value;
+				if (value.getColumn().equals(column)) return value;
 			}
 			return null;
 		}

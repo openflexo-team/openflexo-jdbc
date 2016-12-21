@@ -7,6 +7,7 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 /**
@@ -51,9 +52,12 @@ public interface JDBCColumnActorReference extends JDBCActorReference<JDBCColumn>
 		@Override
 		public JDBCColumn getModellingElement() {
 			if (column == null) {
-				String tableId = getTableId();
-				JDBCTable table = getConnection().getSchema().getTable(tableId);
-				column = table.getColumn(getColumnId());
+				JDBCConnection connection = getConnection();
+				if (connection != null) {
+					String tableId = getTableId();
+					JDBCTable table = connection.getSchema().getTable(tableId);
+					setModellingElement(table.getColumn(getColumnId()));
+				}
 			}
 			return column;
 		}
