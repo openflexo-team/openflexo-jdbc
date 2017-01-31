@@ -103,5 +103,12 @@ public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
             // TODO create empty resource
             return null;
         }
+
+        @Override
+        public TechnologyAdapterResource<JDBCConnection, ?> createSharedEmptyResource(FlexoResourceCenter<?> resourceCenter,
+                String relativePath, String filename, String modelUri) {
+            // TODO create empty resource
+            return null;
+        }
     }
 }
