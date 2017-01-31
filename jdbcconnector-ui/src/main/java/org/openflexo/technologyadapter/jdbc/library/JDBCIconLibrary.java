@@ -21,8 +21,8 @@
 package org.openflexo.technologyadapter.jdbc.library;
 
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
+import org.openflexo.icon.ImageIconResource;
 import org.openflexo.rm.ResourceLocator;
-import org.openflexo.toolbox.ImageIconResource;
 
 import javax.swing.*;
 import java.util.logging.Logger;

@@ -40,10 +40,10 @@ package org.openflexo.technologyadapter.jdbc.fml;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openflexo.foundation.fml.AbstractModelFactoryIntegrationTestCase;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.resource.FlexoResourceCenterService;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
+import org.openflexo.foundation.test.fml.AbstractModelFactoryIntegrationTestCase;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.test.OrderedRunner;
