@@ -1,9 +1,9 @@
 dependencies {
 
-    compile group: 'org.openflexo', name: 'flexo-foundation', version:"1.8.0-SNAPSHOT"
+    compile flexoFoundation()
     compile group: 'commons-dbutils', name: 'commons-dbutils', version:"1.6"
 
-    testCompile group: "org.openflexo", name: "flexoutils", classifier: 'tests'//, version: "1.8.0-SNAPSHOT"
-    testCompile group: "org.openflexo", name: "flexo-foundation", classifier: 'tests', version: "1.8.0-SNAPSHOT"
+    testCompile testUtils()
+    testCompile flexoFoundationTest()
     testCompile group: "org.hsqldb", name: "hsqldb", version: "2.2.4"
 }
