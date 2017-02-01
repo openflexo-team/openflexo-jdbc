@@ -8,7 +8,6 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Setter;
-import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 import java.sql.SQLException;
@@ -47,7 +46,7 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 	@Setter(VALUE)
 	boolean setValue(String value);
 
-	abstract class JDBCValueImpl implements JDBCValue, AccessibleProxyObject {
+	abstract class JDBCValueImpl extends FlexoObjectImpl implements JDBCValue {
 		private static final Logger LOGGER = Logger.getLogger(JDBCTable.class.getPackage().getName());
 
 		@Override

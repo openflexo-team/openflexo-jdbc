@@ -69,7 +69,7 @@ public interface JDBCResultSetDescription extends FlexoObject {
 	@Getter(value = OFFSET, defaultValue = "-1") @XMLAttribute
 	int getOffset();
 
-	abstract class JDBCResultSetDescriptionImpl implements JDBCResultSetDescription {
+	abstract class JDBCResultSetDescriptionImpl extends FlexoObjectImpl implements JDBCResultSetDescription {
 
 		public JoinType decodeJoinType() {
 			String joinType = getJoinType();

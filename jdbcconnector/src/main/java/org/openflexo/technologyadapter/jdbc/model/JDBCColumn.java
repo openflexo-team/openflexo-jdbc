@@ -36,7 +36,7 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 
 	@Getter(TYPE) String getType();
 
-	abstract class JDBCColumnImpl implements JDBCColumn {
+	abstract class JDBCColumnImpl extends FlexoObjectImpl implements JDBCColumn {
 
 		@Override
 		public JDBCConnection getResourceData() {
