@@ -32,9 +32,9 @@ public class SQLHelper {
 
 
 	// TODO complete with http://dev.mysql.com/doc/refman/5.7/en/tables-table.html
-    public static final String SELECT_TABLES = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA='PUBLIC'";
+    public static final String SELECT_TABLES = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA=?";
 
-	public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DTD_IDENTIFIER FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=? ORDER BY ORDINAL_POSITION";
+	public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=? ORDER BY ORDINAL_POSITION";
 
 	public static final String SELECT_PRIMARY_KEY = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME=?";
 
@@ -69,24 +69,21 @@ public class SQLHelper {
 		// query the tables to find new and removed ones
 		final Set<JDBCTable> added = new LinkedHashSet<>();
 		final Set<JDBCTable> matched = new LinkedHashSet<>();
-		new QueryRunner().query(connection, SELECT_TABLES, new ResultSetHandler<Object>() {
-			@Override
-			public Object handle(ResultSet resultSet) throws SQLException {
-				while (resultSet.next()) {
-					String tableName = resultSet.getString("TABLE_NAME");
-					JDBCTable table = sortedTables.get(tableName.toLowerCase());
-					if (table == null) {
-						// new table, add it to the list
-						table = factory.newInstance(JDBCTable.class);
-						table.init(schema, tableName);
-						added.add(table);
-					} else {
-						matched.add(table);
-					}
+		new QueryRunner().query(connection, SELECT_TABLES, resultSet -> {
+			while (resultSet.next()) {
+				String tableName = resultSet.getString("TABLE_NAME");
+				JDBCTable table = sortedTables.get(tableName.toLowerCase());
+				if (table == null) {
+					// new table, add it to the list
+					table = factory.newInstance(JDBCTable.class);
+					table.init(schema, tableName);
+					added.add(table);
+				} else {
+					matched.add(table);
 				}
-				return null;
 			}
-		});
+			return null;
+		}, connection.getCatalog());
 
 		// gets tables to remove
 		Set<JDBCTable> removed = new HashSet<>();
@@ -126,25 +123,22 @@ public class SQLHelper {
 		// query the columns to find new and removed ones
 		final Set<JDBCColumn> added = new LinkedHashSet<>();
 		final Set<JDBCColumn> matched = new LinkedHashSet<>();
-		new QueryRunner().query(connection, SELECT_COLUMNS, new ResultSetHandler<Object>() {
-			@Override
-			public Object handle(ResultSet resultSet) throws SQLException {
-				ArrayList<JDBCColumn> columns = new ArrayList<>();
-				while (resultSet.next()) {
-					String name = resultSet.getString(1);
+		new QueryRunner().query(connection, SELECT_COLUMNS, resultSet -> {
+			ArrayList<JDBCColumn> columns1 = new ArrayList<>();
+			while (resultSet.next()) {
+				String name = resultSet.getString(1);
 
-					JDBCColumn column = sortedColumns.get(name.toLowerCase());
-					if (column == null) {
-						// new column, add it to the list
-						column = factory.newInstance(JDBCColumn.class);
-						column.init(table, keys.contains(name), name, resultSet.getString(2));
-						added.add(column);
-					} else {
-						matched.add(column);
-					}
+				JDBCColumn column = sortedColumns.get(name.toLowerCase());
+				if (column == null) {
+					// new column, add it to the list
+					column = factory.newInstance(JDBCColumn.class);
+					column.init(table, keys.contains(name), name, resultSet.getString(2));
+					added.add(column);
+				} else {
+					matched.add(column);
 				}
-				return null;
 			}
+			return null;
 		}, sqlName(table.getName()));
 
 		// gets columns to remove
@@ -166,28 +160,22 @@ public class SQLHelper {
 
     private static Set<String> getKeys(final JDBCTable table) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
-		return new QueryRunner().query(connection, SELECT_PRIMARY_KEY, new ResultSetHandler<Set<String>>() {
-			@Override
-			public Set<String> handle(ResultSet resultSet) throws SQLException {
-				Set<String> keys = new HashSet<>();
-				while (resultSet.next()) {
-					keys.add(resultSet.getString(1));
-				}
-				return keys;
+		return new QueryRunner().query(connection, SELECT_PRIMARY_KEY, resultSet -> {
+			Set<String> keys = new HashSet<>();
+			while (resultSet.next()) {
+				keys.add(resultSet.getString(1));
 			}
+			return keys;
 		}, sqlName(table.getName()));
 	}
 
     public static JDBCTable createTable(final JDBCSchema schema, final JDBCFactory factory, final String tableName, String[] ... attributes) throws SQLException {
 		Connection connection = schema.getResourceData().getConnection();
 		String request = createTableRequest(tableName, attributes);
-		return new QueryRunner().insert(connection, request, new ResultSetHandler<JDBCTable>() {
-			@Override
-			public JDBCTable handle(ResultSet resultSet) throws SQLException {
-				JDBCTable table = factory.newInstance(JDBCTable.class);
-				table.init(schema, tableName);
-				return table;
-			}
+		return new QueryRunner().insert(connection, request, resultSet -> {
+			JDBCTable table = factory.newInstance(JDBCTable.class);
+			table.init(schema, tableName);
+			return table;
 		});
 	}
 
@@ -323,12 +311,7 @@ public class SQLHelper {
 				from.getResourceData(), from.getName(), joinType, join.getName(), on, where, orderBy, limit, offset
 		);
 		String request = createSelectRequest(description);
-		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
-			@Override
-			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				return factory.makeJDBCResult(description, resultSet, from.getSchema());
-			}
-		});
+		return new QueryRunner().query(connection, request, resultSet -> factory.makeJDBCResult(description, resultSet, from.getSchema()));
 	}
 
 	public static JDBCResultSet select(final JDBCFactory factory, final JDBCConnection connection, final JDBCResultSetDescription description) throws SQLException {
@@ -381,13 +364,10 @@ public class SQLHelper {
 	public static JDBCResultSet insert(final JDBCLine line, final JDBCTable table) throws SQLException {
 		final JDBCConnection connection = table.getResourceData();
 		String request = createInsertRequest(line, table);
-		return new QueryRunner().insert(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
-			@Override
-			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				JDBCFactory factory = getFactory(connection);
-				// TODO check for request definition
-				return factory.makeJDBCResult(null, resultSet, table.getSchema());
-			}
+		return new QueryRunner().insert(connection.getConnection(), request, resultSet -> {
+			JDBCFactory factory = getFactory(connection);
+			// TODO check for request definition
+			return factory.makeJDBCResult(null, resultSet, table.getSchema());
 		});
 	}
 
