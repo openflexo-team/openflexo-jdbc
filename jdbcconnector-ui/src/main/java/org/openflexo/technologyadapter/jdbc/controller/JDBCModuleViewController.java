@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class JDBCModuleViewController extends FlexoFIBController {
 
-	private int pageSize = 100;
+	private int pageSize = 20;
 
 	private JDBCTable selectedTable = null;
 	private int currentPage = 0;
@@ -60,7 +60,7 @@ public class JDBCModuleViewController extends FlexoFIBController {
 	public void updateResultSet() {
 		List<JDBCLine> oldValue = getLines();
 		if (selectedTable != null && currentPage >= 0) {
-			selectedTable.select(null, null, pageSize, currentPage*pageSize);
+			resultSet = selectedTable.select(null, null, pageSize, currentPage*pageSize);
 		} else {
 			resultSet = null;
 		}
