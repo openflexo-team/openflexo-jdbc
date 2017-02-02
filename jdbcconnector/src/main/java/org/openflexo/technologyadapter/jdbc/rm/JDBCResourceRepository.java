@@ -29,11 +29,11 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 public class JDBCResourceRepository<I> extends
         TechnologyAdapterResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCConnection, I>
 {
+    private static final String DEFAULT_BASE_URI = "http://www.openflexo.org/JDBCTechnologyAdapter/Models";
 
     public JDBCResourceRepository(JDBCTechnologyAdapter adapter, FlexoResourceCenter<I> resourceCenter) {
         super(adapter, resourceCenter);
     }
 
-    private static final String DEFAULT_BASE_URI = "http://www.openflexo.org/JDBCTechnologyAdapter/Models";
 
 }
