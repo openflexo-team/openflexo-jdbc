@@ -55,7 +55,7 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter {
 
     @Override
     public String getName() {
-        return new String("JDBC Technology Adapter");
+        return "JDBC Technology Adapter";
     }
 
     @Override

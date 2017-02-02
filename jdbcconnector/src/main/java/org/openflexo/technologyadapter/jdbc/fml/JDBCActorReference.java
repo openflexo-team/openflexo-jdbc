@@ -19,7 +19,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 @FML("JDBCActorReference")
 public interface JDBCActorReference<T> extends ActorReference<T> {
 	abstract class JDBCActorReferenceImpl<T> extends ActorReferenceImpl<T> implements JDBCActorReference<T>  {
-		JDBCConnection getConnection() {
+		public JDBCConnection getConnection() {
 			// FIXME How do I retrieve the JDBCConnection ?
 			AbstractVirtualModelInstance<?, ?> virtualModelInstance = getVirtualModelInstance();
 			if (virtualModelInstance == null) return null;

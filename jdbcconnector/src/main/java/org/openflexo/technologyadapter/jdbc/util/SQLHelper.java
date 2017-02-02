@@ -434,8 +434,10 @@ public class SQLHelper {
 	}
 
 	public static boolean needsQuotes(String type) {
-		type = type.toUpperCase();
-		return type.startsWith("CHAR") || type.startsWith("VARCHAR") || type.startsWith("CLOB");
+		String upperCaseType = type.toUpperCase();
+		return 	upperCaseType.startsWith("CHAR") ||
+				upperCaseType.startsWith("VARCHAR") ||
+				upperCaseType.startsWith("CLOB");
 	}
 
 }

@@ -36,12 +36,9 @@ import org.openflexo.view.controller.TechnologyAdapterController;
 import org.openflexo.view.controller.model.FlexoPerspective;
 
 import javax.swing.*;
-import java.util.logging.Logger;
 
 public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechnologyAdapter> {
     
-	static final Logger LOGGER = Logger.getLogger(JDBCAdapterController.class.getPackage().getName());
-
 	private InspectorGroup jdbcInspectorGroup;
 
 
