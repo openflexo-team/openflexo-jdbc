@@ -29,8 +29,6 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterBindingFactor
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterInitializationException;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 
-import java.util.logging.Logger;
-
 
 /**
  * This class defines and implements the JDBC technology adapter
@@ -41,9 +39,6 @@ import java.util.logging.Logger;
 @DeclareModelSlots({JDBCModelSlot.class})
 @DeclareResourceTypes({JDBCResourceFactory.class})
 public class JDBCTechnologyAdapter extends TechnologyAdapter {
-
-
-    private static final Logger LOGGER = Logger.getLogger(JDBCTechnologyAdapter.class.getPackage().getName());
 
     public JDBCTechnologyAdapter() throws TechnologyAdapterInitializationException {
     }
