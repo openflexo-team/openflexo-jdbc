@@ -38,6 +38,13 @@
 
 package org.openflexo.technologyadapter.jdbc.model;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 import org.openflexo.fge.FGEModelFactoryImpl;
 import org.openflexo.foundation.PamelaResourceModelFactory;
 import org.openflexo.foundation.action.FlexoUndoManager;
@@ -46,14 +53,6 @@ import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * one JDBCFactory
@@ -78,9 +77,7 @@ public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceMo
 		super(JDBCConnection.class);
 		this.resource = resource;
 		setEditingContext(editingContext);
-		if(resource!=null){
-			addConverter(new RelativePathResourceConverter(resource));
-		}
+		addConverter(new RelativePathResourceConverter(null));
 	}
 
 	@Override
