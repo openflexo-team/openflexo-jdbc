@@ -350,12 +350,8 @@ public class SQLHelper {
 
 	public static JDBCResultSet select(final JDBCFactory factory, final JDBCConnection connection, final JDBCResultSetDescription description) throws SQLException {
 		String request = createSelectRequest(description);
-		return new QueryRunner().query(connection.getConnection(), request, new ResultSetHandler<JDBCResultSet>() {
-			@Override
-			public JDBCResultSet handle(ResultSet resultSet) throws SQLException {
-				return factory.makeJDBCResult(description, resultSet, connection.getSchema());
-			}
-		});
+		return new QueryRunner().query(connection.getConnection(), request,
+				resultSet -> factory.makeJDBCResult(description, resultSet, connection.getSchema()));
 	}
 
 	private static String createSelectRequest(JDBCResultSetDescription description) {
