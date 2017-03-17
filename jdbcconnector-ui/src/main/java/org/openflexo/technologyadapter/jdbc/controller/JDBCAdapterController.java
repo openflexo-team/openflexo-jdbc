@@ -104,6 +104,9 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public String getWindowTitleforObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
+		if (obj instanceof JDBCConnection) {
+			return "Connection to " +  ((JDBCConnection) obj).getAddress();
+		}
 		return "Connection";
 	}
 
