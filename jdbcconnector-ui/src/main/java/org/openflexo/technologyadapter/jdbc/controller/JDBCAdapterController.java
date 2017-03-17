@@ -20,6 +20,7 @@
 
 package org.openflexo.technologyadapter.jdbc.controller;
 
+import javax.swing.*;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.gina.utils.InspectorGroup;
@@ -34,8 +35,6 @@ import org.openflexo.view.controller.ControllerActionInitializer;
 import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.TechnologyAdapterController;
 import org.openflexo.view.controller.model.FlexoPerspective;
-
-import javax.swing.*;
 
 public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechnologyAdapter> {
     
@@ -92,7 +91,6 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public ModuleView<?> createModuleViewForObject(final TechnologyObject<JDBCTechnologyAdapter> object, final FlexoController controller, final FlexoPerspective perspective) {
-		// TODO Auto-generated method stub : update your moduleView code to have somethig represented
 		if (object instanceof JDBCConnection){
 			return new JDBCModuleView((JDBCConnection) object, controller, perspective);
 		}
@@ -106,13 +104,11 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public String getWindowTitleforObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
-		// TODO Auto-generated method stub
-		return "";
+		return "Connection";
 	}
 
 	@Override
 	public boolean hasModuleViewForObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
-		// TODO Auto-generated method stub
 		return obj instanceof JDBCConnection;
 	}
 }
