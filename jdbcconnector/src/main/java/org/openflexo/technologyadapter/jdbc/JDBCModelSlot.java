@@ -112,7 +112,13 @@ public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
         @Override
         public <PR extends FlexoRole<?>> String defaultFlexoRoleName(Class<PR> patternRoleClass) {
             if (JDBCTableRole.class.isAssignableFrom(patternRoleClass)) {
-                return "Object";
+                return "table";
+        	}
+            if (JDBCColumnRole.class.isAssignableFrom(patternRoleClass)) {
+                return "column";
+        	}
+            if (JDBCLineRole.class.isAssignableFrom(patternRoleClass)) {
+                return "line";
         	}
             return "";
         }
