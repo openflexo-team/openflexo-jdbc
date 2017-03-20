@@ -121,10 +121,8 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 				JDBCResource newResource = createResource(technologyAdapter, JDBCResourceFactory.class, rc, resourceName, resourceURI, getRelativePath(), ".jdbc", true);
 				JDBCConnection connection = newResource.getResourceData(null);
 
-				// TODO adapts Fib to create JDBCResource
-				connection.setAddress("jdbc:hsqldb:hsql://localhost/");
+				connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
 				connection.setUser("SA");
-				//connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
 
 				return connection;
 			} catch (ModelDefinitionException |FileNotFoundException | ResourceLoadingCancelledException e) {
