@@ -55,7 +55,6 @@
 
 package org.openflexo.technologyadapter.jdbc.rm;
 
-import org.openflexo.foundation.resource.FlexoResource;
 import org.openflexo.foundation.resource.PamelaResource;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.model.annotations.Getter;
@@ -74,7 +73,6 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 public interface JDBCResource
 extends
         PamelaResource<JDBCConnection, JDBCFactory>,
-        FlexoResource<JDBCConnection>,
         TechnologyAdapterResource<JDBCConnection, JDBCTechnologyAdapter>
 {
     
