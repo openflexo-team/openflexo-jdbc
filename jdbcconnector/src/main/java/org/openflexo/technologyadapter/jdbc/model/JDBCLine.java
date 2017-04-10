@@ -37,6 +37,7 @@ package org.openflexo.technologyadapter.jdbc.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -96,8 +97,10 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 
 		@Override
 		public JDBCValue getValue(String columnName) {
-			String tableName = getResultSet().getResultSetDescription().getFrom();
-			return getValue(tableName, columnName);
+			for (JDBCValue value : values) {
+				if (Objects.equals(value.getColumn().getName(),columnName)) return value;
+			}
+			return null;
 		}
 
 		@Override
@@ -129,9 +132,15 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 		@Override
 		public String toString() {
 			StringBuilder string = new StringBuilder();
-			for (JDBCValue value : getValues()) {
-				if (string.length() > 0) string.append(", ");
-				string.append(value);
+			List<JDBCValue> values = getValues();
+			if (values != null && values.size() > 0) {
+				for (JDBCValue value : values) {
+					if (string.length() > 0)
+						string.append(", ");
+					string.append(value);
+				}
+			} else {
+				string.append("<empty>");
 			}
 			return string.toString();
 		}

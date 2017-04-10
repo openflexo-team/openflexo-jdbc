@@ -89,6 +89,13 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	void removeColumn(JDBCColumn table);
 
 	/**
+	 * Find one line with it's primary key
+	 * @param primaryKey
+	 * @return found line or null
+	 */
+	JDBCLine find(String primaryKey);
+
+	/**
 	 * Creates a column in the model and the linked database.
 	 *
 	 * @param columnName new column name, must be uppercase.
@@ -209,11 +216,11 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	 * </pre>
 	 *
 	 * @param values an array of strings where alternating the column name and the value for all values to insert.
-	 * @return true if the value was successfully inserted, false otherwise.
+	 * @return the inserted line or null if not inserted
 	 */
-	boolean insert(String[] values);
+	JDBCLine insert(String[] values);
 
-	boolean insert(JDBCLine line);
+	JDBCLine insert(JDBCLine line);
 
 	abstract class JDBCTableImpl extends FlexoObjectImpl implements JDBCTable {
 
@@ -281,10 +288,20 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			}
 		}
 
-		public JDBCResultSet request(String requestKey) {
-			// TODO implement request from it's key
-			return null;
+		@Override
+		public JDBCLine find(String key) {
+			JDBCColumn keyColumn = null;
+			for (JDBCColumn column : getColumns()) {
+				if (column.isPrimaryKey()) {
+					keyColumn = column;
+					break;
+				}
+			}
+
+			JDBCResultSet resultSet = select(keyColumn.getName() + " = " + key);
+			return resultSet.getLines().get(0);
 		}
+
 
 		@Override
 		public JDBCResultSet selectAll() {
@@ -348,7 +365,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		}
 
 		@Override
-		public boolean insert(String[] values) {
+		public JDBCLine insert(String[] values) {
 			JDBCFactory factory = SQLHelper.getFactory(getSchema().getModel());
 			JDBCLine line = factory.newInstance(JDBCLine.class);
 			List<JDBCValue> jdbcValues = new ArrayList<>();
@@ -362,14 +379,13 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		}
 
 		@Override
-		public boolean insert(JDBCLine line) {
+		public JDBCLine insert(JDBCLine line) {
 			JDBCSchema schema = getSchema();
 			try {
-				SQLHelper.insert(line, this);
-				return true;
+				return SQLHelper.insert(line, this);
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ schema.getModel().getAddress() +"'", e);
-				return false;
+				return null;
 			}
 		}
 

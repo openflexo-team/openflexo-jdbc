@@ -56,13 +56,13 @@ import static org.junit.Assert.*;
 public class TestJDBCModel extends OpenflexoTestCase {
 
     private JDBCTable createTable1(String tableName, JDBCSchema schema) {
-        String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
+        String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL", "IDENTITY"};
         String[] name = {"name", "VARCHAR(100)"};
 		return schema.createTable(tableName, id, name);
     }
 
     private JDBCTable createTable2(String tableName, JDBCSchema schema) {
-        String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
+        String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL", "IDENTITY"};
         String[] name = {"name", "VARCHAR(100)"};
         String[] lastName = {"lastname", "VARCHAR(100)"};
         String[] description = {"description", "VARCHAR(500)"};
@@ -152,13 +152,13 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		JDBCTable table1 = createTable1("table1", connection.getSchema());
 
 		// insert some values
-		assertTrue(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
-		assertTrue(table1.insert(new String[]{"ID", "2", "NAME", "toto2"}));
-		assertTrue(table1.insert(new String[]{"ID", "3", "NAME", "toto3"}));
-		assertTrue(table1.insert(new String[]{"ID", "4", "NAME", "toto4"}));
+		assertNotNull(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
+		assertNotNull(table1.insert(new String[]{"ID", "2", "NAME", "toto2"}));
+		assertNotNull(table1.insert(new String[]{"ID", "3", "NAME", "toto3"}));
+		assertNotNull(table1.insert(new String[]{"ID", "4", "NAME", "toto4"}));
 
 		// insert existing value, must fail
-		assertFalse(table1.insert(new String[]{"ID", "2", "NAME", "toto"}));
+		assertNull(table1.insert(new String[]{"ID", "2", "NAME", "toto"}));
 
 		JDBCResultSet result = table1.selectAll();
 		assertNotNull(result);
@@ -178,7 +178,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 	public void testUpdateValues() throws Exception {
 		JDBCConnection connection = createJDBCMemoryConnection("updateValues");
 		JDBCTable table1 = createTable1("table1", connection.getSchema());
-		assertTrue(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
+		assertNotNull(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
 
 		JDBCResultSet set = table1.selectAll();
 
