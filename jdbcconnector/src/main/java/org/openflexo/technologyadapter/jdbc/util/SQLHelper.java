@@ -391,14 +391,18 @@ public class SQLHelper {
 		return result.toString();
 	}
 
-	public static JDBCResultSet insert(final JDBCLine line, final JDBCTable table) throws SQLException {
+	public static JDBCLine insert(final JDBCLine line, final JDBCTable table) throws SQLException {
 		final JDBCConnection connection = table.getResourceData();
 		String request = createInsertRequest(line, table);
-		return new QueryRunner().insert(connection.getConnection(), request, resultSet -> {
-			JDBCFactory factory = getFactory(connection);
-			// TODO check for request definition
-			return factory.makeJDBCResult(null, resultSet, table.getSchema());
-		});
+		String primaryKey = new QueryRunner().insert(connection.getConnection(), request, resultSet -> {
+				if (resultSet.getMetaData().getColumnCount() > 0) {
+					resultSet.next();
+					return resultSet.getString(1);
+				}
+				return null;
+			}
+		);
+		return primaryKey != null ? table.find(primaryKey) : null;
 	}
 
 	private static String createInsertRequest(JDBCLine line, JDBCTable table) {
@@ -411,7 +415,7 @@ public class SQLHelper {
 			if (length < result.length()) result.append(",");
 			result.append(value.getColumn().getName());
 		}
-		result.append(") VAlUES (");
+		result.append(") VALUES (");
 		length = result.length();
 		for (JDBCValue value : line.getValues()) {
 			if (length < result.length()) result.append(",");
