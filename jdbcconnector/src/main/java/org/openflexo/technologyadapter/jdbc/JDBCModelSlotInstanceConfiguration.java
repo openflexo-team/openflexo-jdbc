@@ -53,25 +53,23 @@
  *
  */
 
-
 package org.openflexo.technologyadapter.jdbc;
 
-import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.FreeModelSlotInstanceConfiguration;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
 public class JDBCModelSlotInstanceConfiguration extends FreeModelSlotInstanceConfiguration<JDBCConnection, JDBCModelSlot> {
 
-    protected JDBCModelSlotInstanceConfiguration(JDBCModelSlot ms, AbstractVirtualModelInstance<?, ?> virtualModelInstance, FlexoResourceCenter<?> rc) {
-        super(ms, virtualModelInstance, rc);
-    }
+	protected JDBCModelSlotInstanceConfiguration(JDBCModelSlot ms, FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {
+		super(ms, fci, rc);
+	}
 
-
-    @Override
-    public void setOption(ModelSlotInstanceConfigurationOption option) {
-        super.setOption(option);
-        // TODO : add specific options here address, user and password (watch before)
-    }
+	@Override
+	public void setOption(ModelSlotInstanceConfigurationOption option) {
+		super.setOption(option);
+		// TODO : add specific options here address, user and password (watch before)
+	}
 
 }

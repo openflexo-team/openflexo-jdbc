@@ -56,6 +56,7 @@
 package org.openflexo.technologyadapter.jdbc.fml;
 
 import java.lang.reflect.Type;
+
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
@@ -68,16 +69,16 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 @XMLElement
 public interface JDBCLineRole extends FlexoRole<JDBCLine> {
 
-    abstract class JDBCLineRoleImpl extends JDBCRole<JDBCLine> implements JDBCLineRole {
+	abstract class JDBCLineRoleImpl extends JDBCRole<JDBCLine> implements JDBCLineRole {
 
-        @Override
-        public Type getType() {
-            return JDBCLine.class;
-        }
+		@Override
+		public Type getType() {
+			return JDBCLine.class;
+		}
 
-        @Override
-        public Class<? extends JDBCActorReference<JDBCLine>> getActorReferenceClass() {
-            return JDBCLineActorReference.class;
-        }
-    }
+		@Override
+		public Class<? extends JDBCActorReference<JDBCLine>> getActorReferenceClass() {
+			return JDBCLineActorReference.class;
+		}
+	}
 }
