@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -63,7 +64,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @ImplementationClass(SelectJDBCColumn.SelectJDBCColumnImpl.class)
 @XMLElement
 @FML("SelectJDBCColumn")
-public interface SelectJDBCColumn extends FetchRequest<JDBCModelSlot, JDBCColumn> {
+public interface SelectJDBCColumn extends FetchRequest<JDBCModelSlot, JDBCConnection, JDBCColumn> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	String TABLE_KEY = "table";
@@ -75,7 +76,7 @@ public interface SelectJDBCColumn extends FetchRequest<JDBCModelSlot, JDBCColumn
 	@Setter(TABLE_KEY)
 	void setTable(DataBinding<JDBCTable> table);
 
-	abstract class SelectJDBCColumnImpl extends FetchRequestImpl<JDBCModelSlot, JDBCColumn> implements SelectJDBCColumn {
+	abstract class SelectJDBCColumnImpl extends FetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCColumn> implements SelectJDBCColumn {
 
 		private static final Logger logger = Logger.getLogger(SelectJDBCColumn.class.getPackage().getName());
 
@@ -108,7 +109,7 @@ public interface SelectJDBCColumn extends FetchRequest<JDBCModelSlot, JDBCColumn
 				if (table != null) {
 					columns.addAll(table.getColumns());
 				}
-			} catch (TypeMismatchException| NullReferenceException | InvocationTargetException e) {
+			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 				logger.log(Level.WARNING, "Can't evaluate table", e);
 			}
 

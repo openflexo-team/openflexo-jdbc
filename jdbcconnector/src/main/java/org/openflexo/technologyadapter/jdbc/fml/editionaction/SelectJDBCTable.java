@@ -39,6 +39,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.FetchRequest;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -53,9 +54,9 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @ImplementationClass(SelectJDBCTable.SelectJDBCTableImpl.class)
 @XMLElement
 @FML("SelectJDBCTable")
-public interface SelectJDBCTable extends FetchRequest<JDBCModelSlot, JDBCTable> {
+public interface SelectJDBCTable extends FetchRequest<JDBCModelSlot, JDBCConnection, JDBCTable> {
 
-	abstract class SelectJDBCTableImpl extends FetchRequestImpl<JDBCModelSlot, JDBCTable> implements SelectJDBCTable {
+	abstract class SelectJDBCTableImpl extends FetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCTable> implements SelectJDBCTable {
 
 		private static final Logger logger = Logger.getLogger(SelectJDBCTable.class.getPackage().getName());
 

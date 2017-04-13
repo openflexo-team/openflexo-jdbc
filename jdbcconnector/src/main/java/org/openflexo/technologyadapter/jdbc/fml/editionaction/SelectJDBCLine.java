@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -55,6 +56,7 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
@@ -62,7 +64,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @ImplementationClass(SelectJDBCLine.SelectJDBCLineImpl.class)
 @XMLElement
 @FML("SelectJDBCLine")
-public interface SelectJDBCLine extends FetchRequest<JDBCModelSlot, JDBCLine> {
+public interface SelectJDBCLine extends FetchRequest<JDBCModelSlot, JDBCConnection, JDBCLine> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	String TABLE_KEY = "table";
@@ -74,7 +76,7 @@ public interface SelectJDBCLine extends FetchRequest<JDBCModelSlot, JDBCLine> {
 	@Setter(TABLE_KEY)
 	void setTable(DataBinding<JDBCTable> table);
 
-	abstract class SelectJDBCLineImpl extends FetchRequestImpl<JDBCModelSlot, JDBCLine> implements SelectJDBCLine {
+	abstract class SelectJDBCLineImpl extends FetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCLine> implements SelectJDBCLine {
 
 		private static final Logger logger = Logger.getLogger(SelectJDBCLine.class.getPackage().getName());
 
@@ -106,7 +108,7 @@ public interface SelectJDBCLine extends FetchRequest<JDBCModelSlot, JDBCLine> {
 					// TODO selectAll isn't a good idea, must have a selection first
 					lines.addAll(table.selectAll().getLines());
 				}
-			} catch (TypeMismatchException| NullReferenceException | InvocationTargetException e) {
+			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 				logger.log(Level.WARNING, "Can't evaluate table", e);
 			}
 

@@ -39,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -62,7 +63,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @ImplementationClass(AddJDBCTable.AddJDBCTableImpl.class)
 @XMLElement
 @FML("AddJDBCTable")
-public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JDBCTable> {
+public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JDBCConnection, JDBCTable> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	String TABLE_NAME = "tableName";
@@ -74,15 +75,12 @@ public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JD
 	@Setter(TABLE_NAME)
 	void setTableName(DataBinding<String> name);
 
-
-	abstract class AddJDBCTableImpl
-		extends TechnologySpecificAction.TechnologySpecificActionImpl<JDBCModelSlot, JDBCTable>
-		implements AddJDBCTable {
+	abstract class AddJDBCTableImpl extends TechnologySpecificAction.TechnologySpecificActionImpl<JDBCModelSlot, JDBCConnection, JDBCTable>
+			implements AddJDBCTable {
 
 		private static final Logger logger = Logger.getLogger(AddJDBCTable.class.getPackage().getName());
 
 		private DataBinding<String> tableName;
-
 
 		@Override
 		public Type getAssignableType() {
@@ -91,7 +89,6 @@ public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JD
 
 		@Override
 		public JDBCTable execute(RunTimeEvaluationContext evaluationContext) {
-
 
 			FreeModelSlotInstance<JDBCConnection, JDBCModelSlot> modelSlotInstance = getModelSlotInstance(evaluationContext);
 			if (modelSlotInstance.getResourceData() != null) {
@@ -102,17 +99,20 @@ public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JD
 						if (name != null) {
 							// Create or retrieve this sheet
 							return retrieveOrCreateTable(connection, name);
-						} else {
+						}
+						else {
 							logger.warning("Create a JDBC table requires a name");
 						}
-					} else {
+					}
+					else {
 						logger.warning("Create a JDBC table requires a JDBC connection");
 					}
 				} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 					logger.log(Level.WARNING, "Can't create JDBC table", e);
 				}
 
-			} else {
+			}
+			else {
 				logger.warning("Model slot not correctly initialised : model is null");
 			}
 
@@ -124,7 +124,8 @@ public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JD
 		private JDBCTable retrieveOrCreateTable(JDBCConnection connection, String name) {
 			JDBCSchema schema = connection.getSchema();
 			JDBCTable table = schema.getTable(name);
-			if (table == null) table = schema.createTable(name);
+			if (table == null)
+				table = schema.createTable(name);
 			return table;
 		}
 
