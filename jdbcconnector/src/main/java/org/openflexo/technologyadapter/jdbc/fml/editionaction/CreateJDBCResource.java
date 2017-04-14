@@ -50,6 +50,7 @@ import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
@@ -72,7 +73,7 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 
 	String ADDRESS = "address";
 
-	@Getter(ADDRESS)
+	@Getter(ADDRESS) @XMLAttribute
 	DataBinding<String> getAddress();
 
 	@Setter(ADDRESS)
