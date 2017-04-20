@@ -56,7 +56,6 @@
 package org.openflexo.technologyadapter.jdbc;
 
 import java.lang.reflect.Type;
-
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
 import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
@@ -91,13 +90,12 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
  * @author SomeOne
  * 
  */
+@ModelEntity @XMLElement
+@ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
 @DeclareActorReferences({ JDBCTableActorReference.class, JDBCColumnActorReference.class, JDBCLineActorReference.class })
 @DeclareFlexoRoles({ JDBCTableRole.class, JDBCColumnRole.class, JDBCLineRole.class })
 @DeclareEditionActions({ CreateJDBCResource.class, AddJDBCTable.class })
 @DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class })
-@ModelEntity
-@ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
-@XMLElement
 public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 
 	@Override
