@@ -42,13 +42,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-import org.openflexo.fge.FGEModelFactoryImpl;
 import org.openflexo.foundation.PamelaResourceModelFactory;
 import org.openflexo.foundation.action.FlexoUndoManager;
 import org.openflexo.foundation.resource.PamelaResourceImpl.IgnoreLoadingEdits;
 import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
+import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 /**
@@ -57,7 +57,7 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
  * @author charlie
  *
  */
-public class JDBCFactory extends FGEModelFactoryImpl implements PamelaResourceModelFactory<JDBCResource> {
+public class JDBCFactory extends ModelFactory implements PamelaResourceModelFactory<JDBCResource> {
 
 	private static final Logger logger = Logger.getLogger(JDBCFactory.class.getPackage().getName());
 
