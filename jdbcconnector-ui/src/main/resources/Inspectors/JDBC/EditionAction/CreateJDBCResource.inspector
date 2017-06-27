@@ -17,6 +17,22 @@
                     constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=right)">
                 <Assignment id="7" mandatory="true" variable="component.bindable" value="data"/>
             </Custom>
+            <Label id="8" name="UserLabel" align="right"
+                   constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=left)"
+                   label="user"/>
+            <Custom id="9" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding"
+                    componentClassName="org.openflexo.gina.swing.utils.BindingSelector" name="UserBinding" data="data.user"
+                    constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=right)">
+                <Assignment id="10" mandatory="true" variable="component.bindable" value="data"/>
+            </Custom>
+            <Label id="11" name="PasswordLabel" align="right"
+                   constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=left)"
+                   label="password"/>
+            <Custom id="12" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding"
+                    componentClassName="org.openflexo.gina.swing.utils.BindingSelector" name="PasswordBinding" data="data.password"
+                    constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=right)">
+                <Assignment id="13" mandatory="true" variable="component.bindable" value="data"/>
+            </Custom>
         </Tab>
     </TabPanel>
     <FIBVariable id="33" name="data" type="org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCResource"/>

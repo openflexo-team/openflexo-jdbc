@@ -71,7 +71,21 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 @FML("CreateJDBCResource")
 public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter> {
 
+	String USER = "user";
+	String PASSWORD = "password";
 	String ADDRESS = "address";
+
+	@Getter(USER) @XMLAttribute
+	DataBinding<String> getUser();
+
+	@Setter(USER)
+	void setUser(DataBinding<String> user);
+
+	@Getter(PASSWORD) @XMLAttribute
+	DataBinding<String> getPassword();
+
+	@Setter(PASSWORD)
+	void setPassword(DataBinding<String> password);
 
 	@Getter(ADDRESS) @XMLAttribute
 	DataBinding<String> getAddress();
@@ -84,11 +98,53 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 
 		private static final Logger logger = Logger.getLogger(CreateJDBCResourceImpl.class.getPackage().getName());
 
+		private DataBinding<String> user;
+		private DataBinding<String> password;
 		private DataBinding<String> address;
 
 		@Override
 		public Type getAssignableType() {
 			return JDBCConnection.class;
+		}
+
+		@Override
+		public DataBinding<String> getUser() {
+			if (user == null) {
+				user = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				user.setBindingName(USER);
+			}
+			return user;
+		}
+
+		@Override
+		public void setUser(DataBinding<String> user) {
+			if (user != null) {
+				user.setOwner(this);
+				user.setDeclaredType(String.class);
+				user.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				user.setBindingName(USER);
+			}
+			this.user = user;
+		}
+
+		@Override
+		public DataBinding<String> getPassword() {
+			if (password == null) {
+				password = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				password.setBindingName(PASSWORD);
+			}
+			return password;
+		}
+
+		@Override
+		public void setPassword(DataBinding<String> password) {
+			if (password != null) {
+				password.setOwner(this);
+				password.setDeclaredType(String.class);
+				password.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				password.setBindingName(PASSWORD);
+			}
+			this.password = password;
 		}
 
 		@Override
@@ -123,7 +179,8 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 				JDBCConnection connection = newResource.getResourceData(null);
 
 				connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
-				connection.setUser("SA");
+				connection.setUser(evaluateDataBinding(getUser(), evaluationContext));
+				connection.setPassword(evaluateDataBinding(getPassword(), evaluationContext));
 
 				return connection;
 			} catch (ModelDefinitionException |FileNotFoundException | ResourceLoadingCancelledException e) {
