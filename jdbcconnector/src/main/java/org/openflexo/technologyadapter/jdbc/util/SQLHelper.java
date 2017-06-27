@@ -458,6 +458,31 @@ public class SQLHelper {
 		return result.toString();
 	}
 
+	public static boolean delete(final JDBCLine line, final JDBCTable table) throws SQLException {
+		final JDBCConnection connection = table.getResourceData();
+		String request = createDeleteRequest(line, table);
+		int primaryKey = new QueryRunner().update(connection.getConnection(), request);
+		return primaryKey != 1;
+	}
+
+	private static String createDeleteRequest(JDBCLine line, JDBCTable table) {
+		StringBuilder result = new StringBuilder();
+		result.append("DELETE FROM ");
+		result.append(table.getName());
+		result.append(" WHERE ");
+		int length = result.length();
+		for (JDBCValue value : line.getValues()) {
+			if (value.getColumn().isPrimaryKey()) {
+				if (length < result.length()) result.append(" and");
+				result.append(value.getColumn().getName());
+				result.append(" = ");
+				result.append(sqlValue(value.getColumn().getType(), value.getValue()));
+			}
+		}
+		return result.toString();
+	}
+
+
 	public static String sqlValue(String type, String value) {
 		StringBuilder result = new StringBuilder();
 		boolean needsQuotes = needsQuotes(type);

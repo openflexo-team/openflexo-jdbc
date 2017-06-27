@@ -222,6 +222,8 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 
 	JDBCLine insert(JDBCLine line);
 
+	void delete(JDBCLine line);
+
 	abstract class JDBCTableImpl extends FlexoObjectImpl implements JDBCTable {
 
 		private static final Logger LOGGER = Logger.getLogger(JDBCTable.class.getPackage().getName());
@@ -386,6 +388,16 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ schema.getModel().getAddress() +"'", e);
 				return null;
+			}
+		}
+
+		@Override
+		public void delete(JDBCLine line) {
+			JDBCSchema schema = getSchema();
+			try {
+				SQLHelper.delete(line, this);
+			} catch (SQLException e) {
+				LOGGER.log(Level.WARNING, "Can't delete from '"+ getName() +"' on '"+ schema.getModel().getAddress() +"'", e);
 			}
 		}
 
