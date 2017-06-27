@@ -112,7 +112,7 @@ public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnectio
 			long currentTimeMillis = System.currentTimeMillis();
 
 			// TODO adds to preferences
-			int tempo = 200;
+			int tempo = 1000 * 60 * 60;
 
 			if (lastTableUpdate < currentTimeMillis - tempo) {
 				try {

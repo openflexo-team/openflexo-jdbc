@@ -234,8 +234,10 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		@Override
 		public List<JDBCColumn> getColumns() {
 			List<JDBCColumn> columns = (List<JDBCColumn>) performSuperGetter(COLUMNS);
+			int tempo = 1000 * 60 * 60;
+
 			long currentTimeMillis = System.currentTimeMillis();
-			if (lastColumnsUpdate < currentTimeMillis - 200) {
+			if (lastColumnsUpdate < currentTimeMillis - tempo) {
 				try {
 					lastColumnsUpdate = currentTimeMillis;
 					SQLHelper.updateColumns(this, columns, SQLHelper.getFactory(getSchema().getModel()));
