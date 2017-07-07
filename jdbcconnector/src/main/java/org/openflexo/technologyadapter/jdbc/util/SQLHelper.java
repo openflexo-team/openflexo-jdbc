@@ -38,7 +38,6 @@ package org.openflexo.technologyadapter.jdbc.util;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -158,7 +157,6 @@ public class SQLHelper {
 		final Set<JDBCColumn> added = new LinkedHashSet<>();
 		final Set<JDBCColumn> matched = new LinkedHashSet<>();
 		new QueryRunner().query(connection, SELECT_COLUMNS, resultSet -> {
-			ArrayList<JDBCColumn> columns1 = new ArrayList<>();
 			while (resultSet.next()) {
 				String name = resultSet.getString(1);
 
