@@ -26,6 +26,7 @@ import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.gina.utils.InspectorGroup;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcConnectionInitializer;
+import org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.view.JDBCModuleView;
@@ -49,6 +50,7 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	@Override
 	public void initializeActions(ControllerActionInitializer actionInitializer) {
 		new CreateJdbcConnectionInitializer(actionInitializer);
+		new CreateJdbcVirtualModelInitializer(actionInitializer);
 	}
 
     @Override

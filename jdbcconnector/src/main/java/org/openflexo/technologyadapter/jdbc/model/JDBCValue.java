@@ -77,6 +77,11 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 
 	void setIntValue(int newValue);
 
+	boolean  getBooleanValue();
+
+	void setBooleanValue(boolean newValue);
+
+
 	@Setter(VALUE)
 	boolean setValue(String value);
 
@@ -108,6 +113,17 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 		@Override
 		public void setIntValue(int newValue) {
 			setValue(Integer.toString(newValue));
+		}
+
+		@Override
+		public boolean getBooleanValue() {
+			String value = getValue();
+			return Boolean.parseBoolean(value);
+		}
+
+		@Override
+		public void setBooleanValue(boolean newValue) {
+			setValue(Boolean.toString(newValue));
 		}
 
 		@Override
