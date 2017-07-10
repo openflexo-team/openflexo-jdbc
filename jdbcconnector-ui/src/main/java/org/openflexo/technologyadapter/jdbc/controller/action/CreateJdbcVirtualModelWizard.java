@@ -165,5 +165,18 @@ public class CreateJdbcVirtualModelWizard extends FlexoWizard {
 				checkValidity();
 			}
 		}
+
+		public boolean isGenerateSynchronizationScheme() {
+			return action.isGenerateSynchronizationScheme();
+		}
+
+		public void setGenerateSynchronizationScheme(boolean newGenerateSynchronizationScheme) {
+			if (!newGenerateSynchronizationScheme == isGenerateSynchronizationScheme()) {
+				String oldValue = getUser();
+				action.setGenerateSynchronizationScheme(newGenerateSynchronizationScheme);
+				getPropertyChangeSupport().firePropertyChange("user", oldValue, newGenerateSynchronizationScheme);
+				checkValidity();
+			}
+		}
 	}
 }
