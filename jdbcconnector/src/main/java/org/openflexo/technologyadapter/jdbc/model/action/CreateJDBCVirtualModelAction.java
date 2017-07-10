@@ -345,7 +345,9 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 
 			InspectorEntry entry = factory.newInspectorEntry(concept.getInspector());
 			entry.setName(column.getName());
+			entry.setType(typeForColumn(column));
 			entry.setData(new DataBinding<>(property.getName(), concept, null, DataBinding.BindingDefinitionType.GET));
+			entry.setIsReadOnly(column.isPrimaryKey());
 			entry.setWidget(widgetTypeForColumn(column));
 		}
 
@@ -357,7 +359,8 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 	private ExpressionProperty createExpressionPropertyForColumn(FMLModelFactory factory, JDBCColumn column) {
 		ExpressionProperty property = factory.newExpressionProperty();
 		property.setName(column.getName().toLowerCase());
-		property.setExpression(new DataBinding("line.getValue('" + column.getName() + "').value", property, JDBCValue.class, DataBinding.BindingDefinitionType.GET_SET));
+		String suffix = typeForColumn(column) == Integer.class ? "intValue" : "value";
+		property.setExpression(new DataBinding("line.getValue('" + column.getName() + "')." + suffix, property, JDBCValue.class, DataBinding.BindingDefinitionType.GET_SET));
 		return property;
 	}
 
@@ -376,6 +379,24 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 			// TODO find adequate field
 			/* DATE TIME TIMESTAMP */
 			return FlexoBehaviourParameter.WidgetType.TEXT_FIELD;
+		}
+	}
+
+	private Type typeForColumn(JDBCColumn column) {
+		String type = column.getType().toLowerCase();
+		if (type.contains("char")) {
+			return String.class;
+		} else if (type.equals("boolean") || type.equals("bool") || type.equals("bit")) {
+			return Boolean.class;
+		} else if (type.contains("int")) {
+			return Integer.class;
+		} else if ( type.startsWith("dec") || type.contains("numeric") || type.contains("real") ||
+					type.contains("float") || type.startsWith("double") ) {
+			return Float.class;
+		} else {
+			// TODO find adequate field
+			/* DATE TIME TIMESTAMP */
+			return String.class;
 		}
 	}
 
