@@ -44,10 +44,12 @@ import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.ViewPoint;
 import org.openflexo.gina.controller.FIBController;
+import org.openflexo.model.exceptions.ModelExecutionException;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModelAction;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
+import org.openflexo.view.controller.FlexoController;
 
 public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJDBCVirtualModelAction, ViewPoint, FMLObject> {
 
@@ -78,7 +80,19 @@ public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJ
 
 	@Override
 	protected FlexoExceptionHandler<CreateJDBCVirtualModelAction> getDefaultExceptionHandler() {
-		return (exception, action) -> false;
+		return (exception, action) -> {
+			Throwable cause = exception.getCause();
+			if (cause instanceof ModelExecutionException) {
+				String message = cause.getMessage();
+				int indexOf = message.lastIndexOf("message:");
+				if (indexOf >= 0) {
+					message = message.substring(indexOf+ 9);
+				}
+				FlexoController.showError("Can't create model", message);
+				return true;
+			}
+			return false;
+		};
 	}
 
 	@Override

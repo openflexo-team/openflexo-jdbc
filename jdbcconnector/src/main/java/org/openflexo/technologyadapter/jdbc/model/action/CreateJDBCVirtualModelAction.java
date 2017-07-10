@@ -185,10 +185,12 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 	@Override
 	protected void doAction(Object context) throws FlexoException {
 		try {
+			JDBCConnection connection = createJdbcConnection();
+			List<JDBCTable> tables = connection.getSchema().getTables();
+
 			ViewPoint viewPoint = getFocusedObject();
 			ViewPointResource viewPointResource = (ViewPointResource) viewPoint.getResource();
 
-			JDBCFactory factory = new JDBCFactory();
 
 			FMLTechnologyAdapter fmlTechnologyAdapter = getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(FMLTechnologyAdapter.class);
 			VirtualModelResourceFactory resourceFactory = fmlTechnologyAdapter.getViewPointResourceFactory().getVirtualModelResourceFactory();
@@ -216,8 +218,6 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 			CreationScheme creationScheme = createVirtualModelCreationScheme(fmlFactory);
 			virtualModel.addToFlexoBehaviours(creationScheme);
 
-			JDBCConnection connection = factory.makeNewModel(getAddress(), getUser(), getPassword());
-			List<JDBCTable> tables = connection.getSchema().getTables();
 
 			// Adds concept for each table
 			for (JDBCTable table : tables) {
@@ -231,9 +231,14 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 
 			viewPoint.addToVirtualModels(virtualModel);
 
-		} catch (ModelDefinitionException e) {
+		} catch (Exception e) {
 			throw new FlexoException(e);
 		}
+	}
+
+	public JDBCConnection createJdbcConnection() throws ModelDefinitionException {
+		JDBCFactory factory = new JDBCFactory();
+		return factory.makeNewModel(getAddress(), getUser(), getPassword());
 	}
 
 	private CreationScheme createVirtualModelCreationScheme(FMLModelFactory fmlFactory) {
