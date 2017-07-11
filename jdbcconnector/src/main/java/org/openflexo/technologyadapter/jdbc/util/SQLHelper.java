@@ -392,7 +392,7 @@ public class SQLHelper {
 	public static JDBCLine insert(final JDBCLine line, final JDBCTable table) throws SQLException {
 		final JDBCConnection connection = table.getResourceData();
 		String request = createInsertRequest(line, table);
-		String primaryKey = new QueryRunner().insert(connection.getConnection(), request, resultSet -> {
+		String resultKey = new QueryRunner().insert(connection.getConnection(), request, resultSet -> {
 				if (resultSet.getMetaData().getColumnCount() > 0) {
 					resultSet.next();
 					return resultSet.getString(1);
@@ -400,7 +400,9 @@ public class SQLHelper {
 				return null;
 			}
 		);
-		return primaryKey != null ? table.find(primaryKey) : null;
+
+		String primaryKey = resultKey != null ? resultKey : line.getKeys().get(0);
+		return table.find(primaryKey);
 	}
 
 	private static String createInsertRequest(JDBCLine line, JDBCTable table) {
