@@ -125,6 +125,8 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 
 	private Map<JDBCTable, FlexoConcept> tableToConcepts = new HashMap<>();
 
+	private VirtualModel virtualModel = null;
+
 	public String getAddress() {
 		return address;
 	}
@@ -203,7 +205,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 					true
 				);
 
-			VirtualModel virtualModel = vmResource.getLoadedResourceData();
+			virtualModel = vmResource.getLoadedResourceData();
 			virtualModel.setDescription("This virtual model was generated to represent the database '" + getAddress() + "'");
 
 			FMLModelFactory fmlFactory = virtualModel.getFMLModelFactory();
@@ -239,6 +241,10 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 	public JDBCConnection createJdbcConnection() throws ModelDefinitionException {
 		JDBCFactory factory = new JDBCFactory();
 		return factory.makeNewModel(getAddress(), getUser(), getPassword());
+	}
+
+	public VirtualModel getVirtualModel() {
+		return virtualModel;
 	}
 
 	private CreationScheme createVirtualModelCreationScheme(FMLModelFactory fmlFactory) {

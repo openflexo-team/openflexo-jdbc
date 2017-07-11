@@ -40,7 +40,6 @@ import java.io.InputStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.foundation.test.OpenflexoTestCase;
-import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.test.OrderedRunner;
 
 
@@ -54,41 +53,6 @@ import static org.junit.Assert.*;
  */
 @RunWith(OrderedRunner.class)
 public class TestJDBCModel extends OpenflexoTestCase {
-
-    private JDBCTable createTable1(String tableName, JDBCSchema schema) {
-        String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL", "IDENTITY"};
-        String[] name = {"name", "VARCHAR(100)"};
-		return schema.createTable(tableName, id, name);
-    }
-
-    private JDBCTable createTable2(String tableName, JDBCSchema schema) {
-        String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL", "IDENTITY"};
-        String[] name = {"name", "VARCHAR(100)"};
-        String[] lastName = {"lastname", "VARCHAR(100)"};
-        String[] description = {"description", "VARCHAR(500)"};
-        String[] portrait = {"portrait", "VARCHAR(200)"};
-        return schema.createTable(tableName, id, name, lastName, description, portrait);
-    }
-
-   private JDBCTable createTable3(String tableName, JDBCSchema schema) {
-        String[] id = {"id", "INT", "PRIMARY KEY", "NOT NULL"};
-        String[] name = {"c1", "VARCHAR(100)"};
-        String[] lastName = {"c2", "VARCHAR(100)"};
-        String[] otherId = {"other_id", "INT"};
-        return schema.createTable(tableName, id, name, lastName, otherId);
-    }
-
-	private JDBCConnection createJDBCMemoryConnection(String name) throws ModelDefinitionException {
-		return createJDBCConnection("mem:" + name);
-	}
-
-	private JDBCConnection createJDBCConnection(String protocolAndName) throws ModelDefinitionException {
-		JDBCFactory factory = new JDBCFactory(null, null);
-		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
-		connection.setAddress("jdbc:hsqldb:" + protocolAndName);
-		connection.setUser("SA");
-		return connection;
-	}
 
 	@Test
     public void testLoad() throws Exception {
@@ -107,7 +71,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		String[] description = { "description", "VARCHAR(1512)" };
 		String tableName = "testCreateColumns_table1";
 
-		JDBCConnection connection = createJDBCMemoryConnection("createColumns//localhost/");
+		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("createColumns//localhost/");
 
 		JDBCSchema schema = connection.getSchema();
 
@@ -128,7 +92,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		String[] description = { "description", "VARCHAR(1512)" };
 		String tableName = "testDropColumns_table1";
 
-		JDBCConnection connection = createJDBCMemoryConnection("dropColumns");
+		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("dropColumns");
 
 		JDBCSchema schema = connection.getSchema();
 
@@ -148,8 +112,8 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
 	public void testInsertAndSelectLines1() throws Exception {
-		JDBCConnection connection = createJDBCMemoryConnection("insertLine");
-		JDBCTable table1 = createTable1("table1", connection.getSchema());
+		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("insertLine");
+		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
 
 		// insert some values
 		assertNotNull(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
@@ -176,8 +140,8 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
 	public void testUpdateValues() throws Exception {
-		JDBCConnection connection = createJDBCMemoryConnection("updateValues");
-		JDBCTable table1 = createTable1("table1", connection.getSchema());
+		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("updateValues");
+		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
 		assertNotNull(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
 
 		JDBCResultSet set = table1.selectAll();
@@ -194,13 +158,13 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
 	public void testJoin() throws Exception {
-		JDBCConnection connection = createJDBCMemoryConnection("join");
+		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("join");
 		JDBCSchema schema = connection.getSchema();
-		JDBCTable t1 = createTable1("t1", schema);
+		JDBCTable t1 = ModelUtils.createTable1("t1", schema);
 		t1.insert(new String[]{"ID", "1", "NAME", "name1"});
 		t1.insert(new String[]{"ID", "2", "NAME",  "name2"});
 
-		JDBCTable t2 = createTable3("t2", schema);
+		JDBCTable t2 = ModelUtils.createTable3("t2", schema);
 		t2.insert(new String[]{"ID", "1", "C1", "value1", "C2", "string1", "OTHER_ID", "1"});
 		t2.insert(new String[]{"ID", "2", "C1", "value2", "C2", "string2", "OTHER_ID", "2"});
 		t2.insert(new String[]{"ID", "3", "C1", "value3", "C2", "string3", "OTHER_ID", "1"});
