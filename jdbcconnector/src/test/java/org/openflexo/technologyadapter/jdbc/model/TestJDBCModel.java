@@ -116,10 +116,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
 
 		// insert some values
-		assertNotNull(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
-		assertNotNull(table1.insert(new String[]{"ID", "2", "NAME", "toto2"}));
-		assertNotNull(table1.insert(new String[]{"ID", "3", "NAME", "toto3"}));
-		assertNotNull(table1.insert(new String[]{"ID", "4", "NAME", "toto4"}));
+		ModelUtils.addLinesForTable1(table1);
 
 		// insert existing value, must fail
 		assertNull(table1.insert(new String[]{"ID", "2", "NAME", "toto"}));
@@ -165,16 +162,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		t1.insert(new String[]{"ID", "2", "NAME",  "name2"});
 
 		JDBCTable t2 = ModelUtils.createTable3("t2", schema);
-		t2.insert(new String[]{"ID", "1", "C1", "value1", "C2", "string1", "OTHER_ID", "1"});
-		t2.insert(new String[]{"ID", "2", "C1", "value2", "C2", "string2", "OTHER_ID", "2"});
-		t2.insert(new String[]{"ID", "3", "C1", "value3", "C2", "string3", "OTHER_ID", "1"});
-		t2.insert(new String[]{"ID", "4", "C1", "value4", "C2", "string4", "OTHER_ID", "2"});
-		t2.insert(new String[]{"ID", "5", "C1", "value5", "C2", "string5", "OTHER_ID", "1"});
-		t2.insert(new String[]{"ID", "6", "C1", "value6", "C2", "string6", "OTHER_ID", "2"});
-		t2.insert(new String[]{"ID", "7", "C1", "value7", "C2", "string7", "OTHER_ID", "1"});
-		t2.insert(new String[]{"ID", "8", "C1", "value8", "C2", "string8", "OTHER_ID", "2"});
-		t2.insert(new String[]{"ID", "9", "C1", "value9", "C2", "string9", "OTHER_ID", "1"});
-		t2.insert(new String[]{"ID", "10", "C1", "value10", "C2", "string10", "OTHER_ID", "2"});
+		ModelUtils.addLinesForTable3(t2);
 
 		JDBCResultSet resultSet = t1.selectAllWithJoin("InnerJoin", t1.getColumn("id"), t2.getColumn("other_id"));
 		assertNotNull(resultSet);
