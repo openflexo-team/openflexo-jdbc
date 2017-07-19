@@ -38,24 +38,23 @@ package org.openflexo.technologyadapter.jdbc.fml;
 import java.io.File;
 import java.util.List;
 import java.util.Vector;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.FlexoConcept;
-import org.openflexo.foundation.fml.ViewPoint;
-import org.openflexo.foundation.fml.ViewPointRepository;
 import org.openflexo.foundation.fml.VirtualModel;
-import org.openflexo.foundation.fml.rm.ViewPointResource;
-import org.openflexo.foundation.fml.rm.ViewPointResourceFactory;
+import org.openflexo.foundation.fml.VirtualModelRepository;
+import org.openflexo.foundation.fml.rm.VirtualModelResource;
+import org.openflexo.foundation.fml.rm.VirtualModelResourceFactory;
 import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
-import org.openflexo.foundation.fml.rt.View;
-import org.openflexo.foundation.fml.rt.ViewLibrary;
+import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstanceRepository;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
-import org.openflexo.foundation.fml.rt.rm.ViewResource;
-import org.openflexo.foundation.fml.rt.rm.ViewResourceFactory;
+import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
+import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResourceFactory;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
@@ -76,13 +75,12 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 	private final String VIEWPOINT_URI = "http://openflexo.org/test/" + VIEWPOINT_NAME + ".viewpoint";
 
 	private final String VIEW_NAME = "testCreateJDBCVirtualModel";
-	private final String VIEW_URI = "http://openflexo.org/test/"+ VIEW_NAME +".view";
+	private final String VIEW_URI = "http://openflexo.org/test/" + VIEW_NAME + ".view";
 
 	private final String PROJECT_NAME = "CreateJDBCVirtualModelProject";
 
 	private final String VIRTUAL_MODEL_NAME = "TestVirtualModel";
 	private final String VIRTUAL_MODEL_INSTANCE_NAME = "testVirtualModel";
-
 
 	@AfterClass
 	public static void tearDownClass() {
@@ -94,18 +92,13 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		return serviceManager.getTechnologyAdapterService().getTechnologyAdapter(type);
 	}
 
-	private ViewPoint createViewPoint(FlexoEditor project)
-			throws org.openflexo.foundation.resource.SaveResourceException, ModelDefinitionException
-	{
+	private VirtualModel createViewPoint(FlexoEditor project)
+			throws org.openflexo.foundation.resource.SaveResourceException, ModelDefinitionException {
 		FMLTechnologyAdapter fmlTechnologyAdapter = getTA(FMLTechnologyAdapter.class);
-		ViewPointResourceFactory factory = fmlTechnologyAdapter.getViewPointResourceFactory();
-		ViewPointRepository<File> viewPointRepository = project.getProject().getViewPointRepository();
-		ViewPointResource viewPointResource = factory.makeViewPointResource(
-				VIEWPOINT_NAME, VIEWPOINT_URI,
-				viewPointRepository.getRootFolder(),
-				fmlTechnologyAdapter.getTechnologyContextManager(),
-				true
-		);
+		VirtualModelResourceFactory factory = fmlTechnologyAdapter.getVirtualModelResourceFactory();
+		VirtualModelRepository<File> viewPointRepository = project.getProject().getViewPointRepository();
+		VirtualModelResource viewPointResource = factory.makeTopLevelVirtualModelResource(VIEWPOINT_NAME, VIEWPOINT_URI,
+				viewPointRepository.getRootFolder(), fmlTechnologyAdapter.getTechnologyContextManager(), true);
 
 		viewPointResource.save(null);
 		return viewPointResource.getLoadedResourceData();
@@ -121,7 +114,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		return connection;
 	}
 
-	private VirtualModel generateVirtualModel(FlexoEditor project, ViewPoint viewPoint, String address, boolean synchronizationScheme) {
+	private VirtualModel generateVirtualModel(FlexoEditor project, VirtualModel viewPoint, String address, boolean synchronizationScheme) {
 		CreateJDBCVirtualModelAction action = CreateJDBCVirtualModelAction.actionType.makeNewAction(viewPoint, new Vector<>(), project);
 		action.setVirtualModelName(VIRTUAL_MODEL_NAME);
 		action.setAddress(address);
@@ -148,28 +141,22 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		Assert.assertEquals(5, table3Concept.getDeclaredProperties().size());
 	}
 
-	private View createView(FlexoEditor project, ViewPoint viewPoint)
-		throws SaveResourceException, ModelDefinitionException
-	{
+	private VirtualModelInstance createView(FlexoEditor project, VirtualModel virtualModel)
+			throws SaveResourceException, ModelDefinitionException {
 		FMLRTTechnologyAdapter fmlRtTechnologyAdapter = getTA(FMLRTTechnologyAdapter.class);
-		ViewResourceFactory factory = fmlRtTechnologyAdapter.getViewResourceFactory();
-		ViewLibrary<?> viewLibrary = project.getProject().getViewLibrary();
+		FMLRTVirtualModelInstanceResourceFactory factory = fmlRtTechnologyAdapter.getFMLRTVirtualModelInstanceResourceFactory();
+		FMLRTVirtualModelInstanceRepository<?> viewLibrary = project.getProject().getVirtualModelInstanceRepository();
 
-		ViewResource viewResource = factory.makeViewResource(
-				VIEW_NAME, VIEW_URI,
-				viewPoint.getViewPointResource(),
-				viewLibrary.getRootFolder(),
-				fmlRtTechnologyAdapter.getTechnologyContextManager(),
-				true
-			);
+		FMLRTVirtualModelInstanceResource viewResource = factory.makeTopLevelFMLRTVirtualModelInstanceResource(VIEW_NAME, VIEW_URI,
+				virtualModel.getVirtualModelResource(), viewLibrary.getRootFolder(), fmlRtTechnologyAdapter.getTechnologyContextManager(),
+				true);
 
 		return viewResource.getLoadedResourceData();
 	}
 
-	private VirtualModelInstance createVirtualModelInstance(FlexoEditor project, View view, VirtualModel virtualModel)
-			throws SaveResourceException, ModelDefinitionException
-	{
-		CreateBasicVirtualModelInstance action = CreateBasicVirtualModelInstance.actionType.makeNewAction(view, null, project);
+	private VirtualModelInstance createVirtualModelInstance(FlexoEditor project, VirtualModelInstance containerVMI,
+			VirtualModel virtualModel) throws SaveResourceException, ModelDefinitionException {
+		CreateBasicVirtualModelInstance action = CreateBasicVirtualModelInstance.actionType.makeNewAction(containerVMI, null, project);
 		action.setNewVirtualModelInstanceName("data");
 		action.setNewVirtualModelInstanceTitle("data");
 		action.setVirtualModel(virtualModel);
@@ -188,7 +175,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		FlexoEditor project = createProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + VIEWPOINT_NAME);
-		ViewPoint viewPoint = createViewPoint(project);
+		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Generate VirtualModel");
 		VirtualModel virtualModel = generateVirtualModel(project, viewPoint, "jdbc:hsqldb:mem:.", false);
@@ -205,7 +192,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		FlexoEditor project = createProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + VIEWPOINT_NAME);
-		ViewPoint viewPoint = createViewPoint(project);
+		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Prepare database");
 		JDBCConnection connection = prepareDatabase("noSync");
@@ -225,7 +212,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		FlexoEditor project = createProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + VIEWPOINT_NAME);
-		ViewPoint viewPoint = createViewPoint(project);
+		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Prepare database");
 		JDBCConnection connection = prepareDatabase("sync");
@@ -245,7 +232,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		FlexoEditor project = createProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + VIEWPOINT_NAME);
-		ViewPoint viewPoint = createViewPoint(project);
+		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Prepare database");
 		JDBCConnection connection = prepareDatabase("syncAndView");
@@ -256,13 +243,12 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		Assert.assertEquals(2, virtualModel.getFlexoBehaviours().size());
 
 		log("Create view " + VIEW_NAME);
-		View view = createView(project, viewPoint);
+		VirtualModelInstance view = createView(project, viewPoint);
 
 		log("Create virtual model instance " + VIRTUAL_MODEL_INSTANCE_NAME);
 		VirtualModelInstance instance = createVirtualModelInstance(project, view, virtualModel);
 
 		Assert.assertEquals(14, instance.getFlexoConceptInstances().size());
 	}
-
 
 }

@@ -35,14 +35,16 @@
 package org.openflexo.technologyadapter.jdbc.controller.action;
 
 import java.util.logging.Logger;
-import javax.swing.*;
+
+import javax.swing.Icon;
+
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
 import org.openflexo.foundation.action.FlexoActionFinalizer;
 import org.openflexo.foundation.action.FlexoActionInitializer;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.fml.FMLObject;
-import org.openflexo.foundation.fml.ViewPoint;
+import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.gina.controller.FIBController;
 import org.openflexo.model.exceptions.ModelExecutionException;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
@@ -51,7 +53,7 @@ import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJDBCVirtualModelAction, ViewPoint, FMLObject> {
+public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJDBCVirtualModelAction, VirtualModel, FMLObject> {
 
 	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
 
@@ -86,7 +88,7 @@ public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJ
 				String message = cause.getMessage();
 				int indexOf = message.lastIndexOf("message:");
 				if (indexOf >= 0) {
-					message = message.substring(indexOf+ 9);
+					message = message.substring(indexOf + 9);
 				}
 				FlexoController.showError("Can't create model", message);
 				return true;

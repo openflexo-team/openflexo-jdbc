@@ -60,6 +60,7 @@ import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.FreeModelSlotInstanceConfiguration;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
+@Deprecated
 public class JDBCModelSlotInstanceConfiguration extends FreeModelSlotInstanceConfiguration<JDBCConnection, JDBCModelSlot> {
 
 	protected JDBCModelSlotInstanceConfiguration(JDBCModelSlot ms, FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {

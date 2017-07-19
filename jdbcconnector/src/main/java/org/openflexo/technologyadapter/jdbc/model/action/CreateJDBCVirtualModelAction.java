@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
@@ -54,13 +55,11 @@ import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.SynchronizationScheme;
-import org.openflexo.foundation.fml.ViewPoint;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.controlgraph.IterationAction;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.inspector.InspectorEntry;
-import org.openflexo.foundation.fml.rm.ViewPointResource;
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rm.VirtualModelResourceFactory;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
@@ -82,37 +81,38 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
 
-public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualModelAction, ViewPoint, FMLObject> {
+public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualModelAction, VirtualModel, FMLObject> {
 
 	private static final Logger logger = Logger.getLogger(CreateJDBCVirtualModelAction.class.getPackage().getName());
 
-	public static FlexoActionType<CreateJDBCVirtualModelAction, ViewPoint, FMLObject> actionType = new FlexoActionType<CreateJDBCVirtualModelAction, ViewPoint, FMLObject>(
+	public static FlexoActionType<CreateJDBCVirtualModelAction, VirtualModel, FMLObject> actionType = new FlexoActionType<CreateJDBCVirtualModelAction, VirtualModel, FMLObject>(
 			"create_jdbc_virtualmodel", FlexoActionType.newMenu, FlexoActionType.defaultGroup, FlexoActionType.ADD_ACTION_TYPE) {
 
 		/**
 		 * Factory method
 		 */
 		@Override
-		public CreateJDBCVirtualModelAction makeNewAction(ViewPoint focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
+		public CreateJDBCVirtualModelAction makeNewAction(VirtualModel focusedObject, Vector<FMLObject> globalSelection,
+				FlexoEditor editor) {
 			return new CreateJDBCVirtualModelAction(focusedObject, globalSelection, editor);
 		}
 
 		@Override
-		public boolean isVisibleForSelection(ViewPoint object, Vector<FMLObject> globalSelection) {
+		public boolean isVisibleForSelection(VirtualModel object, Vector<FMLObject> globalSelection) {
 			// TODO check what should be done
-			//return object != null && object.getResourceRepository() instanceof JDBCResourceRepository;
+			// return object != null && object.getResourceRepository() instanceof JDBCResourceRepository;
 			return true;
 		}
 
 		@Override
-		public boolean isEnabledForSelection(ViewPoint object, Vector<FMLObject> globalSelection) {
+		public boolean isEnabledForSelection(VirtualModel object, Vector<FMLObject> globalSelection) {
 			return object != null;
 		}
 
 	};
 
 	static {
-		FlexoObjectImpl.addActionForClass(CreateJDBCVirtualModelAction.actionType, ViewPoint.class);
+		FlexoObjectImpl.addActionForClass(CreateJDBCVirtualModelAction.actionType, VirtualModel.class);
 	}
 
 	private String address = "jdbc:hsqldb:hsql://localhost/";
@@ -167,7 +167,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		this.generateSynchronizationScheme = generateSynchronizationScheme;
 	}
 
-	CreateJDBCVirtualModelAction(ViewPoint focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
+	CreateJDBCVirtualModelAction(VirtualModel focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 
@@ -183,27 +183,22 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		return getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class);
 	}
 
-
 	@Override
 	protected void doAction(Object context) throws FlexoException {
 		try {
 			JDBCConnection connection = createJdbcConnection();
 			List<JDBCTable> tables = connection.getSchema().getTables();
 
-			ViewPoint viewPoint = getFocusedObject();
-			ViewPointResource viewPointResource = (ViewPointResource) viewPoint.getResource();
+			VirtualModel viewPoint = getFocusedObject();
+			VirtualModelResource viewPointResource = (VirtualModelResource) viewPoint.getResource();
 
-
-			FMLTechnologyAdapter fmlTechnologyAdapter = getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(FMLTechnologyAdapter.class);
-			VirtualModelResourceFactory resourceFactory = fmlTechnologyAdapter.getViewPointResourceFactory().getVirtualModelResourceFactory();
+			FMLTechnologyAdapter fmlTechnologyAdapter = getServiceManager().getTechnologyAdapterService()
+					.getTechnologyAdapter(FMLTechnologyAdapter.class);
+			VirtualModelResourceFactory resourceFactory = fmlTechnologyAdapter.getVirtualModelResourceFactory();
 
 			// creates the virtual model
-			VirtualModelResource vmResource = resourceFactory.makeVirtualModelResource(
-					getVirtualModelName(),
-					viewPointResource,
-					fmlTechnologyAdapter.getTechnologyContextManager(),
-					true
-				);
+			VirtualModelResource vmResource = resourceFactory.makeContainedVirtualModelResource(getVirtualModelName(), viewPointResource,
+					fmlTechnologyAdapter.getTechnologyContextManager(), true);
 
 			virtualModel = vmResource.getLoadedResourceData();
 			virtualModel.setDescription("This virtual model was generated to represent the database '" + getAddress() + "'");
@@ -219,7 +214,6 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 			// Adds creation scheme
 			CreationScheme creationScheme = createVirtualModelCreationScheme(fmlFactory);
 			virtualModel.addToFlexoBehaviours(creationScheme);
-
 
 			// Adds concept for each table
 			for (JDBCTable table : tables) {
@@ -253,14 +247,16 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 
 		addParameter(fmlFactory, creationScheme, "address", String.class, getAddress());
 		addParameter(fmlFactory, creationScheme, "user", String.class, getUser());
-		addParameter(fmlFactory, creationScheme, "password",  String.class, null);
+		addParameter(fmlFactory, creationScheme, "password", String.class, null);
 
 		AssignationAction assignation = fmlFactory.newAssignationAction();
 		assignation.setAssignation(new DataBinding("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
 		CreateJDBCResource action = fmlFactory.newInstance(CreateJDBCResource.class);
 		action.setReceiver(new DataBinding("db", creationScheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
-		action.setResourceName(new DataBinding("'db_' + virtualModelInstance.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setResourceCenter(new DataBinding("resourceCenter", creationScheme, FlexoResourceCenter.class, DataBinding.BindingDefinitionType.GET));
+		action.setResourceName(
+				new DataBinding("'db_' + virtualModelInstance.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setResourceCenter(
+				new DataBinding("resourceCenter", creationScheme, FlexoResourceCenter.class, DataBinding.BindingDefinitionType.GET));
 		action.setAddress(new DataBinding("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setUser(new DataBinding("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setPassword(new DataBinding("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
@@ -282,20 +278,22 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 
 			if (scheme.getControlGraph() == null) {
 				scheme.setControlGraph(action);
-			} else {
+			}
+			else {
 				scheme.getControlGraph().sequentiallyAppend(action);
 			}
-
 
 			SelectJDBCLine select = factory.newInstance(SelectJDBCLine.class);
 			action.setIterationAction(select);
 			select.setReceiver(new DataBinding("db", scheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
-			select.setTable(new DataBinding("db.schema.getTable('"+ table.getName() + "')", scheme, JDBCTable.class, DataBinding.BindingDefinitionType.GET));
+			select.setTable(new DataBinding("db.schema.getTable('" + table.getName() + "')", scheme, JDBCTable.class,
+					DataBinding.BindingDefinitionType.GET));
 
 			MatchFlexoConceptInstance match = factory.newMatchFlexoConceptInstance();
 			action.setControlGraph(match);
 
-			match.setReceiver(new DataBinding("virtualModelInstance", scheme, VirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
+			match.setReceiver(
+					new DataBinding("virtualModelInstance", scheme, VirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
 
 			FlexoConcept flexoConcept = tableToConcepts.get(table);
 			CreationScheme creationScheme = flexoConcept.getCreationSchemes().get(0);
@@ -308,7 +306,8 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 				}
 			}
 
-			CreateFlexoConceptInstanceParameter parameter = factory.newCreateFlexoConceptInstanceParameter(creationScheme.getParameter("line"));
+			CreateFlexoConceptInstanceParameter parameter = factory
+					.newCreateFlexoConceptInstanceParameter(creationScheme.getParameter("line"));
 			parameter.setValue(new DataBinding("item", scheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
 			parameter.setAction(match);
 			match.addToParameters(parameter);
@@ -324,7 +323,8 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		parameter.setName(address);
 		parameter.setType(type);
 		if (defaultValue != null) {
-			parameter.setDefaultValue(new DataBinding<Object>("'" + defaultValue + "'", creationScheme, null, DataBinding.BindingDefinitionType.GET));
+			parameter.setDefaultValue(
+					new DataBinding<Object>("'" + defaultValue + "'", creationScheme, null, DataBinding.BindingDefinitionType.GET));
 		}
 		creationScheme.addToParameters(parameter);
 	}
@@ -366,7 +366,8 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		ExpressionProperty property = factory.newExpressionProperty();
 		property.setName(column.getName().toLowerCase());
 		String suffix = typeForColumn(column) == Integer.class ? "intValue" : "value";
-		property.setExpression(new DataBinding("line.getValue('" + column.getName() + "')." + suffix, property, JDBCValue.class, DataBinding.BindingDefinitionType.GET_SET));
+		property.setExpression(new DataBinding("line.getValue('" + column.getName() + "')." + suffix, property, JDBCValue.class,
+				DataBinding.BindingDefinitionType.GET_SET));
 		return property;
 	}
 
@@ -374,14 +375,18 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		String type = column.getType().toLowerCase();
 		if (type.contains("char")) {
 			return FlexoBehaviourParameter.WidgetType.TEXT_FIELD;
-		} else if (type.equals("boolean") || type.equals("bool") || type.equals("bit")) {
+		}
+		else if (type.equals("boolean") || type.equals("bool") || type.equals("bit")) {
 			return FlexoBehaviourParameter.WidgetType.CHECKBOX;
-		} else if (type.contains("int")) {
+		}
+		else if (type.contains("int")) {
 			return FlexoBehaviourParameter.WidgetType.INTEGER;
-		} else if ( type.startsWith("dec") || type.contains("numeric") || type.contains("real") ||
-					type.contains("float") || type.startsWith("double") ) {
+		}
+		else if (type.startsWith("dec") || type.contains("numeric") || type.contains("real") || type.contains("float")
+				|| type.startsWith("double")) {
 			return FlexoBehaviourParameter.WidgetType.FLOAT;
-		} else {
+		}
+		else {
 			// TODO find adequate field
 			/* DATE TIME TIMESTAMP */
 			return FlexoBehaviourParameter.WidgetType.TEXT_FIELD;
@@ -392,14 +397,18 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		String type = column.getType().toLowerCase();
 		if (type.contains("char")) {
 			return String.class;
-		} else if (type.equals("boolean") || type.equals("bool") || type.equals("bit")) {
+		}
+		else if (type.equals("boolean") || type.equals("bool") || type.equals("bit")) {
 			return Boolean.class;
-		} else if (type.contains("int")) {
+		}
+		else if (type.contains("int")) {
 			return Integer.class;
-		} else if ( type.startsWith("dec") || type.contains("numeric") || type.contains("real") ||
-					type.contains("float") || type.startsWith("double") ) {
+		}
+		else if (type.startsWith("dec") || type.contains("numeric") || type.contains("real") || type.contains("float")
+				|| type.startsWith("double")) {
 			return Float.class;
-		} else {
+		}
+		else {
 			// TODO find adequate field
 			/* DATE TIME TIMESTAMP */
 			return String.class;
