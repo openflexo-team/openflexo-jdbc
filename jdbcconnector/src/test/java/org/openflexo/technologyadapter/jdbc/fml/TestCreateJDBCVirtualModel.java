@@ -96,7 +96,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 			throws org.openflexo.foundation.resource.SaveResourceException, ModelDefinitionException {
 		FMLTechnologyAdapter fmlTechnologyAdapter = getTA(FMLTechnologyAdapter.class);
 		VirtualModelResourceFactory factory = fmlTechnologyAdapter.getVirtualModelResourceFactory();
-		VirtualModelRepository<File> viewPointRepository = project.getProject().getViewPointRepository();
+		VirtualModelRepository<File> viewPointRepository = project.getProject().getVirtualModelRepository();
 		VirtualModelResource viewPointResource = factory.makeTopLevelVirtualModelResource(VIEWPOINT_NAME, VIEWPOINT_URI,
 				viewPointRepository.getRootFolder(), fmlTechnologyAdapter.getTechnologyContextManager(), true);
 
