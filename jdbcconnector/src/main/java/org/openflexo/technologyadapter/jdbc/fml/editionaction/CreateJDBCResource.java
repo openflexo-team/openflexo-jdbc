@@ -38,6 +38,7 @@ package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
@@ -75,26 +76,29 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 	String PASSWORD = "password";
 	String ADDRESS = "address";
 
-	@Getter(USER) @XMLAttribute
+	@Getter(USER)
+	@XMLAttribute
 	DataBinding<String> getUser();
 
 	@Setter(USER)
 	void setUser(DataBinding<String> user);
 
-	@Getter(PASSWORD) @XMLAttribute
+	@Getter(PASSWORD)
+	@XMLAttribute
 	DataBinding<String> getPassword();
 
 	@Setter(PASSWORD)
 	void setPassword(DataBinding<String> password);
 
-	@Getter(ADDRESS) @XMLAttribute
+	@Getter(ADDRESS)
+	@XMLAttribute
 	DataBinding<String> getAddress();
 
 	@Setter(ADDRESS)
 	void setAddress(DataBinding<String> address);
 
-	abstract class CreateJDBCResourceImpl
-			extends AbstractCreateResourceImpl<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter>implements CreateJDBCResource {
+	abstract class CreateJDBCResourceImpl extends AbstractCreateResourceImpl<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter>
+			implements CreateJDBCResource {
 
 		private static final Logger logger = Logger.getLogger(CreateJDBCResourceImpl.class.getPackage().getName());
 
@@ -173,9 +177,11 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 				String resourceName = getResourceName(evaluationContext);
 				String resourceURI = getResourceURI(evaluationContext);
 				FlexoResourceCenter<?> rc = getResourceCenter(evaluationContext);
-				JDBCTechnologyAdapter technologyAdapter = getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class);
+				JDBCTechnologyAdapter technologyAdapter = getServiceManager().getTechnologyAdapterService()
+						.getTechnologyAdapter(JDBCTechnologyAdapter.class);
 
-				JDBCResource newResource = createResource(technologyAdapter, JDBCResourceFactory.class, rc, resourceName, resourceURI, getRelativePath(), ".jdbc", true);
+				JDBCResource newResource = createResource(technologyAdapter, JDBCResourceFactory.class, rc, resourceName, resourceURI,
+						getRelativePath(), ".jdbc", true);
 				JDBCConnection connection = newResource.getResourceData(null);
 
 				connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
@@ -183,10 +189,9 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 				connection.setPassword(evaluateDataBinding(getPassword(), evaluationContext));
 
 				return connection;
-			} catch (ModelDefinitionException |FileNotFoundException | ResourceLoadingCancelledException e) {
+			} catch (ModelDefinitionException | FileNotFoundException | ResourceLoadingCancelledException e) {
 				throw new FlexoException(e);
 			}
-
 
 		}
 	}

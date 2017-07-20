@@ -253,10 +253,9 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		assignation.setAssignation(new DataBinding("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
 		CreateJDBCResource action = fmlFactory.newInstance(CreateJDBCResource.class);
 		action.setReceiver(new DataBinding("db", creationScheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
-		action.setResourceName(
-				new DataBinding("'db_' + virtualModelInstance.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setResourceCenter(
-				new DataBinding("resourceCenter", creationScheme, FlexoResourceCenter.class, DataBinding.BindingDefinitionType.GET));
+		action.setResourceName(new DataBinding("'db_' + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setResourceCenter(new DataBinding("this.resource.resourceCenter", creationScheme, FlexoResourceCenter.class,
+				DataBinding.BindingDefinitionType.GET));
 		action.setAddress(new DataBinding("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setUser(new DataBinding("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setPassword(new DataBinding("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
@@ -292,8 +291,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 			MatchFlexoConceptInstance match = factory.newMatchFlexoConceptInstance();
 			action.setControlGraph(match);
 
-			match.setReceiver(
-					new DataBinding("virtualModelInstance", scheme, VirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
+			match.setReceiver(new DataBinding("this", scheme, VirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
 
 			FlexoConcept flexoConcept = tableToConcepts.get(table);
 			CreationScheme creationScheme = flexoConcept.getCreationSchemes().get(0);

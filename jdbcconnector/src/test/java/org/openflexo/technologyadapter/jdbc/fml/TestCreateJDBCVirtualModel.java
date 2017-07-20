@@ -248,6 +248,8 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		log("Create virtual model instance " + VIRTUAL_MODEL_INSTANCE_NAME);
 		VirtualModelInstance instance = createVirtualModelInstance(project, view, virtualModel);
 
+		System.out.println("FML=" + virtualModel.getFMLRepresentation());
+
 		Assert.assertEquals(14, instance.getFlexoConceptInstances().size());
 	}
 
