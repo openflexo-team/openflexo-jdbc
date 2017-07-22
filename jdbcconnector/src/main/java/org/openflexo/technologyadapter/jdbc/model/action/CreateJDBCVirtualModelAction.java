@@ -62,7 +62,7 @@ import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.inspector.InspectorEntry;
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rm.VirtualModelResourceFactory;
-import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.editionaction.CreateFlexoConceptInstanceParameter;
 import org.openflexo.foundation.fml.rt.editionaction.MatchFlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.editionaction.MatchingCriteria;
@@ -291,7 +291,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 			MatchFlexoConceptInstance match = factory.newMatchFlexoConceptInstance();
 			action.setControlGraph(match);
 
-			match.setReceiver(new DataBinding("this", scheme, VirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
+			match.setReceiver(new DataBinding("this", scheme, FMLRTVirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
 
 			FlexoConcept flexoConcept = tableToConcepts.get(table);
 			CreationScheme creationScheme = flexoConcept.getCreationSchemes().get(0);

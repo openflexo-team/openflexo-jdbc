@@ -51,7 +51,7 @@ import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rm.VirtualModelResourceFactory;
 import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstanceRepository;
-import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResourceFactory;
@@ -141,7 +141,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		Assert.assertEquals(5, table3Concept.getDeclaredProperties().size());
 	}
 
-	private VirtualModelInstance createView(FlexoEditor project, VirtualModel virtualModel)
+	private FMLRTVirtualModelInstance createView(FlexoEditor project, VirtualModel virtualModel)
 			throws SaveResourceException, ModelDefinitionException {
 		FMLRTTechnologyAdapter fmlRtTechnologyAdapter = getTA(FMLRTTechnologyAdapter.class);
 		FMLRTVirtualModelInstanceResourceFactory factory = fmlRtTechnologyAdapter.getFMLRTVirtualModelInstanceResourceFactory();
@@ -154,7 +154,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		return viewResource.getLoadedResourceData();
 	}
 
-	private VirtualModelInstance createVirtualModelInstance(FlexoEditor project, VirtualModelInstance containerVMI,
+	private FMLRTVirtualModelInstance createVirtualModelInstance(FlexoEditor project, FMLRTVirtualModelInstance containerVMI,
 			VirtualModel virtualModel) throws SaveResourceException, ModelDefinitionException {
 		CreateBasicVirtualModelInstance action = CreateBasicVirtualModelInstance.actionType.makeNewAction(containerVMI, null, project);
 		action.setNewVirtualModelInstanceName("data");
@@ -243,10 +243,10 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 		Assert.assertEquals(2, virtualModel.getFlexoBehaviours().size());
 
 		log("Create view " + VIEW_NAME);
-		VirtualModelInstance view = createView(project, viewPoint);
+		FMLRTVirtualModelInstance view = createView(project, viewPoint);
 
 		log("Create virtual model instance " + VIRTUAL_MODEL_INSTANCE_NAME);
-		VirtualModelInstance instance = createVirtualModelInstance(project, view, virtualModel);
+		FMLRTVirtualModelInstance instance = createVirtualModelInstance(project, view, virtualModel);
 
 		System.out.println("FML=" + virtualModel.getFMLRepresentation());
 

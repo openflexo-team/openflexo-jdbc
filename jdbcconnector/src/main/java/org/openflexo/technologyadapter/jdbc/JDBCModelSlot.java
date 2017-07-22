@@ -62,7 +62,7 @@ import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
 import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
 import org.openflexo.foundation.fml.annotations.DeclareFetchRequests;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoRoles;
-import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.action.ModelSlotInstanceConfiguration;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
@@ -141,7 +141,7 @@ public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 		}
 
 		@Override
-		public TechnologyAdapterResource<JDBCConnection, ?> createProjectSpecificEmptyResource(AbstractVirtualModelInstance<?, ?> view,
+		public TechnologyAdapterResource<JDBCConnection, ?> createProjectSpecificEmptyResource(VirtualModelInstance<?, ?> view,
 				String filename, String modelUri) {
 			// TODO create empty resource
 			return null;
