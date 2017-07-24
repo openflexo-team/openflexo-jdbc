@@ -49,40 +49,45 @@ import org.openflexo.toolbox.StringUtils;
 /**
  *
  */
-public class JDBCResourceFactory
-    extends PamelaResourceFactory<JDBCResource, JDBCConnection, JDBCTechnologyAdapter, JDBCFactory>
-{
+public class JDBCResourceFactory extends PamelaResourceFactory<JDBCResource, JDBCConnection, JDBCTechnologyAdapter, JDBCFactory> {
 
-    public static final String JDBC_EXTENSION = ".jdbc";
+	public static final String JDBC_EXTENSION = ".jdbc";
 
-    public JDBCResourceFactory() throws ModelDefinitionException {
-        super(JDBCResource.class);
-    }
+	public JDBCResourceFactory() throws ModelDefinitionException {
+		super(JDBCResource.class);
+	}
 
-    @Override
-    public JDBCFactory makeResourceDataFactory(JDBCResource resource, TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
-        return new JDBCFactory(resource, technologyContextManager.getServiceManager().getEditingContext()) ;
-    }
+	@Override
+	public JDBCFactory makeResourceDataFactory(JDBCResource resource,
+			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
+		return new JDBCFactory(resource, technologyContextManager.getServiceManager().getEditingContext());
+	}
 
-    @Override
-    public JDBCConnection makeEmptyResourceData(JDBCResource resource) {
+	@Override
+	public JDBCConnection makeEmptyResourceData(JDBCResource resource) {
 		return resource.getFactory().makeEmptyModel();
 	}
 
-    @Override
-    public <I> boolean isValidArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
-        String name = resourceCenter.retrieveName(serializationArtefact);
-        return StringUtils.hasExtension(name, JDBC_EXTENSION);
-    }
+	@Override
+	public <I> boolean isValidArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
+		String name = resourceCenter.retrieveName(serializationArtefact);
+		return StringUtils.hasExtension(name, JDBC_EXTENSION);
+	}
 
-    public <I> JDBCResource makeJDBCResource(String baseName, RepositoryFolder<JDBCResource, I> folder, TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager)
-        throws SaveResourceException, ModelDefinitionException {
+	@Override
+	public <I> I getConvertableArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
+		return null;
+	}
 
-        FlexoResourceCenter<I> rc = folder.getResourceRepository().getResourceCenter();
-        String artefactName = baseName.endsWith(JDBC_EXTENSION) ? baseName : baseName + JDBC_EXTENSION;
-        I serializationArtefact = rc.createEntry(artefactName, folder.getSerializationArtefact());
-        JDBCResource newJDBCResource = makeResource(serializationArtefact, rc, technologyContextManager, true);
+	public <I> JDBCResource makeJDBCResource(String baseName, RepositoryFolder<JDBCResource, I> folder,
+			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager)
+			throws SaveResourceException, ModelDefinitionException {
 
-        return newJDBCResource;
-    }
+		FlexoResourceCenter<I> rc = folder.getResourceRepository().getResourceCenter();
+		String artefactName = baseName.endsWith(JDBC_EXTENSION) ? baseName : baseName + JDBC_EXTENSION;
+		I serializationArtefact = rc.createEntry(artefactName, folder.getSerializationArtefact());
+		JDBCResource newJDBCResource = makeResource(serializationArtefact, rc, technologyContextManager, true);
+
+		return newJDBCResource;
+	}
 }
