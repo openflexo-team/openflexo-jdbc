@@ -46,21 +46,7 @@ import javax.persistence.metamodel.EntityType;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.MappingException;
 import org.hibernate.boot.Metadata;
-import org.hibernate.boot.internal.ClassLoaderAccessImpl;
-import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
-import org.hibernate.boot.internal.MetadataBuilderImpl;
-import org.hibernate.boot.internal.MetadataBuilderImpl.MetadataBuildingOptionsImpl;
-import org.hibernate.boot.internal.MetadataBuildingContextRootImpl;
-import org.hibernate.boot.spi.MetadataImplementor;
-import org.hibernate.mapping.Column;
-import org.hibernate.mapping.Property;
-import org.hibernate.mapping.RootClass;
-import org.hibernate.mapping.SimpleValue;
-import org.hibernate.mapping.Table;
-import org.hibernate.mapping.UniqueKey;
-import org.hibernate.type.TypeResolver;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.BindingModel;
@@ -70,6 +56,7 @@ import org.openflexo.connie.DefaultBindable;
 import org.openflexo.connie.hbn.HbnEntityBindingModel;
 import org.openflexo.connie.hbn.HibernateBindingFactory;
 import org.openflexo.hbn.test.HbnTest;
+import org.openflexo.hbn.test.model.DynamicModel;
 
 public class BindingFactoryTestOnDynamicModel extends HbnTest {
 
@@ -115,85 +102,19 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		MetadataBuildingOptionsImpl buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(hbnRegistry);
-		InFlightMetadataCollectorImpl metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
-		ClassLoaderAccessImpl classLoaderAccess = new ClassLoaderAccessImpl(null, hbnRegistry);
-
-		MetadataBuildingContextRootImpl metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions, classLoaderAccess,
-				metadataCollector);
-
-		Metadata metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
-
-		// Creation / Définition de la table
-		Table table = metadataCollector.addTable("", "", "T_Dynamic_Table", null, false);
-		table.setName("T_Dynamic_Table");
-		Column col = new Column();
-		col.setName("pouet");
-		col.setLength(256);
-		col.setSqlType("CHAR(256)");
-		col.setUnique(true);
-		table.addColumn(col);
-		UniqueKey uk = new UniqueKey();
-		uk.setTable(table);
-		uk.addColumn(col);
-		table.addUniqueKey(uk);
-
-		Column col2 = new Column();
-		col2.setName("padam");
-		col2.setLength(256);
-		col2.setSqlType("CHAR(256)");
-		col2.setNullable(true);
-		table.addColumn(col2);
-
-		// Creation de l'entité persistée
-
-		RootClass pClass = new RootClass(metadataBuildingContext);
-		pClass.setEntityName("Dynamic_Class");
-		pClass.setJpaEntityName("Dynamic_Class");
-		pClass.setTable(table);
-		metadataCollector.addEntityBinding(pClass);
-
-		// Creation d'une propriété (clef) et son mapping
-
-		Property prop = new Property();
-		prop.setName("Nom");
-		SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
-		value.setIdentifierGeneratorStrategy("assigned");
-		value.setTypeName("java.lang.String");
-		value.addColumn(col);
-		value.setTable(table);
-		prop.setValue(value);
-		pClass.setIdentifier(value);
-		pClass.setIdentifierProperty(prop);
-		// pClass.addProperty(prop);
-
-		// Creation d'une propriété (clef) et son mapping
-
-		prop = new Property();
-		prop.setName("Prenom");
-		value = new SimpleValue((MetadataImplementor) metadata, table);
-		value.setTypeName(String.class.getCanonicalName());
-		value.addColumn(col2);
-		value.setTable(table);
-		prop.setValue(value);
-		pClass.addProperty(prop);
-
-		try {
-			((MetadataImplementor) metadata).validate();
-		} catch (MappingException e) {
-			System.out.println("Validation Error: " + e.getMessage());
-		}
+		// Creation du model
+		Metadata metadata = DynamicModel.buildDynamicModel(hbnRegistry);
 
 		// Creation de la session
 
 		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
 		hbnSession = hbnSessionFactory.withOptions().openSession();
-
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 
+		// Close session
 		hbnSession.close();
 
 		super.tearDown();
