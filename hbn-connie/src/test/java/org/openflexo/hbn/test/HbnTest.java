@@ -40,6 +40,7 @@ package org.openflexo.hbn.test;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.hibernate.Session;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -64,6 +65,8 @@ public abstract class HbnTest extends TestCase {
 	protected final StandardServiceRegistryBuilder hbnRegistryBuilder = new StandardServiceRegistryBuilder(hbnBsRegistry);
 
 	protected StandardServiceRegistry hbnRegistry = null;
+
+	protected Session hbnSession = null;
 
 	@Override
 	protected void setUp() throws Exception {
