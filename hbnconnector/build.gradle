@@ -1,0 +1,16 @@
+dependencies {
+  // openflexo dep
+  compile flexoFoundation()
+  
+  // external dep
+  compile "org.hibernate:hibernate-core:${hbn_version}"
+  compile project(':hbn-connie')
+  
+  // testing dep
+  testCompile testUtils()
+  testCompile flexoFoundationTest()
+  
+  // Test resource center
+  testRuntime project(':hbnconnector-test-rc')
+  
+}
