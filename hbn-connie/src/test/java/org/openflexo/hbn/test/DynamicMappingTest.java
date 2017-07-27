@@ -44,106 +44,46 @@ import java.util.Set;
 
 import javax.persistence.metamodel.EntityType;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.MappingException;
 import org.hibernate.boot.Metadata;
-import org.hibernate.boot.internal.ClassLoaderAccessImpl;
-import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
-import org.hibernate.boot.internal.MetadataBuilderImpl;
-import org.hibernate.boot.internal.MetadataBuilderImpl.MetadataBuildingOptionsImpl;
-import org.hibernate.boot.internal.MetadataBuildingContextRootImpl;
-import org.hibernate.boot.spi.MetadataImplementor;
-import org.hibernate.mapping.Column;
-import org.hibernate.mapping.Property;
-import org.hibernate.mapping.RootClass;
-import org.hibernate.mapping.SimpleValue;
-import org.hibernate.mapping.Table;
-import org.hibernate.mapping.UniqueKey;
 import org.hibernate.query.NativeQuery;
-import org.hibernate.type.TypeResolver;
+import org.openflexo.hbn.test.model.DynamicModelBuilder;
 
 public class DynamicMappingTest extends HbnTest {
+
+	private DynamicModelBuilder modelBuilder;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+
+		// Creation du model
+		DynamicModelBuilder modelBuilder = new DynamicModelBuilder(hbnRegistry);
+		Metadata metadata = modelBuilder.buildDynamicModel();
+
+		// Creation de la session
+
+		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
+		hbnSession = hbnSessionFactory.withOptions().openSession();
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+
+		// Close session
+		hbnSession.close();
+
+		super.tearDown();
+	}
 
 	public void testDynamicMapping() {
 
 		System.out.println("*********** testDynamicMapping");
 
-		MetadataBuildingOptionsImpl buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(hbnRegistry);
-		InFlightMetadataCollectorImpl metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
-		ClassLoaderAccessImpl classLoaderAccess = new ClassLoaderAccessImpl(null, hbnRegistry);
+		System.out.println("*********** testDynamicMapping");
 
-		MetadataBuildingContextRootImpl metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions, classLoaderAccess,
-				metadataCollector);
-
-		Metadata metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
-
-		// Creation / Définition de la table
-		Table table = metadataCollector.addTable("", "", "T_Dynamic_Table", null, false);
-		table.setName("T_Dynamic_Table");
-		Column col = new Column();
-		col.setName("pouet");
-		col.setLength(256);
-		col.setSqlType("CHAR(256)");
-		col.setUnique(true);
-		table.addColumn(col);
-		UniqueKey uk = new UniqueKey();
-		uk.setTable(table);
-		uk.addColumn(col);
-		table.addUniqueKey(uk);
-
-		Column col2 = new Column();
-		col2.setName("padam");
-		col2.setLength(256);
-		col2.setSqlType("CHAR(256)");
-		col2.setNullable(true);
-		table.addColumn(col2);
-
-		// Creation de l'entité persistée
-
-		RootClass pClass = new RootClass(metadataBuildingContext);
-		pClass.setEntityName("Dynamic_Class");
-		pClass.setJpaEntityName("Dynamic_Class");
-		pClass.setTable(table);
-		metadataCollector.addEntityBinding(pClass);
-
-		// Creation d'une propriété (clef) et son mapping
-
-		Property prop = new Property();
-		prop.setName("Nom");
-		prop.setNaturalIdentifier(true);
-		SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
-		value.setIdentifierGeneratorStrategy("assigned");
-		value.setTypeName("java.lang.String");
-		value.addColumn(col);
-		value.setTable(table);
-		prop.setValue(value);
-		pClass.setIdentifier(value);
-		pClass.setIdentifierProperty(prop);
-		// pClass.addProperty(prop);
-
-		// Creation d'une propriété (clef) et son mapping
-
-		prop = new Property();
-		prop.setName("Prenom");
-		value = new SimpleValue((MetadataImplementor) metadata, table);
-		value.setTypeName(String.class.getCanonicalName());
-		value.addColumn(col2);
-		value.setTable(table);
-		prop.setValue(value);
-		pClass.addProperty(prop);
-
-		try {
-			((MetadataImplementor) metadata).validate();
-		} catch (MappingException e) {
-			System.out.println("Validation Error: " + e.getMessage());
-		}
-
-		// Creation de la session
-
-		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
-		Session hbnSession = hbnSessionFactory.withOptions().openSession();
+		assertNotNull(hbnSession);
 
 		// Création de l'instance
 
@@ -156,8 +96,10 @@ public class DynamicMappingTest extends HbnTest {
 		// Sérialisation de l'instance
 		// Hibernate native
 		Transaction trans = hbnSession.beginTransaction();
+
 		hbnSession.save("Dynamic_Class", syl);
 		hbnSession.save("Dynamic_Class", chris);
+
 		trans.commit();
 
 		// Standard SQL
@@ -174,8 +116,6 @@ public class DynamicMappingTest extends HbnTest {
 			System.out.println("Entité dynamique: " + ent.getName());
 		}
 
-		// Close session
-		hbnSession.close();
 	}
 
 }

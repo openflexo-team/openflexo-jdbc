@@ -55,13 +55,22 @@ import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 import org.hibernate.type.TypeResolver;
 
-public class DynamicModel {
+public class DynamicModelBuilder {
 
-	public static Metadata buildDynamicModel(StandardServiceRegistry hbnRegistry) {
+	private StandardServiceRegistry registry;
+	public MetadataBuildingOptionsImpl buildingOptions;
+	public InFlightMetadataCollectorImpl metadataCollector;
+	public ClassLoaderAccessImpl classLoaderAccess;
 
-		MetadataBuildingOptionsImpl buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(hbnRegistry);
-		InFlightMetadataCollectorImpl metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
-		ClassLoaderAccessImpl classLoaderAccess = new ClassLoaderAccessImpl(null, hbnRegistry);
+	public DynamicModelBuilder(StandardServiceRegistry hbnRegistry) {
+		registry = hbnRegistry;
+		buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(hbnRegistry);
+		metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
+		classLoaderAccess = new ClassLoaderAccessImpl(null, hbnRegistry);
+
+	}
+
+	public Metadata buildDynamicModel() {
 
 		MetadataBuildingContextRootImpl metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions, classLoaderAccess,
 				metadataCollector);
@@ -75,10 +84,17 @@ public class DynamicModel {
 		col.setName("pouet");
 		col.setLength(256);
 		col.setSqlType("CHAR(256)");
-		col.setUnique(true);
+		col.setNullable(false);
 		table.addColumn(col);
+
 		PrimaryKey pk = new PrimaryKey(table);
 		pk.addColumn(col);
+
+		UniqueKey uk1 = new UniqueKey();
+		uk1.setName("Nom_Unique");
+		uk1.setTable(table);
+		uk1.addColumn(col);
+		table.addUniqueKey(uk1);
 
 		Column col2 = new Column();
 		col2.setName("padam");
@@ -88,6 +104,7 @@ public class DynamicModel {
 		table.addColumn(col2);
 		// pour rire les couples "Nom + Prenom" doivent être uniques
 		UniqueKey uk = new UniqueKey();
+		uk.setName("Couple_Nom_Prenom_Unique");
 		uk.setTable(table);
 		uk.addColumn(col);
 		uk.addColumn(col2);
@@ -111,12 +128,11 @@ public class DynamicModel {
 		value.addColumn(col);
 		value.setTable(table);
 		prop.setValue(value);
-		pClass.setEmbeddedIdentifier(true);
 		pClass.setDeclaredIdentifierProperty(prop);
 		pClass.setIdentifierProperty(prop);
 		pClass.setIdentifier(value);
 
-		// Creation d'une propriété (clef) et son mapping
+		// Creation d'une propriété et son mapping
 
 		prop = new Property();
 		prop.setName("Prenom");
@@ -136,5 +152,4 @@ public class DynamicModel {
 		return metadata;
 
 	}
-
 }

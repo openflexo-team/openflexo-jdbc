@@ -56,7 +56,7 @@ import org.openflexo.connie.DefaultBindable;
 import org.openflexo.connie.hbn.HbnEntityBindingModel;
 import org.openflexo.connie.hbn.HibernateBindingFactory;
 import org.openflexo.hbn.test.HbnTest;
-import org.openflexo.hbn.test.model.DynamicModel;
+import org.openflexo.hbn.test.model.DynamicModelBuilder;
 
 public class BindingFactoryTestOnDynamicModel extends HbnTest {
 
@@ -103,7 +103,8 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		super.setUp();
 
 		// Creation du model
-		Metadata metadata = DynamicModel.buildDynamicModel(hbnRegistry);
+		DynamicModelBuilder modelBuilder = new DynamicModelBuilder(hbnRegistry);
+		Metadata metadata = modelBuilder.buildDynamicModel();
 
 		// Creation de la session
 
@@ -120,9 +121,9 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		super.tearDown();
 	}
 
-	public void test1() {
+	public void testListBindingVariables() {
 
-		System.out.println("*********** test1");
+		System.out.println("*********** testListBindingVariables");
 
 		assertNotNull(hbnSession);
 
@@ -143,7 +144,10 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 			for (BindingVariable bv : listVariables) {
 				System.out.println("     var: " + bv.getLabel() + " -> " + bv.getType().toString());
 			}
+
+			assertEquals(3, listVariables.size());
 		}
+
 		/* Object parentEntity = BINDING_FACTORY.makeSimplePathElement(bm, "data");
 		Object listElements = BINDING_FACTORY.getAccessibleSimplePathElements(bm); */
 	}
