@@ -11,6 +11,6 @@ dependencies {
   testCompile flexoFoundationTest()
   
   // Test resource center
-  testRuntime project(':hbnconnector-test-rc')
+  testRuntime project(':jdbc-test-rc')
   
 }
