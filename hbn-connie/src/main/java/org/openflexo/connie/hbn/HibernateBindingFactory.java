@@ -39,17 +39,47 @@
 package org.openflexo.connie.hbn;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
+
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 
 import org.hibernate.type.AbstractType;
-import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.java.JavaBindingFactory;
 
-public class HibernateBindingFactory implements BindingFactory {
+public class HibernateBindingFactory extends JavaBindingFactory {
+
+	static final Logger logger = Logger.getLogger(HibernateBindingFactory.class.getPackage().getName());
+
+	// Hibernate mapping Model
+	private Metamodel metamodel;
+
+	public HibernateBindingFactory(Metamodel model) {
+		super();
+		metamodel = model;
+	}
+
+	protected SimplePathElement makeSimplePathElement(Object object, BindingPathElement parent) {
+		if (object instanceof EntityType) {
+
+			return new JpaEntitySimplePathElement(parent, ((EntityType) object).getName(), ((EntityType) object).getJavaType());
+		}
+		if (object instanceof Attribute) {
+			return new JpaAttributeSimplePathElement(parent, ((Attribute) object).getName(), ((Attribute) object).getJavaType());
+		}
+
+		logger.warning("Unexpected " + object + " for parent=" + parent);
+		return null;
+	}
 
 	@Override
 	public List<? extends FunctionPathElement> getAccessibleFunctionPathElements(BindingPathElement parent) {
@@ -62,37 +92,62 @@ public class HibernateBindingFactory implements BindingFactory {
 			}
 		}
 
-		return null;
+		return super.getAccessibleFunctionPathElements(parent);
 	}
 
 	@Override
-	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent) {
+		if (parent != null) {
+			Type pType = parent.getType();
+			if (pType instanceof Attribute) {
+				List<SimplePathElement> returned = new ArrayList<SimplePathElement>();
+
+				Collections.sort(returned, BindingPathElement.COMPARATOR);
+				return returned;
+			}
+			else if (pType instanceof EntityType) {
+				List<SimplePathElement> returned = new ArrayList<SimplePathElement>();
+
+				Collections.sort(returned, BindingPathElement.COMPARATOR);
+				return returned;
+			}
+			else if (pType instanceof Metamodel) {
+				List<SimplePathElement> returned = new ArrayList<SimplePathElement>();
+
+				Collections.sort(returned, BindingPathElement.COMPARATOR);
+				return returned;
+			}
+			else
+				return super.getAccessibleSimplePathElements(parent);
+		}
+		else {
+			logger.warning("Trying to find accessible path elements for a NULL parent");
+			return Collections.EMPTY_LIST;
+		}
 	}
 
 	@Override
 	public Type getTypeForObject(Object arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getTypeForObject(arg0);
 	}
 
 	@Override
 	public FunctionPathElement makeFunctionPathElement(BindingPathElement arg0, Function arg1, List<DataBinding<?>> arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.makeFunctionPathElement(arg0, arg1, arg2);
 	}
 
 	@Override
 	public SimplePathElement makeSimplePathElement(BindingPathElement arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.makeSimplePathElement(arg0, arg1);
 	}
 
 	@Override
 	public Function retrieveFunction(Type arg0, String arg1, List<DataBinding<?>> arg2) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.retrieveFunction(arg0, arg1, arg2);
+	}
+
+	public Metamodel getMetamodel() {
+		return metamodel;
 	}
 
 }

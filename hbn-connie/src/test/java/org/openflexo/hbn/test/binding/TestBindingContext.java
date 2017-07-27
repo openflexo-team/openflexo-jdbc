@@ -1,8 +1,7 @@
 /**
  * 
  * Copyright (c) 2017, Openflexo
- * 
- * This file is part of Csvconnector, a component of the software infrastructure 
+ * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
  * 
  * 
@@ -36,44 +35,55 @@
  * 
  */
 
-package org.openflexo.connie.hbn;
+package org.openflexo.hbn.test.binding;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
-
+import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DefaultBindable;
+import org.openflexo.connie.hbn.HibernateBindingFactory;
+import org.openflexo.connie.hbn.JpaMetamodelBindingModel;
 
-public class HbnEntityBindingModel extends BindingModel {
+public class TestBindingContext extends DefaultBindable implements BindingEvaluationContext {
 
-	EntityType<?> innerType = null;
+	private BindingFactory bindingFactory;
+	private BindingModel bindingModel;
 
-	public HbnEntityBindingModel(EntityType<?> ent) {
+	public TestBindingContext(HibernateBindingFactory factory) {
 		super();
-		innerType = ent;
+		bindingFactory = factory;
+		if (factory.getMetamodel() != null)
+			bindingModel = new JpaMetamodelBindingModel(factory.getMetamodel());
 	}
 
-	/* TODO: simple for now */
-
-	public void updateVariables() {
-
-		// TODO: do something better one-day...
-		Class<?> jType = innerType.getJavaType();
-		if (jType == null) {
-			jType = Object.class;
-		}
-		BindingVariable bv = new BindingVariable("this", jType);
-		addToBindingVariables(bv);
-
-		for (Attribute<?, ?> attr : innerType.getAttributes()) {
-			// TODO: do something better one-day...
-			jType = attr.getJavaType();
-			if (jType == null) {
-				jType = Object.class;
-			}
-			bv = new BindingVariable(attr.getName(), jType);
-			addToBindingVariables(bv);
-		}
+	@Override
+	public BindingFactory getBindingFactory() {
+		return bindingFactory;
 	}
 
+	@Override
+	public BindingModel getBindingModel() {
+		return bindingModel;
+	}
+
+	@Override
+	public Object getValue(BindingVariable variable) {
+
+		return null;
+	}
+
+	@Override
+	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
+	}
+
+	@Override
+	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
+	}
+
+	@Override
+	public String getDeletedProperty() {
+		return null;
+	}
 }

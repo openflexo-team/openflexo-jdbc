@@ -37,6 +37,8 @@
 
 package org.openflexo.hbn.test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -45,6 +47,12 @@ import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.hbn.HibernateBindingFactory;
+import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.hbn.test.binding.TestBindingContext;
 
 import junit.framework.TestCase;
 
@@ -67,6 +75,11 @@ public abstract class HbnTest extends TestCase {
 	protected StandardServiceRegistry hbnRegistry = null;
 
 	protected Session hbnSession = null;
+
+	// Connie configuration
+
+	protected HibernateBindingFactory bindingFactory = null;
+	protected TestBindingContext bindingContext = null;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -105,4 +118,55 @@ public abstract class HbnTest extends TestCase {
 		super.tearDown();
 		StandardServiceRegistryBuilder.destroy(hbnRegistry);
 	}
+
+	/**
+	 * 
+	 * @param bindingPath
+	 * @param expectedType
+	 * @param expectedResult
+	 */
+	public void genericTest(String bindingPath, Type expectedType, Object expectedResult) {
+
+		System.out.println("Evaluate " + bindingPath);
+
+		DataBinding<?> dataBinding = new DataBinding<>(bindingPath, bindingContext, expectedType, DataBinding.BindingDefinitionType.GET);
+
+		if (dataBinding.getExpression() != null) {
+
+			System.out.println(
+					"Parsed " + dataBinding + " as " + dataBinding.getExpression() + " of " + dataBinding.getExpression().getClass());
+
+		}
+		else {
+			System.out.println("Parsed " + dataBinding + " without success");
+
+		}
+
+		if (!dataBinding.isValid()) {
+			fail(dataBinding.invalidBindingReason());
+		}
+
+		Object evaluation = null;
+		try {
+			evaluation = dataBinding.getBindingValue(bindingContext);
+		} catch (TypeMismatchException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NullReferenceException e) {
+			e.printStackTrace();
+			fail();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			fail();
+		}
+
+		System.out.println("Evaluated as " + evaluation);
+
+		System.out.println("expectedResult = " + expectedResult + " of " + expectedResult.getClass());
+		System.out.println("evaluation = " + evaluation + " of " + evaluation.getClass());
+
+		assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
+
+	}
+
 }
