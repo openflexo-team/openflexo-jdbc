@@ -38,42 +38,46 @@
 
 package org.openflexo.connie.hbn;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
+import java.lang.reflect.Type;
 
-import org.openflexo.connie.BindingModel;
-import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.binding.BindingPathElement;
+import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.exception.InvocationTargetTransformException;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
 
-public class HbnEntityBindingModel extends BindingModel {
+public class JpaEntitySimplePathElement extends SimplePathElement {
 
-	EntityType<?> innerType = null;
-
-	public HbnEntityBindingModel(EntityType<?> ent) {
-		super();
-		innerType = ent;
+	public JpaEntitySimplePathElement(BindingPathElement parent, String propertyName, Type type) {
+		super(parent, propertyName, type);
+		// TODO Auto-generated constructor stub
 	}
 
-	/* TODO: simple for now */
+	@Override
+	public Object getBindingValue(Object arg0, BindingEvaluationContext arg1)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	public void updateVariables() {
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		// TODO: do something better one-day...
-		Class<?> jType = innerType.getJavaType();
-		if (jType == null) {
-			jType = Object.class;
-		}
-		BindingVariable bv = new BindingVariable("this", jType);
-		addToBindingVariables(bv);
+	@Override
+	public String getTooltipText(Type arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		for (Attribute<?, ?> attr : innerType.getAttributes()) {
-			// TODO: do something better one-day...
-			jType = attr.getJavaType();
-			if (jType == null) {
-				jType = Object.class;
-			}
-			bv = new BindingVariable(attr.getName(), jType);
-			addToBindingVariables(bv);
-		}
+	@Override
+	public void setBindingValue(Object arg0, Object arg1, BindingEvaluationContext arg2)
+			throws TypeMismatchException, NullReferenceException {
+		// TODO Auto-generated method stub
+
 	}
 
 }

@@ -44,16 +44,10 @@ import java.util.Set;
 
 import javax.persistence.metamodel.EntityType;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.cfg.Configuration;
-import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingFactory;
-import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.DefaultBindable;
 import org.openflexo.connie.hbn.HbnEntityBindingModel;
 import org.openflexo.connie.hbn.HibernateBindingFactory;
 import org.openflexo.hbn.test.HbnTest;
@@ -61,43 +55,7 @@ import org.openflexo.hbn.test.model.Vehicle;
 
 public class BasicBindingFactoryTest extends HbnTest {
 
-	private Session hbnSession = null;
-
-	private static final BindingFactory BINDING_FACTORY = new HibernateBindingFactory();
-
 	private final Map<EntityType<?>, HbnEntityBindingModel> modelsMap = new HashMap<EntityType<?>, HbnEntityBindingModel>();
-
-	public static class TestBindingContext extends DefaultBindable implements BindingEvaluationContext {
-
-		@Override
-		public BindingFactory getBindingFactory() {
-			return BINDING_FACTORY;
-		}
-
-		@Override
-		public BindingModel getBindingModel() {
-			return null;
-		}
-
-		@Override
-		public Object getValue(BindingVariable variable) {
-
-			return null;
-		}
-
-		@Override
-		public void notifiedBindingChanged(DataBinding<?> dataBinding) {
-		}
-
-		@Override
-		public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
-		}
-
-		@Override
-		public String getDeletedProperty() {
-			return null;
-		}
-	}
 
 	@Override
 	protected void setUp() throws Exception {
@@ -112,6 +70,8 @@ public class BasicBindingFactoryTest extends HbnTest {
 		Configuration hbnConfig = new Configuration(hbnMetadataSrc);
 		SessionFactory hbnSessionFactory = hbnConfig.buildSessionFactory(hbnRegistry);
 		hbnSession = hbnSessionFactory.withOptions().openSession();
+		bindingFactory = new HibernateBindingFactory(hbnSession.getMetamodel());
+		bindingContext = new TestBindingContext(bindingFactory);
 	}
 
 	@Override
@@ -122,13 +82,11 @@ public class BasicBindingFactoryTest extends HbnTest {
 		super.tearDown();
 	}
 
-	public void test1() {
+	public void testListBindingVariables() {
 
-		System.out.println("*********** test1");
+		System.out.println("*********** testListBindingVariables");
 
 		assertNotNull(hbnSession);
-
-		/* FROM : http://www.programcreek.com/java-api-examples/index.php?api=org.hibernate.boot.MetadataBuilder */
 
 		// Explore le metamodel
 		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
@@ -145,9 +103,21 @@ public class BasicBindingFactoryTest extends HbnTest {
 			for (BindingVariable bv : listVariables) {
 				System.out.println("     var: " + bv.getLabel() + " -> " + bv.getType().toString());
 			}
+			assertEquals(4, listVariables.size());
+
 		}
-		/* Object parentEntity = BINDING_FACTORY.makeSimplePathElement(bm, "data");
-		Object listElements = BINDING_FACTORY.getAccessibleSimplePathElements(bm); */
+	}
+
+	public void testBinding1() {
+
+		System.out.println("*********** testBinding1");
+
+		assertNotNull(hbnSession);
+		assertNotNull(bindingFactory);
+		assertNotNull(bindingContext);
+
+		genericTest("org.openflexo.hbn.test.model.Vehicle", String.class, "toto");
+
 	}
 
 }
