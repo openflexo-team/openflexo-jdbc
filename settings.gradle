@@ -1,2 +1,5 @@
 include 'jdbcconnector',
-        'jdbcconnector-ui'
+        'jdbcconnector-ui',
+        'hbn-connie',
+        'hbnconnector',
+        'jdbc-test-rc'

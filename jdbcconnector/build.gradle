@@ -1,6 +1,7 @@
 dependencies {
 
     compile flexoFoundation()
+    
     compile group: 'commons-dbutils', name: 'commons-dbutils', version:"1.6"
 // TODO: reflechir a une solution propre pour intégrer les drivers au runtime
     compile group: "org.hsqldb", name: "hsqldb", version: "2.2.4"
@@ -11,4 +12,7 @@ dependencies {
     testCompile testUtils()
     testCompile flexoFoundationTest()
 
+  // Test resource center
+  testRuntime project(':jdbc-test-rc')
+  
 }
