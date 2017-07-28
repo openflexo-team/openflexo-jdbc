@@ -3,3 +3,9 @@ include 'jdbcconnector',
         'hbn-connie',
         'hbnconnector',
         'jdbc-test-rc'
+
+// file('../').listFiles().each { File otherProject ->
+//    if (!otherProject.equals(file('.')) && new File(otherProject, "build.gradle").exists()) {
+//        includeBuild otherProject
+//    }
+//}
