@@ -42,6 +42,7 @@ import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
 import org.openflexo.foundation.action.FlexoActionFinalizer;
 import org.openflexo.foundation.action.FlexoActionInitializer;
+import org.openflexo.foundation.action.FlexoActionType;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -98,7 +99,7 @@ public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJ
 	}
 
 	@Override
-	protected Icon getEnabledIcon() {
+	protected Icon getEnabledIcon(FlexoActionType actionType) {
 		return JDBCIconLibrary.JDBC_FILE_ICON;
 	}
 
