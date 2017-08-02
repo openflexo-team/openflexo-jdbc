@@ -38,52 +38,14 @@
 package org.openflexo.hbn.test.binding;
 
 import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingFactory;
-import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.DefaultBindable;
-import org.openflexo.connie.hbn.HibernateBindingFactory;
-import org.openflexo.connie.hbn.JpaMetamodelBindingModel;
 
-public class TestBindingContext extends DefaultBindable implements BindingEvaluationContext {
-
-	private BindingFactory bindingFactory;
-	private BindingModel bindingModel;
-
-	public TestBindingContext(HibernateBindingFactory factory) {
-		super();
-		bindingFactory = factory;
-		if (factory.getMetamodel() != null)
-			bindingModel = new JpaMetamodelBindingModel(factory.getMetamodel());
-	}
-
-	@Override
-	public BindingFactory getBindingFactory() {
-		return bindingFactory;
-	}
-
-	@Override
-	public BindingModel getBindingModel() {
-		return bindingModel;
-	}
+public class TestBindingContext implements BindingEvaluationContext {
 
 	@Override
 	public Object getValue(BindingVariable variable) {
-
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
-	}
-
-	@Override
-	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
-	}
-
-	@Override
-	public String getDeletedProperty() {
-		return null;
-	}
 }

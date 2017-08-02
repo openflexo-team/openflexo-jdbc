@@ -47,6 +47,7 @@ import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -125,11 +126,11 @@ public abstract class HbnTest extends TestCase {
 	 * @param expectedType
 	 * @param expectedResult
 	 */
-	public void genericTest(String bindingPath, Type expectedType, Object expectedResult) {
+	public void genericTest(Bindable owner, String bindingPath, Type expectedType, Object expectedResult) {
 
 		System.out.println("Evaluate " + bindingPath);
 
-		DataBinding<?> dataBinding = new DataBinding<>(bindingPath, bindingContext, expectedType, DataBinding.BindingDefinitionType.GET);
+		DataBinding<?> dataBinding = new DataBinding<>(bindingPath, owner, expectedType, DataBinding.BindingDefinitionType.GET);
 
 		if (dataBinding.getExpression() != null) {
 
@@ -143,6 +144,7 @@ public abstract class HbnTest extends TestCase {
 		}
 
 		if (!dataBinding.isValid()) {
+			System.out.println("ERROR: " + dataBinding.invalidBindingReason());
 			fail(dataBinding.invalidBindingReason());
 		}
 

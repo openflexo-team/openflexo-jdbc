@@ -47,14 +47,16 @@ import javax.persistence.metamodel.EntityType;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.hbn.HbnEntityBindingModel;
 import org.openflexo.connie.hbn.HibernateBindingFactory;
+import org.openflexo.connie.hbn.JpaEntityWrapper;
+import org.openflexo.connie.hbn.JpaMetamodelWrapper;
 import org.openflexo.hbn.test.HbnTest;
 import org.openflexo.hbn.test.model.DynamicModelBuilder;
 
 public class BindingFactoryTestOnDynamicModel extends HbnTest {
 
-	private final Map<EntityType<?>, HbnEntityBindingModel> modelsMap = new HashMap<EntityType<?>, HbnEntityBindingModel>();
+	private final Map<EntityType<?>, JpaEntityWrapper> modelsMap = new HashMap<EntityType<?>, JpaEntityWrapper>();
+	private JpaMetamodelWrapper jpaWrapper;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -69,7 +71,8 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
 		hbnSession = hbnSessionFactory.withOptions().openSession();
 		bindingFactory = new HibernateBindingFactory(hbnSession.getMetamodel());
-		bindingContext = new TestBindingContext(bindingFactory);
+		bindingContext = new TestBindingContext();
+		jpaWrapper = new JpaMetamodelWrapper(bindingFactory, hbnSession.getMetamodel());
 	}
 
 	@Override
@@ -90,9 +93,9 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		// Explore le metamodel
 		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
 		for (EntityType ent : entities) {
-			HbnEntityBindingModel bm = modelsMap.get(ent);
+			JpaEntityWrapper bm = modelsMap.get(ent);
 			if (bm == null) {
-				bm = new HbnEntityBindingModel(ent);
+				bm = new JpaEntityWrapper(bindingFactory, ent);
 				bm.updateVariables();
 				modelsMap.put(ent, bm);
 			}
@@ -118,7 +121,8 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		assertNotNull(bindingFactory);
 		assertNotNull(bindingContext);
 
-		genericTest("Dynamic_Class.Nom", String.class, "toto");
+		genericTest(jpaWrapper, "Dynamic_Class.Nom", String.class, "toto");
+		genericTest(jpaWrapper, "Dynamic_Class.Nom", String.class, "toto");
 
 	}
 
