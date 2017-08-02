@@ -49,11 +49,11 @@ import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 
-public class JpaAttributeSimplePathElement extends SimplePathElement {
+public class JpaAttributeTypeSimplePathElement extends SimplePathElement {
 
 	private Attribute<?, ?> attribute = null;
 
-	public JpaAttributeSimplePathElement(BindingPathElement parent, Attribute<?, ?> attr) {
+	public JpaAttributeTypeSimplePathElement(BindingPathElement parent, Attribute<?, ?> attr) {
 		super(parent, attr.getName(), Attribute.class);
 		attribute = attr;
 	}
@@ -61,27 +61,28 @@ public class JpaAttributeSimplePathElement extends SimplePathElement {
 	@Override
 	public Object getBindingValue(Object arg0, BindingEvaluationContext arg1)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
-		System.out.println("Zob de Mamouth à roulettes");
-		// TODO Auto-generated method stub
-		return null;
+		return attribute;
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return attribute.getName();
 	}
 
 	@Override
 	public String getTooltipText(Type arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return "Attribut " + attribute.getName();
+	}
+
+	@Override
+	public boolean isSettable() {
+		return false;
 	}
 
 	@Override
 	public void setBindingValue(Object arg0, Object arg1, BindingEvaluationContext arg2)
 			throws TypeMismatchException, NullReferenceException {
-		// TODO Auto-generated method stub
+		return;
 
 	}
 

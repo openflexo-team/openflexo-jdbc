@@ -113,7 +113,7 @@ public class DynamicMappingTest extends HbnTest {
 		// Explore le metamodel
 		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
 		for (EntityType<?> ent : entities) {
-			System.out.println("Entit� dynamique: " + ent.getName());
+			System.out.println("Entité dynamique: " + ent.getName());
 		}
 
 	}

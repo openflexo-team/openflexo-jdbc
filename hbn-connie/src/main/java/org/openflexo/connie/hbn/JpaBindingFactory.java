@@ -77,10 +77,10 @@ public class JpaBindingFactory extends JavaBindingFactory {
 	protected SimplePathElement makeSimplePathElement(Object object, BindingPathElement parent) {
 		if (object instanceof EntityType) {
 
-			return new JpaEntitySimplePathElement(parent, (EntityType<?>) object, EntityType.class);
+			return new JpaEntityTypeSimplePathElement(parent, (EntityType<?>) object, EntityType.class);
 		}
 		if (object instanceof Attribute) {
-			return new JpaAttributeSimplePathElement(parent, (Attribute<?, ?>) object);
+			return new JpaAttributeTypeSimplePathElement(parent, (Attribute<?, ?>) object);
 		}
 
 		logger.warning("Unexpected " + object + " for parent=" + parent);
@@ -153,8 +153,8 @@ public class JpaBindingFactory extends JavaBindingFactory {
 					}
 				}
 			}
-			else if (arg0 instanceof JpaEntitySimplePathElement) {
-				EntityType<?> entityType = ((JpaEntitySimplePathElement) arg0).getEntityType();
+			else if (arg0 instanceof JpaEntityTypeSimplePathElement) {
+				EntityType<?> entityType = ((JpaEntityTypeSimplePathElement) arg0).getEntityType();
 				Attribute<?, ?> attr = entityType.getAttribute(arg1);
 				if (attr != null) {
 					return makeSimplePathElement(attr, arg0);

@@ -49,11 +49,11 @@ import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 
-public class JpaEntitySimplePathElement extends SimplePathElement {
+public class JpaEntityTypeSimplePathElement extends SimplePathElement {
 
 	private EntityType<?> entityType = null;
 
-	public JpaEntitySimplePathElement(BindingPathElement parent, EntityType<?> entType, Type type) {
+	public JpaEntityTypeSimplePathElement(BindingPathElement parent, EntityType<?> entType, Type type) {
 		super(parent, entType.getName(), type);
 		entityType = entType;
 	}
