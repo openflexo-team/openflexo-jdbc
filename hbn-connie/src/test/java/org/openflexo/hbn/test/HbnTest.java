@@ -77,7 +77,7 @@ public abstract class HbnTest extends TestCase {
 	// Connie configuration
 
 	protected JpaBindingFactory bindingFactory = null;
-	protected EntityManagerCtxt bindingContext = null;
+	protected EntityManagerCtxt entityManager = null;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -141,14 +141,14 @@ public abstract class HbnTest extends TestCase {
 		}
 
 		if (!dataBinding.isValid()) {
-			System.out.println("ERROR: " + dataBinding.invalidBindingReason());
+			System.out.println("VALIDATION ERROR: " + dataBinding.invalidBindingReason());
 			fail(dataBinding.invalidBindingReason());
 		}
 
 		else {
 			Object evaluation = null;
 			try {
-				evaluation = dataBinding.getBindingValue(bindingContext);
+				evaluation = dataBinding.getBindingValue(entityManager);
 			} catch (TypeMismatchException e) {
 				e.printStackTrace();
 				fail();
@@ -162,10 +162,13 @@ public abstract class HbnTest extends TestCase {
 
 			System.out.println("Evaluated as " + evaluation);
 
-			System.out.println("expectedResult = " + expectedResult + " of " + expectedResult.getClass());
-			System.out.println("evaluation = " + evaluation + " of " + evaluation.getClass());
-
-			assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
+			if (evaluation != null) {
+				System.out.println("evaluation = " + evaluation + " of " + evaluation.getClass());
+			}
+			if (expectedResult != null) {
+				System.out.println("expectedResult = " + expectedResult + " of " + expectedResult.getClass());
+				assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
+			}
 		}
 
 	}

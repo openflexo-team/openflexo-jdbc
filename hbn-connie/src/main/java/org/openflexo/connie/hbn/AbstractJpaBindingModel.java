@@ -38,12 +38,9 @@
 
 package org.openflexo.connie.hbn;
 
-import org.openflexo.connie.Bindable;
-import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.BindingModel;
-import org.openflexo.connie.DataBinding;
 
-public abstract class JpaWrapper<A> extends BindingModel implements Bindable {
+public abstract class AbstractJpaBindingModel<A> extends BindingModel {
 
 	A innerType = null;
 	JpaBindingFactory factory = null;
@@ -52,35 +49,13 @@ public abstract class JpaWrapper<A> extends BindingModel implements Bindable {
 
 	protected abstract void updateVariables();
 
-	public JpaWrapper(JpaBindingFactory bindingFactory, A obj) {
+	public AbstractJpaBindingModel(JpaBindingFactory bindingFactory, A obj) {
 		super();
 		innerType = obj;
 		factory = bindingFactory;
 		if (obj != null) {
 			updateVariables();
 		}
-	}
-
-	@Override
-	public BindingModel getBindingModel() {
-		return this;
-	}
-
-	@Override
-	public BindingFactory getBindingFactory() {
-		return factory;
-	}
-
-	@Override
-	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -40,6 +40,8 @@ package org.openflexo.connie.hbn;
 
 import java.lang.reflect.Type;
 
+import javax.persistence.metamodel.EntityType;
+
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
@@ -49,35 +51,51 @@ import org.openflexo.connie.exception.TypeMismatchException;
 
 public class JpaEntitySimplePathElement extends SimplePathElement {
 
-	public JpaEntitySimplePathElement(BindingPathElement parent, String propertyName, Type type) {
-		super(parent, propertyName, type);
-		// TODO Auto-generated constructor stub
+	private EntityType<?> entityType = null;
+
+	public JpaEntitySimplePathElement(BindingPathElement parent, EntityType<?> entType, Type type) {
+		super(parent, entType.getName(), type);
+		entityType = entType;
 	}
 
 	@Override
 	public Object getBindingValue(Object arg0, BindingEvaluationContext arg1)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
-		// TODO Auto-generated method stub
-		return null;
+		if (arg0 instanceof EntityManagerCtxt) {
+			return entityType;
+		}
+		else {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean isSettable() {
+		return false;
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return entityType.getName();
 	}
 
 	@Override
 	public String getTooltipText(Type arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		if (entityType != null) {
+			return "Jpa Entity<" + entityType.getName() + ">";
+		}
+		else {
+			return "Jpa Entity<unknown>";
+		}
 	}
 
 	@Override
-	public void setBindingValue(Object arg0, Object arg1, BindingEvaluationContext arg2)
+	public void setBindingValue(Object value, Object target, BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 
+	public EntityType<?> getEntityType() {
+		return entityType;
+	}
 }

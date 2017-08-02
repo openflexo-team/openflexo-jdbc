@@ -45,13 +45,13 @@ import javax.persistence.metamodel.Metamodel;
 
 import org.openflexo.connie.BindingVariable;
 
-public class EntityManagerBindingModel extends JpaWrapper<Metamodel> {
+public class EntityManagerBindingModel extends AbstractJpaBindingModel<Metamodel> {
 
 	public EntityManagerBindingModel(JpaBindingFactory bindingFactory, Metamodel obj) {
 		super(bindingFactory, obj);
 	}
 
-	/* TODO: simple for now */
+	/* TODO: simple for now , needs to ass support for change on notification*/
 	@Override
 	protected void updateVariables() {
 
@@ -73,7 +73,7 @@ public class EntityManagerBindingModel extends JpaWrapper<Metamodel> {
 				TO_REMOVE.remove(existing);
 			}
 			else {
-				bv = new BindingVariable(ent.getName(), JpaEntityWrapper.class);
+				bv = new BindingVariable(ent.getName(), EntityBindingModel.class);
 				addToBindingVariables(bv);
 			}
 		}

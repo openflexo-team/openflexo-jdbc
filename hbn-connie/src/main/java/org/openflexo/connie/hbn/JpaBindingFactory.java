@@ -68,13 +68,19 @@ public class JpaBindingFactory extends JavaBindingFactory {
 		metamodel = model;
 	}
 
+	/**
+	 * 
+	 * @param object
+	 * @param parent
+	 * @return
+	 */
 	protected SimplePathElement makeSimplePathElement(Object object, BindingPathElement parent) {
 		if (object instanceof EntityType) {
 
-			return new JpaEntitySimplePathElement(parent, ((EntityType) object).getName(), ((EntityType) object).getJavaType());
+			return new JpaEntitySimplePathElement(parent, (EntityType<?>) object, EntityType.class);
 		}
 		if (object instanceof Attribute) {
-			return new JpaAttributeSimplePathElement(parent, ((Attribute) object).getName(), ((Attribute) object).getJavaType());
+			return new JpaAttributeSimplePathElement(parent, (Attribute<?, ?>) object);
 		}
 
 		logger.warning("Unexpected " + object + " for parent=" + parent);
@@ -122,7 +128,7 @@ public class JpaBindingFactory extends JavaBindingFactory {
 		}
 		else {
 			logger.warning("Trying to find accessible path elements for a NULL parent");
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 	}
 
@@ -138,7 +144,26 @@ public class JpaBindingFactory extends JavaBindingFactory {
 
 	@Override
 	public SimplePathElement makeSimplePathElement(BindingPathElement arg0, String arg1) {
+		if (arg0 != null) {
+			Type objectType = arg0.getType();
+			if (objectType == EntityManagerCtxt.class) {
+				for (EntityType<?> f : this.getMetamodel().getEntities()) {
+					if (f.getName().equals(arg1)) {
+						return makeSimplePathElement(f, arg0);
+					}
+				}
+			}
+			else if (arg0 instanceof JpaEntitySimplePathElement) {
+				EntityType<?> entityType = ((JpaEntitySimplePathElement) arg0).getEntityType();
+				Attribute<?, ?> attr = entityType.getAttribute(arg1);
+				if (attr != null) {
+					return makeSimplePathElement(attr, arg0);
+				}
+			}
+
+		}
 		return super.makeSimplePathElement(arg0, arg1);
+
 	}
 
 	@Override

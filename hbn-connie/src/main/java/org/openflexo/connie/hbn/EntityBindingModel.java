@@ -45,9 +45,9 @@ import javax.persistence.metamodel.EntityType;
 
 import org.openflexo.connie.BindingVariable;
 
-public class JpaEntityWrapper extends JpaWrapper<EntityType<?>> {
+public class EntityBindingModel extends AbstractJpaBindingModel<EntityType<?>> {
 
-	public JpaEntityWrapper(JpaBindingFactory bindingFactory, EntityType<?> obj) {
+	public EntityBindingModel(JpaBindingFactory bindingFactory, EntityType<?> obj) {
 		super(bindingFactory, obj);
 	}
 
@@ -72,7 +72,7 @@ public class JpaEntityWrapper extends JpaWrapper<EntityType<?>> {
 				TO_REMOVE.remove(existing);
 			}
 			else {
-				bv = new BindingVariable(attr.getName(), JpaEntityWrapper.class);
+				bv = new BindingVariable(attr.getName(), EntityBindingModel.class);
 				addToBindingVariables(bv);
 			}
 		}
