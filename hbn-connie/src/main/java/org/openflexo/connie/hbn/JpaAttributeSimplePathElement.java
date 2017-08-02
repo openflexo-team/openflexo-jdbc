@@ -40,6 +40,8 @@ package org.openflexo.connie.hbn;
 
 import java.lang.reflect.Type;
 
+import javax.persistence.metamodel.Attribute;
+
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
@@ -49,14 +51,17 @@ import org.openflexo.connie.exception.TypeMismatchException;
 
 public class JpaAttributeSimplePathElement extends SimplePathElement {
 
-	public JpaAttributeSimplePathElement(BindingPathElement parent, String propertyName, Type type) {
-		super(parent, propertyName, type);
-		// TODO Auto-generated constructor stub
+	private Attribute<?, ?> attribute = null;
+
+	public JpaAttributeSimplePathElement(BindingPathElement parent, Attribute<?, ?> attr) {
+		super(parent, attr.getName(), Attribute.class);
+		attribute = attr;
 	}
 
 	@Override
 	public Object getBindingValue(Object arg0, BindingEvaluationContext arg1)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
+		System.out.println("Zob de Mamouth à roulettes");
 		// TODO Auto-generated method stub
 		return null;
 	}

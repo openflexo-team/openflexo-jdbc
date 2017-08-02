@@ -37,29 +37,78 @@
 
 package org.openflexo.connie.hbn;
 
+import java.beans.PropertyChangeSupport;
+
 import javax.persistence.EntityManager;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.DataBinding;
 
-public class EntityManagerCtxt implements BindingEvaluationContext {
+public class EntityManagerCtxt implements Bindable, BindingEvaluationContext {
 
-	EntityManager em = null;
+	private EntityManager em = null;
+	private EntityManagerBindingModel bindingModel = null;
+	private JpaBindingFactory factory = null;
 
-	public EntityManagerCtxt(EntityManager anEm) {
+	static protected String SELF_PROPERTY_NAME = "self";
+
+	public EntityManagerCtxt(JpaBindingFactory bindingFactory, EntityManager anEm) {
 		super();
 		em = anEm;
+		factory = bindingFactory;
+		if (em != null & factory != null)
+			bindingModel = new EntityManagerBindingModel(factory, em.getMetamodel());
+	}
+
+	@Override
+	public BindingFactory getBindingFactory() {
+		return factory;
 	}
 
 	@Override
 	public Object getValue(BindingVariable variable) {
 
-		if (variable.getVariableName().equals(JpaWrapper.SELF_PROPERTY_NAME)) {
-			return em;
+		if (variable.getVariableName().equals(SELF_PROPERTY_NAME)) {
+			return this;
 		}
 
 		System.out.println(" Moi Je chercher la valeur de " + variable.getLabel());
 		return null;
+	}
+
+	@Override
+	public BindingModel getBindingModel() {
+		if (bindingModel == null & em != null & factory != null)
+			bindingModel = new EntityManagerBindingModel(factory, em.getMetamodel());
+		return bindingModel;
+	}
+
+	@Override
+	public PropertyChangeSupport getPropertyChangeSupport() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDeletedProperty() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

@@ -41,22 +41,20 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.hbn.EntityBindingModel;
 import org.openflexo.connie.hbn.EntityManagerCtxt;
 import org.openflexo.connie.hbn.JpaBindingFactory;
-import org.openflexo.connie.hbn.JpaEntityWrapper;
-import org.openflexo.connie.hbn.EntityManagerBindingModel;
 import org.openflexo.hbn.test.HbnTest;
 import org.openflexo.hbn.test.model.DynamicModelBuilder;
 
 public class BindingFactoryTestOnDynamicModel extends HbnTest {
 
-	private EntityManagerBindingModel jpaWrapper;
 	private EntityManager em = null;
 
 	@Override
@@ -73,8 +71,7 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		em = hbnSessionFactory.createEntityManager();
 		bindingFactory = new JpaBindingFactory(em.getMetamodel());
 
-		bindingContext = new EntityManagerCtxt(em);
-		jpaWrapper = new EntityManagerBindingModel(bindingFactory, em.getMetamodel());
+		entityManager = new EntityManagerCtxt(bindingFactory, em);
 	}
 
 	@Override
@@ -96,7 +93,7 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		// Explore le metamodel
 		Set<EntityType<?>> entities = em.getMetamodel().getEntities();
 		for (EntityType ent : entities) {
-			JpaEntityWrapper bm = new JpaEntityWrapper(bindingFactory, ent);
+			EntityBindingModel bm = new EntityBindingModel(bindingFactory, ent);
 			List<BindingVariable> listVariables = bm.getAccessibleBindingVariables();
 
 			System.out.println("For Entity: " + ent.getName());
@@ -118,12 +115,13 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 
 		assertNotNull(em);
 		assertNotNull(bindingFactory);
-		assertNotNull(jpaWrapper);
+		assertNotNull(entityManager.getBindingModel());
 
-		assertEquals(2, jpaWrapper.getBindingVariablesCount());
+		assertEquals(2, entityManager.getBindingModel().getBindingVariablesCount());
 
-		genericTest(jpaWrapper, "self", EntityManagerCtxt.class, bindingContext);
-		genericTest(jpaWrapper, "self.Dynamic_Class", Session.class, em);
+		genericTest(entityManager, "self", EntityManagerCtxt.class, entityManager);
+		genericTest(entityManager, "self.Dynamic_Class", EntityType.class, null);
+		genericTest(entityManager, "self.Dynamic_Class.Nom", Attribute.class, null);
 	}
 	/*
 		public void testBinding1() {

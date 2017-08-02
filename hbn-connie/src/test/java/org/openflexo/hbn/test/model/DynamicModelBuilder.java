@@ -77,7 +77,7 @@ public class DynamicModelBuilder {
 
 		Metadata metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
 
-		// Creation / Définition de la table
+		// Creation / DÃ©finition de la table
 		Table table = metadataCollector.addTable("", "", "T_Dynamic_Table", null, false);
 		table.setName("T_Dynamic_Table");
 		Column col = new Column();
@@ -102,7 +102,7 @@ public class DynamicModelBuilder {
 		col2.setSqlType("CHAR(256)");
 		col2.setNullable(true);
 		table.addColumn(col2);
-		// pour rire les couples "Nom + Prenom" doivent être uniques
+		// pour rire les couples "Nom + Prenom" doivent ï¿½tre uniques
 		UniqueKey uk = new UniqueKey();
 		uk.setName("Couple_Nom_Prenom_Unique");
 		uk.setTable(table);
@@ -110,7 +110,7 @@ public class DynamicModelBuilder {
 		uk.addColumn(col2);
 		table.addUniqueKey(uk);
 
-		// Creation de l'entité persistée
+		// Creation de l'entitÃ© persistÃ©e
 
 		RootClass pClass = new RootClass(metadataBuildingContext);
 		pClass.setEntityName("Dynamic_Class");
@@ -118,7 +118,7 @@ public class DynamicModelBuilder {
 		pClass.setTable(table);
 		metadataCollector.addEntityBinding(pClass);
 
-		// Creation d'une propriété (clef) et son mapping
+		// Creation d'une propriÃ©tÃ© (clef) et son mapping
 
 		Property prop = new Property();
 		prop.setName("Nom");
@@ -132,7 +132,7 @@ public class DynamicModelBuilder {
 		pClass.setIdentifierProperty(prop);
 		pClass.setIdentifier(value);
 
-		// Creation d'une propriété et son mapping
+		// Creation d'une propriÃ©tÃ© et son mapping
 
 		prop = new Property();
 		prop.setName("Prenom");

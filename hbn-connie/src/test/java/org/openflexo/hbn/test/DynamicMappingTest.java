@@ -83,8 +83,6 @@ public class DynamicMappingTest extends HbnTest {
 
 		System.out.println("*********** testDynamicMapping");
 
-		System.out.println("*********** testDynamicMapping");
-
 		assertNotNull(hbnSession);
 
 		// Cr�ation de l'instance
@@ -95,7 +93,7 @@ public class DynamicMappingTest extends HbnTest {
 		chris.put("Nom", "Guychard");
 		chris.put("Prenom", "Christophe");
 
-		// S�rialisation de l'instance
+		// Sérialisation de l'instance
 		// Hibernate native
 		Transaction trans = hbnSession.beginTransaction();
 
