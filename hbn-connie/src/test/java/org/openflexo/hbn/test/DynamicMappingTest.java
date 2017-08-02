@@ -44,6 +44,7 @@ import java.util.Set;
 
 import javax.persistence.metamodel.EntityType;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
@@ -53,6 +54,7 @@ import org.openflexo.hbn.test.model.DynamicModelBuilder;
 public class DynamicMappingTest extends HbnTest {
 
 	private DynamicModelBuilder modelBuilder;
+	private Session hbnSession;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -85,7 +87,7 @@ public class DynamicMappingTest extends HbnTest {
 
 		assertNotNull(hbnSession);
 
-		// Création de l'instance
+		// Crï¿½ation de l'instance
 
 		Map<String, String> syl = new HashMap<>();
 		syl.put("Nom", "Sylvain");
@@ -93,7 +95,7 @@ public class DynamicMappingTest extends HbnTest {
 		chris.put("Nom", "Guychard");
 		chris.put("Prenom", "Christophe");
 
-		// Sérialisation de l'instance
+		// Sï¿½rialisation de l'instance
 		// Hibernate native
 		Transaction trans = hbnSession.beginTransaction();
 
@@ -113,7 +115,7 @@ public class DynamicMappingTest extends HbnTest {
 		// Explore le metamodel
 		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
 		for (EntityType<?> ent : entities) {
-			System.out.println("Entité dynamique: " + ent.getName());
+			System.out.println("Entitï¿½ dynamique: " + ent.getName());
 		}
 
 	}

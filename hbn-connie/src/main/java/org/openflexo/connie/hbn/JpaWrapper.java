@@ -46,13 +46,13 @@ import org.openflexo.connie.DataBinding;
 public abstract class JpaWrapper<A> extends BindingModel implements Bindable {
 
 	A innerType = null;
-	HibernateBindingFactory factory = null;
+	JpaBindingFactory factory = null;
 
 	static protected String SELF_PROPERTY_NAME = "self";
 
 	protected abstract void updateVariables();
 
-	public JpaWrapper(HibernateBindingFactory bindingFactory, A obj) {
+	public JpaWrapper(JpaBindingFactory bindingFactory, A obj) {
 		super();
 		innerType = obj;
 		factory = bindingFactory;

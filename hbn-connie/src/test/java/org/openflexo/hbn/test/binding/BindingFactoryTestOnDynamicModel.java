@@ -37,26 +37,27 @@
 
 package org.openflexo.hbn.test.binding;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
 import javax.persistence.metamodel.EntityType;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.hbn.HibernateBindingFactory;
+import org.openflexo.connie.hbn.EntityManagerCtxt;
+import org.openflexo.connie.hbn.JpaBindingFactory;
 import org.openflexo.connie.hbn.JpaEntityWrapper;
-import org.openflexo.connie.hbn.JpaMetamodelWrapper;
+import org.openflexo.connie.hbn.EntityManagerBindingModel;
 import org.openflexo.hbn.test.HbnTest;
 import org.openflexo.hbn.test.model.DynamicModelBuilder;
 
 public class BindingFactoryTestOnDynamicModel extends HbnTest {
 
-	private final Map<EntityType<?>, JpaEntityWrapper> modelsMap = new HashMap<EntityType<?>, JpaEntityWrapper>();
-	private JpaMetamodelWrapper jpaWrapper;
+	private EntityManagerBindingModel jpaWrapper;
+	private EntityManager em = null;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -69,36 +70,33 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		// Creation de la session
 
 		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
-		hbnSession = hbnSessionFactory.withOptions().openSession();
-		bindingFactory = new HibernateBindingFactory(hbnSession.getMetamodel());
-		bindingContext = new TestBindingContext();
-		jpaWrapper = new JpaMetamodelWrapper(bindingFactory, hbnSession.getMetamodel());
+		em = hbnSessionFactory.createEntityManager();
+		bindingFactory = new JpaBindingFactory(em.getMetamodel());
+
+		bindingContext = new EntityManagerCtxt(em);
+		jpaWrapper = new EntityManagerBindingModel(bindingFactory, em.getMetamodel());
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 
 		// Close session
-		hbnSession.close();
+		em.close();
 
 		super.tearDown();
 	}
 
-	public void testListBindingVariables() {
+	public void testListEntityWrapperBindingVariables() {
 
-		System.out.println("*********** testListBindingVariables");
+		System.out.println("*********** testListEntityWrapperBindingVariables");
 
-		assertNotNull(hbnSession);
+		assertNotNull(em);
+		assertNotNull(bindingFactory);
 
 		// Explore le metamodel
-		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
+		Set<EntityType<?>> entities = em.getMetamodel().getEntities();
 		for (EntityType ent : entities) {
-			JpaEntityWrapper bm = modelsMap.get(ent);
-			if (bm == null) {
-				bm = new JpaEntityWrapper(bindingFactory, ent);
-				bm.updateVariables();
-				modelsMap.put(ent, bm);
-			}
+			JpaEntityWrapper bm = new JpaEntityWrapper(bindingFactory, ent);
 			List<BindingVariable> listVariables = bm.getAccessibleBindingVariables();
 
 			System.out.println("For Entity: " + ent.getName());
@@ -107,23 +105,39 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 			}
 
 			assertEquals(3, listVariables.size());
+			assertEquals(3, bm.getBindingVariablesCount());
 		}
 
 		/* Object parentEntity = BINDING_FACTORY.makeSimplePathElement(bm, "data");
 		Object listElements = BINDING_FACTORY.getAccessibleSimplePathElements(bm); */
 	}
 
-	public void testBinding1() {
+	public void testJpaWrapper() {
 
 		System.out.println("*********** testBinding1");
 
-		assertNotNull(hbnSession);
+		assertNotNull(em);
 		assertNotNull(bindingFactory);
-		assertNotNull(bindingContext);
+		assertNotNull(jpaWrapper);
 
-		genericTest(jpaWrapper, "Dynamic_Class.Nom", String.class, "toto");
-		genericTest(jpaWrapper, "Dynamic_Class.Nom", String.class, "toto");
+		assertEquals(2, jpaWrapper.getBindingVariablesCount());
 
+		genericTest(jpaWrapper, "self", EntityManagerCtxt.class, bindingContext);
+		genericTest(jpaWrapper, "self.Dynamic_Class", Session.class, em);
 	}
+	/*
+		public void testBinding1() {
+	
+			System.out.println("*********** testBinding1");
+	
+			assertNotNull(hbnSession);
+			assertNotNull(bindingFactory);
+			assertNotNull(jpaWrapper);
+	
+			genericTest(jpaWrapper, "self.Dynamic_Class.Nom", String.class, "toto");
+			genericTest(jpaWrapper, "self.Dynamic_Class.Nom", String.class, "toto");
+	
+		}
+	*/
 
 }
