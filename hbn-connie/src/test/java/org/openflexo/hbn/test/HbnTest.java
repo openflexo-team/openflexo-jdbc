@@ -42,7 +42,6 @@ import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.hibernate.Session;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -51,9 +50,9 @@ import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.hbn.HibernateBindingFactory;
+import org.openflexo.connie.hbn.EntityManagerCtxt;
+import org.openflexo.connie.hbn.JpaBindingFactory;
 import org.openflexo.connie.type.TypeUtils;
-import org.openflexo.hbn.test.binding.TestBindingContext;
 
 import junit.framework.TestCase;
 
@@ -75,12 +74,10 @@ public abstract class HbnTest extends TestCase {
 
 	protected StandardServiceRegistry hbnRegistry = null;
 
-	protected Session hbnSession = null;
-
 	// Connie configuration
 
-	protected HibernateBindingFactory bindingFactory = null;
-	protected TestBindingContext bindingContext = null;
+	protected JpaBindingFactory bindingFactory = null;
+	protected EntityManagerCtxt bindingContext = null;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -148,26 +145,28 @@ public abstract class HbnTest extends TestCase {
 			fail(dataBinding.invalidBindingReason());
 		}
 
-		Object evaluation = null;
-		try {
-			evaluation = dataBinding.getBindingValue(bindingContext);
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
-		} catch (NullReferenceException e) {
-			e.printStackTrace();
-			fail();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-			fail();
+		else {
+			Object evaluation = null;
+			try {
+				evaluation = dataBinding.getBindingValue(bindingContext);
+			} catch (TypeMismatchException e) {
+				e.printStackTrace();
+				fail();
+			} catch (NullReferenceException e) {
+				e.printStackTrace();
+				fail();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				fail();
+			}
+
+			System.out.println("Evaluated as " + evaluation);
+
+			System.out.println("expectedResult = " + expectedResult + " of " + expectedResult.getClass());
+			System.out.println("evaluation = " + evaluation + " of " + evaluation.getClass());
+
+			assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
 		}
-
-		System.out.println("Evaluated as " + evaluation);
-
-		System.out.println("expectedResult = " + expectedResult + " of " + expectedResult.getClass());
-		System.out.println("evaluation = " + evaluation + " of " + evaluation.getClass());
-
-		assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
 
 	}
 

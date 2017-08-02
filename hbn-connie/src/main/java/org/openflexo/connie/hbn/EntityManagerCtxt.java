@@ -35,16 +35,30 @@
  * 
  */
 
-package org.openflexo.hbn.test.binding;
+package org.openflexo.connie.hbn;
+
+import javax.persistence.EntityManager;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingVariable;
 
-public class TestBindingContext implements BindingEvaluationContext {
+public class EntityManagerCtxt implements BindingEvaluationContext {
+
+	EntityManager em = null;
+
+	public EntityManagerCtxt(EntityManager anEm) {
+		super();
+		em = anEm;
+	}
 
 	@Override
 	public Object getValue(BindingVariable variable) {
-		// TODO Auto-generated method stub
+
+		if (variable.getVariableName().equals(JpaWrapper.SELF_PROPERTY_NAME)) {
+			return em;
+		}
+
+		System.out.println(" Moi Je chercher la valeur de " + variable.getLabel());
 		return null;
 	}
 

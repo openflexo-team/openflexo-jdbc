@@ -56,14 +56,14 @@ import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.java.JavaBindingFactory;
 
-public class HibernateBindingFactory extends JavaBindingFactory {
+public class JpaBindingFactory extends JavaBindingFactory {
 
-	static final Logger logger = Logger.getLogger(HibernateBindingFactory.class.getPackage().getName());
+	static final Logger logger = Logger.getLogger(JpaBindingFactory.class.getPackage().getName());
 
 	// Hibernate mapping Model
 	private Metamodel metamodel;
 
-	public HibernateBindingFactory(Metamodel model) {
+	public JpaBindingFactory(Metamodel model) {
 		super();
 		metamodel = model;
 	}

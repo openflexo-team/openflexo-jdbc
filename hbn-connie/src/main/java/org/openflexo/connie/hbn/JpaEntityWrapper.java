@@ -38,6 +38,8 @@
 
 package org.openflexo.connie.hbn;
 
+import java.util.List;
+
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 
@@ -45,26 +47,40 @@ import org.openflexo.connie.BindingVariable;
 
 public class JpaEntityWrapper extends JpaWrapper<EntityType<?>> {
 
-	public JpaEntityWrapper(HibernateBindingFactory bindingFactory, EntityType<?> obj) {
+	public JpaEntityWrapper(JpaBindingFactory bindingFactory, EntityType<?> obj) {
 		super(bindingFactory, obj);
 	}
 
 	public void updateVariables() {
 
-		if (this.getBindingVariableNamed(SELF_PROPERTY_NAME) == null) {
-			BindingVariable bv = new BindingVariable(SELF_PROPERTY_NAME, JpaMetamodelWrapper.class);
+		List<BindingVariable> TO_REMOVE = this.getAccessibleBindingVariables();
+
+		BindingVariable existing = this.getBindingVariableNamed(SELF_PROPERTY_NAME);
+		BindingVariable bv;
+
+		if (existing == null) {
+			bv = new BindingVariable(SELF_PROPERTY_NAME, EntityManagerBindingModel.class);
 			addToBindingVariables(bv);
+		}
+		else {
+			TO_REMOVE.remove(existing);
 		}
 
 		for (Attribute<?, ?> attr : innerType.getAttributes()) {
-			// TODO: do something better one-day...
-			Class<?> jType = attr.getJavaType();
-			if (jType == null) {
-				jType = Object.class;
+			existing = this.getBindingVariableNamed(attr.getName());
+			if (existing != null) {
+				TO_REMOVE.remove(existing);
 			}
-			BindingVariable bv = new BindingVariable(attr.getName(), jType);
-			addToBindingVariables(bv);
+			else {
+				bv = new BindingVariable(attr.getName(), JpaEntityWrapper.class);
+				addToBindingVariables(bv);
+			}
 		}
+		for (BindingVariable abv : TO_REMOVE) {
+			this.removeFromBindingVariables(abv);
+		}
+
+		this.getBindingVariablesCount();
 	}
 
 }

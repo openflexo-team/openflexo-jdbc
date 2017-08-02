@@ -45,9 +45,9 @@ import javax.persistence.metamodel.Metamodel;
 
 import org.openflexo.connie.BindingVariable;
 
-public class JpaMetamodelWrapper extends JpaWrapper<Metamodel> {
+public class EntityManagerBindingModel extends JpaWrapper<Metamodel> {
 
-	public JpaMetamodelWrapper(HibernateBindingFactory bindingFactory, Metamodel obj) {
+	public EntityManagerBindingModel(JpaBindingFactory bindingFactory, Metamodel obj) {
 		super(bindingFactory, obj);
 	}
 
@@ -57,24 +57,29 @@ public class JpaMetamodelWrapper extends JpaWrapper<Metamodel> {
 
 		List<BindingVariable> TO_REMOVE = this.getAccessibleBindingVariables();
 
-		if (this.getBindingVariableNamed(SELF_PROPERTY_NAME) == null) {
-			BindingVariable bv = new BindingVariable(SELF_PROPERTY_NAME, JpaMetamodelWrapper.class);
+		BindingVariable existing = this.getBindingVariableNamed(SELF_PROPERTY_NAME);
+		BindingVariable bv;
+		if (existing == null) {
+			bv = new BindingVariable(SELF_PROPERTY_NAME, EntityManagerCtxt.class);
 			addToBindingVariables(bv);
+		}
+		else {
+			TO_REMOVE.remove(existing);
 		}
 
 		for (EntityType<?> ent : innerType.getEntities()) {
-			BindingVariable existing = this.getBindingVariableNamed(ent.getName());
+			existing = this.getBindingVariableNamed(ent.getName());
 			if (existing != null) {
 				TO_REMOVE.remove(existing);
 			}
 			else {
-				BindingVariable bv = new BindingVariable(ent.getName(), JpaEntityWrapper.class);
+				bv = new BindingVariable(ent.getName(), JpaEntityWrapper.class);
 				addToBindingVariables(bv);
 			}
 		}
 
-		for (BindingVariable bv : TO_REMOVE) {
-			this.removeFromBindingVariables(bv);
+		for (BindingVariable abv : TO_REMOVE) {
+			this.removeFromBindingVariables(abv);
 		}
 
 	}
