@@ -38,76 +38,49 @@
 
 package org.openflexo.connie.hbn;
 
-import java.beans.PropertyChangeSupport;
-import java.lang.reflect.Type;
+import org.openflexo.connie.Bindable;
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.BindingModel;
+import org.openflexo.connie.DataBinding;
 
-import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.binding.BindingPathElement;
-import org.openflexo.connie.exception.InvocationTargetTransformException;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.toolbox.HasPropertyChangeSupport;
+public abstract class JpaWrapper<A> extends BindingModel implements Bindable {
 
-public class HbnEntityBindingPathElement implements BindingPathElement, HasPropertyChangeSupport {
+	A innerType = null;
+	HibernateBindingFactory factory = null;
 
-	@Override
-	public String getDeletedProperty() {
-		// TODO Auto-generated method stub
-		return null;
+	static protected String SELF_PROPERTY_NAME = "self";
+
+	protected abstract void updateVariables();
+
+	public JpaWrapper(HibernateBindingFactory bindingFactory, A obj) {
+		super();
+		innerType = obj;
+		factory = bindingFactory;
+		if (obj != null) {
+			updateVariables();
+		}
 	}
 
 	@Override
-	public PropertyChangeSupport getPropertyChangeSupport() {
-		// TODO Auto-generated method stub
-		return null;
+	public BindingModel getBindingModel() {
+		return this;
 	}
 
 	@Override
-	public Object getBindingValue(Object arg0, BindingEvaluationContext arg1)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
-		// TODO Auto-generated method stub
-		return null;
+	public BindingFactory getBindingFactory() {
+		return factory;
 	}
 
 	@Override
-	public String getLabel() {
+	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public BindingPathElement getParent() {
+	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
 		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public String getSerializationRepresentation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getTooltipText(Type arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isNotifyingBindingPathChanged() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
 	}
 
 }
