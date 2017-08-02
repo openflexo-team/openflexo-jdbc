@@ -77,7 +77,8 @@ public class DynamicModelBuilder {
 
 		Metadata metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
 
-		// Creation / Définition de la table
+		// **********
+		// Creation / Définition de la table T_Dynamic_Table
 		Table table = metadataCollector.addTable("", "", "T_Dynamic_Table", null, false);
 		table.setName("T_Dynamic_Table");
 		Column col = new Column();
@@ -102,7 +103,7 @@ public class DynamicModelBuilder {
 		col2.setSqlType("CHAR(256)");
 		col2.setNullable(true);
 		table.addColumn(col2);
-		// pour rire les couples "Nom + Prenom" doivent �tre uniques
+		// pour rire les couples "Nom + Prenom" doivent être uniques
 		UniqueKey uk = new UniqueKey();
 		uk.setName("Couple_Nom_Prenom_Unique");
 		uk.setTable(table);
@@ -110,7 +111,43 @@ public class DynamicModelBuilder {
 		uk.addColumn(col2);
 		table.addUniqueKey(uk);
 
-		// Creation de l'entité persistée
+		// une colonne de clef etrangère vers T_Adresse
+		Column col3 = new Column();
+		col3.setName("id_addr");
+		col3.setLength(16);
+		col3.setSqlType("INTEGER");
+		col3.setNullable(true);
+		table.addColumn(col3);
+
+		// **********
+		// Creation / Définition de la table T_Adresse
+		Table table2 = metadataCollector.addTable("", "", "T_Adresse", null, false);
+		table2.setName("T_Adresse");
+		Column col4 = new Column();
+		col4.setName("Id");
+		col4.setLength(16);
+		col4.setSqlType("INTEGER");
+		col4.setNullable(false);
+		table2.addColumn(col4);
+
+		pk = new PrimaryKey(table2);
+		pk.addColumn(col);
+
+		uk1 = new UniqueKey();
+		uk1.setName("Id_Unique");
+		uk1.setTable(table2);
+		uk1.addColumn(col4);
+		table.addUniqueKey(uk1);
+
+		Column col5 = new Column();
+		col5.setName("Adresse");
+		col5.setLength(512);
+		col5.setSqlType("CHAR(512)");
+		col5.setNullable(true);
+		table2.addColumn(col5);
+
+		// ************************
+		// Creation de l'entité persistée "Dynamic_Class"
 
 		RootClass pClass = new RootClass(metadataBuildingContext);
 		pClass.setEntityName("Dynamic_Class");
@@ -142,6 +179,40 @@ public class DynamicModelBuilder {
 		value.setTable(table);
 		prop.setValue(value);
 		pClass.addProperty(prop);
+
+		// ************************
+		// Creation de l'entité persistée "Adresse"
+
+		RootClass pClass2 = new RootClass(metadataBuildingContext);
+		pClass2.setEntityName("Adresse");
+		pClass2.setJpaEntityName("Adresse");
+		pClass2.setTable(table2);
+		metadataCollector.addEntityBinding(pClass2);
+
+		// Creation d'une propriété (clef) et son mapping
+
+		prop = new Property();
+		prop.setName("Identifiant");
+		value = new SimpleValue((MetadataImplementor) metadata, table2);
+		value.setTypeName("java.lang.Integer");
+		value.setIdentifierGeneratorStrategy("native");
+		value.addColumn(col4);
+		value.setTable(table2);
+		prop.setValue(value);
+		pClass2.setDeclaredIdentifierProperty(prop);
+		pClass2.setIdentifierProperty(prop);
+		pClass2.setIdentifier(value);
+
+		// Creation d'une propriété et son mapping
+
+		prop = new Property();
+		prop.setName("Prenom");
+		value = new SimpleValue((MetadataImplementor) metadata, table2);
+		value.setTypeName(String.class.getCanonicalName());
+		value.addColumn(col5);
+		value.setTable(table2);
+		prop.setValue(value);
+		pClass2.addProperty(prop);
 
 		try {
 			((MetadataImplementor) metadata).validate();

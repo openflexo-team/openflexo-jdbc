@@ -105,11 +105,9 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 			assertEquals(3, bm.getBindingVariablesCount());
 		}
 
-		/* Object parentEntity = BINDING_FACTORY.makeSimplePathElement(bm, "data");
-		Object listElements = BINDING_FACTORY.getAccessibleSimplePathElements(bm); */
 	}
 
-	public void testJpaWrapper() {
+	public void testBindingModel() {
 
 		System.out.println("*********** testBinding1");
 
@@ -117,25 +115,44 @@ public class BindingFactoryTestOnDynamicModel extends HbnTest {
 		assertNotNull(bindingFactory);
 		assertNotNull(entityManager.getBindingModel());
 
-		assertEquals(2, entityManager.getBindingModel().getBindingVariablesCount());
+		assertEquals(3, entityManager.getBindingModel().getBindingVariablesCount());
 
 		genericTest(entityManager, "self", EntityManagerCtxt.class, entityManager);
 		genericTest(entityManager, "self.Dynamic_Class", EntityType.class, null);
+		genericTest(entityManager, "self.Adresse", EntityType.class, null);
+	}
+
+	public void testBinding1() {
+
+		System.out.println("*********** testBinding1");
+
+		assertNotNull(em);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
 		genericTest(entityManager, "self.Dynamic_Class.Nom", Attribute.class, null);
 	}
-	/*
-		public void testBinding1() {
-	
-			System.out.println("*********** testBinding1");
-	
-			assertNotNull(hbnSession);
-			assertNotNull(bindingFactory);
-			assertNotNull(jpaWrapper);
-	
-			genericTest(jpaWrapper, "self.Dynamic_Class.Nom", String.class, "toto");
-			genericTest(jpaWrapper, "self.Dynamic_Class.Nom", String.class, "toto");
-	
-		}
-	*/
+
+	public void testBinding2() {
+
+		System.out.println("*********** testBinding1");
+
+		assertNotNull(em);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		genericTest(entityManager, "self.Dynamic_Class.Prenom", Attribute.class, null);
+	}
+
+	public void testBinding3() {
+
+		System.out.println("*********** testBinding1");
+
+		assertNotNull(em);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		genericTest(entityManager, "self.Adresse.Identifiant", Attribute.class, null);
+	}
 
 }
