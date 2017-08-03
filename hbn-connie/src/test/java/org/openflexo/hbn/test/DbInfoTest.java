@@ -38,23 +38,21 @@
 package org.openflexo.hbn.test;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 
-import javax.persistence.EntityManager;
-
-import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
-import org.hibernate.boot.model.relational.Database;
-import org.hibernate.engine.jdbc.env.spi.ExtractedDatabaseMetaData;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.openflexo.hbn.test.model.DynamicModelBuilder;
 import org.openflexo.hbn.test.model.Vehicle;
 
 public class DbInfoTest extends HbnTest {
 
-	private SessionFactory hbnSessionFactory = null;
 	private JdbcEnvironment jdbcEnv = null;
+	private Metadata metadata;
+	private Connection conn;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -62,14 +60,13 @@ public class DbInfoTest extends HbnTest {
 
 		// ******
 		// Create temp schema
-		Connection c = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
-		Statement stmt = c.createStatement();
+		conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
+		Statement stmt = conn.createStatement();
 
 		stmt.executeQuery("drop table test if exists");
 		stmt.executeQuery("create table test (id integer, nom char(16));");
 
 		stmt.close();
-		c.close();
 
 		// ******
 		// Set up Hibernate configuration
@@ -79,45 +76,40 @@ public class DbInfoTest extends HbnTest {
 		// Creation du model
 		DynamicModelBuilder modelBuilder = new DynamicModelBuilder(config);
 
-		Metadata metadata = modelBuilder.buildDynamicModel();
+		metadata = modelBuilder.buildDynamicModel();
 
-		hbnSessionFactory = config.getSessionFactory();
-
-		jdbcEnv = config.getJdbcEnv();
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
+		conn.close();
 		super.tearDown();
 	}
 
-	public void test1() {
+	public void testPrintSchemaInfo() {
 
 		System.out.println("*********** test1");
 
-		assertNotNull(jdbcEnv);
-		assertNotNull(hbnSessionFactory);
+		assertNotNull(conn);
 
 		try {
 
-			EntityManager hbnEM = hbnSessionFactory.createEntityManager();
+			DatabaseMetaData meta = conn.getMetaData();
 
-			ExtractedDatabaseMetaData dbMetadata = jdbcEnv.getExtractedDatabaseMetaData();
+			ResultSet schemas = meta.getSchemas();
+			while (schemas.next()) {
+				String tableSchema = schemas.getString(1); // "TABLE_SCHEM"
+				String tableCatalog = schemas.getString(2); // "TABLE_CATALOG"
+				System.out.println("tableSchema " + tableSchema);
 
-			Database toto = config.getMetadata().getDatabase();
-
-			/* DatabaseInformation dbInfo = new DatabaseInformationImpl(hbnRegistry, jdbcEnv,
-					new DdlTransactionIsolatorNonJtaImpl(hbnRegistry,
-							new JdbcEnvironmentInitiator.ConnectionProviderJdbcConnectionAccess(connectionProvider)),
-					jdbcEnv.getDefaultNamespace().getName());
-			*/
-			System.out.println("klong sur mer : " + dbMetadata.toString());
-
-			/* TODO : explore 
-			DdlTransactionIsolator transIso = null;
-			Name nom = new Name(jdbcEnv.getCurrentCatalog(), jdbcEnv.getCurrentSchema());
-			DatabaseInformationImpl dbInfo = new DatabaseInformationImpl(hbnBsRegistry, env, transIso, nom);
-			*/
+				ResultSet tables = meta.getTables(tableCatalog, tableSchema, "%", null);
+				while (tables.next()) {
+					String val1 = tables.getString(1);
+					String val2 = tables.getString(2);
+					String val3 = tables.getString(3);
+					System.out.println("tableSchema " + val1 + "-- " + val2 + "--" + val3);
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
