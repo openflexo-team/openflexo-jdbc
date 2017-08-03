@@ -41,29 +41,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.query.NativeQuery;
+import org.openflexo.connie.hbn.EntityManagerCtxt;
+import org.openflexo.connie.hbn.JpaBindingFactory;
 
 public class HashMapTest extends HbnTest {
+
+	private Session hbnSession;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+
+		// adds a class with annotations
+		config.addResource("/org/openflexo/hbn/test/vehicle.xml");
+
+		SessionFactory hbnSessionFactory = config.getSessionFactory();
+		hbnSession = hbnSessionFactory.withOptions().openSession();
+
+		bindingFactory = new JpaBindingFactory(hbnSession.getMetamodel());
+
+		entityManager = new EntityManagerCtxt(bindingFactory, hbnSession);
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+
+		// Close session
+		hbnSession.close();
+
+		super.tearDown();
+	}
 
 	public void test1() {
 
 		System.out.println("*********** test1");
-
-		/* FROM : http://www.programcreek.com/java-api-examples/index.php?api=org.hibernate.boot.MetadataBuilder */
-
-		MetadataSources hbnMetadataSrc = new MetadataSources(hbnRegistry);
-
-		// adds a class with annotations
-		hbnMetadataSrc.addResource("/org/openflexo/hbn/test/vehicle.xml");
-
-		Configuration hbnConfig = new Configuration(hbnMetadataSrc);
-		SessionFactory hbnSessionFactory = hbnConfig.buildSessionFactory(hbnRegistry);
-		Session hbnSession = hbnSessionFactory.withOptions().openSession();
 
 		// Hibernate native
 		Transaction trans = hbnSession.beginTransaction();
@@ -103,4 +121,24 @@ public class HashMapTest extends HbnTest {
 		hbnSession.close();
 	}
 
+	public void testBindingModel() {
+
+		System.out.println("*********** testBindingModel");
+
+		assertNotNull(hbnSession);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		assertEquals(2, entityManager.getBindingModel().getBindingVariablesCount());
+
+	}
+
+	public void testBindings() {
+
+		System.out.println("*********** testBindings");
+
+		genericTest(entityManager, "self", EntityManagerCtxt.class, entityManager);
+		genericTest(entityManager, "self.Vehicle", EntityType.class, null);
+		genericTest(entityManager, "self.Vehicle.mineralogic", Attribute.class, null);
+	}
 }
