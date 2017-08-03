@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2017, Openflexo
  *
  * This file is part of Flexo-foundation, a component of the software infrastructure

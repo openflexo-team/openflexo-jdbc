@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2017, Openflexo
+ * Copyright (c) 2017, Openflexo
  *
  * This file is part of Flexo-foundation, a component of the software infrastructure
  * developed at Openflexo.
@@ -33,7 +33,7 @@
  *
  */
 
-package org.openflexo.technologyadapter.jdbc.fml;
+package org.openflexo.technologyadapter.hbn.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +47,7 @@ import org.openflexo.foundation.resource.FlexoResourceCenterService;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
 import org.openflexo.foundation.test.fml.AbstractModelFactoryIntegrationTestCase;
 import org.openflexo.logging.FlexoLogger;
-import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.hbn.HBNTechnologyAdapter;
 import org.openflexo.test.OrderedRunner;
 import org.openflexo.test.TestOrder;
 
@@ -57,9 +57,9 @@ import org.openflexo.test.TestOrder;
  * 
  */
 @RunWith(OrderedRunner.class)
-public class JDBCFMLModelFactoryIntegrationTest extends AbstractModelFactoryIntegrationTestCase {
+public class HBNFMLModelFactoryIntegrationTest extends AbstractModelFactoryIntegrationTestCase {
 
-	private static final Logger logger = FlexoLogger.getLogger(JDBCFMLModelFactoryIntegrationTest.class.getPackage().getName());
+	private static final Logger logger = FlexoLogger.getLogger(HBNFMLModelFactoryIntegrationTest.class.getPackage().getName());
 
 	/**
 	 * Instanciate test ServiceManager
@@ -76,7 +76,7 @@ public class JDBCFMLModelFactoryIntegrationTest extends AbstractModelFactoryInte
 		TechnologyAdapterService taService = serviceManager.getTechnologyAdapterService();
 		assertEquals(taService, serviceManager.getService(TechnologyAdapterService.class));
 
-		assertNotNull(taService.getTechnologyAdapter(JDBCTechnologyAdapter.class));
+		assertNotNull(taService.getTechnologyAdapter(HBNTechnologyAdapter.class));
 	}
 
 	/**
@@ -84,11 +84,11 @@ public class JDBCFMLModelFactoryIntegrationTest extends AbstractModelFactoryInte
 	 */
 	@Test
 	@TestOrder(2)
-	public void checkJDBCFMLTechnologyAdapter() {
-		log("checkJDBCFMLTechnologyAdapter()");
+	public void checkHBNFMLTechnologyAdapter() {
+		log("checkHBNFMLTechnologyAdapter()");
 
 		testVirtualModelModelFactoryWithTechnologyAdapter(
-				serviceManager.getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class));
+				serviceManager.getTechnologyAdapterService().getTechnologyAdapter(HBNTechnologyAdapter.class));
 	}
 
 }

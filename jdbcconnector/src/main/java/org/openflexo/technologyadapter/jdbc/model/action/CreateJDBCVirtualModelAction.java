@@ -56,6 +56,7 @@ import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.SynchronizationScheme;
 import org.openflexo.foundation.fml.VirtualModel;
+import org.openflexo.foundation.fml.action.CreateModelSlot;
 import org.openflexo.foundation.fml.controlgraph.IterationAction;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
@@ -203,13 +204,19 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 			virtualModel = vmResource.getLoadedResourceData();
 			virtualModel.setDescription("This virtual model was generated to represent the database '" + getAddress() + "'");
 
-			FMLModelFactory fmlFactory = virtualModel.getFMLModelFactory();
-
 			// Creates the db slot
-			JDBCModelSlot dbSlot = fmlFactory.newInstance(JDBCModelSlot.class);
+
+			CreateModelSlot action = CreateModelSlot.actionType.makeNewEmbeddedAction(virtualModel, null, this);
+			action.setModelSlotName("db");
+			action.setTechnologyAdapter(getTechnologyAdapter());
+			action.setModelSlotClass(JDBCModelSlot.class);
+			action.doAction();
+			JDBCModelSlot dbSlot = (JDBCModelSlot) action.getNewModelSlot();
 			dbSlot.setName("db");
 			dbSlot.setDescription("ModelSlot to the db.");
 			virtualModel.addToFlexoProperties(dbSlot);
+
+			FMLModelFactory fmlFactory = virtualModel.getFMLModelFactory();
 
 			// Adds creation scheme
 			CreationScheme creationScheme = createVirtualModelCreationScheme(fmlFactory);
