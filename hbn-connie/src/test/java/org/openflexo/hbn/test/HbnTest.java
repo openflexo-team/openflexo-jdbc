@@ -42,15 +42,13 @@ import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.hbn.EntityManagerCtxt;
+import org.openflexo.connie.hbn.HbnConfig;
 import org.openflexo.connie.hbn.JpaBindingFactory;
 import org.openflexo.connie.type.TypeUtils;
 
@@ -69,10 +67,7 @@ public abstract class HbnTest extends TestCase {
 
 	protected final static String hbnDialect = "org.hibernate.dialect.HSQLDialect";
 
-	protected final BootstrapServiceRegistry hbnBsRegistry = new BootstrapServiceRegistryBuilder().build();
-	protected final StandardServiceRegistryBuilder hbnRegistryBuilder = new StandardServiceRegistryBuilder(hbnBsRegistry);
-
-	protected StandardServiceRegistry hbnRegistry = null;
+	protected HbnConfig config = null;
 
 	// Connie configuration
 
@@ -83,6 +78,7 @@ public abstract class HbnTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
+		// Loads JdbcDriver
 		Class.forName(jdbcDriverClassname);
 		Connection conn = null;
 
@@ -96,17 +92,21 @@ public abstract class HbnTest extends TestCase {
 		if (conn != null) {
 			System.out.println("Got Connection.");
 
-			hbnRegistryBuilder.applySetting("hibernate.connection.driver_class", jdbcDriverClassname);
-			hbnRegistryBuilder.applySetting("hibernate.connection.url", jdbcURL);
-			hbnRegistryBuilder.applySetting("hibernate.connection.username", jdbcUser);
-			hbnRegistryBuilder.applySetting("hibernate.connection.password", jdbcPwd);
-			hbnRegistryBuilder.applySetting("hibernate.connection.pool_size", "1");
-			hbnRegistryBuilder.applySetting("hibernate.dialect", hbnDialect);
-			hbnRegistryBuilder.applySetting("hibernate.show_sql", "true");
-			// creates object, wipe out if already exists
-			hbnRegistryBuilder.applySetting("hibernate.hbm2ddl.auto", "create-drop");
+			// Setup Hibernate config
 
-			hbnRegistry = hbnRegistryBuilder.build();
+			config = new HbnConfig(new BootstrapServiceRegistryBuilder().build());
+
+			config.setProperty("hibernate.connection.driver_class", jdbcDriverClassname);
+			config.setProperty("hibernate.connection.url", jdbcURL);
+			config.setProperty("hibernate.connection.username", jdbcUser);
+			config.setProperty("hibernate.connection.password", jdbcPwd);
+			config.setProperty("hibernate.connection.pool_size", "1");
+			config.setProperty("hibernate.dialect", hbnDialect);
+			config.setProperty("hibernate.show_sql", "true");
+			// creates object, wipe out if already exists
+			config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+
+			conn.close();
 		}
 
 	}
@@ -114,7 +114,6 @@ public abstract class HbnTest extends TestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		StandardServiceRegistryBuilder.destroy(hbnRegistry);
 	}
 
 	/**

@@ -40,29 +40,54 @@ package org.openflexo.hbn.test;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.query.NativeQuery;
+import org.openflexo.connie.hbn.EntityManagerCtxt;
+import org.openflexo.connie.hbn.JpaBindingFactory;
 import org.openflexo.hbn.test.model.Vehicle;
 
+/**
+ * Testing standard Hobernage Mapping with annotated class
+ * 
+ * @author xtof
+ *
+ */
 public class BasicTest extends HbnTest {
 
-	public void test1() {
+	private EntityManager hbnEM;
 
-		System.out.println("*********** test1");
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 
-		/* FROM : http://www.programcreek.com/java-api-examples/index.php?api=org.hibernate.boot.MetadataBuilder */
+		config.addAnnotatedClass(Vehicle.class);
+		hbnEM = config.createEntityManager();
+		bindingFactory = new JpaBindingFactory(hbnEM.getMetamodel());
 
-		MetadataSources hbnMetadataSrc = new MetadataSources(hbnRegistry);
+		entityManager = new EntityManagerCtxt(bindingFactory, hbnEM);
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+
+		// Close session
+		hbnEM.close();
+
+		super.tearDown();
+	}
+
+	public void testCreateData() {
+
+		System.out.println("*********** testCreateData");
+
 		// adds a class with annotations
-		hbnMetadataSrc.addAnnotatedClass(Vehicle.class);
 
-		Configuration hbnConfig = new Configuration(hbnMetadataSrc);
-		SessionFactory hbnSessionFactory = hbnConfig.buildSessionFactory(hbnRegistry);
+		SessionFactory hbnSessionFactory = config.getSessionFactory();
 		EntityManager hbnEM = hbnSessionFactory.createEntityManager();
 		Session hbnSession = hbnSessionFactory.withOptions().openSession();
 
@@ -85,6 +110,28 @@ public class BasicTest extends HbnTest {
 
 		// Close session
 		hbnSession.close();
+		hbnEM.close();
+	}
+
+	public void testBindingModel() {
+
+		System.out.println("*********** testBindingModel");
+
+		assertNotNull(hbnEM);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		assertEquals(2, entityManager.getBindingModel().getBindingVariablesCount());
+
+	}
+
+	public void testBindings() {
+
+		System.out.println("*********** testBindings");
+
+		genericTest(entityManager, "self", EntityManagerCtxt.class, entityManager);
+		genericTest(entityManager, "self.Vehicle", EntityType.class, null);
+		genericTest(entityManager, "self.Vehicle.mineralogic", Attribute.class, null);
 	}
 
 }

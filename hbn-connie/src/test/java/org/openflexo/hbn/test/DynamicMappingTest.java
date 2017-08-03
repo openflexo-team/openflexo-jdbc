@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 
 import org.hibernate.Session;
@@ -49,6 +50,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.query.NativeQuery;
+import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.hbn.EntityBindingModel;
+import org.openflexo.connie.hbn.EntityManagerCtxt;
+import org.openflexo.connie.hbn.JpaBindingFactory;
 import org.openflexo.hbn.test.model.DynamicModelBuilder;
 
 public class DynamicMappingTest extends HbnTest {
@@ -61,13 +66,16 @@ public class DynamicMappingTest extends HbnTest {
 		super.setUp();
 
 		// Creation du model
-		DynamicModelBuilder modelBuilder = new DynamicModelBuilder(hbnRegistry);
+		DynamicModelBuilder modelBuilder = new DynamicModelBuilder(config);
 		Metadata metadata = modelBuilder.buildDynamicModel();
 
 		// Creation de la session
 
 		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
 		hbnSession = hbnSessionFactory.withOptions().openSession();
+
+		bindingFactory = new JpaBindingFactory(hbnSession.getMetamodel());
+		entityManager = new EntityManagerCtxt(bindingFactory, hbnSession);
 	}
 
 	@Override
@@ -85,7 +93,7 @@ public class DynamicMappingTest extends HbnTest {
 
 		assertNotNull(hbnSession);
 
-		// Cr�ation de l'instance
+		// Création de l'instance
 
 		Map<String, String> syl = new HashMap<>();
 		syl.put("Nom", "Sylvain");
@@ -116,6 +124,78 @@ public class DynamicMappingTest extends HbnTest {
 			System.out.println("Entité dynamique: " + ent.getName());
 		}
 
+	}
+
+	public void testListEntityWrapperBindingVariables() {
+
+		System.out.println("*********** testListEntityWrapperBindingVariables");
+
+		assertNotNull(hbnSession);
+		assertNotNull(bindingFactory);
+
+		// Explore le metamodel
+		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
+		for (EntityType ent : entities) {
+			EntityBindingModel bm = new EntityBindingModel(bindingFactory, ent);
+			List<BindingVariable> listVariables = bm.getAccessibleBindingVariables();
+
+			System.out.println("For Entity: " + ent.getName());
+			for (BindingVariable bv : listVariables) {
+				System.out.println("     var: " + bv.getLabel() + " -> " + bv.getType().toString());
+			}
+
+			assertEquals(3, listVariables.size());
+			assertEquals(3, bm.getBindingVariablesCount());
+		}
+
+	}
+
+	public void testBindingModel() {
+
+		System.out.println("*********** testBindingModel");
+
+		assertNotNull(hbnSession);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		assertEquals(3, entityManager.getBindingModel().getBindingVariablesCount());
+
+		genericTest(entityManager, "self", EntityManagerCtxt.class, entityManager);
+		genericTest(entityManager, "self.Dynamic_Class", EntityType.class, null);
+		genericTest(entityManager, "self.Adresse", EntityType.class, null);
+	}
+
+	public void testBinding1() {
+
+		System.out.println("*********** testBinding1");
+
+		assertNotNull(hbnSession);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		genericTest(entityManager, "self.Dynamic_Class.Nom", Attribute.class, null);
+	}
+
+	public void testBinding2() {
+
+		System.out.println("*********** testBinding2");
+
+		assertNotNull(hbnSession);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		genericTest(entityManager, "self.Dynamic_Class.Prenom", Attribute.class, null);
+	}
+
+	public void testBinding3() {
+
+		System.out.println("*********** testBinding3");
+
+		assertNotNull(hbnSession);
+		assertNotNull(bindingFactory);
+		assertNotNull(entityManager.getBindingModel());
+
+		genericTest(entityManager, "self.Adresse.Identifiant", Attribute.class, null);
 	}
 
 }

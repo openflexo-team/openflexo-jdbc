@@ -44,7 +44,7 @@ import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl.MetadataBuildingOptionsImpl;
 import org.hibernate.boot.internal.MetadataBuildingContextRootImpl;
-import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.model.relational.Database;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PrimaryKey;
@@ -54,31 +54,36 @@ import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 import org.hibernate.type.TypeResolver;
+import org.openflexo.connie.hbn.HbnConfig;
 
 public class DynamicModelBuilder {
 
-	private StandardServiceRegistry registry;
-	public MetadataBuildingOptionsImpl buildingOptions;
-	public InFlightMetadataCollectorImpl metadataCollector;
-	public ClassLoaderAccessImpl classLoaderAccess;
+	private HbnConfig config = null;
+	private MetadataBuildingOptionsImpl buildingOptions;
+	private InFlightMetadataCollectorImpl metadataCollector;
+	private MetadataBuildingContextRootImpl metadataBuildingContext;
 
-	public DynamicModelBuilder(StandardServiceRegistry hbnRegistry) {
-		registry = hbnRegistry;
-		buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(hbnRegistry);
+	public DynamicModelBuilder(HbnConfig aConfig) {
+
+		super();
+		config = aConfig;
+		buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(config.getServiceRegistry());
+
 		metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
-		classLoaderAccess = new ClassLoaderAccessImpl(null, hbnRegistry);
+
+		metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions,
+				new ClassLoaderAccessImpl(null, config.getServiceRegistry()), metadataCollector);
 
 	}
 
 	public Metadata buildDynamicModel() {
-
-		MetadataBuildingContextRootImpl metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions, classLoaderAccess,
-				metadataCollector);
-
 		Metadata metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
+
+		Database database = metadata.getDatabase();
 
 		// **********
 		// Creation / Définition de la table T_Dynamic_Table
+
 		Table table = metadataCollector.addTable("", "", "T_Dynamic_Table", null, false);
 		table.setName("T_Dynamic_Table");
 		Column col = new Column();
