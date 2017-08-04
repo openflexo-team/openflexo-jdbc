@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2013-2017, Openflexo
  *
  * This file is part of Flexo-foundation, a component of the software infrastructure
@@ -36,6 +36,7 @@
 package org.openflexo.technologyadapter.jdbc.util;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.openflexo.model.exceptions.ModelDefinitionException;
@@ -60,22 +62,23 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 /**
  * SQL request helper
+ * 
+ * @author Jean-Charles Roger
+ * @author xtof
+ * 
+ *         TODO: better manage catalog,
+ * 
+ *         TODO: test with connection to other databases
+ * 
  */
 public class SQLHelper {
-
-
-	// TODO complete with http://dev.mysql.com/doc/refman/5.7/en/tables-table.html
-    public static final String SELECT_TABLES = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA=?";
-
-	public static final String SELECT_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=? ORDER BY ORDINAL_POSITION";
-
-	public static final String SELECT_PRIMARY_KEY = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME=?";
 
 	public static JDBCFactory getFactory(JDBCConnection model) {
 		// Find the correct factory
 		if (model.getResource() instanceof JDBCResource) {
 			return ((JDBCResource) model.getResource()).getFactory();
-		} else {
+		}
+		else {
 			try {
 				return new JDBCFactory();
 			} catch (ModelDefinitionException e) {
@@ -86,11 +89,15 @@ public class SQLHelper {
 
 	/**
 	 * Updates the list of tables for the given schema.
-	 * @param schema the schema
-	 * @param tables the table list to update
-	 * @param factory the factory used to create the new tables if needed
+	 * 
+	 * @param schema
+	 *            the schema
+	 * @param tables
+	 *            the table list to update
+	 * @param factory
+	 *            the factory used to create the new tables if needed
 	 */
-    public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final JDBCFactory factory) throws SQLException {
+	public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final JDBCFactory factory) throws SQLException {
 		Connection connection = schema.getResourceData().getConnection();
 
 		// prepare case ignoring map to match tables
@@ -102,26 +109,29 @@ public class SQLHelper {
 		// query the tables to find new and removed ones
 		final Set<JDBCTable> added = new LinkedHashSet<>();
 		final Set<JDBCTable> matched = new LinkedHashSet<>();
-		new QueryRunner().query(connection, SELECT_TABLES, resultSet -> {
-			while (resultSet.next()) {
-				String tableName = resultSet.getString("TABLE_NAME");
-				JDBCTable table = sortedTables.get(tableName.toLowerCase());
-				if (table == null) {
-					// new table, add it to the list
-					table = factory.newInstance(JDBCTable.class);
-					table.init(schema, tableName);
-					added.add(table);
-				} else {
-					matched.add(table);
-				}
+
+		DatabaseMetaData metadata = connection.getMetaData();
+
+		ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), "PUBLIC", "%", null);
+		while (jdbcTables.next()) {
+			String tableName = jdbcTables.getString("TABLE_NAME");
+			JDBCTable aTable = sortedTables.get(tableName.toLowerCase());
+			if (aTable == null) {
+				// new table, add it to the list
+				aTable = factory.newInstance(JDBCTable.class);
+				aTable.init(schema, tableName);
+				added.add(aTable);
 			}
-			return null;
-		}, connection.getCatalog());
+			else {
+				matched.add(aTable);
+			}
+		}
 
 		// gets tables to remove
 		Set<JDBCTable> removed = new HashSet<>();
 		for (JDBCTable table : tables) {
-			if (!matched.contains(table)) removed.add(table);
+			if (!matched.contains(table))
+				removed.add(table);
 		}
 
 		// clears the tables of the removed ones
@@ -137,9 +147,13 @@ public class SQLHelper {
 
 	/**
 	 * Updates the list of columns for the given table.
-	 * @param table the table
-	 * @param columns the table list to update
-	 * @param factory the factory used to create the new columns if needed
+	 * 
+	 * @param table
+	 *            the table
+	 * @param columns
+	 *            the table list to update
+	 * @param factory
+	 *            the factory used to create the new columns if needed
 	 */
 	public static void updateColumns(final JDBCTable table, List<JDBCColumn> columns, final JDBCFactory factory) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
@@ -156,27 +170,29 @@ public class SQLHelper {
 		// query the columns to find new and removed ones
 		final Set<JDBCColumn> added = new LinkedHashSet<>();
 		final Set<JDBCColumn> matched = new LinkedHashSet<>();
-		new QueryRunner().query(connection, SELECT_COLUMNS, resultSet -> {
-			while (resultSet.next()) {
-				String name = resultSet.getString(1);
 
-				JDBCColumn column = sortedColumns.get(name.toLowerCase());
-				if (column == null) {
-					// new column, add it to the list
-					column = factory.newInstance(JDBCColumn.class);
-					column.init(table, keys.contains(name), name, resultSet.getString(2));
-					added.add(column);
-				} else {
-					matched.add(column);
-				}
+		DatabaseMetaData metadata = connection.getMetaData();
+
+		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), "PUBLIC", sqlName(table.getName()), "%");
+		while (jdbcCols.next()) {
+			String name = jdbcCols.getString("COLUMN_NAME");
+			JDBCColumn column = sortedColumns.get(name.toLowerCase());
+			if (column == null) {
+				// new column, add it to the list
+				column = factory.newInstance(JDBCColumn.class);
+				column.init(table, keys.contains(name), name, jdbcCols.getString("TYPE_NAME"));
+				added.add(column);
 			}
-			return null;
-		}, sqlName(table.getName()));
+			else {
+				matched.add(column);
+			}
+		}
 
 		// gets columns to remove
 		Set<JDBCColumn> removed = new HashSet<>();
 		for (JDBCColumn column : columns) {
-			if (!matched.contains(column)) removed.add(column);
+			if (!matched.contains(column))
+				removed.add(column);
 		}
 
 		// clears the columns of the removed ones
@@ -190,18 +206,23 @@ public class SQLHelper {
 		}
 	}
 
-    private static Set<String> getKeys(final JDBCTable table) throws SQLException {
+	private static Set<String> getKeys(final JDBCTable table) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
-		return new QueryRunner().query(connection, SELECT_PRIMARY_KEY, resultSet -> {
-			Set<String> keys = new HashSet<>();
-			while (resultSet.next()) {
-				keys.add(resultSet.getString(1));
-			}
-			return keys;
-		}, sqlName(table.getName()));
+
+		DatabaseMetaData metadata = connection.getMetaData();
+
+		ResultSet foundKeys = metadata.getPrimaryKeys(connection.getCatalog(), "PUBLIC", sqlName(table.getName()));
+
+		Set<String> keys = new HashSet<>();
+		while (foundKeys.next()) {
+			keys.add(foundKeys.getString("COLUMN_NAME"));
+		}
+		return keys;
+
 	}
 
-    public static JDBCTable createTable(final JDBCSchema schema, final JDBCFactory factory, final String tableName, String[] ... attributes) throws SQLException {
+	public static JDBCTable createTable(final JDBCSchema schema, final JDBCFactory factory, final String tableName, String[]... attributes)
+			throws SQLException {
 		Connection connection = schema.getResourceData().getConnection();
 		String request = createTableRequest(tableName, attributes);
 		return new QueryRunner().insert(connection, request, resultSet -> {
@@ -211,7 +232,7 @@ public class SQLHelper {
 		});
 	}
 
-	private static String createTableRequest(String name, String[] ... attributes) throws SQLException {
+	private static String createTableRequest(String name, String[]... attributes) throws SQLException {
 		StringBuilder request = new StringBuilder("CREATE TABLE ");
 		request.append(sqlName(name));
 		request.append(" (");
@@ -235,17 +256,13 @@ public class SQLHelper {
 		return request.toString();
 	}
 
-
-	public static void dropTable(
-    		final JDBCSchema schema, final String tableName
-	) throws SQLException {
+	public static void dropTable(final JDBCSchema schema, final String tableName) throws SQLException {
 		Connection connection = schema.getResourceData().getConnection();
 		new QueryRunner().update(connection, "DROP TABLE " + sqlName(tableName));
 	}
 
-	public static JDBCColumn createColumn(
-			final JDBCTable table, final JDBCFactory factory, final String columnName, final String type, boolean key
-	) throws SQLException {
+	public static JDBCColumn createColumn(final JDBCTable table, final JDBCFactory factory, final String columnName, final String type,
+			boolean key) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
 		String addColumn = createAddColumnRequest(table, columnName, type, key);
 		new QueryRunner().update(connection, addColumn);
@@ -271,13 +288,13 @@ public class SQLHelper {
 
 	public static void dropColumn(final JDBCTable table, final String columnName) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
-		String dropColumn = "ALTER TABLE "+ sqlName(table.getName()) +" DROP COLUMN " + sqlName(columnName);
+		String dropColumn = "ALTER TABLE " + sqlName(table.getName()) + " DROP COLUMN " + sqlName(columnName);
 		new QueryRunner().update(connection, dropColumn);
 	}
 
 	public static void grant(JDBCConnection connection, String access, String on, String user) throws SQLException {
-		String grant = "GRANT "+ access +" ON " + sqlName(on) + " TO " + sqlName(user) + "";
-		new QueryRunner().update(connection.getConnection(),grant);
+		String grant = "GRANT " + access + " ON " + sqlName(on) + " TO " + sqlName(user) + "";
+		new QueryRunner().update(connection.getConnection(), grant);
 	}
 
 	public static String sqlName(String name) {
@@ -312,16 +329,11 @@ public class SQLHelper {
 		}
 	}
 
-	public static JDBCResultSet select(
-		final JDBCFactory factory, final JDBCTable from,
-		String where, String orderBy, int limit, int offset
-	)
-		throws SQLException
-	{
+	public static JDBCResultSet select(final JDBCFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
+			throws SQLException {
 		Connection connection = from.getResourceData().getConnection();
-		final JDBCResultSetDescription description = factory.makeResultSetDescription(
-				from.getResourceData(), from.getName(), null, null, null, where, orderBy, limit, offset
-		);
+		final JDBCResultSetDescription description = factory.makeResultSetDescription(from.getResourceData(), from.getName(), null, null,
+				null, where, orderBy, limit, offset);
 		String request = createSelectRequest(description);
 		return new QueryRunner().query(connection, request, new ResultSetHandler<JDBCResultSet>() {
 			@Override
@@ -331,22 +343,17 @@ public class SQLHelper {
 		});
 	}
 
-	public static JDBCResultSet select(
-		final JDBCFactory factory, final JDBCTable from,
-		String joinType, JDBCTable join, String on,
-		String where, String orderBy, int limit, int offset
-	)
-		throws SQLException
-	{
+	public static JDBCResultSet select(final JDBCFactory factory, final JDBCTable from, String joinType, JDBCTable join, String on,
+			String where, String orderBy, int limit, int offset) throws SQLException {
 		Connection connection = from.getResourceData().getConnection();
-		final JDBCResultSetDescription description = factory.makeResultSetDescription(
-				from.getResourceData(), from.getName(), joinType, join.getName(), on, where, orderBy, limit, offset
-		);
+		final JDBCResultSetDescription description = factory.makeResultSetDescription(from.getResourceData(), from.getName(), joinType,
+				join.getName(), on, where, orderBy, limit, offset);
 		String request = createSelectRequest(description);
 		return new QueryRunner().query(connection, request, resultSet -> factory.makeJDBCResult(description, resultSet, from.getSchema()));
 	}
 
-	public static JDBCResultSet select(final JDBCFactory factory, final JDBCConnection connection, final JDBCResultSetDescription description) throws SQLException {
+	public static JDBCResultSet select(final JDBCFactory factory, final JDBCConnection connection,
+			final JDBCResultSetDescription description) throws SQLException {
 		String request = createSelectRequest(description);
 		return new QueryRunner().query(connection.getConnection(), request,
 				resultSet -> factory.makeJDBCResult(description, resultSet, connection.getSchema()));
@@ -393,13 +400,12 @@ public class SQLHelper {
 		final JDBCConnection connection = table.getResourceData();
 		String request = createInsertRequest(line, table);
 		String resultKey = new QueryRunner().insert(connection.getConnection(), request, resultSet -> {
-				if (resultSet.getMetaData().getColumnCount() > 0) {
-					resultSet.next();
-					return resultSet.getString(1);
-				}
-				return null;
+			if (resultSet.getMetaData().getColumnCount() > 0) {
+				resultSet.next();
+				return resultSet.getString(1);
 			}
-		);
+			return null;
+		});
 
 		String primaryKey = resultKey != null ? resultKey : line.getKeys().get(0);
 		return table.find(primaryKey);
@@ -412,13 +418,15 @@ public class SQLHelper {
 		result.append(" (");
 		int length = result.length();
 		for (JDBCValue value : line.getValues()) {
-			if (length < result.length()) result.append(",");
+			if (length < result.length())
+				result.append(",");
 			result.append(value.getColumn().getName());
 		}
 		result.append(") VALUES (");
 		length = result.length();
 		for (JDBCValue value : line.getValues()) {
-			if (length < result.length()) result.append(",");
+			if (length < result.length())
+				result.append(",");
 			result.append(sqlValue(value.getColumn().getType(), value.getValue()));
 		}
 		result.append(")");
@@ -445,13 +453,14 @@ public class SQLHelper {
 		result.append(" WHERE ");
 		int length = result.length();
 		JDBCLine line = value.getLine();
-		for (JDBCValue otherValue: line.getValues()) {
+		for (JDBCValue otherValue : line.getValues()) {
 			JDBCColumn whereColumn = otherValue.getColumn();
 			if (whereColumn.isPrimaryKey()) {
-				if (length < result.length()) result.append(" AND ");
+				if (length < result.length())
+					result.append(" AND ");
 
 				result.append(whereColumn.getName());
-				result.append( " = ");
+				result.append(" = ");
 				result.append(sqlValue(whereColumn.getType(), otherValue.getValue()));
 			}
 		}
@@ -473,7 +482,8 @@ public class SQLHelper {
 		int length = result.length();
 		for (JDBCValue value : line.getValues()) {
 			if (value.getColumn().isPrimaryKey()) {
-				if (length < result.length()) result.append(" and");
+				if (length < result.length())
+					result.append(" and");
 				result.append(value.getColumn().getName());
 				result.append(" = ");
 				result.append(sqlValue(value.getColumn().getType(), value.getValue()));
@@ -482,21 +492,20 @@ public class SQLHelper {
 		return result.toString();
 	}
 
-
 	public static String sqlValue(String type, String value) {
 		StringBuilder result = new StringBuilder();
 		boolean needsQuotes = needsQuotes(type);
-		if (needsQuotes) result.append("'");
+		if (needsQuotes)
+			result.append("'");
 		result.append(value);
-		if (needsQuotes) result.append("'");
+		if (needsQuotes)
+			result.append("'");
 		return result.toString();
 	}
 
 	public static boolean needsQuotes(String type) {
 		String upperCaseType = type.toUpperCase();
-		return 	upperCaseType.startsWith("CHAR") ||
-				upperCaseType.startsWith("VARCHAR") ||
-				upperCaseType.startsWith("CLOB");
+		return upperCaseType.startsWith("CHAR") || upperCaseType.startsWith("VARCHAR") || upperCaseType.startsWith("CLOB");
 	}
 
 }
