@@ -38,6 +38,7 @@ package org.openflexo.technologyadapter.jdbc.model.action;
 import java.io.FileNotFoundException;
 import java.util.Vector;
 import java.util.logging.Logger;
+
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
@@ -53,13 +54,14 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
+import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceRepository;
 
 public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, RepositoryFolder, FlexoObject> {
 
 	private static final Logger logger = Logger.getLogger(CreateJDBCConnection.class.getPackage().getName());
 
 	public static FlexoActionType<CreateJDBCConnection, RepositoryFolder, FlexoObject> actionType = new FlexoActionType<CreateJDBCConnection, RepositoryFolder, FlexoObject>(
-			"create_jdbc_model", FlexoActionType.newMenu, FlexoActionType.defaultGroup, FlexoActionType.ADD_ACTION_TYPE) {
+			"create_jdbc_connection", FlexoActionType.newMenu, FlexoActionType.defaultGroup, FlexoActionType.ADD_ACTION_TYPE) {
 
 		/**
 		 * Factory method
@@ -72,8 +74,7 @@ public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, Repo
 		@Override
 		public boolean isVisibleForSelection(RepositoryFolder object, Vector<FlexoObject> globalSelection) {
 			// TODO check what should be done
-			//return object != null && object.getResourceRepository() instanceof JDBCResourceRepository;
-			return true;
+			return object != null && object.getResourceRepository() instanceof JDBCResourceRepository;
 		}
 
 		@Override
@@ -145,7 +146,8 @@ public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, Repo
 		try {
 			JDBCTechnologyAdapter technologyAdapter = getTechnologyAdapter();
 			JDBCResourceFactory resourceFactory = technologyAdapter.getResourceFactory(JDBCResourceFactory.class);
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager = (TechnologyContextManager<JDBCTechnologyAdapter>) technologyAdapter.getTechnologyContextManager();
+			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager = (TechnologyContextManager<JDBCTechnologyAdapter>) technologyAdapter
+					.getTechnologyContextManager();
 			JDBCResource resource = resourceFactory.makeJDBCResource(resourceName, getFocusedObject(), technologyContextManager);
 			JDBCConnection model = resource.getResourceData(null);
 			model.setAddress(getAddress());

@@ -47,25 +47,26 @@ import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.gina.controller.FIBController;
+import org.openflexo.icon.FMLIconLibrary;
+import org.openflexo.icon.IconFactory;
 import org.openflexo.model.exceptions.ModelExecutionException;
-import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
-import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModelAction;
+import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJDBCVirtualModelAction, VirtualModel, FMLObject> {
+public class CreateJDBCVirtualModelInitializer extends ActionInitializer<CreateJDBCVirtualModel, VirtualModel, FMLObject> {
 
 	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
 
-	public CreateJdbcVirtualModelInitializer(ControllerActionInitializer actionInitializer) {
-		super(CreateJDBCVirtualModelAction.actionType, actionInitializer);
+	public CreateJDBCVirtualModelInitializer(ControllerActionInitializer actionInitializer) {
+		super(CreateJDBCVirtualModel.actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionInitializer<CreateJDBCVirtualModelAction> getDefaultInitializer() {
+	protected FlexoActionInitializer<CreateJDBCVirtualModel> getDefaultInitializer() {
 		return (e, action) -> {
-			Wizard wizard = new CreateJdbcVirtualModelWizard(action, getController());
+			Wizard wizard = new CreateJDBCVirtualModelWizard(action, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
 			dialog.showDialog();
 			if (dialog.getStatus() != FIBController.Status.VALIDATED) {
@@ -77,12 +78,12 @@ public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJ
 	}
 
 	@Override
-	protected FlexoActionFinalizer<CreateJDBCVirtualModelAction> getDefaultFinalizer() {
+	protected FlexoActionFinalizer<CreateJDBCVirtualModel> getDefaultFinalizer() {
 		return (e, action) -> true;
 	}
 
 	@Override
-	protected FlexoExceptionHandler<CreateJDBCVirtualModelAction> getDefaultExceptionHandler() {
+	protected FlexoExceptionHandler<CreateJDBCVirtualModel> getDefaultExceptionHandler() {
 		return (exception, action) -> {
 			Throwable cause = exception.getCause();
 			if (cause instanceof ModelExecutionException) {
@@ -100,7 +101,7 @@ public class CreateJdbcVirtualModelInitializer extends ActionInitializer<CreateJ
 
 	@Override
 	protected Icon getEnabledIcon(FlexoActionType actionType) {
-		return JDBCIconLibrary.JDBC_FILE_ICON;
+		return IconFactory.getImageIcon(FMLIconLibrary.VIRTUAL_MODEL_ICON, FMLIconLibrary.NEW_MARKER);
 	}
 
 }

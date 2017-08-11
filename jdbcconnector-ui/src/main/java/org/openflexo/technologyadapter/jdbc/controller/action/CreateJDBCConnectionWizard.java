@@ -38,35 +38,33 @@
 
 package org.openflexo.technologyadapter.jdbc.controller.action;
 
+import java.awt.Image;
+import java.util.logging.Logger;
+
 import org.openflexo.ApplicationContext;
 import org.openflexo.components.wizard.FlexoWizard;
 import org.openflexo.components.wizard.WizardStep;
-import org.openflexo.foundation.fml.VirtualModel;
-import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.gina.annotation.FIBPanel;
-import org.openflexo.icon.FMLIconLibrary;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
+import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCConnection;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
-import java.awt.*;
-import java.util.logging.Logger;
-
-public class CreateJdbcConnectionWizard extends FlexoWizard {
+public class CreateJDBCConnectionWizard extends FlexoWizard {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CreateJdbcConnectionWizard.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(CreateJDBCConnectionWizard.class.getPackage().getName());
 
 	private final CreateJDBCConnection action;
 
-	private final ConfigureJdbcConnection configureJdbcConnection;
+	private final ConfigureJDBCConnection configureJdbcConnection;
 
-	public CreateJdbcConnectionWizard(CreateJDBCConnection action, FlexoController controller) {
+	public CreateJDBCConnectionWizard(CreateJDBCConnection action, FlexoController controller) {
 		super(controller);
 		this.action = action;
-		addStep(configureJdbcConnection = new ConfigureJdbcConnection());
+		addStep(configureJdbcConnection = new ConfigureJDBCConnection());
 	}
 
 	@Override
@@ -77,21 +75,15 @@ public class CreateJdbcConnectionWizard extends FlexoWizard {
 	@Override
 	public Image getDefaultPageImage() {
 		// TODO change icon
-		return IconFactory.getImageIcon(FMLIconLibrary.FLEXO_CONCEPT_BIG_ICON, IconLibrary.NEW_32_32).getImage();
+		return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_BIG_ICON, IconLibrary.NEW_32_32).getImage();
 	}
 
-	public ConfigureJdbcConnection getConfigureJdbcConnection() {
+	public ConfigureJDBCConnection getConfigureJdbcConnection() {
 		return configureJdbcConnection;
 	}
 
-	/**
-	 * This step is used to set {@link VirtualModel} to be used, as well as name and title of the {@link FMLRTVirtualModelInstance}
-	 * 
-	 * @author sylvain
-	 *
-	 */
-	@FIBPanel("Fib/Wizard/ConfigureJdbcConnection.fib")
-	public class ConfigureJdbcConnection extends WizardStep {
+	@FIBPanel("Fib/Wizard/ConfigureJDBCConnection.fib")
+	public class ConfigureJDBCConnection extends WizardStep {
 
 		public ApplicationContext getServiceManager() {
 			return getController().getApplicationContext();
@@ -170,4 +162,5 @@ public class CreateJdbcConnectionWizard extends FlexoWizard {
 			}
 		}
 	}
+
 }

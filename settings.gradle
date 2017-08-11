@@ -1,7 +1,5 @@
 include 'jdbcconnector',
         'jdbcconnector-ui',
-        'hbn-connie',
-        'hbnconnector',
         'jdbc-test-rc'
 
 // file('../').listFiles().each { File otherProject ->

@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.openflexo.foundation.PamelaResourceModelFactory;
 import org.openflexo.foundation.action.FlexoUndoManager;
 import org.openflexo.foundation.resource.PamelaResourceImpl.IgnoreLoadingEdits;
@@ -84,6 +85,7 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 
 	/**
 	 * Creates empty model that needs to be initialized
+	 * 
 	 * @return the created model
 	 */
 	public JDBCConnection makeEmptyModel() {
@@ -95,12 +97,24 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 		returned.setAddress(address);
 		returned.setUser(user);
 		returned.setPassword(password);
+
+		System.out.println("On ouvre une connexion sur " + address + " user=" + user + " password=" + password);
+		if (returned.getConnection() != null) {
+			System.out.println("Voici le schema: " + returned.getSchema());
+			System.out.println("Les tables: " + returned.getSchema().getTables());
+		}
+		else if (returned.getException() != null) {
+			logger.warning("Cannot open JDBC connection: " + returned.getException().getMessage());
+		}
+		else {
+			logger.warning("Cannot open JDBC connection");
+		}
 		return returned;
 	}
 
 	public JDBCResultSet emptyResultSet(JDBCConnection connection) {
 		JDBCResultSet result = newInstance(JDBCResultSet.class);
-		result.init(connection, null, Collections.<JDBCLine>emptyList());
+		result.init(connection, null, Collections.<JDBCLine> emptyList());
 		return result;
 	}
 
@@ -111,8 +125,7 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 	}
 
 	/** Create JDBCResultSet from a ResultSet */
-	public JDBCResultSet makeJDBCResult(JDBCResultSetDescription description, ResultSet resultSet, JDBCSchema schema) throws
-			SQLException {
+	public JDBCResultSet makeJDBCResult(JDBCResultSetDescription description, ResultSet resultSet, JDBCSchema schema) throws SQLException {
 		JDBCResultSet result = newInstance(JDBCResultSet.class);
 
 		ResultSetMetaData metaData = resultSet.getMetaData();
@@ -120,7 +133,7 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 		int columnCount = metaData.getColumnCount();
 		JDBCColumn[] columns = new JDBCColumn[columnCount];
 		for (int i = 1; i <= columnCount; i++) {
-			columns[i-1] = findColumn(i, metaData, schema);
+			columns[i - 1] = findColumn(i, metaData, schema);
 		}
 
 		List<JDBCLine> lines = new ArrayList<>();
@@ -129,7 +142,7 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 			List<JDBCValue> values = new ArrayList<>();
 			for (int i = 1; i <= columnCount; i++) {
 				JDBCValue value = newInstance(JDBCValue.class);
-				value.init(line, columns[i-1], resultSet.getString(i));
+				value.init(line, columns[i - 1], resultSet.getString(i));
 				values.add(value);
 			}
 			line.init(result, values);
@@ -141,11 +154,8 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 		return result;
 	}
 
-	public JDBCResultSetDescription makeResultSetDescription(
-			JDBCConnection connection,
-			String from, String joinType, String join, String on,
-			String where, String orderBy, int limit, int offset
-	) {
+	public JDBCResultSetDescription makeResultSetDescription(JDBCConnection connection, String from, String joinType, String join,
+			String on, String where, String orderBy, int limit, int offset) {
 		JDBCResultSetDescription description = newInstance(JDBCResultSetDescription.class);
 		description.init(connection, from, joinType, join, on, where, orderBy, limit, offset);
 		return description;

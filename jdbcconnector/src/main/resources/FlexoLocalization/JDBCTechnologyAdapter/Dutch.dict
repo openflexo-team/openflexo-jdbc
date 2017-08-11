@@ -1,4 +1,9 @@
+choose_entities_to_be_reflected=Choose entities to be reflected
 configure_jdbc_connection=Configure jdbc connection
 configure_jdbc_virtualmodel=Configure jdbc virtualmodel
+configure_table_mapping_for=Configure table mapping for
 connection=Connection
+create_virtual_model_reflecting_a_jdbc_schema=Create virtual model reflecting a jdbc schema
 no_connection_address_defined=No connection address defined
+please_choose_some_entities=Please choose some entities
+please_enter_name_for_new_virtual_model=Please enter name for new virtual model

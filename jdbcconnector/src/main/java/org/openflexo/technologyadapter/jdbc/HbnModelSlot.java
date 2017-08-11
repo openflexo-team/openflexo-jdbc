@@ -55,35 +55,17 @@
 
 package org.openflexo.technologyadapter.jdbc;
 
-import java.lang.reflect.Type;
-
 import org.openflexo.foundation.fml.FlexoRole;
-import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
-import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
-import org.openflexo.foundation.fml.annotations.DeclareFetchRequests;
-import org.openflexo.foundation.fml.annotations.DeclareFlexoRoles;
+import org.openflexo.foundation.fml.rt.FMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.action.ModelSlotInstanceConfiguration;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
-import org.openflexo.foundation.technologyadapter.FreeModelSlot;
-import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnActorReference;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCLineActorReference;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCTableActorReference;
-import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
-import org.openflexo.technologyadapter.jdbc.fml.editionaction.AddJDBCTable;
-import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCResource;
-import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCColumn;
-import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCLine;
-import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCTable;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
-import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
@@ -97,17 +79,15 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
  */
 @ModelEntity
 @XMLElement
-@ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
-@DeclareActorReferences({ JDBCTableActorReference.class, JDBCColumnActorReference.class, JDBCLineActorReference.class })
+@ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
+/*@DeclareActorReferences({ JDBCTableActorReference.class, JDBCColumnActorReference.class, JDBCLineActorReference.class })
 @DeclareFlexoRoles({ JDBCTableRole.class, JDBCColumnRole.class, JDBCLineRole.class })
 @DeclareEditionActions({ CreateJDBCResource.class, AddJDBCTable.class })
-@DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class })
-public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
+@DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class })*/
+public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
-	@Override
-	JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
-
-	abstract class JDBCModelSlotImpl extends FreeModelSlotImpl<JDBCConnection> implements JDBCModelSlot {
+	abstract class HbnModelSlotImpl extends InferedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
+			implements HbnModelSlot {
 
 		@Override
 		public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
@@ -115,22 +95,8 @@ public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 		}
 
 		@Override
-		public <PR extends FlexoRole<?>> String defaultFlexoRoleName(Class<PR> patternRoleClass) {
-			if (JDBCTableRole.class.isAssignableFrom(patternRoleClass)) {
-				return "table";
-			}
-			if (JDBCColumnRole.class.isAssignableFrom(patternRoleClass)) {
-				return "column";
-			}
-			if (JDBCLineRole.class.isAssignableFrom(patternRoleClass)) {
-				return "line";
-			}
-			return "";
-		}
-
-		@Override
-		public Type getType() {
-			return JDBCConnection.class;
+		public <PR extends FlexoRole<?>> String defaultFlexoRoleName(Class<PR> flexoRoleClass) {
+			return super.defaultFlexoRoleName(flexoRoleClass);
 		}
 
 		@Override
@@ -138,24 +104,32 @@ public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 			return (JDBCTechnologyAdapter) super.getModelSlotTechnologyAdapter();
 		}
 
-		@Override
+		/*@Override
 		public ModelSlotInstanceConfiguration<? extends FreeModelSlot<JDBCConnection>, JDBCConnection> createConfiguration(
 				FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {
 			return new JDBCModelSlotInstanceConfiguration(this, fci, rc);
 		}
-
+		
 		@Override
 		public TechnologyAdapterResource<JDBCConnection, ?> createProjectSpecificEmptyResource(VirtualModelInstance<?, ?> view,
 				String filename, String modelUri) {
 			// TODO create empty resource
 			return null;
 		}
-
+		
 		@Override
 		public TechnologyAdapterResource<JDBCConnection, ?> createSharedEmptyResource(FlexoResourceCenter<?> resourceCenter,
 				String relativePath, String filename, String modelUri) {
 			// TODO create empty resource
 			return null;
+		}*/
+
+		@Override
+		public ModelSlotInstanceConfiguration<? extends FMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter>, HbnVirtualModelInstance> createConfiguration(
+				FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {
+			// TODO Auto-generated method stub
+			return super.createConfiguration(fci, rc);
 		}
+
 	}
 }

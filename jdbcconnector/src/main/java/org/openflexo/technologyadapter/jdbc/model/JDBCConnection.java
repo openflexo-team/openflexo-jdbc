@@ -60,6 +60,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.foundation.FlexoServiceManager;
 import org.openflexo.foundation.resource.FlexoResource;
 import org.openflexo.foundation.resource.ResourceData;
@@ -79,45 +80,48 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 @ModelEntity
 @ImplementationClass(value = JDBCConnection.JDBCConnectionImpl.class)
 @XMLElement
-@Imports({
-	@Import(JDBCSchema.class), @Import(JDBCTable.class), @Import(JDBCColumn.class),
-	@Import(JDBCResultSet.class), @Import(JDBCLine.class), @Import(JDBCValue.class),
-	@Import(JDBCResultSetDescription.class)
-})
+@Imports({ @Import(JDBCSchema.class), @Import(JDBCTable.class), @Import(JDBCColumn.class), @Import(JDBCResultSet.class),
+		@Import(JDBCLine.class), @Import(JDBCValue.class), @Import(JDBCResultSetDescription.class) })
 public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCConnection> {
 
-    String ADDRESS = "address";
-    String USER = "user";
-    String PASSWORD = "password";
-    String SCHEMA = "schema";
-    String CONNECTION = "connection";
+	String ADDRESS = "address";
+	String USER = "user";
+	String PASSWORD = "password";
+	String SCHEMA = "schema";
+	String CONNECTION = "connection";
 
-    @Getter(ADDRESS) @XMLAttribute
-    String getAddress();
+	@Getter(ADDRESS)
+	@XMLAttribute
+	String getAddress();
 
-    @Setter(ADDRESS)
-    void setAddress(String address);
+	@Setter(ADDRESS)
+	void setAddress(String address);
 
-    @Getter(USER) @XMLAttribute
-    String getUser();
+	@Getter(USER)
+	@XMLAttribute
+	String getUser();
 
-    @Setter(USER)
-    void setUser(String user);
+	@Setter(USER)
+	void setUser(String user);
 
-    @Getter(PASSWORD) @XMLAttribute
-    String getPassword();
+	@Getter(PASSWORD)
+	@XMLAttribute
+	String getPassword();
 
-    @Setter(PASSWORD)
-    void setPassword(String pass);
+	@Setter(PASSWORD)
+	void setPassword(String pass);
 
-    @Getter(SCHEMA)
-    JDBCSchema getSchema();
+	@Getter(SCHEMA)
+	JDBCSchema getSchema();
 
-    @Getter(value = CONNECTION, ignoreType = true)
-    Connection getConnection();
+	@Getter(value = CONNECTION, ignoreType = true)
+	Connection getConnection();
 
 	JDBCResultSet select(JDBCResultSetDescription description);
-    /**
+
+	public SQLException getException();
+
+	/**
 	 * Abstract JDBCConnection implementation using Pamela.
 	 *
 	 * @author charlie
@@ -158,6 +162,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 			getPropertyChangeSupport().firePropertyChange(CONNECTION, oldValue, null);
 		}
 
+		@Override
 		public JDBCTechnologyAdapter getTechnologyAdapter() {
 			FlexoResource<JDBCConnection> resource = getResource();
 			if (resource != null && resource.getServiceManager() != null) {
@@ -168,7 +173,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 		}
 
 		@Override
-		public JDBCSchema getSchema()  {
+		public JDBCSchema getSchema() {
 			if (schema == null) {
 				JDBCFactory factory = SQLHelper.getFactory(this);
 				schema = factory.newInstance(JDBCSchema.class);
@@ -180,15 +185,24 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 
 		@Override
 		public Connection getConnection() {
-			if (connection == null) {
+			if (connection == null && getAddress() != null) {
 				try {
+					System.out.println("Open connection " + getAddress());
 					connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
 					getPropertyChangeSupport().firePropertyChange(CONNECTION, null, connection);
 				} catch (SQLException e) {
-					throw new IllegalStateException("JDBC connection can't be initialized", e);
+					LOGGER.warning(e.getMessage());
+					exception = e;
 				}
 			}
 			return connection;
+		}
+
+		private SQLException exception;
+
+		@Override
+		public SQLException getException() {
+			return exception;
 		}
 
 		@Override
@@ -197,7 +211,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 			try {
 				return SQLHelper.select(factory, this, description);
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't select from '"+ description.getFrom() +"' on '"+ this.getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't select from '" + description.getFrom() + "' on '" + this.getAddress() + "'", e);
 				return factory.emptyResultSet(this);
 			}
 		}

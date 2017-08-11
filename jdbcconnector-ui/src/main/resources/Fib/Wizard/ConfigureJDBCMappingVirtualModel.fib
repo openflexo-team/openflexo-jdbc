@@ -10,6 +10,6 @@
   <TextField id="8" passwd="true" columns="7" data="data.password" constraints="gridbag(anchor=center;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;padX=0;padY=0;weightX=0.0;weightY=0.0)" name="passwordTextField" />
   <CheckBox id="9" tooltipText="If check a default synchronisation scheme will be generated. It may induce performance problems" data="data.isGenerateSynchronizationScheme" constraints="gridbag(anchor=east;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;padX=0;padY=0;weightX=0.0;weightY=0.0)" name="synchronisationSchemeCheckbox" />
   <Label id="10" label="generate_synchronization_scheme" align="left" constraints="gridbag(anchor=west;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;padX=0;padY=0;weightX=0.0;weightY=0.0)" name="synchronisationSchemeLabel" description="If check a default synchronisation scheme will be generated. It may induce performance problems" />
-  <FIBVariable id="11" type="org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcVirtualModelWizard$ConfigureJdbcVirtualModel" name="data" />
+  <FIBVariable id="11" type="org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCMappingVirtualModelWizard$ConfigureJDBCMappingVirtualModel" name="data" />
   <LocalizedDictionary id="12" />
 </Panel>

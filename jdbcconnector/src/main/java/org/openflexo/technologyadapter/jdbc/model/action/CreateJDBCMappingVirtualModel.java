@@ -82,20 +82,21 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
 
-public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualModelAction, VirtualModel, FMLObject> {
+public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> {
 
-	private static final Logger logger = Logger.getLogger(CreateJDBCVirtualModelAction.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(CreateJDBCMappingVirtualModel.class.getPackage().getName());
 
-	public static FlexoActionType<CreateJDBCVirtualModelAction, VirtualModel, FMLObject> actionType = new FlexoActionType<CreateJDBCVirtualModelAction, VirtualModel, FMLObject>(
-			"create_jdbc_virtualmodel", FlexoActionType.newMenu, FlexoActionType.defaultGroup, FlexoActionType.ADD_ACTION_TYPE) {
+	public static FlexoActionType<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> actionType = new FlexoActionType<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject>(
+			"create_jdbc_mapping_virtualmodel", FlexoActionType.newVirtualModelMenu, FlexoActionType.defaultGroup,
+			FlexoActionType.ADD_ACTION_TYPE) {
 
 		/**
 		 * Factory method
 		 */
 		@Override
-		public CreateJDBCVirtualModelAction makeNewAction(VirtualModel focusedObject, Vector<FMLObject> globalSelection,
+		public CreateJDBCMappingVirtualModel makeNewAction(VirtualModel focusedObject, Vector<FMLObject> globalSelection,
 				FlexoEditor editor) {
-			return new CreateJDBCVirtualModelAction(focusedObject, globalSelection, editor);
+			return new CreateJDBCMappingVirtualModel(focusedObject, globalSelection, editor);
 		}
 
 		@Override
@@ -113,7 +114,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 	};
 
 	static {
-		FlexoObjectImpl.addActionForClass(CreateJDBCVirtualModelAction.actionType, VirtualModel.class);
+		FlexoObjectImpl.addActionForClass(CreateJDBCMappingVirtualModel.actionType, VirtualModel.class);
 	}
 
 	private String address = "jdbc:hsqldb:hsql://localhost/";
@@ -168,7 +169,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 		this.generateSynchronizationScheme = generateSynchronizationScheme;
 	}
 
-	CreateJDBCVirtualModelAction(VirtualModel focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
+	CreateJDBCMappingVirtualModel(VirtualModel focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 
@@ -377,7 +378,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 	}
 
 	private FlexoBehaviourParameter.WidgetType widgetTypeForColumn(JDBCColumn column) {
-		String type = column.getType().toLowerCase();
+		String type = column.getTypeAsString().toLowerCase();
 		if (type.contains("char")) {
 			return FlexoBehaviourParameter.WidgetType.TEXT_FIELD;
 		}
@@ -399,7 +400,7 @@ public class CreateJDBCVirtualModelAction extends FlexoAction<CreateJDBCVirtualM
 	}
 
 	private Type typeForColumn(JDBCColumn column) {
-		String type = column.getType().toLowerCase();
+		String type = column.getTypeAsString().toLowerCase();
 		if (type.contains("char")) {
 			return String.class;
 		}

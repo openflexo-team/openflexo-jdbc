@@ -38,6 +38,11 @@
 
 package org.openflexo.technologyadapter.jdbc.controller.action;
 
+import java.util.EventObject;
+import java.util.logging.Logger;
+
+import javax.swing.Icon;
+
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
 import org.openflexo.foundation.FlexoException;
@@ -48,20 +53,18 @@ import org.openflexo.foundation.action.FlexoActionType;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.gina.controller.FIBController;
+import org.openflexo.icon.FMLIconLibrary;
+import org.openflexo.icon.IconFactory;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCConnection;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
-import javax.swing.*;
-import java.util.EventObject;
-import java.util.logging.Logger;
-
-public class CreateJdbcConnectionInitializer extends ActionInitializer<CreateJDBCConnection, RepositoryFolder, FlexoObject> {
+public class CreateJDBCConnectionInitializer extends ActionInitializer<CreateJDBCConnection, RepositoryFolder, FlexoObject> {
 
 	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
 
-	public CreateJdbcConnectionInitializer(ControllerActionInitializer actionInitializer) {
+	public CreateJDBCConnectionInitializer(ControllerActionInitializer actionInitializer) {
 		super(CreateJDBCConnection.actionType, actionInitializer);
 	}
 
@@ -70,7 +73,7 @@ public class CreateJdbcConnectionInitializer extends ActionInitializer<CreateJDB
 		return new FlexoActionInitializer<CreateJDBCConnection>() {
 			@Override
 			public boolean run(EventObject e, CreateJDBCConnection action) {
-				Wizard wizard = new CreateJdbcConnectionWizard(action, getController());
+				Wizard wizard = new CreateJDBCConnectionWizard(action, getController());
 				WizardDialog dialog = new WizardDialog(wizard, getController());
 				dialog.showDialog();
 				if (dialog.getStatus() != FIBController.Status.VALIDATED) {
@@ -104,7 +107,7 @@ public class CreateJdbcConnectionInitializer extends ActionInitializer<CreateJDB
 
 	@Override
 	protected Icon getEnabledIcon(FlexoActionType actionType) {
-		return JDBCIconLibrary.JDBC_FILE_ICON;
+		return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, FMLIconLibrary.VIRTUAL_MODEL_MARKER);
 	}
 
 }

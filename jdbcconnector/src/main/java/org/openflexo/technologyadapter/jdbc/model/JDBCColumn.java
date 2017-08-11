@@ -35,7 +35,10 @@
 
 package org.openflexo.technologyadapter.jdbc.model;
 
+import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.Objects;
+
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Getter;
@@ -54,21 +57,25 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 	String TABLE = "table";
 	String PRIMARY_KEY = "primaryKey";
 	String NAME = "name";
-	String TYPE = "type";
+	String TYPE_AS_STRING = "typeAsString";
 
-	@Initializer void init(
-		@Parameter(TABLE) JDBCTable table, @Parameter(PRIMARY_KEY) boolean primaryKey,
-		@Parameter(NAME) String name, @Parameter(TYPE) String type
-	);
+	@Initializer
+	void init(@Parameter(TABLE) JDBCTable table, @Parameter(PRIMARY_KEY) boolean primaryKey, @Parameter(NAME) String name,
+			@Parameter(TYPE_AS_STRING) String typeAsString);
 
-	@Getter(TABLE) JDBCTable getTable();
+	@Getter(TABLE)
+	JDBCTable getTable();
 
 	@Getter(value = PRIMARY_KEY, defaultValue = "false")
 	boolean isPrimaryKey();
 
-	@Getter(NAME) String getName();
+	@Getter(NAME)
+	String getName();
 
-	@Getter(TYPE) String getType();
+	@Getter(TYPE_AS_STRING)
+	String getTypeAsString();
+
+	Type getJavaType();
 
 	abstract class JDBCColumnImpl extends FlexoObjectImpl implements JDBCColumn {
 
@@ -77,14 +84,34 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 			return getTable().getSchema().getModel();
 		}
 
+		@Override
 		public boolean equals(Object other) {
 			if (other instanceof JDBCColumn) {
 				JDBCColumn two = (JDBCColumn) other;
-				if (!Objects.equals(getName(), two.getName())) return false;
-				if (getTable() == null) return two.getTable() == null;
+				if (!Objects.equals(getName(), two.getName()))
+					return false;
+				if (getTable() == null)
+					return two.getTable() == null;
 				return Objects.equals(getTable().getName(), two.getTable().getName());
 			}
 			return false;
+		}
+
+		@Override
+		public Type getJavaType() {
+			if (getTypeAsString().equalsIgnoreCase("INTEGER")) {
+				return Long.class;
+			}
+			else if (getTypeAsString().equalsIgnoreCase("VARCHAR")) {
+				return String.class;
+			}
+			else if (getTypeAsString().toUpperCase().contains("CHAR")) {
+				return String.class;
+			}
+			else if (getTypeAsString().equalsIgnoreCase("DATE")) {
+				return Date.class;
+			}
+			return String.class;
 		}
 	}
 }

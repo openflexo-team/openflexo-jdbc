@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Adder;
@@ -86,15 +87,19 @@ public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnectio
 	/**
 	 * Creates a table in the model and the linked database.
 	 *
-	 * @param tableName new table name, must be uppercase.
-	 * @param attributes list of column attributes
+	 * @param tableName
+	 *            new table name, must be uppercase.
+	 * @param attributes
+	 *            list of column attributes
 	 * @return the created table or null if the creation failed (SQL problem, already exists, incorrect name, ...).
 	 */
-	JDBCTable createTable(String tableName, String[] ... attributes);
+	JDBCTable createTable(String tableName, String[]... attributes);
 
 	/**
 	 * Drops a table in the model and the linked database.
-	 * @param table table to drop
+	 * 
+	 * @param table
+	 *            table to drop
 	 * @return true if the table has been dropped, false otherwise (SQL problem, doesn't exist, ...).
 	 */
 	boolean dropTable(JDBCTable table);
@@ -128,19 +133,20 @@ public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnectio
 		@Override
 		public JDBCTable getTable(String name) {
 			for (JDBCTable table : getTables()) {
-				if (table.getName().equalsIgnoreCase(name)) return table;
+				if (table.getName().equalsIgnoreCase(name))
+					return table;
 			}
 			return null;
 		}
 
 		@Override
-		public JDBCTable createTable(String tableName, String[] ... attributes) {
+		public JDBCTable createTable(String tableName, String[]... attributes) {
 			try {
 				JDBCTable table = SQLHelper.createTable(this, SQLHelper.getFactory(getModel()), tableName, attributes);
 				addTable(table);
 				return table;
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't create table "+ tableName +" on database '"+ getModel().getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't create table " + tableName + " on database '" + getModel().getAddress() + "'", e);
 				return null;
 			}
 		}
@@ -152,7 +158,7 @@ public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnectio
 				removeTable(table);
 				return true;
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't drop table "+ table.getName() +" on database '"+ getModel().getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't drop table " + table.getName() + " on database '" + getModel().getAddress() + "'", e);
 				return false;
 			}
 		}
@@ -167,7 +173,8 @@ public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnectio
 			StringBuilder text = new StringBuilder("[Schema]");
 			int length = text.length();
 			for (JDBCTable table : getTables()) {
-				if (text.length() > length) text.append(", ");
+				if (text.length() > length)
+					text.append(", ");
 				text.append(table);
 			}
 			return text.toString();

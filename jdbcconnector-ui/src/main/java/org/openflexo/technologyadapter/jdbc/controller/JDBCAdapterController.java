@@ -20,13 +20,15 @@
 
 package org.openflexo.technologyadapter.jdbc.controller;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.gina.utils.InspectorGroup;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcConnectionInitializer;
-import org.openflexo.technologyadapter.jdbc.controller.action.CreateJdbcVirtualModelInitializer;
+import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCConnectionInitializer;
+import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCMappingVirtualModelInitializer;
+import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.view.JDBCModuleView;
@@ -38,9 +40,8 @@ import org.openflexo.view.controller.TechnologyAdapterController;
 import org.openflexo.view.controller.model.FlexoPerspective;
 
 public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechnologyAdapter> {
-    
-	private InspectorGroup jdbcInspectorGroup;
 
+	private InspectorGroup jdbcInspectorGroup;
 
 	@Override
 	public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
@@ -49,24 +50,27 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public void initializeActions(ControllerActionInitializer actionInitializer) {
-		new CreateJdbcConnectionInitializer(actionInitializer);
-		new CreateJdbcVirtualModelInitializer(actionInitializer);
+		new CreateJDBCConnectionInitializer(actionInitializer);
+		new CreateJDBCVirtualModelInitializer(actionInitializer);
+		new CreateJDBCMappingVirtualModelInitializer(actionInitializer);
 	}
 
-    @Override
-    protected void initializeInspectors(FlexoController controller) {
-		//jdbcInspectorGroup = controller.loadInspectorGroup("JDBC", getTechnologyAdapter().getLocales(), getFMLTechnologyAdapterInspectorGroup());
+	@Override
+	protected void initializeInspectors(FlexoController controller) {
+		// jdbcInspectorGroup = controller.loadInspectorGroup("JDBC", getTechnologyAdapter().getLocales(),
+		// getFMLTechnologyAdapterInspectorGroup());
 
-		jdbcInspectorGroup = controller.loadInspectorGroup("JDBC", getTechnologyAdapter().getLocales(), getFMLTechnologyAdapterInspectorGroup());
+		jdbcInspectorGroup = controller.loadInspectorGroup("JDBC", getTechnologyAdapter().getLocales(),
+				getFMLTechnologyAdapterInspectorGroup());
 
 	}
 
-    @Override
-    public InspectorGroup getTechnologyAdapterInspectorGroup() {
-        return jdbcInspectorGroup;
-    }
+	@Override
+	public InspectorGroup getTechnologyAdapterInspectorGroup() {
+		return jdbcInspectorGroup;
+	}
 
-    @Override
+	@Override
 	public ImageIcon getTechnologyBigIcon() {
 		return JDBCIconLibrary.JDBC_TECHNOLOGY_BIG_ICON;
 	}
@@ -92,22 +96,23 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	}
 
 	@Override
-	public ModuleView<?> createModuleViewForObject(final TechnologyObject<JDBCTechnologyAdapter> object, final FlexoController controller, final FlexoPerspective perspective) {
-		if (object instanceof JDBCConnection){
+	public ModuleView<?> createModuleViewForObject(final TechnologyObject<JDBCTechnologyAdapter> object, final FlexoController controller,
+			final FlexoPerspective perspective) {
+		if (object instanceof JDBCConnection) {
 			return new JDBCModuleView((JDBCConnection) object, controller, perspective);
 		}
 		return new EmptyPanel<>(controller, perspective, object);
 	}
 
-    @Override
-    public ImageIcon getIconForFlexoRole(Class<? extends FlexoRole<?>> flexoRoleClass) {
+	@Override
+	public ImageIcon getIconForFlexoRole(Class<? extends FlexoRole<?>> flexoRoleClass) {
 		return JDBCIconLibrary.JDBC_TECHNOLOGY_ICON;
-    }
+	}
 
 	@Override
 	public String getWindowTitleforObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
 		if (obj instanceof JDBCConnection) {
-			return "Connection to " +  ((JDBCConnection) obj).getAddress();
+			return "Connection to " + ((JDBCConnection) obj).getAddress();
 		}
 		return "Connection";
 	}
@@ -117,4 +122,3 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 		return obj instanceof JDBCConnection;
 	}
 }
-

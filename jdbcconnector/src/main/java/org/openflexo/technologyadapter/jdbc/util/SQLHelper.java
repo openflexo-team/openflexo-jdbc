@@ -427,7 +427,7 @@ public class SQLHelper {
 		for (JDBCValue value : line.getValues()) {
 			if (length < result.length())
 				result.append(",");
-			result.append(sqlValue(value.getColumn().getType(), value.getValue()));
+			result.append(sqlValue(value.getColumn().getTypeAsString(), value.getValue()));
 		}
 		result.append(")");
 		return result.toString();
@@ -448,7 +448,7 @@ public class SQLHelper {
 		result.append(column.getName());
 		result.append(" = ");
 
-		result.append(sqlValue(value.getColumn().getType(), newValue));
+		result.append(sqlValue(value.getColumn().getTypeAsString(), newValue));
 
 		result.append(" WHERE ");
 		int length = result.length();
@@ -461,7 +461,7 @@ public class SQLHelper {
 
 				result.append(whereColumn.getName());
 				result.append(" = ");
-				result.append(sqlValue(whereColumn.getType(), otherValue.getValue()));
+				result.append(sqlValue(whereColumn.getTypeAsString(), otherValue.getValue()));
 			}
 		}
 		return result.toString();
@@ -486,7 +486,7 @@ public class SQLHelper {
 					result.append(" and");
 				result.append(value.getColumn().getName());
 				result.append(" = ");
-				result.append(sqlValue(value.getColumn().getType(), value.getValue()));
+				result.append(sqlValue(value.getColumn().getTypeAsString(), value.getValue()));
 			}
 		}
 		return result.toString();

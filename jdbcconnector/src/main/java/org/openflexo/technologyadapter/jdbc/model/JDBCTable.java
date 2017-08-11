@@ -40,8 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InnerResourceData;
+import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -49,6 +51,8 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.Parameter;
 import org.openflexo.model.annotations.Remover;
+import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 /**
@@ -56,20 +60,20 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
  */
 @ModelEntity
 @ImplementationClass(JDBCTable.JDBCTableImpl.class)
-public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection> {
+public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection>, TechnologyObject<JDBCTechnologyAdapter> {
 
-    String NAME = "name";
-    String SCHEMA = "schema";
-    String COLUMNS = "columns";
+	String NAME = "name";
+	String SCHEMA = "schema";
+	String COLUMNS = "columns";
 
 	@Initializer
 	void init(@Parameter(SCHEMA) JDBCSchema schema, @Parameter(NAME) String name);
 
 	@Getter(NAME)
-    String getName();
+	String getName();
 
 	@Getter(SCHEMA)
-    JDBCSchema getSchema();
+	JDBCSchema getSchema();
 
 	@Getter(value = COLUMNS, cardinality = Getter.Cardinality.LIST)
 	List<JDBCColumn> getColumns();
@@ -90,6 +94,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 
 	/**
 	 * Find one line with it's primary key
+	 * 
 	 * @param primaryKey
 	 * @return found line or null
 	 */
@@ -98,111 +103,161 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	/**
 	 * Creates a column in the model and the linked database.
 	 *
-	 * @param columnName new column name, must be uppercase.
-	 * @param type column type
-	 * @param key true if the column is the primary key
+	 * @param columnName
+	 *            new column name, must be uppercase.
+	 * @param type
+	 *            column type
+	 * @param key
+	 *            true if the column is the primary key
 	 * @return the created column or null if the creation failed (SQL problem, already exists, incorrect name, ...).
 	 */
 	JDBCColumn createColumn(String columnName, String type, boolean key);
 
 	/**
 	 * Drops a table in the model and the linked database.
-	 * @param column column to drop
+	 * 
+	 * @param column
+	 *            column to drop
 	 * @return true if the column has been dropped, false otherwise (SQL problem, doesn't exist, ...).
 	 */
 	boolean dropColumn(JDBCColumn column);
 
 	/**
 	 * Grant access for a user
-	 * @param access access type
-	 * @param user user to grand
+	 * 
+	 * @param access
+	 *            access type
+	 * @param user
+	 *            user to grand
 	 * @return true if grant is accepted
 	 */
 	boolean grant(String access, String user);
 
 	/**
 	 * Selects all lines for the table.
+	 * 
 	 * @return a result set contains all line.
 	 */
 	JDBCResultSet selectAll();
 
 	/**
 	 * Selects line in the table that matches the where close.
-	 * @param where a SQL where close for the select query
+	 * 
+	 * @param where
+	 *            a SQL where close for the select query
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet select(String where);
 
 	/**
 	 * Select line in the table that matches the where close in the given order and limited in size.
-	 * @param where a SQL where close for the select query
-	 * @param order a SQL order close for the select query
-	 * @param limit the limit of result lines
-	 * @param offset the offset to start result lines
+	 * 
+	 * @param where
+	 *            a SQL where close for the select query
+	 * @param order
+	 *            a SQL order close for the select query
+	 * @param limit
+	 *            the limit of result lines
+	 * @param offset
+	 *            the offset to start result lines
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet select(String where, String order, int limit, int offset);
 
 	/**
 	 * Select all lines with join in the table.
-	 * @param joinType type of join.
-	 * @param thisOn column for this table to join on
-	 * @param otherOn column for another table to join on
+	 * 
+	 * @param joinType
+	 *            type of join.
+	 * @param thisOn
+	 *            column for this table to join on
+	 * @param otherOn
+	 *            column for another table to join on
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet selectAllWithJoin(String joinType, JDBCColumn thisOn, JDBCColumn otherOn);
 
 	/**
 	 * Select lines with join in the table that matches the where close.
-	 * @param joinType type of join.
-	 * @param thisOn column for this table to join on
-	 * @param otherOn column for another table to join on
-	 * @param where a SQL where close for the select query
+	 * 
+	 * @param joinType
+	 *            type of join.
+	 * @param thisOn
+	 *            column for this table to join on
+	 * @param otherOn
+	 *            column for another table to join on
+	 * @param where
+	 *            a SQL where close for the select query
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet selectWithJoin(String joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where);
 
 	/**
 	 * Select line with join in the table that matches the where close in the given order and limited in size.
-	 * @param joinType type of join.
-	 * @param thisOn column for this table to join on
-	 * @param otherOn column for another table to join on
-	 * @param where a SQL where close for the select query
-	 * @param order a SQL order close for the select query
-	 * @param limit the limit of result lines
-	 * @param offset the offset to start result lines
+	 * 
+	 * @param joinType
+	 *            type of join.
+	 * @param thisOn
+	 *            column for this table to join on
+	 * @param otherOn
+	 *            column for another table to join on
+	 * @param where
+	 *            a SQL where close for the select query
+	 * @param order
+	 *            a SQL order close for the select query
+	 * @param limit
+	 *            the limit of result lines
+	 * @param offset
+	 *            the offset to start result lines
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet selectWithJoin(String joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where, String order, int limit, int offset);
 
 	/**
 	 * Select all line with join in the table.
-	 * @param joinType type of join.
-	 * @param join table to join with.
-	 * @param on a SQL on close for the select query
+	 * 
+	 * @param joinType
+	 *            type of join.
+	 * @param join
+	 *            table to join with.
+	 * @param on
+	 *            a SQL on close for the select query
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet selectAllWithJoin(String joinType, JDBCTable join, String on);
 
 	/**
 	 * Select line with join in the table that matches the where close.
-	 * @param joinType type of join.
-	 * @param join table to join with.
-	 * @param on a SQL on close for the select query
-	 * @param where a SQL where close for the select query
+	 * 
+	 * @param joinType
+	 *            type of join.
+	 * @param join
+	 *            table to join with.
+	 * @param on
+	 *            a SQL on close for the select query
+	 * @param where
+	 *            a SQL where close for the select query
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet selectWithJoin(String joinType, JDBCTable join, String on, String where);
 
 	/**
 	 * Select line with join in the table that matches the where close in the given order and limited in size.
-	 * @param joinType type of join.
-	 * @param join table to join with.
-	 * @param on a SQL on close for the select query
-	 * @param where a SQL where close for the select query
-	 * @param order a SQL order close for the select query
-	 * @param limit the limit of result lines
-	 * @param offset the offset to start result lines
+	 * 
+	 * @param joinType
+	 *            type of join.
+	 * @param join
+	 *            table to join with.
+	 * @param on
+	 *            a SQL on close for the select query
+	 * @param where
+	 *            a SQL where close for the select query
+	 * @param order
+	 *            a SQL order close for the select query
+	 * @param limit
+	 *            the limit of result lines
+	 * @param offset
+	 *            the offset to start result lines
 	 * @return the {@link JDBCResultSet} for this request
 	 */
 	JDBCResultSet selectWithJoin(String joinType, JDBCTable join, String on, String where, String order, int limit, int offset);
@@ -211,11 +266,13 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	 * Insert one line into the table using a string array alternating column name and value.
 	 *
 	 * Examples:
+	 * 
 	 * <pre>
-	 *     table1.insert(new String[]{"ID", "1", "NAME", "toto1"})
+	 * table1.insert(new String[] { "ID", "1", "NAME", "toto1" })
 	 * </pre>
 	 *
-	 * @param values an array of strings where alternating the column name and the value for all values to insert.
+	 * @param values
+	 *            an array of strings where alternating the column name and the value for all values to insert.
 	 * @return the inserted line or null if not inserted
 	 */
 	JDBCLine insert(String[] values);
@@ -242,7 +299,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 					lastColumnsUpdate = currentTimeMillis;
 					SQLHelper.updateColumns(this, columns, SQLHelper.getFactory(getSchema().getModel()));
 				} catch (SQLException e) {
-					LOGGER.log(Level.WARNING, "Can't read columns on table '"+ getName()+"'", e);
+					LOGGER.log(Level.WARNING, "Can't read columns on table '" + getName() + "'", e);
 				}
 			}
 			return columns;
@@ -251,7 +308,8 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		@Override
 		public JDBCColumn getColumn(String name) {
 			for (JDBCColumn column : getColumns()) {
-				if (column.getName().equalsIgnoreCase(name)) return column;
+				if (column.getName().equalsIgnoreCase(name))
+					return column;
 			}
 			return null;
 		}
@@ -263,7 +321,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 				addColumn(column);
 				return column;
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't create column '"+ columnName +"' on table '"+ getName()+"'", e);
+				LOGGER.log(Level.WARNING, "Can't create column '" + columnName + "' on table '" + getName() + "'", e);
 				return null;
 			}
 		}
@@ -275,7 +333,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 				removeColumn(column);
 				return true;
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't drop column '"+ column.getName() +"' on table '"+ getName()+"'", e);
+				LOGGER.log(Level.WARNING, "Can't drop column '" + column.getName() + "' on table '" + getName() + "'", e);
 				return false;
 			}
 		}
@@ -287,7 +345,9 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 				SQLHelper.grant(connection, access, getName(), user);
 				return true;
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't grant '" + access +"' on '"+ getName() +"' for user '"+ user +"' in '"+ connection.getAddress() +"'", e);
+				LOGGER.log(Level.WARNING,
+						"Can't grant '" + access + "' on '" + getName() + "' for user '" + user + "' in '" + connection.getAddress() + "'",
+						e);
 				return false;
 			}
 		}
@@ -306,7 +366,6 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			return resultSet.getLines().get(0);
 		}
 
-
 		@Override
 		public JDBCResultSet selectAll() {
 			return select(null);
@@ -324,7 +383,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			try {
 				return SQLHelper.select(factory, this, where, order, limit, offset);
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't select from '" + getName() + "' on '" + model.getAddress() + "'", e);
 				return factory.emptyResultSet(getResourceData());
 			}
 		}
@@ -340,8 +399,10 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		}
 
 		@Override
-		public JDBCResultSet selectWithJoin(String joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where, String order, int limit, int offset) {
-			String on = thisOn.getTable().getName() + "." + thisOn.getName() + " = " + otherOn.getTable().getName() + "." + otherOn.getName();
+		public JDBCResultSet selectWithJoin(String joinType, JDBCColumn thisOn, JDBCColumn otherOn, String where, String order, int limit,
+				int offset) {
+			String on = thisOn.getTable().getName() + "." + thisOn.getName() + " = " + otherOn.getTable().getName() + "."
+					+ otherOn.getName();
 			return selectWithJoin(joinType, otherOn.getTable(), on, where, order, limit, offset);
 		}
 
@@ -362,7 +423,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			try {
 				return SQLHelper.select(factory, this, joinType, join, on, where, order, limit, offset);
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't select from '"+ getName() +"' on '"+ model.getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't select from '" + getName() + "' on '" + model.getAddress() + "'", e);
 				return factory.emptyResultSet(getResourceData());
 			}
 
@@ -373,9 +434,9 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			JDBCFactory factory = SQLHelper.getFactory(getSchema().getModel());
 			JDBCLine line = factory.newInstance(JDBCLine.class);
 			List<JDBCValue> jdbcValues = new ArrayList<>();
-			for (int i = 0; i < values.length; i+=2) {
+			for (int i = 0; i < values.length; i += 2) {
 				JDBCValue jdbcValue = factory.newInstance(JDBCValue.class);
-				jdbcValue.init(line, getColumn(values[i]), values[i+1]);
+				jdbcValue.init(line, getColumn(values[i]), values[i + 1]);
 				jdbcValues.add(jdbcValue);
 			}
 			line.init(null, jdbcValues);
@@ -388,7 +449,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			try {
 				return SQLHelper.insert(line, this);
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't insert into '"+ getName() +"' on '"+ schema.getModel().getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't insert into '" + getName() + "' on '" + schema.getModel().getAddress() + "'", e);
 				return null;
 			}
 		}
@@ -399,7 +460,7 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 			try {
 				SQLHelper.delete(line, this);
 			} catch (SQLException e) {
-				LOGGER.log(Level.WARNING, "Can't delete from '"+ getName() +"' on '"+ schema.getModel().getAddress() +"'", e);
+				LOGGER.log(Level.WARNING, "Can't delete from '" + getName() + "' on '" + schema.getModel().getAddress() + "'", e);
 			}
 		}
 
@@ -409,8 +470,16 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		}
 
 		@Override
+		public JDBCTechnologyAdapter getTechnologyAdapter() {
+			if (getResourceData() != null && getResourceData().getResource() != null) {
+				return ((JDBCResource) getResourceData().getResource()).getTechnologyAdapter();
+			}
+			return null;
+		}
+
+		@Override
 		public String toString() {
-			return "[Table] " + getName() + "("+ getColumns().size() +")";
+			return "[Table] " + getName() + "(" + getColumns().size() + ")";
 		}
 	}
 }

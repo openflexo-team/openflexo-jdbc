@@ -62,8 +62,8 @@ import org.openflexo.foundation.resource.FlexoResourceCenterService;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterBindingFactory;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterInitializationException;
+import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceRepository;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
-
 
 /**
  * This class defines and implements the JDBC technology adapter
@@ -71,43 +71,52 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
  * @author SomeOne
  * 
  */
-@DeclareModelSlots({JDBCModelSlot.class})
-@DeclareResourceTypes({JDBCResourceFactory.class})
+@DeclareModelSlots({ JDBCModelSlot.class, HbnModelSlot.class })
+@DeclareResourceTypes({ JDBCResourceFactory.class })
 public class JDBCTechnologyAdapter extends TechnologyAdapter {
 
-    public JDBCTechnologyAdapter() throws TechnologyAdapterInitializationException {
-    }
+	public JDBCTechnologyAdapter() throws TechnologyAdapterInitializationException {
+	}
 
-    @Override
-    public String getIdentifier() {
-        return "JDBC";
-    }
+	@Override
+	public String getIdentifier() {
+		return "JDBC";
+	}
 
-    @Override
-    public String getName() {
-        return "JDBC Technology Adapter";
-    }
+	@Override
+	public String getName() {
+		return "JDBC Technology Adapter";
+	}
 
-    @Override
-    public String getLocalizationDirectory() {
-        return "FlexoLocalization/JDBCTechnologyAdapter";
-    }
+	@Override
+	public String getLocalizationDirectory() {
+		return "FlexoLocalization/JDBCTechnologyAdapter";
+	}
 
-    @Override
-    public JDBCTechnologyContextManager createTechnologyContextManager(FlexoResourceCenterService service) {
-        return new JDBCTechnologyContextManager(this, service);
-    }
+	@Override
+	public JDBCTechnologyContextManager createTechnologyContextManager(FlexoResourceCenterService service) {
+		return new JDBCTechnologyContextManager(this, service);
+	}
 
-    @Override
-    public TechnologyAdapterBindingFactory getTechnologyAdapterBindingFactory() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public TechnologyAdapterBindingFactory getTechnologyAdapterBindingFactory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public <I> boolean isIgnorable(FlexoResourceCenter<I> resourceCenter, I contents) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    @Override
-    public <I> boolean isIgnorable(FlexoResourceCenter<I> resourceCenter, I contents) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	public <I> HbnVirtualModelInstanceRepository<I> getVirtualModelInstanceRepository(FlexoResourceCenter<I> resourceCenter) {
+		HbnVirtualModelInstanceRepository<I> returned = resourceCenter.retrieveRepository(HbnVirtualModelInstanceRepository.class, this);
+		if (returned == null) {
+			returned = new HbnVirtualModelInstanceRepository<I>(this, resourceCenter);
+			resourceCenter.registerRepository(returned, HbnVirtualModelInstanceRepository.class, this);
+		}
+		return returned;
+	}
+
 }

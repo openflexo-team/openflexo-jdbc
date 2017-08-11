@@ -63,11 +63,11 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.ModelUtils;
-import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModelAction;
+import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCMappingVirtualModel;
 
 /**
  *
- * Tests for {@link CreateJDBCVirtualModelAction}, testing
+ * Tests for {@link CreateJDBCMappingVirtualModel}, testing
  *
  */
 public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCase {
@@ -116,7 +116,7 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 	}
 
 	private VirtualModel generateVirtualModel(FlexoEditor project, VirtualModel viewPoint, String address, boolean synchronizationScheme) {
-		CreateJDBCVirtualModelAction action = CreateJDBCVirtualModelAction.actionType.makeNewAction(viewPoint, new Vector<>(), project);
+		CreateJDBCMappingVirtualModel action = CreateJDBCMappingVirtualModel.actionType.makeNewAction(viewPoint, new Vector<>(), project);
 		action.setVirtualModelName(VIRTUAL_MODEL_NAME);
 		action.setAddress(address);
 		action.setGenerateSynchronizationScheme(synchronizationScheme);

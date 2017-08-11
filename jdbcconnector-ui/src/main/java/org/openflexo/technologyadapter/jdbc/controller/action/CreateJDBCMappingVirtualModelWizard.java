@@ -35,8 +35,9 @@
 
 package org.openflexo.technologyadapter.jdbc.controller.action;
 
-import java.awt.*;
+import java.awt.Image;
 import java.util.logging.Logger;
+
 import org.openflexo.ApplicationContext;
 import org.openflexo.components.wizard.FlexoWizard;
 import org.openflexo.components.wizard.WizardStep;
@@ -46,37 +47,37 @@ import org.openflexo.gina.annotation.FIBPanel;
 import org.openflexo.icon.FMLIconLibrary;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
-import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModelAction;
+import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCMappingVirtualModel;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateJdbcVirtualModelWizard extends FlexoWizard {
+public class CreateJDBCMappingVirtualModelWizard extends FlexoWizard {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CreateJdbcVirtualModelWizard.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(CreateJDBCMappingVirtualModelWizard.class.getPackage().getName());
 
-	private final CreateJDBCVirtualModelAction action;
+	private final CreateJDBCMappingVirtualModel action;
 
-	private final ConfigureJdbcVirtualModel configureJdbcConnection;
+	private final ConfigureJDBCMappingVirtualModel configureJdbcConnection;
 
-	public CreateJdbcVirtualModelWizard(CreateJDBCVirtualModelAction action, FlexoController controller) {
+	public CreateJDBCMappingVirtualModelWizard(CreateJDBCMappingVirtualModel action, FlexoController controller) {
 		super(controller);
 		this.action = action;
-		addStep(configureJdbcConnection = new ConfigureJdbcVirtualModel());
+		addStep(configureJdbcConnection = new ConfigureJDBCMappingVirtualModel());
 	}
 
 	@Override
 	public String getWizardTitle() {
-		return action.getLocales().localizedForKey("create_jdbc_model");
+		return action.getLocales().localizedForKey("create_virtual_model_federating_a_jdbc_schema");
 	}
 
 	@Override
 	public Image getDefaultPageImage() {
 		// TODO change icon
-		return IconFactory.getImageIcon(FMLIconLibrary.FLEXO_CONCEPT_BIG_ICON, IconLibrary.NEW_32_32).getImage();
+		return IconFactory.getImageIcon(FMLIconLibrary.VIRTUAL_MODEL_BIG_ICON, IconLibrary.NEW_32_32).getImage();
 	}
 
-	public ConfigureJdbcVirtualModel getConfigureJdbcConnection() {
+	public ConfigureJDBCMappingVirtualModel getConfigureJdbcConnection() {
 		return configureJdbcConnection;
 	}
 
@@ -86,14 +87,14 @@ public class CreateJdbcVirtualModelWizard extends FlexoWizard {
 	 * @author sylvain
 	 *
 	 */
-	@FIBPanel("Fib/Wizard/ConfigureJdbcVirtualModel.fib")
-	public class ConfigureJdbcVirtualModel extends WizardStep {
+	@FIBPanel("Fib/Wizard/ConfigureJDBCMappingVirtualModel.fib")
+	public class ConfigureJDBCMappingVirtualModel extends WizardStep {
 
 		public ApplicationContext getServiceManager() {
 			return getController().getApplicationContext();
 		}
 
-		public CreateJDBCVirtualModelAction getAction() {
+		public CreateJDBCMappingVirtualModel getAction() {
 			return action;
 		}
 

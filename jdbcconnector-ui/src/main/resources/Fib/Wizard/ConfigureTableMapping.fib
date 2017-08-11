@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel id="0" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" titleFont="Lucida Grande,0,13" layout="twocols" borderRight="0" controllerClassName="org.openflexo.view.controller.FlexoFIBController" opaque="false">
+  <Label id="1" label="table_name" align="right" localize="true" index="1" constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=20;location=left;padX=0;padY=0;weightX=0.2;weightY=0.0)" name="nameLabel" />
+  <TextField id="2" columns="7" text="TextField" localize="true" manageDynamicModel="true" readOnly="true" data="data.tableMapping.table.name" index="3" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=2;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=20;location=right;padX=0;padY=0;weightX=0.8;weightY=0.0)" name="nameTextField" />
+  <Label id="3" label="Concept name" align="left" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=0;location=left)" name="Label" />
+  <TextField id="4" columns="7" readOnly="true" data="data.tableMapping.conceptName" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)" name="TextField" />
+  <Label id="5" label="Properties" align="left" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=10;location=left)" name="Label2" />
+  <Table id="6" visibleRowCount="3" backgroundNonSelectionColor="255,255,255" iteratorClassName="org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel$TableMapping$ColumnMapping" backgroundSecondarySelectionColor="178,215,255" showFooter="false" lookAndFeel="Classic" selectionMode="MultipleIntervalSelection" rowHeight="18" manageDynamicModel="true" data="data.tableMapping.columnMappings" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=20;insetsLeft=0;insetsRight=20;insetsTop=10;location=right)" name="Table">
+    <CheckBoxColumn id="7" data="iterator.selectIt" resizable="false" title="checkbox" displayTitle="false" columnWidth="20" showIcon="false" name="checkbox" />
+    <IconColumn id="8" data="data.getColumnIcon(iterator.column)" resizable="false" title="icon" displayTitle="false" columnWidth="20" showIcon="false" name="icon" />
+    <LabelColumn id="9" data="iterator.propertyName" resizable="true" title="property" displayTitle="true" columnWidth="100" showIcon="false" name="label" />
+    <LabelColumn id="10" data="iterator.column.name" resizable="true" title="column" displayTitle="true" columnWidth="100" showIcon="false" name="label" />
+    <LabelColumn id="11" data="iterator.column.type" resizable="true" title="type" displayTitle="true" columnWidth="100" showIcon="false" name="label" />
+    <DropDownColumn id="12" data="iterator.mappingType" resizable="true" title="mapping_type" displayTitle="true" columnWidth="100" showIcon="false" name="dropdown" />
+    <DropDownColumn id="13" data="iterator.oppositeTable" list="data.action.allTables" resizable="true" format="object.name" title="Opposite" displayTitle="true" columnWidth="100" showIcon="false" name="dropdown" />
+  </Table>
+  <FIBVariable id="14" type="org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelWizard$ConfigureTableMapping" name="data" />
+  <LocalizedDictionary id="15" />
+</Panel>
