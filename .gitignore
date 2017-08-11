@@ -12,3 +12,4 @@
 .gradle
 **/target/
 **/build/
+**/out/
