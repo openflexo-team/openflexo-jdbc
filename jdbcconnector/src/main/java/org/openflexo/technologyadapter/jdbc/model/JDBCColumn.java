@@ -100,7 +100,7 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 		@Override
 		public Type getJavaType() {
 			if (getTypeAsString().equalsIgnoreCase("INTEGER")) {
-				return Long.class;
+				return Integer.class;
 			}
 			else if (getTypeAsString().equalsIgnoreCase("VARCHAR")) {
 				return String.class;
