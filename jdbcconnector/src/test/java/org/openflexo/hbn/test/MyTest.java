@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
-import org.junit.Test;
 import org.openflexo.connie.hbn.HbnConfig;
 
 //TODO: to be removed: used for experimentations
@@ -24,7 +23,7 @@ public class MyTest {
 	protected final static String hbnDialect = "org.hibernate.dialect.HSQLDialect";
 	protected HbnConfig config = null;
 
-	@Test
+	// @Test
 	public void connectToDB() throws ClassNotFoundException, SQLException {
 
 		// Loads JdbcDriver

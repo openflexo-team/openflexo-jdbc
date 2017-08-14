@@ -44,7 +44,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.resource.DirectoryResourceCenter;
@@ -84,7 +83,7 @@ public class MyDBTest extends OpenflexoTestCase {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	@Test
+	// @Test
 	@TestOrder(1)
 	public void testCreateConnection() throws SaveResourceException, ModelDefinitionException, IOException, SQLException {
 		instanciateTestServiceManager(JDBCTechnologyAdapter.class);
