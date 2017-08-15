@@ -10,7 +10,7 @@
     <IconColumn id="8" data="data.getColumnIcon(iterator.column)" resizable="false" title="icon" displayTitle="false" columnWidth="20" showIcon="false" name="icon" />
     <LabelColumn id="9" data="iterator.propertyName" resizable="true" title="property" displayTitle="true" columnWidth="100" showIcon="false" name="label" />
     <LabelColumn id="10" data="iterator.column.name" resizable="true" title="column" displayTitle="true" columnWidth="100" showIcon="false" name="label" />
-    <LabelColumn id="11" data="iterator.column.type" resizable="true" title="type" displayTitle="true" columnWidth="100" showIcon="false" name="label" />
+    <LabelColumn id="11" data="iterator.column.typeAsString" resizable="true" title="type" displayTitle="true" columnWidth="100" showIcon="false" name="label" />
     <DropDownColumn id="12" data="iterator.mappingType" resizable="true" title="mapping_type" displayTitle="true" columnWidth="100" showIcon="false" name="dropdown" />
     <DropDownColumn id="13" data="iterator.oppositeTable" list="data.action.allTables" resizable="true" format="object.name" title="Opposite" displayTitle="true" columnWidth="100" showIcon="false" name="dropdown" />
   </Table>
