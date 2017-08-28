@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.openflexo.connie.hbn.HbnConfig;
 
 //TODO: to be removed: used for experimentations
-@Deprecated
 @Ignore
 public class MyTest {
 
