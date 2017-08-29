@@ -1,4 +1,7 @@
 dependencies {
     compile project(':jdbcconnector')
     compile flexoUi()
+    
+    testCompile flexoUiTest()
+    
 }

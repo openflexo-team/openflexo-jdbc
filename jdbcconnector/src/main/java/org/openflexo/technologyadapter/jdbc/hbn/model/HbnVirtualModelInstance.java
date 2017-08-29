@@ -43,11 +43,14 @@ import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.logging.FlexoLogger;
+import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Import;
 import org.openflexo.model.annotations.Imports;
 import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -63,6 +66,31 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance.Hb
 @Imports(@Import(HbnFlexoConceptInstance.class))
 @XMLElement
 public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
+
+	String ADDRESS_KEY = "address";
+	String USER_KEY = "user";
+	String PASSWORD_KEY = "password";
+
+	@Getter(ADDRESS_KEY)
+	@XMLAttribute
+	String getAddress();
+
+	@Setter(ADDRESS_KEY)
+	void setAddress(String address);
+
+	@Getter(USER_KEY)
+	@XMLAttribute
+	String getUser();
+
+	@Setter(USER_KEY)
+	void setUser(String user);
+
+	@Getter(PASSWORD_KEY)
+	@XMLAttribute
+	String getPassword();
+
+	@Setter(PASSWORD_KEY)
+	void setPassword(String password);
 
 	@Initializer
 	void initialize(FlexoServiceManager serviceManager);

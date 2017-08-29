@@ -23,12 +23,16 @@ package org.openflexo.technologyadapter.jdbc.controller;
 import javax.swing.ImageIcon;
 
 import org.openflexo.foundation.fml.FlexoRole;
+import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.gina.utils.InspectorGroup;
+import org.openflexo.icon.IconFactory;
+import org.openflexo.icon.IconLibrary;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCConnectionInitializer;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCMappingVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelInitializer;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.view.JDBCModuleView;
@@ -121,4 +125,13 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	public boolean hasModuleViewForObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
 		return obj instanceof JDBCConnection;
 	}
+
+	@Override
+	public ImageIcon getIconForEditionAction(Class<? extends EditionAction> editionActionClass) {
+		if (CreateHbnResource.class.isAssignableFrom(editionActionClass)) {
+			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, IconLibrary.NEW_MARKER);
+		}
+		return super.getIconForEditionAction(editionActionClass);
+	}
+
 }

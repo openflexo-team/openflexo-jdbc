@@ -40,12 +40,17 @@ package org.openflexo.technologyadapter.jdbc.hbn.rm;
 
 import java.util.logging.Logger;
 
+import org.openflexo.foundation.IOFlexoException;
+import org.openflexo.foundation.InconsistentDataException;
+import org.openflexo.foundation.InvalidModelDefinitionException;
+import org.openflexo.foundation.InvalidXMLException;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.rm.AbstractVirtualModelInstanceResource;
 import org.openflexo.foundation.fml.rt.rm.AbstractVirtualModelInstanceResourceImpl;
 import org.openflexo.foundation.resource.FileIODelegate;
+import org.openflexo.foundation.resource.FlexoFileNotFoundException;
 import org.openflexo.foundation.resource.FlexoResource;
 import org.openflexo.foundation.technologyadapter.FlexoModelResource;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -56,6 +61,7 @@ import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
+import org.openflexo.toolbox.IProgress;
 
 /**
  * This is the {@link FlexoResource} encoding a {@link FMLRTVirtualModelInstance}
@@ -120,8 +126,6 @@ public interface HbnVirtualModelInstanceResource
 			return getVirtualModelInstance();
 		}
 
-		public abstract String getSuffix();
-
 		@Override
 		public String computeDefaultURI() {
 			if (getContainer() != null) {
@@ -152,6 +156,23 @@ public interface HbnVirtualModelInstanceResource
 		@Override
 		public void setVirtualModelURI(String virtualModelURI) {
 			this.virtualModelURI = virtualModelURI;
+		}
+
+		public String getSuffix() {
+			return HbnVirtualModelInstanceResourceFactory.JDBC_HBN_SUFFIX;
+		}
+
+		@Override
+		public Class<HbnVirtualModelInstance> getResourceDataClass() {
+			return HbnVirtualModelInstance.class;
+		}
+
+		@Override
+		public HbnVirtualModelInstance loadResourceData(IProgress progress) throws FlexoFileNotFoundException, IOFlexoException,
+				InvalidXMLException, InconsistentDataException, InvalidModelDefinitionException {
+			HbnVirtualModelInstance returned = super.loadResourceData(progress);
+			// returned.setSupportFactory(new JsonSupportFactory("url"));
+			return returned;
 		}
 
 	}

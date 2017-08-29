@@ -55,36 +55,77 @@
 
 package org.openflexo.technologyadapter.jdbc;
 
+import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.fml.FlexoRole;
+import org.openflexo.foundation.fml.VirtualModel;
+import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
+import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
 import org.openflexo.foundation.fml.rt.FMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
+import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.ModelSlotInstanceConfiguration;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
+import org.openflexo.foundation.technologyadapter.ModelSlot;
+import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.PropertyIdentifier;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformQuery;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnObjectActorReference;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
-import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
-import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
-import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 /**
- * Implementation of the ModelSlot class for the JDBC technology adapter<br>
+ * An implementation of a {@link ModelSlot} providing basic access to a relational database, based on Hibernate technology<br>
  * 
- * Managed modelling elements are {@link JDBCTable}, {@link JDBCColumn} and {@link JDBCLine}
+ * This {@link ModelSlot} is contract-based, as it is configured with a {@link VirtualModel} modelling data beeing accessed through this
+ * {@link ModelSlot}. It means that data stored in database is locally reflected as {@link FlexoConceptInstance}s in a
+ * {@link VirtualModelInstance} (instance of contract {@link VirtualModel})
  * 
- * @author charlie
+ * 
+ * @author sylvain
  * 
  */
 @ModelEntity
 @XMLElement
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
-/*@DeclareActorReferences({ JDBCTableActorReference.class, JDBCColumnActorReference.class, JDBCLineActorReference.class })
-@DeclareFlexoRoles({ JDBCTableRole.class, JDBCColumnRole.class, JDBCLineRole.class })
-@DeclareEditionActions({ CreateJDBCResource.class, AddJDBCTable.class })
-@DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class })*/
+// @DeclareFlexoRoles({ RestObjectRole.class })
+@DeclareEditionActions({ CreateHbnResource.class, PerformQuery.class })
+// @DeclareFlexoBehaviours({ RestObjectRetriever.class, JsonRequestBehaviour.class })
+@DeclareActorReferences({ HbnObjectActorReference.class })
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
+
+	@PropertyIdentifier(type = DataBinding.class)
+	String ADDRESS_KEY = "address";
+	@PropertyIdentifier(type = DataBinding.class)
+	String USER_KEY = "user";
+	@PropertyIdentifier(type = DataBinding.class)
+	String PASSWORD_KEY = "password";
+
+	@Getter(ADDRESS_KEY)
+	@XMLAttribute
+	DataBinding<String> getAddress();
+
+	@Setter(ADDRESS_KEY)
+	void setAddress(DataBinding<String> address);
+
+	@Getter(USER_KEY)
+	@XMLAttribute
+	DataBinding<String> getUser();
+
+	@Setter(USER_KEY)
+	void setUser(DataBinding<String> user);
+
+	@Getter(PASSWORD_KEY)
+	@XMLAttribute
+	DataBinding<String> getPassword();
+
+	@Setter(PASSWORD_KEY)
+	void setPassword(DataBinding<String> password);
 
 	abstract class HbnModelSlotImpl extends InferedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnModelSlot {

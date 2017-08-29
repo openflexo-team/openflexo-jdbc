@@ -41,7 +41,6 @@ package org.openflexo.technologyadapter.jdbc.hbn.model;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
@@ -49,21 +48,29 @@ import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResource;
 
 /**
- * {@link ModelFactory} used to handle RestVirtualModelInstance models<br>
+ * {@link ModelFactory} used to handle {@link HbnVirtualModelInstance} models<br>
  * 
  * @author sylvain
  * 
  */
-public abstract class HbnVirtualModelInstanceModelFactory
-		extends AbstractVirtualModelInstanceModelFactory<HbnVirtualModelInstanceResource> {
+public class HbnVirtualModelInstanceModelFactory extends AbstractVirtualModelInstanceModelFactory<HbnVirtualModelInstanceResource> {
 
-	public HbnVirtualModelInstanceModelFactory(HbnVirtualModelInstanceResource virtualModelInstanceResource,
-			Class<? extends VirtualModelInstance<?, ?>> baseVMIClass, EditingContext editingContext, TechnologyAdapterService taService)
-			throws ModelDefinitionException {
-		super(virtualModelInstanceResource, baseVMIClass, editingContext, taService);
+	public HbnVirtualModelInstanceModelFactory(HbnVirtualModelInstanceResource virtualModelInstanceResource, EditingContext editingContext,
+			TechnologyAdapterService taService) throws ModelDefinitionException {
+		super(virtualModelInstanceResource, HbnVirtualModelInstance.class, editingContext, taService);
 	}
 
-	public abstract HbnFlexoConceptInstance newFlexoConceptInstance(HbnVirtualModelInstance owner, FlexoConceptInstance container,
-			Object support, FlexoConcept concept);
+	public HbnFlexoConceptInstance newFlexoConceptInstance(HbnVirtualModelInstance owner, FlexoConceptInstance container, Object support,
+			FlexoConcept concept) {
+		HbnFlexoConceptInstance returned = newInstance(HbnFlexoConceptInstance.class, owner, support, concept);
+		if (container == null || container == owner) {
+			owner.addToFlexoConceptInstances(returned);
+		}
+		else {
+			container.addToEmbeddedFlexoConceptInstances(returned);
+		}
+		return returned;
+
+	}
 
 }

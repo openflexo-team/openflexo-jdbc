@@ -63,16 +63,17 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterBindingFactory;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterInitializationException;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceRepository;
+import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResourceFactory;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 
 /**
  * This class defines and implements the JDBC technology adapter
  * 
- * @author SomeOne
+ * @author charlie, sylvain
  * 
  */
 @DeclareModelSlots({ JDBCModelSlot.class, HbnModelSlot.class })
-@DeclareResourceTypes({ JDBCResourceFactory.class })
+@DeclareResourceTypes({ JDBCResourceFactory.class, HbnVirtualModelInstanceResourceFactory.class })
 public class JDBCTechnologyAdapter extends TechnologyAdapter {
 
 	public JDBCTechnologyAdapter() throws TechnologyAdapterInitializationException {

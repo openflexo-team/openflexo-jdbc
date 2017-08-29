@@ -37,7 +37,8 @@ package org.openflexo.technologyadapter.jdbc.hbn.model;
 
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
-import org.openflexo.foundation.fml.rt.ActorReference;
+import org.openflexo.foundation.fml.FlexoRole;
+import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
@@ -55,6 +56,11 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 	public String getIdentifier();
 
 	abstract class HbnFlexoConceptInstanceImpl extends FlexoConceptInstanceImpl implements HbnFlexoConceptInstance {
+
+		@Override
+		public HbnVirtualModelInstance getVirtualModelInstance() {
+			return (HbnVirtualModelInstance) super.getVirtualModelInstance();
+		}
 
 		@Override
 		public <T> T getFlexoPropertyValue(FlexoProperty<T> flexoProperty) {
@@ -121,8 +127,14 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		private String identifier = null;
 
 		@Override
-		public abstract ActorReference<? extends FlexoConceptInstance> makeActorReference(FlexoConceptInstanceRole role,
-				FlexoConceptInstance fci);
+		public HbnObjectActorReference makeActorReference(FlexoConceptInstanceRole role, FlexoConceptInstance fci) {
+			AbstractVirtualModelInstanceModelFactory<?> factory = getFactory();
+			HbnObjectActorReference returned = factory.newInstance(HbnObjectActorReference.class);
+			returned.setFlexoRole((FlexoRole) role);
+			returned.setFlexoConceptInstance(fci);
+			returned.setModellingElement(this);
+			return returned;
+		}
 
 	}
 }

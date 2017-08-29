@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
+import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.rm.AbstractVirtualModelInstanceResource;
 import org.openflexo.foundation.fml.rt.rm.AbstractVirtualModelInstanceResourceFactory;
@@ -35,30 +36,37 @@ import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstanceModelFactory;
 import org.openflexo.toolbox.FlexoVersion;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.xml.XMLRootElementInfo;
 
 /**
- * The resource factory for {@link RestVirtualModelInstanceResource}
+ * The resource factory for {@link HbnVirtualModelInstanceResource}
  * 
  * @author sylvain
  *
  */
-public abstract class HbnVirtualModelInstanceResourceFactory extends
+public class HbnVirtualModelInstanceResourceFactory extends
 		AbstractVirtualModelInstanceResourceFactory<HbnVirtualModelInstance, JDBCTechnologyAdapter, HbnVirtualModelInstanceResource> {
 
 	private static final Logger logger = Logger.getLogger(HbnVirtualModelInstanceResourceFactory.class.getPackage().getName());
 
-	public static final FlexoVersion CURRENT_FML_RT_VERSION = new FlexoVersion("1.0");
+	public static final FlexoVersion CURRENT_HBN_RT_VERSION = new FlexoVersion("1.0");
+	public static final String JDBC_HBN_SUFFIX = ".jdbc.hbn";
+	public static final String JDBC_HBN_XML_SUFFIX = ".jdbc.hbn.xml";
 
 	public HbnVirtualModelInstanceResourceFactory() throws ModelDefinitionException {
 		super(HbnVirtualModelInstanceResource.class);
 	}
 
-	public abstract String getExpectedDirectorySuffix();
+	public String getExpectedDirectorySuffix() {
+		return JDBC_HBN_SUFFIX;
+	}
 
-	public abstract String getExpectedXMLFileSuffix();
+	public String getExpectedXMLFileSuffix() {
+		return JDBC_HBN_XML_SUFFIX;
+	}
 
 	/**
 	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied {@link VirtualModelResource}
@@ -238,7 +246,7 @@ public abstract class HbnVirtualModelInstanceResourceFactory extends
 		HbnVirtualModelInstanceResource returned = super.initResourceForCreation(serializationArtefact, resourceCenter,
 				technologyContextManager, name, uri);
 		returned.setVersion(INITIAL_REVISION);
-		returned.setModelVersion(CURRENT_FML_RT_VERSION);
+		returned.setModelVersion(CURRENT_HBN_RT_VERSION);
 		return returned;
 	}
 
@@ -271,7 +279,7 @@ public abstract class HbnVirtualModelInstanceResourceFactory extends
 				returned.setModelVersion(new FlexoVersion(vmiInfo.modelVersion));
 			}
 			else {
-				returned.setModelVersion(CURRENT_FML_RT_VERSION);
+				returned.setModelVersion(CURRENT_HBN_RT_VERSION);
 			}
 			if (StringUtils.isNotEmpty(vmiInfo.virtualModelURI)) {
 				VirtualModelResource vmResource = resourceCenter.getServiceManager().getVirtualModelLibrary()
@@ -288,7 +296,7 @@ public abstract class HbnVirtualModelInstanceResourceFactory extends
 			// Unable to retrieve infos, just abort
 			logger.warning("Cannot retrieve info from " + serializationArtefact);
 			returned.setVersion(INITIAL_REVISION);
-			returned.setModelVersion(CURRENT_FML_RT_VERSION);
+			returned.setModelVersion(CURRENT_HBN_RT_VERSION);
 		}
 
 		return returned;
@@ -365,6 +373,22 @@ public abstract class HbnVirtualModelInstanceResourceFactory extends
 	public <I> I getConvertableArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public HbnVirtualModelInstance makeEmptyResourceData(HbnVirtualModelInstanceResource resource) {
+		return resource.getFactory().newInstance(HbnVirtualModelInstance.class, resource.getServiceManager());
+	}
+
+	/**
+	 * Build and return model factory to use for resource data managing
+	 */
+	@Override
+	public AbstractVirtualModelInstanceModelFactory<?> makeResourceDataFactory(HbnVirtualModelInstanceResource resource,
+			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
+		return new HbnVirtualModelInstanceModelFactory((HbnVirtualModelInstanceResource) resource,
+				technologyContextManager.getTechnologyAdapter().getServiceManager().getEditingContext(),
+				technologyContextManager.getTechnologyAdapter().getServiceManager().getTechnologyAdapterService());
 	}
 
 }

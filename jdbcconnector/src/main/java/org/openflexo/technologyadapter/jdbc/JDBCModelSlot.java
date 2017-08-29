@@ -67,6 +67,7 @@ import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.ModelSlotInstanceConfiguration;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.FreeModelSlot;
+import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
@@ -88,10 +89,13 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 /**
- * Implementation of the ModelSlot class for the JDBC technology adapter<br>
+ * An implementation of a {@link ModelSlot} providing basic access to JDBC modelling element<br>
  * 
- * Managed modelling elements are {@link JDBCTable}, {@link JDBCColumn} and {@link JDBCLine}
+ * This is really low-level, as managed modelling elements are {@link JDBCTable}, {@link JDBCColumn} and {@link JDBCLine}
  * 
+ * In production context, you should use {@link HbnModelSlot}
+ * 
+ * @see HbnModelSlot
  * @author charlie
  * 
  */

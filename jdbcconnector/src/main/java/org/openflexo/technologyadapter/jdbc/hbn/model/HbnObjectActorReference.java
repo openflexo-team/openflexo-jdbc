@@ -40,7 +40,6 @@ package org.openflexo.technologyadapter.jdbc.hbn.model;
 
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.fml.rt.ActorReference;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.model.annotations.Getter;
@@ -51,7 +50,7 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 
 /**
- * Implements {@link ActorReference} for {@link FlexoObject} as modelling elements.<br>
+ * Implements {@link ActorReference} for {@link HbnFlexoConceptInstance}<br>
  * 
  * @author sylvain
  * 
