@@ -73,7 +73,6 @@ import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.TypeResolver;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.hbn.HbnConfig;
@@ -99,7 +98,7 @@ import org.openflexo.test.TestOrder;
  */
 // TODO: to be removed: used for experimentations
 @RunWith(OrderedRunner.class)
-@Ignore
+// @Ignore
 public class MyDBTest extends OpenflexoTestCase {
 
 	static FlexoEditor editor;

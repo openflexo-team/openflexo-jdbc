@@ -40,6 +40,7 @@ package org.openflexo.technologyadapter.jdbc.hbn.rm;
 
 import java.util.logging.Logger;
 
+import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.IOFlexoException;
 import org.openflexo.foundation.InconsistentDataException;
 import org.openflexo.foundation.InvalidModelDefinitionException;
@@ -172,6 +173,12 @@ public interface HbnVirtualModelInstanceResource
 				InvalidXMLException, InconsistentDataException, InvalidModelDefinitionException {
 			HbnVirtualModelInstance returned = super.loadResourceData(progress);
 			// returned.setSupportFactory(new JsonSupportFactory("url"));
+			try {
+				returned.connectToDB();
+			} catch (FlexoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return returned;
 		}
 

@@ -2,7 +2,7 @@
  * 
  * Copyright (c) 2014-2015, Openflexo
  * 
- * This file is part of Excelconnector, a component of the software infrastructure 
+ * This file is part of Flexo-foundation, a component of the software infrastructure 
  * developed at Openflexo.
  * 
  * 
@@ -38,33 +38,32 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
-import java.util.logging.Logger;
-
-import org.openflexo.foundation.fml.annotations.FML;
-import org.openflexo.foundation.fml.editionaction.FetchRequest;
-import org.openflexo.foundation.fml.rt.editionaction.SelectFlexoConceptInstance;
-import org.openflexo.model.annotations.ImplementationClass;
-import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.connie.type.CustomTypeFactory;
+import org.openflexo.foundation.fml.VirtualModel;
+import org.openflexo.foundation.fml.VirtualModelInstanceType;
+import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
- * A {@link FetchRequest} used to perform a JDBC query
+ * Represent the type of an instance of a {@link VirtualModel} in the context of {@link HbnModelSlot}
  * 
  * @author sylvain
- *
+ * 
  */
-@ModelEntity
-@ImplementationClass(PerformQuery.PerformQueryImpl.class)
-@XMLElement
-@FML("PerformQuery")
-public interface PerformQuery extends SelectFlexoConceptInstance<HbnVirtualModelInstance> {
+public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 
-	public static abstract class PerformQueryImpl<T> extends SelectFlexoConceptInstanceImpl<HbnVirtualModelInstance>
-			implements PerformQuery {
+	public static HbnVirtualModelInstanceType UNDEFINED_VIRTUAL_MODEL_INSTANCE_TYPE = new HbnVirtualModelInstanceType((VirtualModel) null);
 
-		@SuppressWarnings("unused")
-		private static final Logger logger = Logger.getLogger(PerformQueryImpl.class.getPackage().getName());
+	public HbnVirtualModelInstanceType(VirtualModel aVirtualModel) {
+		super(aVirtualModel);
+	}
 
+	public HbnVirtualModelInstanceType(String virtualModelURI, CustomTypeFactory<?> factory) {
+		super(virtualModelURI, factory);
+	}
+
+	@Override
+	public Class<?> getBaseClass() {
+		return HbnVirtualModelInstance.class;
 	}
 }

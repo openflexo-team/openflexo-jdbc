@@ -377,6 +377,8 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				String resourceURI = getResourceURI(evaluationContext);
 				FlexoResourceCenter<?> rc = getResourceCenter(evaluationContext);
 
+				System.out.println("Creating HbnVirtualModelInstanceResource");
+
 				HbnVirtualModelInstanceResource newResource = createResource(
 						getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class),
 						getResourceFactoryClass(), rc, resourceName, resourceURI, getRelativePath(), getSuffix(), true);
@@ -425,7 +427,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					data.setPassword(password);
 
 					// Now we should execute CreationScheme
-					// System.out.println("Executing FML: " + getCreationScheme().getFMLRepresentation());
+					System.out.println("Executing FML: " + getCreationScheme().getFMLRepresentation());
 					CreationSchemeAction creationSchemeAction = CreationSchemeAction.actionType.makeNewEmbeddedAction(null, null,
 							(FlexoBehaviourAction<?, ?, ?>) evaluationContext);
 					// creationSchemeAction.setVirtualModelInstance(vmInstance);
@@ -440,6 +442,8 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 									p.evaluateParameterValue((FlexoBehaviourAction<?, ?, ?>) evaluationContext));
 						}
 					}
+
+					System.out.println("Et hop....");
 					creationSchemeAction.doAction();
 
 					// newResource.getFactory().initializeModel(data, getCreationScheme(), getParameters(), evaluationContext);
@@ -450,7 +454,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 							evaluationContext);*/
 				}
 				else {
-					throw new InvalidArgumentException("AccessPoint creation must be affected to a HTTPModelSlot");
+					throw new InvalidArgumentException("HbnResource creation must be affected to a HbnModelSlot");
 				}
 
 				return data;

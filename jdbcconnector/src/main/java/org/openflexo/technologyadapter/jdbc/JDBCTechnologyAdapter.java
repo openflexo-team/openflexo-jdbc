@@ -55,13 +55,17 @@
 
 package org.openflexo.technologyadapter.jdbc;
 
+import org.openflexo.foundation.fml.VirtualModel;
+import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.foundation.fml.annotations.DeclareModelSlots;
 import org.openflexo.foundation.fml.annotations.DeclareResourceTypes;
+import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.FlexoResourceCenterService;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterBindingFactory;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterInitializationException;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnVirtualModelInstanceType;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceRepository;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResourceFactory;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
@@ -118,6 +122,19 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter {
 			resourceCenter.registerRepository(returned, HbnVirtualModelInstanceRepository.class, this);
 		}
 		return returned;
+	}
+
+	// Hacking area
+	// I'm not proud of that, this should be handled from a more elegant way
+	// TODO: find a better solution
+	@Override
+	@Deprecated
+	public VirtualModelInstanceType getInferedVirtualModelInstanceType(VirtualModel vm,
+			Class<? extends InferedFMLRTModelSlot<?, ?>> modelSlotClass) {
+		if (HbnModelSlot.class.equals(modelSlotClass)) {
+			return new HbnVirtualModelInstanceType(vm);
+		}
+		return super.getInferedVirtualModelInstanceType(vm, modelSlotClass);
 	}
 
 }

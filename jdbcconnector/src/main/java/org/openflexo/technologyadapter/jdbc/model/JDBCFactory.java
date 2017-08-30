@@ -98,10 +98,9 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 		returned.setUser(user);
 		returned.setPassword(password);
 
-		System.out.println("On ouvre une connexion sur " + address + " user=" + user + " password=" + password);
+		// System.out.println("Connect to " + address + " user=" + user + " password=" + password);
 		if (returned.getConnection() != null) {
-			System.out.println("Voici le schema: " + returned.getSchema());
-			System.out.println("Les tables: " + returned.getSchema().getTables());
+			logger.info("Successfully opening connection on " + address);
 		}
 		else if (returned.getException() != null) {
 			logger.warning("Cannot open JDBC connection: " + returned.getException().getMessage());

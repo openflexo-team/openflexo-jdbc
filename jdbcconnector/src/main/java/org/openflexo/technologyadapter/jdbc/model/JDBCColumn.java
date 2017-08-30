@@ -77,6 +77,12 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 
 	Type getJavaType();
 
+	String getSQLType();
+
+	int getLength();
+
+	boolean isNullable();
+
 	abstract class JDBCColumnImpl extends FlexoObjectImpl implements JDBCColumn {
 
 		@Override
@@ -113,5 +119,41 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 			}
 			return String.class;
 		}
+
+		@Override
+		public String getSQLType() {
+			if (getTypeAsString().equalsIgnoreCase("INTEGER")) {
+				return "INTEGER";
+			}
+			else if (getTypeAsString().equalsIgnoreCase("VARCHAR")) {
+				return "CHAR(256)";
+			}
+			else if (getTypeAsString().toUpperCase().contains("CHAR")) {
+				return "CHAR(256)";
+			}
+			else if (getTypeAsString().equalsIgnoreCase("DATE")) {
+				return "DATE";
+			}
+			return "CHAR(256)";
+		}
+
+		@Override
+		public int getLength() {
+			// TODO
+			if (getTypeAsString().equalsIgnoreCase("INTEGER")) {
+				return 16;
+			}
+			else if (getTypeAsString().toUpperCase().contains("CHAR")) {
+				return 256;
+			}
+			return 256;
+		}
+
+		@Override
+		public boolean isNullable() {
+			// TODO
+			return !isPrimaryKey();
+		}
+
 	}
 }

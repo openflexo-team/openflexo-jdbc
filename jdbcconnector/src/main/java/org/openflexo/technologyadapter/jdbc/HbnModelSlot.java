@@ -55,6 +55,8 @@
 
 package org.openflexo.technologyadapter.jdbc;
 
+import java.lang.reflect.Type;
+
 import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -75,7 +77,8 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformQuery;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnVirtualModelInstanceType;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnObjectActorReference;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -94,7 +97,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @XMLElement
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
 // @DeclareFlexoRoles({ RestObjectRole.class })
-@DeclareEditionActions({ CreateHbnResource.class, PerformQuery.class })
+@DeclareEditionActions({ CreateHbnResource.class, PerformSQLQuery.class })
 // @DeclareFlexoBehaviours({ RestObjectRetriever.class, JsonRequestBehaviour.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
@@ -170,6 +173,24 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 				FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {
 			// TODO Auto-generated method stub
 			return super.createConfiguration(fci, rc);
+		}
+
+		private HbnVirtualModelInstanceType type;
+
+		@Override
+		public Type getType() {
+			if (type == null || type.getVirtualModel() != getAccessedVirtualModel()) {
+				type = new HbnVirtualModelInstanceType(getAccessedVirtualModel());
+			}
+			return type;
+		}
+
+		@Override
+		public void setAccessedVirtualModel(VirtualModel aVirtualModel) {
+			if (aVirtualModel != getAccessedVirtualModel()) {
+				super.setAccessedVirtualModel(aVirtualModel);
+				type = new HbnVirtualModelInstanceType(getAccessedVirtualModel());
+			}
 		}
 
 	}

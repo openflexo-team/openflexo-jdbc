@@ -33,6 +33,7 @@ import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCConnecti
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCMappingVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.view.JDBCModuleView;
@@ -130,6 +131,9 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	public ImageIcon getIconForEditionAction(Class<? extends EditionAction> editionActionClass) {
 		if (CreateHbnResource.class.isAssignableFrom(editionActionClass)) {
 			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, IconLibrary.NEW_MARKER);
+		}
+		if (PerformSQLQuery.class.isAssignableFrom(editionActionClass)) {
+			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, IconLibrary.IMPORT);
 		}
 		return super.getIconForEditionAction(editionActionClass);
 	}
