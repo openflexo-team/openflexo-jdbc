@@ -46,7 +46,7 @@ import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoAction;
-import org.openflexo.foundation.action.FlexoActionType;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.ExpressionProperty;
 import org.openflexo.foundation.fml.FMLModelFactory;
@@ -86,9 +86,9 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	private static final Logger logger = Logger.getLogger(CreateJDBCMappingVirtualModel.class.getPackage().getName());
 
-	public static FlexoActionType<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> actionType = new FlexoActionType<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject>(
-			"create_jdbc_mapping_virtualmodel", FlexoActionType.newVirtualModelMenu, FlexoActionType.defaultGroup,
-			FlexoActionType.ADD_ACTION_TYPE) {
+	public static FlexoActionFactory<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> actionType = new FlexoActionFactory<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject>(
+			"create_jdbc_mapping_virtualmodel", FlexoActionFactory.newVirtualModelMenu, FlexoActionFactory.defaultGroup,
+			FlexoActionFactory.ADD_ACTION_TYPE) {
 
 		/**
 		 * Factory method

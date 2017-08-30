@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.action.FlexoAction;
-import org.openflexo.foundation.action.FlexoActionType;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.AbstractActionScheme;
 import org.openflexo.foundation.fml.FlexoBehaviour;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
@@ -69,7 +69,7 @@ public class HbnInitializerAction extends FlexoBehaviourAction<HbnInitializerAct
 	private final ActionSchemeActionType actionType;
 
 	public static class HbnInitializerActionType
-			extends FlexoActionType<HbnInitializerAction, HbnVirtualModelInstance, VirtualModelInstanceObject> {
+			extends FlexoActionFactory<HbnInitializerAction, HbnVirtualModelInstance, VirtualModelInstanceObject> {
 		public HbnInitializerActionType(HbnInitializer behaviour, HbnVirtualModelInstance focusedObject) {
 			super(behaviour, focusedObject);
 		}

@@ -50,7 +50,7 @@ import org.openflexo.fge.FGEModelFactoryImpl;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
-import org.openflexo.foundation.action.FlexoActionType;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -81,9 +81,9 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CreateJDBCVirtualModel.class.getPackage().getName());
 
-	public static FlexoActionType<CreateJDBCVirtualModel, VirtualModel, FMLObject> actionType = new FlexoActionType<CreateJDBCVirtualModel, VirtualModel, FMLObject>(
-			"create_jdbc_virtual_model", FlexoActionType.newVirtualModelMenu, FlexoActionType.defaultGroup,
-			FlexoActionType.ADD_ACTION_TYPE) {
+	public static FlexoActionFactory<CreateJDBCVirtualModel, VirtualModel, FMLObject> actionType = new FlexoActionFactory<CreateJDBCVirtualModel, VirtualModel, FMLObject>(
+			"create_jdbc_virtual_model", FlexoActionFactory.newVirtualModelMenu, FlexoActionFactory.defaultGroup,
+			FlexoActionFactory.ADD_ACTION_TYPE) {
 
 		/**
 		 * Factory method

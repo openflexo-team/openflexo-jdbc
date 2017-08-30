@@ -49,7 +49,7 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.action.FlexoActionFinalizer;
 import org.openflexo.foundation.action.FlexoActionInitializer;
-import org.openflexo.foundation.action.FlexoActionType;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.gina.controller.FIBController;
@@ -106,7 +106,7 @@ public class CreateJDBCConnectionInitializer extends ActionInitializer<CreateJDB
 	}
 
 	@Override
-	protected Icon getEnabledIcon(FlexoActionType actionType) {
+	protected Icon getEnabledIcon(FlexoActionFactory actionType) {
 		return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, FMLIconLibrary.VIRTUAL_MODEL_MARKER);
 	}
 
