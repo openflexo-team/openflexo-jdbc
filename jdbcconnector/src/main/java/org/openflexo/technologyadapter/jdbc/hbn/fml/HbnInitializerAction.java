@@ -44,102 +44,53 @@ import java.util.logging.Logger;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.action.FlexoAction;
-import org.openflexo.foundation.action.FlexoActionFactory;
-import org.openflexo.foundation.fml.AbstractActionScheme;
-import org.openflexo.foundation.fml.FlexoBehaviour;
-import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstanceObject;
-import org.openflexo.foundation.fml.rt.action.ActionSchemeActionType;
-import org.openflexo.foundation.fml.rt.action.FlexoBehaviourAction;
+import org.openflexo.foundation.fml.rt.action.AbstractActionSchemeAction;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
  * Provides execution environment of a {@link HbnInitializer} on a given {@link HbnVirtualModelInstance} as a {@link FlexoAction}
  * 
- * 
- * 
  * @author sylvain
  *
  */
-public class HbnInitializerAction extends FlexoBehaviourAction<HbnInitializerAction, HbnInitializer, HbnVirtualModelInstance> {
+public class HbnInitializerAction extends AbstractActionSchemeAction<HbnInitializerAction, HbnInitializer, HbnVirtualModelInstance> {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(HbnInitializerAction.class.getPackage().getName());
 
-	private final ActionSchemeActionType actionType;
-
-	public static class HbnInitializerActionType
-			extends FlexoActionFactory<HbnInitializerAction, HbnVirtualModelInstance, VirtualModelInstanceObject> {
-		public HbnInitializerActionType(HbnInitializer behaviour, HbnVirtualModelInstance focusedObject) {
-			super(behaviour, focusedObject);
-		}
-	}
-
+	/**
+	 * Constructor to be used for creating a new action without factory
+	 * 
+	 * @param flexoBehaviour
+	 * @param focusedObject
+	 * @param globalSelection
+	 * @param editor
+	 */
 	public HbnInitializerAction(HbnInitializer behaviour, HbnVirtualModelInstance focusedObject,
 			List<VirtualModelInstanceObject> globalSelection, FlexoEditor editor) {
-		super(new ActionSchemeActionType(behaviour, focusedObject), focusedObject, globalSelection, editor);
-		// super(actionType, focusedObject, globalSelection, editor);
-		this.actionType = actionType;
-	}
-
-	public AbstractActionScheme getActionScheme() {
-		if (actionType != null) {
-			return actionType.getActionScheme();
-		}
-		return null;
+		super(behaviour, focusedObject, globalSelection, editor);
 	}
 
 	/**
-	 * Return the {@link FlexoConceptInstance} on which this {@link FlexoBehaviour} is applied.<br>
+	 * Constructor to be used for creating a new action as an action embedded in another one
 	 * 
-	 * @return
+	 * @param flexoBehaviour
+	 * @param focusedObject
+	 * @param globalSelection
+	 * @param ownerAction
+	 *            Action in which action to be created will be embedded
 	 */
-	@Override
-	public FlexoConceptInstance getFlexoConceptInstance() {
-		if (actionType != null) {
-			return actionType.getFlexoConceptInstance();
-		}
-		return null;
-	}
-
-	@Override
-	public AbstractActionScheme getFlexoBehaviour() {
-		return getActionScheme();
+	public HbnInitializerAction(HbnInitializer behaviour, HbnVirtualModelInstance focusedObject,
+			List<VirtualModelInstanceObject> globalSelection, FlexoAction<?, ?, ?> ownerAction) {
+		super(behaviour, focusedObject, globalSelection, ownerAction);
 	}
 
 	@Override
 	protected void doAction(Object context) throws FlexoException {
-		logger.fine("Perform action " + actionType);
-
-		if (getActionScheme() != null && getActionScheme().evaluateCondition(actionType.getFlexoConceptInstance())) {
+		if (getActionScheme() != null && getActionScheme().evaluateCondition(getFlexoConceptInstance())) {
 			executeControlGraph();
 		}
 	}
-
-	@Override
-	public VirtualModelInstance<?, ?> retrieveVirtualModelInstance() {
-		if (getFlexoConceptInstance() instanceof VirtualModelInstance) {
-			return (VirtualModelInstance<?, ?>) getFlexoConceptInstance();
-		}
-		if (getFlexoConceptInstance() != null) {
-			return getFlexoConceptInstance().getVirtualModelInstance();
-		}
-		return null;
-	}
-
-	/*@Override
-	public Object getValue(BindingVariable variable) {
-		return super.getValue(variable);
-	}*/
-
-	/*@Override
-	public void setValue(Object value, BindingVariable variable) {
-		// Why not upper ?
-		if (variable instanceof FlexoPropertyBindingVariable) {
-			getFlexoConceptInstance().setFlexoActor(value, (FlexoProperty) ((FlexoPropertyBindingVariable) variable).getFlexoProperty());
-			return;
-		}
-		super.setValue(value, variable);
-	}*/
 
 }
