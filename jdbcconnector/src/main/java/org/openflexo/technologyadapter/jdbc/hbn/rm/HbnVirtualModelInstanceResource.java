@@ -40,7 +40,9 @@ package org.openflexo.technologyadapter.jdbc.hbn.rm;
 
 import java.util.logging.Logger;
 
+import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.IOFlexoException;
 import org.openflexo.foundation.InconsistentDataException;
 import org.openflexo.foundation.InvalidModelDefinitionException;
@@ -61,6 +63,8 @@ import org.openflexo.rm.FileSystemResourceLocatorImpl;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializerAction;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.toolbox.IProgress;
 
@@ -178,6 +182,16 @@ public interface HbnVirtualModelInstanceResource
 			} catch (FlexoException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+
+			if (returned.getVirtualModel().getFlexoBehaviours(HbnInitializer.class).size() > 0) {
+				HbnInitializer initializer = returned.getVirtualModel().getFlexoBehaviours(HbnInitializer.class).get(0);
+				FlexoEditor editor = null;
+				if (getResourceCenter() instanceof FlexoProject) {
+					editor = getServiceManager().getProjectLoaderService().getEditorForProject((FlexoProject) getResourceCenter());
+				}
+				HbnInitializerAction action = new HbnInitializerAction(initializer, returned, null, editor);
+				action.doAction();
 			}
 			return returned;
 		}

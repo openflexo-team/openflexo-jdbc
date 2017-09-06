@@ -55,18 +55,20 @@ import org.openflexo.model.annotations.Parameter;
 public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnection> {
 
 	String TABLE = "table";
-	String PRIMARY_KEY = "primaryKey";
+	String IS_PRIMARY_KEY = "isPrimaryKey";
 	String NAME = "name";
 	String TYPE_AS_STRING = "typeAsString";
+	String LENGTH = "length";
+	String IS_NULLABLE = "isNullable";
 
 	@Initializer
-	void init(@Parameter(TABLE) JDBCTable table, @Parameter(PRIMARY_KEY) boolean primaryKey, @Parameter(NAME) String name,
-			@Parameter(TYPE_AS_STRING) String typeAsString);
+	void init(@Parameter(TABLE) JDBCTable table, @Parameter(IS_PRIMARY_KEY) boolean primaryKey, @Parameter(NAME) String name,
+			@Parameter(TYPE_AS_STRING) String typeAsString, @Parameter(LENGTH) int length, @Parameter(IS_NULLABLE) boolean isNullable);
 
 	@Getter(TABLE)
 	JDBCTable getTable();
 
-	@Getter(value = PRIMARY_KEY, defaultValue = "false")
+	@Getter(value = IS_PRIMARY_KEY, defaultValue = "false")
 	boolean isPrimaryKey();
 
 	@Getter(NAME)
@@ -79,8 +81,10 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 
 	String getSQLType();
 
+	@Getter(value = LENGTH, defaultValue = "256")
 	int getLength();
 
+	@Getter(value = IS_NULLABLE, defaultValue = "true")
 	boolean isNullable();
 
 	abstract class JDBCColumnImpl extends FlexoObjectImpl implements JDBCColumn {
@@ -122,37 +126,10 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 
 		@Override
 		public String getSQLType() {
-			if (getTypeAsString().equalsIgnoreCase("INTEGER")) {
-				return "INTEGER";
+			if (getTypeAsString().equalsIgnoreCase("VARCHAR") || getTypeAsString().toUpperCase().contains("CHAR")) {
+				return "CHAR(" + getLength() + ")";
 			}
-			else if (getTypeAsString().equalsIgnoreCase("VARCHAR")) {
-				return "CHAR(256)";
-			}
-			else if (getTypeAsString().toUpperCase().contains("CHAR")) {
-				return "CHAR(256)";
-			}
-			else if (getTypeAsString().equalsIgnoreCase("DATE")) {
-				return "DATE";
-			}
-			return "CHAR(256)";
-		}
-
-		@Override
-		public int getLength() {
-			// TODO
-			if (getTypeAsString().equalsIgnoreCase("INTEGER")) {
-				return 16;
-			}
-			else if (getTypeAsString().toUpperCase().contains("CHAR")) {
-				return 256;
-			}
-			return 256;
-		}
-
-		@Override
-		public boolean isNullable() {
-			// TODO
-			return !isPrimaryKey();
+			return getTypeAsString();
 		}
 
 	}

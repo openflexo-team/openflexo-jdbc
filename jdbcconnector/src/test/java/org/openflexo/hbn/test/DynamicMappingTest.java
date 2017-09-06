@@ -49,6 +49,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.openflexo.hbn.test.model.DynamicModelBuilder;
 
 public class DynamicMappingTest extends HbnTest {
@@ -118,6 +119,13 @@ public class DynamicMappingTest extends HbnTest {
 		for (EntityType<?> ent : entities) {
 			System.out.println("Entité dynamique: " + ent.getName());
 		}
+
+		// HQL
+		Query<?> hqlQ = hbnSession.createQuery("select o from Dynamic_Class o");
+		List<?> result2 = hqlQ.getResultList();
+
+		System.out.println("result2=" + result2);
+		assertEquals(2, result2.size());
 
 	}
 

@@ -43,6 +43,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.hibernate.query.Query;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.exception.NullReferenceException;
@@ -65,6 +66,7 @@ import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnException;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -287,17 +289,21 @@ public interface PerformSQLQuery extends FetchRequest<HbnModelSlot, HbnVirtualMo
 
 				System.out.println("La on y est, faut faire un select * from bidule...");
 
-				// System.out.println("SELECT FCI " + getFlexoConceptType().getName() + " from " + vmi + " container=" + container);
+				// vmi.getDefaultSession().createQuery(queryString)
 
-				List<HbnFlexoConceptInstance> fciList = null;
-				/*if (container instanceof FMLRTVirtualModelInstance) {
-					fciList = ((VirtualModelInstance<?, ?>) container).getFlexoConceptInstances(getFlexoConceptType());
+				try {
+
+					Query<?> sqlQ = vmi.getDefaultSession().createQuery("select o from " + getFlexoConceptType().getName() + " o");
+
+					return vmi.getFlexoConceptInstances(sqlQ, container, getFlexoConceptType());
+
+				} catch (HbnException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				else {
-					fciList = container.getEmbeddedFlexoConceptInstances(getFlexoConceptType());
-				}*/
-				// System.out.println("Unfiltered FCI list for " + getFlexoConceptType() + " : " + fciList);
-				return filterWithConditions(fciList, evaluationContext);
+
+				return null;
+
 			}
 			else {
 				logger.warning(

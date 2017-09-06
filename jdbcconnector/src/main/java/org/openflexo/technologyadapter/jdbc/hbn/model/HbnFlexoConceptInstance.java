@@ -35,27 +35,97 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
+import java.io.Serializable;
+import java.util.Map;
+
+import org.openflexo.foundation.fml.AbstractProperty;
+import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.model.annotations.ImplementationClass;
+import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 
 /**
  * A JDBC/Hibernate-specific {@link FlexoConceptInstance} reflecting a distant object accessible in an {@link HbnVirtualModelInstance}
- * through a {@link HbnModelSlot}
+ * through a {@link HbnModelSlot}<br>
+ * 
+ * This {@link HbnFlexoConceptInstance} internally manages Hibernate support object (a {@link Map}) which encodes mapped dynamic object
  * 
  */
-@ModelEntity(isAbstract = true)
+@ModelEntity
 @ImplementationClass(HbnFlexoConceptInstance.HbnFlexoConceptInstanceImpl.class)
+@XMLElement
 public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 
-	public String getIdentifier();
+	/**
+	 * Return a {@link Serializable} object which acts as key identifier for this {@link HbnFlexoConceptInstance}
+	 * 
+	 * <ul>
+	 * <li>If key of declaring {@link FlexoConcept} is simple, just return the value of key property</li>
+	 * <li>If Key is composite, return an Object array with all the values of properties composing composite key, in the order where those
+	 * properties are declared in keyProperties of related {@link FlexoConcept}</li>
+	 * </ul>
+	 * 
+	 * @param hbnMap
+	 * @param concept
+	 * @return
+	 */
 
+	public Object getIdentifier();
+
+	/**
+	 * Return a {@link String} object which acts as string representation for this {@link HbnFlexoConceptInstance}
+	 * 
+	 * <ul>
+	 * <li>If key of declaring {@link FlexoConcept} is simple, just return the String value of key property</li>
+	 * <li>If Key is composite, return an comma-separated dictionary as a String with all the values of properties composing composite key,
+	 * in the order where those properties are declared in keyProperties of related {@link FlexoConcept}</li>
+	 * </ul>
+	 * 
+	 * @return
+	 */
+	public String getIdentifierAsString();
+
+	/**
+	 * Initialize this {@link HbnFlexoConceptInstance} with supplied Hibernate support object, and explicit concept (type)
+	 * 
+	 * @param hbnMap
+	 * @param concept
+	 */
+	@Initializer
+	void initialize(Map<String, Object> hbnMap, FlexoConcept concept);
+
+	/**
+	 * Default implementation for {@link HbnFlexoConceptInstance}
+	 * 
+	 * @author sylvain
+	 *
+	 */
 	abstract class HbnFlexoConceptInstanceImpl extends FlexoConceptInstanceImpl implements HbnFlexoConceptInstance {
+
+		// Hibernate support object
+		private Map<String, Object> hbnMap;
+
+		private Serializable identifier = null;
+		private String identifierAsString = null;
+
+		/**
+		 * Initialize this {@link HbnFlexoConceptInstance} with supplied Hibernate support object, and explicit concept (type)
+		 * 
+		 * @param hbnMap
+		 * @param concept
+		 */
+		@Override
+		public void initialize(Map<String, Object> hbnMap, FlexoConcept concept) {
+			this.hbnMap = hbnMap;
+			setFlexoConcept(concept);
+		}
 
 		@Override
 		public HbnVirtualModelInstance getVirtualModelInstance() {
@@ -64,67 +134,52 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 
 		@Override
 		public <T> T getFlexoPropertyValue(FlexoProperty<T> flexoProperty) {
-			/*if (getFlexoConcept().getDeclaredProperties().contains(flexoProperty) && flexoProperty instanceof AbstractProperty
-					&& getSupport() != null) {
-				// System.out.println("support = " + support);
-				return (T) getSupport().getValue(flexoProperty.getName(), flexoProperty.getType());
-			}*/
+			if (flexoProperty instanceof AbstractProperty) {
+				T returned = (T) hbnMap.get(((AbstractProperty) flexoProperty).getName());
+				return returned;
+			}
+
 			return super.getFlexoPropertyValue(flexoProperty);
 		}
 
 		@Override
 		public <T> void setFlexoPropertyValue(FlexoProperty<T> flexoProperty, T value) {
-			/*if (flexoProperty instanceof AbstractProperty && getSupport() != null) {
+			if (flexoProperty instanceof AbstractProperty) {
 				T oldValue = getFlexoPropertyValue(flexoProperty);
 				if ((value == null && oldValue != null) || (value != null && !value.equals(oldValue))) {
-					getSupport().setValue(flexoProperty.getName(), value);
+					hbnMap.put(flexoProperty.getName(), value);
+					identifier = null;
+					identifierAsString = null;
 					setIsModified();
 					getPropertyChangeSupport().firePropertyChange(flexoProperty.getPropertyName(), oldValue, value);
 				}
 			}
-			else {*/
-			super.setFlexoPropertyValue(flexoProperty, value);
-			// }
+			else {
+				super.setFlexoPropertyValue(flexoProperty, value);
+			}
 		}
 
-		/*@Override
-		public String getReferenceForSerialization(boolean serializeClassName) {
-			AccessPoint accessPoint = getVirtualModelInstance().getAccessPoint();
-			String resourceURI = accessPoint.getResource().getURI();
-			String conceptName = getFlexoConcept().getName();
-			return FlexoObjectReference.constructSerializationRepresentation(null, resourceURI, getUserIdentifier(),
-					support.getIdentifier(), conceptName);
-		}*/
-
 		@Override
-		public String getIdentifier() {
-			// TODO: implement caching
+		public Serializable getIdentifier() {
 			if (getFlexoConcept() == null) {
 				return null;
 			}
 			if (identifier == null) {
-				if (getFlexoConcept() != null) {
-					if (getFlexoConcept().getKeyProperties().size() > 1) {
-						StringBuffer sb = new StringBuffer();
-						boolean isFirst = true;
-						for (FlexoProperty<?> keyP : getFlexoConcept().getKeyProperties()) {
-							sb.append((isFirst ? "" : ",") + keyP.getName() + "=" + getFlexoPropertyValue(keyP));
-							isFirst = false;
-						}
-						identifier = sb.toString();
-					}
-					else if (getFlexoConcept().getKeyProperties().size() > 0) {
-						Object keyValue = getFlexoPropertyValue(getFlexoConcept().getKeyProperties().get(0));
-						if (keyValue != null) {
-							identifier = keyValue.toString();
-						}
-					}
-				}
+				identifier = getVirtualModelInstance().getIdentifier(hbnMap, getFlexoConcept());
 			}
 			return identifier;
 		}
 
-		private String identifier = null;
+		@Override
+		public String getIdentifierAsString() {
+			if (getFlexoConcept() == null) {
+				return null;
+			}
+			if (identifierAsString == null) {
+				identifierAsString = getVirtualModelInstance().getIdentifierAsString(hbnMap, getFlexoConcept());
+			}
+			return identifierAsString;
+		}
 
 		@Override
 		public HbnObjectActorReference makeActorReference(FlexoConceptInstanceRole role, FlexoConceptInstance fci) {

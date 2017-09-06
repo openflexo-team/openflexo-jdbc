@@ -35,7 +35,11 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.hibernate.MappingException;
@@ -58,6 +62,7 @@ import org.hibernate.mapping.Property;
 import org.hibernate.mapping.RootClass;
 import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
+import org.hibernate.query.Query;
 import org.hibernate.type.TypeResolver;
 import org.openflexo.connie.hbn.HbnConfig;
 import org.openflexo.connie.type.TypeUtils;
@@ -93,6 +98,10 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
  * This {@link VirtualModelInstance} implementation implements Hibernate framework on a given database to provide a database connection.<br>
  * Call {@link #connectToDB()} to realize connection to database. This call initialize a {@link SessionFactory} and open a defaut
  * connection.
+ * 
+ * This {@link HbnVirtualModelInstance} has an internal caching scheme allowing to store {@link HbnFlexoConceptInstance} relatively to their
+ * related {@link FlexoConcept} (their type) and their identifier
+ * 
  * 
  */
 @ModelEntity
@@ -179,6 +188,74 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 	 */
 	public void closeSession(Session session);
 
+	/**
+	 * Build and return a {@link Serializable} object which acts as key identifier for supplied hbnMap, asserting this is the support object
+	 * for a {@link HbnFlexoConceptInstance} of supplied {@link FlexoConcept}
+	 * 
+	 * <ul>
+	 * <li>If key of declaring {@link FlexoConcept} is simple, just return the value of key property</li>
+	 * <li>If Key is composite, return an Object array with all the values of properties composing composite key, in the order where those
+	 * properties are declared in keyProperties of related {@link FlexoConcept}</li>
+	 * </ul>
+	 * 
+	 * @param hbnMap
+	 *            hibernate support object
+	 * @param concept
+	 *            type of related {@link HbnFlexoConceptInstance}
+	 * @return
+	 */
+	public Serializable getIdentifier(Map<String, Object> hbnMap, FlexoConcept concept);
+
+	/**
+	 * Build and return a {@link String} object which acts as string representation of an identifier for supplied hbnMap, asserting this is
+	 * the support object for a {@link HbnFlexoConceptInstance} of supplied {@link FlexoConcept}
+	 * 
+	 * <ul>
+	 * <li>If key of declaring {@link FlexoConcept} is simple, just return the String value of key property</li>
+	 * <li>If Key is composite, return an comma-separated dictionary as a String with all the values of properties composing composite key,
+	 * in the order where those properties are declared in keyProperties of related {@link FlexoConcept}</li>
+	 * </ul>
+	 * 
+	 * @param hbnMap
+	 *            hibernate support object
+	 * @param concept
+	 *            type of related {@link HbnFlexoConceptInstance}
+	 * @return
+	 */
+	public String getIdentifierAsString(Map<String, Object> hbnMap, FlexoConcept concept);
+
+	/**
+	 * Retrieve (build when non-existant) a list of {@link HbnFlexoConceptInstance} matching supplied {@link Query} asserting returned
+	 * {@link HbnFlexoConceptInstance} objects have supplied concept type and container<br>
+	 *
+	 * @param query
+	 *            query whose results have to be wrapped into {@link HbnFlexoConceptInstance} list
+	 * @param container
+	 *            container (eventually null) of returned {@link HbnFlexoConceptInstance}
+	 * @param concept
+	 *            type of returned {@link HbnFlexoConceptInstance}
+	 * @return
+	 */
+	public List<HbnFlexoConceptInstance> getFlexoConceptInstances(Query<?> query, FlexoConceptInstance container, FlexoConcept concept);
+
+	/**
+	 * Retrieve (build if not existant) {@link HbnFlexoConceptInstance} with supplied support object (a map managed by Hibernate Framework),
+	 * asserting returned {@link HbnFlexoConceptInstance} object has supplied concept type and container<br>
+	 * 
+	 * This {@link HbnVirtualModelInstance} has an internal caching scheme allowing to store {@link HbnFlexoConceptInstance} relatively to
+	 * their related {@link FlexoConcept} (their type) and their identifier
+	 * 
+	 * @param hbnMap
+	 *            hibernate support object
+	 * @param container
+	 *            container (eventually null) of returned {@link HbnFlexoConceptInstance}
+	 * @param concept
+	 *            type of returned {@link HbnFlexoConceptInstance}
+	 * @return
+	 */
+	public HbnFlexoConceptInstance getFlexoConceptInstance(Map<String, Object> hbnMap, FlexoConceptInstance container,
+			FlexoConcept concept);
+
 	abstract class HbnVirtualModelInstanceImpl extends VirtualModelInstanceImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnVirtualModelInstance {
 
@@ -197,6 +274,9 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		protected Session defaultSession;
 
 		private boolean isConnected = false;
+
+		// Stores all FCIs related to their identifier
+		private Map<FlexoConcept, Map<Object, HbnFlexoConceptInstance>> instances = new HashMap<>();
 
 		/**
 		 * Return boolean indicating if this {@link HbnVirtualModelInstance} is connected to database
@@ -431,7 +511,6 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 			metadataCollector.addEntityBinding(pClass);
 
 			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
-				System.out.println("> flexoProperty: " + flexoProperty);
 				Property prop;
 				Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(flexoProperty.getName());
 				// System.out.println("colIdentifier: " + colIdentifier);
@@ -446,10 +525,8 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					value.addColumn(col);
 					value.setTable(table);
 					prop.setValue(value);
-					System.out.println("On ajoute la property " + prop + " col=" + col);
 					if (concept.getKeyProperties().contains(flexoProperty)) {
 						// This is a key !
-						System.out.println("En plus c'est une clef ! " + prop + " col=" + col);
 						if (abstractProperty.getType().equals(Integer.class)) {
 							value.setIdentifierGeneratorStrategy("native");
 						}
@@ -460,79 +537,12 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 						pClass.setIdentifierProperty(prop);
 						pClass.setIdentifier(value);
 					}
+					else {
+						pClass.addProperty(prop);
+					}
+
 				}
 			}
-
-			/*
-			// ************************
-			// Creation de l'entité persistée "Dynamic_Class"
-			
-			RootClass pClass = new RootClass(metadataBuildingContext);
-			pClass.setEntityName("Dynamic_Class");
-			pClass.setJpaEntityName("Dynamic_Class");
-			pClass.setTable(table);
-			metadataCollector.addEntityBinding(pClass);
-			
-			// Creation d'une propriété (clef) et son mapping
-			
-			Property prop = new Property();
-			prop.setName("Nom");
-			SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
-			value.setTypeName("java.lang.String");
-			value.setIdentifierGeneratorStrategy("assigned");
-			value.addColumn(col);
-			value.setTable(table);
-			prop.setValue(value);
-			pClass.setDeclaredIdentifierProperty(prop);
-			pClass.setIdentifierProperty(prop);
-			pClass.setIdentifier(value);
-			
-			// Creation d'une propriété et son mapping
-			
-			prop = new Property();
-			prop.setName("Prenom");
-			value = new SimpleValue((MetadataImplementor) metadata, table);
-			value.setTypeName(String.class.getCanonicalName());
-			value.addColumn(col2);
-			value.setTable(table);
-			prop.setValue(value);
-			pClass.addProperty(prop);
-			
-			// ************************
-			// Creation de l'entité persistée "Adresse"
-			
-			RootClass pClass2 = new RootClass(metadataBuildingContext);
-			pClass2.setEntityName("Adresse");
-			pClass2.setJpaEntityName("Adresse");
-			pClass2.setTable(table2);
-			metadataCollector.addEntityBinding(pClass2);
-			
-			// Creation d'une propriété (clef) et son mapping
-			
-			prop = new Property();
-			prop.setName("Identifiant");
-			value = new SimpleValue((MetadataImplementor) metadata, table2);
-			value.setTypeName("java.lang.Integer");
-			value.setIdentifierGeneratorStrategy("native");
-			value.addColumn(col4);
-			value.setTable(table2);
-			prop.setValue(value);
-			pClass2.setDeclaredIdentifierProperty(prop);
-			pClass2.setIdentifierProperty(prop);
-			pClass2.setIdentifier(value);
-			
-			// Creation d'une propriété et son mapping
-			
-			prop = new Property();
-			prop.setName("Prenom");
-			value = new SimpleValue((MetadataImplementor) metadata, table2);
-			value.setTypeName(String.class.getCanonicalName());
-			value.addColumn(col5);
-			value.setTable(table2);
-			prop.setValue(value);
-			pClass2.addProperty(prop);
-			
-			 */
 
 		}
 
@@ -544,6 +554,134 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 				return null;
 			}
 			return (List<FlexoConceptInstance>) performSuperGetter(FLEXO_CONCEPT_INSTANCES_KEY);
+		}
+
+		/**
+		 * Build and return a {@link Serializable} object which acts as key identifier for supplied hbnMap, asserting this is the support
+		 * object for a {@link HbnFlexoConceptInstance} of supplied {@link FlexoConcept}
+		 * 
+		 * <ul>
+		 * <li>If key of declaring {@link FlexoConcept} is simple, just return the value of key property</li>
+		 * <li>If Key is composite, return an Object array with all the values of properties composing composite key, in the order where
+		 * those properties are declared in keyProperties of related {@link FlexoConcept}</li>
+		 * </ul>
+		 * 
+		 * @param hbnMap
+		 * @param concept
+		 * @return
+		 */
+		@Override
+		public Serializable getIdentifier(Map<String, Object> hbnMap, FlexoConcept concept) {
+			if (concept.getKeyProperties().size() == 0) {
+				return null;
+			}
+			if (concept.getKeyProperties().size() == 1) {
+				return (Serializable) hbnMap.get(concept.getKeyProperties().get(0).getName());
+			}
+			// composite key
+			Object[] returned = new Object[concept.getKeyProperties().size()];
+			for (int i = 0; i < concept.getKeyProperties().size(); i++) {
+				returned[i] = hbnMap.get(concept.getKeyProperties().get(i).getName());
+			}
+			return returned;
+		}
+
+		/**
+		 * Build and return a {@link String} object which acts as string representation of an identifier for supplied hbnMap, asserting this
+		 * is the support object for a {@link HbnFlexoConceptInstance} of supplied {@link FlexoConcept}
+		 * 
+		 * <ul>
+		 * <li>If key of declaring {@link FlexoConcept} is simple, just return the String value of key property</li>
+		 * <li>If Key is composite, return an comma-separated dictionary as a String with all the values of properties composing composite
+		 * key, in the order where those properties are declared in keyProperties of related {@link FlexoConcept}</li>
+		 * </ul>
+		 * 
+		 * @param hbnMap
+		 * @param concept
+		 * @return
+		 */
+		@Override
+		public String getIdentifierAsString(Map<String, Object> hbnMap, FlexoConcept concept) {
+			if (concept.getKeyProperties().size() == 0) {
+				return null;
+			}
+			if (concept.getKeyProperties().size() == 1) {
+				return hbnMap.get(concept.getKeyProperties().get(0).getName()).toString();
+			}
+			// composite key
+			StringBuffer sb = new StringBuffer();
+			boolean isFirst = true;
+			for (FlexoProperty<?> keyP : concept.getKeyProperties()) {
+				sb.append((isFirst ? "" : ",") + keyP.getName() + "=" + hbnMap.get(keyP.getName()));
+				isFirst = false;
+			}
+			return sb.toString();
+		}
+
+		@Override
+		public HbnVirtualModelInstanceModelFactory getFactory() {
+			return (HbnVirtualModelInstanceModelFactory) super.getFactory();
+		}
+
+		/**
+		 * Retrieve (build if not existant) {@link HbnFlexoConceptInstance} with supplied support object (a map managed by Hibernate
+		 * Framework), asserting returned {@link HbnFlexoConceptInstance} object has supplied concept type and container<br>
+		 * 
+		 * This {@link HbnVirtualModelInstance} has an internal caching scheme allowing to store {@link HbnFlexoConceptInstance} relatively
+		 * to their related {@link FlexoConcept} (their type) and their identifier
+		 * 
+		 * @param hbnMap
+		 *            hibernate support object
+		 * @param container
+		 *            container (eventually null) of returned {@link HbnFlexoConceptInstance}
+		 * @param concept
+		 *            type of returned {@link HbnFlexoConceptInstance}
+		 * @return
+		 */
+		@Override
+		public HbnFlexoConceptInstance getFlexoConceptInstance(Map<String, Object> hbnMap, FlexoConceptInstance container,
+				FlexoConcept concept) {
+
+			if (concept == null) {
+				logger.warning("Could not obtain HbnFlexoConceptInstance with null FlexoConcept");
+			}
+
+			Object identifier = getIdentifier(hbnMap, concept).toString();
+			// System.out.println("Building object with: " + hbnMap + " id=" + identifier);
+
+			Map<Object, HbnFlexoConceptInstance> mapForConcept = instances.computeIfAbsent(concept, (newConcept) -> {
+				return new HashMap<>();
+			});
+
+			return mapForConcept.computeIfAbsent(identifier, (newId) -> {
+				return getFactory().newFlexoConceptInstance(this, container, hbnMap, concept);
+			});
+		}
+
+		/**
+		 * Retrieve (build when non-existant) a list of {@link HbnFlexoConceptInstance} matching supplied {@link Query} asserting returned
+		 * {@link HbnFlexoConceptInstance} objects have supplied concept type and container<br>
+		 *
+		 * @param query
+		 *            query whose results have to be wrapped into {@link HbnFlexoConceptInstance} list
+		 * @param container
+		 *            container (eventually null) of returned {@link HbnFlexoConceptInstance}
+		 * @param concept
+		 *            type of returned {@link HbnFlexoConceptInstance}
+		 * @return
+		 */
+		@Override
+		public List<HbnFlexoConceptInstance> getFlexoConceptInstances(Query<?> query, FlexoConceptInstance container,
+				FlexoConcept concept) {
+			List<HbnFlexoConceptInstance> returned = new ArrayList<>();
+			for (Object o : query.getResultList()) {
+				if (o instanceof Map) {
+					Map<String, Object> hbnMap = (Map<String, Object>) o;
+					HbnFlexoConceptInstance fci = getFlexoConceptInstance(hbnMap, container, concept);
+					returned.add(fci);
+				}
+			}
+			return returned;
 		}
 
 	}

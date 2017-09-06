@@ -48,6 +48,7 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.PropertyIdentifier;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
+import org.openflexo.model.annotations.XMLElement;
 
 /**
  * Implements {@link ActorReference} for {@link HbnFlexoConceptInstance}<br>
@@ -56,8 +57,9 @@ import org.openflexo.model.annotations.XMLAttribute;
  * 
  * @param <T>
  */
-@ModelEntity(isAbstract = true)
+@ModelEntity
 @ImplementationClass(HbnObjectActorReference.HbnObjectActorReferenceImpl.class)
+@XMLElement
 public interface HbnObjectActorReference extends ActorReference<HbnFlexoConceptInstance> {
 
 	@PropertyIdentifier(type = String.class)
@@ -102,7 +104,7 @@ public interface HbnObjectActorReference extends ActorReference<HbnFlexoConceptI
 			if (object != null) {
 				setResourceURI(object.getVirtualModelInstance().getURI());
 				setFlexoConceptURI(object.getFlexoConcept().getURI());
-				setKey(object.getIdentifier());
+				setKey(object.getIdentifierAsString());
 			}
 			else {
 				setResourceURI(null);

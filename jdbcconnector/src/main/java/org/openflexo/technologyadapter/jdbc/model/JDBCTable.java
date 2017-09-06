@@ -107,11 +107,24 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 	 *            new column name, must be uppercase.
 	 * @param type
 	 *            column type
-	 * @param key
+	 * @param isPrimaryKey
 	 *            true if the column is the primary key
 	 * @return the created column or null if the creation failed (SQL problem, already exists, incorrect name, ...).
 	 */
-	JDBCColumn createColumn(String columnName, String type, boolean key);
+	JDBCColumn createColumn(String columnName, String type, boolean isPrimaryKey, int length, boolean isNullable);
+
+	/**
+	 * Creates a column in the model and the linked database.
+	 *
+	 * @param columnName
+	 *            new column name, must be uppercase.
+	 * @param type
+	 *            column type
+	 * @param isPrimaryKey
+	 *            true if the column is the primary key
+	 * @return the created column or null if the creation failed (SQL problem, already exists, incorrect name, ...).
+	 */
+	JDBCColumn createColumn(String columnName, String type, boolean isPrimaryKey);
 
 	/**
 	 * Drops a table in the model and the linked database.
@@ -315,15 +328,21 @@ public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection
 		}
 
 		@Override
-		public JDBCColumn createColumn(String columnName, String type, boolean key) {
+		public JDBCColumn createColumn(String columnName, String type, boolean isPrimaryKey, int length, boolean isNullable) {
 			try {
-				JDBCColumn column = SQLHelper.createColumn(this, SQLHelper.getFactory(getSchema().getModel()), columnName, type, key);
+				JDBCColumn column = SQLHelper.createColumn(this, SQLHelper.getFactory(getSchema().getModel()), columnName, type,
+						isPrimaryKey, length, isNullable);
 				addColumn(column);
 				return column;
 			} catch (SQLException e) {
 				LOGGER.log(Level.WARNING, "Can't create column '" + columnName + "' on table '" + getName() + "'", e);
 				return null;
 			}
+		}
+
+		@Override
+		public JDBCColumn createColumn(String columnName, String type, boolean isPrimaryKey) {
+			return createColumn(columnName, type, isPrimaryKey, 256, true);
 		}
 
 		@Override

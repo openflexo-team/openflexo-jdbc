@@ -22,6 +22,7 @@ package org.openflexo.technologyadapter.jdbc.controller;
 
 import javax.swing.ImageIcon;
 
+import org.openflexo.foundation.fml.FlexoBehaviour;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
@@ -33,6 +34,7 @@ import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCConnecti
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCMappingVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -112,6 +114,14 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	@Override
 	public ImageIcon getIconForFlexoRole(Class<? extends FlexoRole<?>> flexoRoleClass) {
 		return JDBCIconLibrary.JDBC_TECHNOLOGY_ICON;
+	}
+
+	@Override
+	public ImageIcon getIconForFlexoBehaviour(Class<? extends FlexoBehaviour> flexoBehaviourClass) {
+		if (HbnInitializer.class.isAssignableFrom(flexoBehaviourClass)) {
+			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, IconLibrary.SYNC);
+		}
+		return super.getIconForFlexoBehaviour(flexoBehaviourClass);
 	}
 
 	@Override

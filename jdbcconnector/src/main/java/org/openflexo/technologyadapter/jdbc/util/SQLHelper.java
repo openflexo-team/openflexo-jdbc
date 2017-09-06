@@ -115,6 +115,9 @@ public class SQLHelper {
 		ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), "PUBLIC", "%", null);
 		while (jdbcTables.next()) {
 			String tableName = jdbcTables.getString("TABLE_NAME");
+
+			System.out.println("Je cherche la table " + tableName + " dans " + sortedTables.keySet());
+
 			JDBCTable aTable = sortedTables.get(tableName.toLowerCase());
 			if (aTable == null) {
 				// new table, add it to the list
@@ -175,17 +178,53 @@ public class SQLHelper {
 
 		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), "PUBLIC", sqlName(table.getName()), "%");
 		while (jdbcCols.next()) {
-			String name = jdbcCols.getString("COLUMN_NAME");
-			JDBCColumn column = sortedColumns.get(name.toLowerCase());
+
+			/*System.out.println(" --------------------> " + jdbcCols.getString("COLUMN_NAME"));
+			System.out.println("TABLE_CAT: " + jdbcCols.getObject("TABLE_CAT"));
+			System.out.println("TABLE_SCHEM: " + jdbcCols.getObject("TABLE_SCHEM"));
+			System.out.println("TABLE_NAME: " + jdbcCols.getObject("TABLE_NAME"));
+			System.out.println("COLUMN_NAME: " + jdbcCols.getObject("COLUMN_NAME"));
+			System.out.println("DATA_TYPE: " + jdbcCols.getObject("DATA_TYPE"));
+			System.out.println("TYPE_NAME: " + jdbcCols.getObject("TYPE_NAME"));
+			System.out.println("COLUMN_SIZE: " + jdbcCols.getObject("COLUMN_SIZE"));
+			System.out.println("BUFFER_LENGTH: " + jdbcCols.getObject("BUFFER_LENGTH"));
+			System.out.println("DECIMAL_DIGITS: " + jdbcCols.getObject("DECIMAL_DIGITS"));
+			System.out.println("NUM_PREC_RADIX: " + jdbcCols.getObject("NUM_PREC_RADIX"));
+			System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
+			System.out.println("REMARKS: " + jdbcCols.getObject("REMARKS"));
+			System.out.println("COLUMN_DEF: " + jdbcCols.getObject("COLUMN_DEF"));
+			System.out.println("SQL_DATA_TYPE: " + jdbcCols.getObject("SQL_DATA_TYPE"));
+			System.out.println("SQL_DATETIME_SUB: " + jdbcCols.getObject("SQL_DATETIME_SUB"));
+			System.out.println("CHAR_OCTET_LENGTH: " + jdbcCols.getObject("CHAR_OCTET_LENGTH"));
+			System.out.println("ORDINAL_POSITION: " + jdbcCols.getObject("ORDINAL_POSITION"));
+			System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
+			System.out.println("SCOPE_CATALOG: " + jdbcCols.getObject("SCOPE_CATALOG"));
+			System.out.println("SCOPE_SCHEMA: " + jdbcCols.getObject("SCOPE_SCHEMA"));
+			System.out.println("SCOPE_TABLE: " + jdbcCols.getObject("SCOPE_TABLE"));
+			System.out.println("SOURCE_DATA_TYPE: " + jdbcCols.getObject("SOURCE_DATA_TYPE"));
+			System.out.println("IS_AUTOINCREMENT: " + jdbcCols.getObject("IS_AUTOINCREMENT"));
+			System.out.println("IS_GENERATEDCOLUMN: " + jdbcCols.getObject("IS_GENERATEDCOLUMN"));*/
+
+			// [TABLE_CAT, TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, COLUMN_SIZE, BUFFER_LENGTH, DECIMAL_DIGITS,
+			// NUM_PREC_RADIX, IS_NULLABLE, REMARKS, COLUMN_DEF, SQL_DATA_TYPE, SQL_DATETIME_SUB, CHAR_OCTET_LENGTH, ORDINAL_POSITION,
+			// IS_NULLABLE, SCOPE_CATALOG, SCOPE_SCHEMA, SCOPE_TABLE, SOURCE_DATA_TYPE, IS_AUTOINCREMENT, IS_GENERATEDCOLUMN]
+
+			String columnName = jdbcCols.getString("COLUMN_NAME");
+			String typeName = jdbcCols.getString("TYPE_NAME");
+			int columnLength = jdbcCols.getInt("COLUMN_SIZE");
+			boolean isNullable = jdbcCols.getString("IS_NULLABLE").equalsIgnoreCase("YES");
+
+			JDBCColumn column = sortedColumns.get(columnName.toLowerCase());
 			if (column == null) {
 				// new column, add it to the list
 				column = factory.newInstance(JDBCColumn.class);
-				column.init(table, keys.contains(name), name, jdbcCols.getString("TYPE_NAME"));
+				column.init(table, keys.contains(columnName), columnName, typeName, columnLength, isNullable);
 				added.add(column);
 			}
 			else {
 				matched.add(column);
 			}
+
 		}
 
 		// gets columns to remove
@@ -225,6 +264,7 @@ public class SQLHelper {
 			throws SQLException {
 		Connection connection = schema.getResourceData().getConnection();
 		String request = createTableRequest(tableName, attributes);
+		System.out.println("request: " + request);
 		return new QueryRunner().insert(connection, request, resultSet -> {
 			JDBCTable table = factory.newInstance(JDBCTable.class);
 			table.init(schema, tableName);
@@ -262,13 +302,13 @@ public class SQLHelper {
 	}
 
 	public static JDBCColumn createColumn(final JDBCTable table, final JDBCFactory factory, final String columnName, final String type,
-			boolean key) throws SQLException {
+			boolean isPrimaryKey, int length, boolean isNullable) throws SQLException {
 		Connection connection = table.getResourceData().getConnection();
-		String addColumn = createAddColumnRequest(table, columnName, type, key);
+		String addColumn = createAddColumnRequest(table, columnName, type, isPrimaryKey);
 		new QueryRunner().update(connection, addColumn);
 
 		JDBCColumn column = factory.newInstance(JDBCColumn.class);
-		column.init(table, key, columnName, type);
+		column.init(table, isPrimaryKey, columnName, type, length, isNullable);
 		return column;
 	}
 

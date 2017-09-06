@@ -62,6 +62,7 @@ import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
 import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
+import org.openflexo.foundation.fml.annotations.DeclareFlexoBehaviours;
 import org.openflexo.foundation.fml.rt.FMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
@@ -77,6 +78,7 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnVirtualModelInstanceType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnObjectActorReference;
@@ -98,7 +100,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
 // @DeclareFlexoRoles({ RestObjectRole.class })
 @DeclareEditionActions({ CreateHbnResource.class, PerformSQLQuery.class })
-// @DeclareFlexoBehaviours({ RestObjectRetriever.class, JsonRequestBehaviour.class })
+@DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
@@ -194,4 +196,5 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 		}
 
 	}
+
 }

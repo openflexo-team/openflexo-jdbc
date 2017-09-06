@@ -291,6 +291,10 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 	}
 
 	public List<JDBCTable> getTablesToBeReflected() {
+		// Obtain the JDBCConnection
+		if (jdbcConnection == null) {
+			getJDBCConnection();
+		}
 		return tablesToBeReflected;
 	}
 

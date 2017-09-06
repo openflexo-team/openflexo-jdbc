@@ -38,6 +38,8 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
+import java.util.Map;
+
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
@@ -60,13 +62,12 @@ public class HbnVirtualModelInstanceModelFactory extends AbstractVirtualModelIns
 		super(virtualModelInstanceResource, HbnVirtualModelInstance.class, editingContext, taService);
 	}
 
-	public HbnFlexoConceptInstance newFlexoConceptInstance(HbnVirtualModelInstance owner, FlexoConceptInstance container, Object support,
-			FlexoConcept concept) {
-		HbnFlexoConceptInstance returned = newInstance(HbnFlexoConceptInstance.class, owner, support, concept);
-		if (container == null || container == owner) {
-			owner.addToFlexoConceptInstances(returned);
-		}
-		else {
+	public HbnFlexoConceptInstance newFlexoConceptInstance(HbnVirtualModelInstance owner, FlexoConceptInstance container,
+			Map<String, Object> hbnMap, FlexoConcept concept) {
+		// System.out.println("On cree un nouveau HbnFlexoConceptInstance avec " + hbnMap);
+		HbnFlexoConceptInstance returned = newInstance(HbnFlexoConceptInstance.class, hbnMap, concept);
+		owner.addToFlexoConceptInstances(returned);
+		if (container != null && container != owner) {
 			container.addToEmbeddedFlexoConceptInstances(returned);
 		}
 		return returned;

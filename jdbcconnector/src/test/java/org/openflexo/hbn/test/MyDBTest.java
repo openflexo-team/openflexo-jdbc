@@ -47,13 +47,12 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
-
-import javax.persistence.metamodel.EntityType;
+import java.util.Map;
 
 import org.hibernate.MappingException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.internal.ClassLoaderAccessImpl;
 import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
@@ -71,8 +70,9 @@ import org.hibernate.mapping.RootClass;
 import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
-import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.hibernate.type.TypeResolver;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.hbn.HbnConfig;
@@ -98,7 +98,7 @@ import org.openflexo.test.TestOrder;
  */
 // TODO: to be removed: used for experimentations
 @RunWith(OrderedRunner.class)
-// @Ignore
+@Ignore
 public class MyDBTest extends OpenflexoTestCase {
 
 	static FlexoEditor editor;
@@ -494,28 +494,43 @@ public class MyDBTest extends OpenflexoTestCase {
 		
 		trans.commit();*/
 
-		NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Dynamic_Table_2;");
+		// NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Dynamic_Table_2;");
+
+		Query<?> sqlQ = hbnSession.createQuery("select o from Dynamic_Class o");
+
 		List<?> result = sqlQ.getResultList();
 		assertEquals(5, result.size());
 
 		for (Object o : result) {
 			System.out.println(" > " + o + " of " + o.getClass());
-			if (o.getClass().isArray()) {
+			/*if (o.getClass().isArray()) {
 				Object[] array = (Object[]) o;
 				for (Object o2 : array) {
 					System.out.println("  >> " + o2);
 				}
-			}
+			}*/
 		}
 
-		System.out.println("DEBUT");
+		Transaction t = hbnSession.beginTransaction();
+
+		Map<String, Object> o1 = (Map<String, Object>) result.get(0);
+		Map<String, Object> o2 = (Map<String, Object>) result.get(1);
+		Map<String, Object> o3 = (Map<String, Object>) result.get(2);
+		Map<String, Object> o4 = (Map<String, Object>) result.get(3);
+		Map<String, Object> o5 = (Map<String, Object>) result.get(4);
+
+		o1.put("Prenom", "toto");
+
+		t.commit();
+
+		/*System.out.println("DEBUT");
 		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
 		for (EntityType<?> ent : entities) {
 			System.out.println("Entité dynamique: " + ent.getName());
 		}
 		System.out.println("FIN");
-
-		System.err.println(hbnSession.load("Dynamic_Class", "Sylvain"));
+		
+		System.err.println(hbnSession.load("Dynamic_Class", "Sylvain"));*/
 
 		hbnSession.close();
 	}

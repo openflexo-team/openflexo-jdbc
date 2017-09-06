@@ -377,7 +377,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 
 	@Override
 	public HbnVirtualModelInstance makeEmptyResourceData(HbnVirtualModelInstanceResource resource) {
-		return resource.getFactory().newInstance(HbnVirtualModelInstance.class, resource.getServiceManager());
+		return resource.getFactory().newInstance(HbnVirtualModelInstance.class/*, resource.getServiceManager()*/);
 	}
 
 	/**
@@ -386,7 +386,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	@Override
 	public AbstractVirtualModelInstanceModelFactory<?> makeResourceDataFactory(HbnVirtualModelInstanceResource resource,
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
-		return new HbnVirtualModelInstanceModelFactory((HbnVirtualModelInstanceResource) resource,
+		return new HbnVirtualModelInstanceModelFactory(resource,
 				technologyContextManager.getTechnologyAdapter().getServiceManager().getEditingContext(),
 				technologyContextManager.getTechnologyAdapter().getServiceManager().getTechnologyAdapterService());
 	}

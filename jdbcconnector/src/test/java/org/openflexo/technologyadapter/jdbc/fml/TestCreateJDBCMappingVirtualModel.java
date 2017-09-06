@@ -56,7 +56,6 @@ import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResourceFactory;
 import org.openflexo.foundation.resource.SaveResourceException;
-import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -70,9 +69,9 @@ import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCMappingVirtua
  * Tests for {@link CreateJDBCMappingVirtualModel}, testing
  *
  */
-public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCase {
+public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTimeTestCase {
 
-	private final String ROOT_VIRTUAL_MODEL_NAME = "TestCreateJDBCVirtualModel";
+	private final String ROOT_VIRTUAL_MODEL_NAME = "TestCreateJDBCMappingVirtualModel";
 	private final String ROOT_VIRTUAL_MODEL_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_NAME + ".viewpoint";
 
 	private final String ROOT_VIRTUAL_MODEL_INSTANCE_NAME = "testCreateJDBCVirtualModel";
@@ -87,10 +86,6 @@ public class TestCreateJDBCVirtualModel extends OpenflexoProjectAtRunTimeTestCas
 	public static void tearDownClass() {
 		deleteTestResourceCenters();
 		unloadServiceManager();
-	}
-
-	private <T extends TechnologyAdapter> T getTA(Class<T> type) {
-		return serviceManager.getTechnologyAdapterService().getTechnologyAdapter(type);
 	}
 
 	private VirtualModel createViewPoint(FlexoEditor project)

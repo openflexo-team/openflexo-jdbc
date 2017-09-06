@@ -35,15 +35,18 @@
 
 package org.openflexo.technologyadapter.jdbc.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.foundation.test.OpenflexoTestCase;
 import org.openflexo.test.OrderedRunner;
-
-
-import static org.junit.Assert.*;
 
 /**
  * Test JDBC model
@@ -55,16 +58,16 @@ import static org.junit.Assert.*;
 public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
-    public void testLoad() throws Exception {
+	public void testLoad() throws Exception {
 
 		JDBCFactory factory = new JDBCFactory(null, null);
 		try (InputStream stream = new BufferedInputStream(getClass().getResourceAsStream("Test1.jdbc"))) {
 			JDBCConnection result = (JDBCConnection) factory.deserialize(stream);
 			assertNotNull(result);
 		}
-    }
+	}
 
-    @Test
+	@Test
 	public void testCreateColumns() throws Exception {
 		String[] id = { "id", "INT", "PRIMARY KEY", "NOT NULL" };
 		String[] name = { "name", "VARCHAR(100)" };
@@ -78,10 +81,9 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		JDBCTable table1 = schema.createTable(tableName, id, name, description);
 		assertNotNull(table1);
 
-
 		assertTrue(table1.grant("ALL", connection.getUser()));
 
-		assertNotNull(table1.createColumn("other", "VARCHAR(100)", false));
+		assertNotNull(table1.createColumn("other", "VARCHAR(100)", false, 100, true));
 		assertNotNull(table1.createColumn("other2", "INT", false));
 	}
 
@@ -119,7 +121,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		ModelUtils.addLinesForTable1(table1);
 
 		// insert existing value, must fail
-		assertNull(table1.insert(new String[]{"ID", "2", "NAME", "toto"}));
+		assertNull(table1.insert(new String[] { "ID", "2", "NAME", "toto" }));
 
 		JDBCResultSet result = table1.selectAll();
 		assertNotNull(result);
@@ -139,7 +141,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 	public void testUpdateValues() throws Exception {
 		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("updateValues");
 		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
-		assertNotNull(table1.insert(new String[]{"ID", "1", "NAME", "toto1"}));
+		assertNotNull(table1.insert(new String[] { "ID", "1", "NAME", "toto1" }));
 
 		JDBCResultSet set = table1.selectAll();
 
@@ -158,8 +160,8 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("join");
 		JDBCSchema schema = connection.getSchema();
 		JDBCTable t1 = ModelUtils.createTable1("t1", schema);
-		t1.insert(new String[]{"ID", "1", "NAME", "name1"});
-		t1.insert(new String[]{"ID", "2", "NAME",  "name2"});
+		t1.insert(new String[] { "ID", "1", "NAME", "name1" });
+		t1.insert(new String[] { "ID", "2", "NAME", "name2" });
 
 		JDBCTable t2 = ModelUtils.createTable3("t2", schema);
 		ModelUtils.addLinesForTable3(t2);

@@ -141,7 +141,12 @@ public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnectio
 
 		@Override
 		public JDBCTable createTable(String tableName, String[]... attributes) {
+			System.out.println("Create table " + tableName);
 			try {
+				// Following statement (getTables()) is really important as it first update table
+				// If you remove this, first table will be added twice in the database
+				// TODO: fix this
+				getTables();
 				JDBCTable table = SQLHelper.createTable(this, SQLHelper.getFactory(getModel()), tableName, attributes);
 				addTable(table);
 				return table;
@@ -179,5 +184,12 @@ public interface JDBCSchema extends FlexoObject, InnerResourceData<JDBCConnectio
 			}
 			return text.toString();
 		}
+
+		/*@Override
+		public void addTable(JDBCTable table) {
+			performSuperAdder(TABLES, table);
+			System.out.println("******** Tiens on ajoute la table " + table);
+			Thread.dumpStack();
+		}*/
 	}
 }

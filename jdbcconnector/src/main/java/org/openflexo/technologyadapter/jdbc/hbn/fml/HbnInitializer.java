@@ -42,9 +42,13 @@ import org.openflexo.foundation.fml.AbstractActionScheme;
 import org.openflexo.foundation.fml.TechnologySpecificFlexoBehaviour;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.annotations.FML;
+import org.openflexo.model.annotations.DefineValidationRule;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.model.validation.ValidationError;
+import org.openflexo.model.validation.ValidationIssue;
+import org.openflexo.model.validation.ValidationRule;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -74,4 +78,23 @@ public interface HbnInitializer extends AbstractActionScheme, TechnologySpecific
 		}
 
 	}
+
+	@DefineValidationRule
+	public static class OnlyOneHbnInitializer extends ValidationRule<OnlyOneHbnInitializer, HbnInitializer> {
+		public OnlyOneHbnInitializer() {
+			super(HbnInitializer.class, "only_one_initializer_should_be_defined_for_one_virtual_model");
+		}
+
+		@Override
+		public ValidationIssue<OnlyOneHbnInitializer, HbnInitializer> applyValidation(HbnInitializer initializer) {
+
+			if (initializer.getFlexoConcept() instanceof VirtualModel
+					&& ((VirtualModel) initializer.getFlexoConcept()).getFlexoBehaviours(HbnInitializer.class).size() > 1) {
+				return new ValidationError<>(this, initializer, "more_than_one_initializer_defined");
+			}
+			return null;
+		}
+
+	}
+
 }
