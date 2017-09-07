@@ -28,7 +28,7 @@ import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.gina.utils.InspectorGroup;
-import org.openflexo.icon.FMLIconLibrary;
+import org.openflexo.icon.FMLRTIconLibrary;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -103,7 +103,7 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	@Override
 	public ImageIcon getIconForTechnologyObject(final Class<? extends TechnologyObject<?>> objectClass) {
 		if (HbnVirtualModelInstance.class.isAssignableFrom(objectClass)) {
-			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, FMLIconLibrary.VIRTUAL_MODEL_MARKER);
+			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, FMLRTIconLibrary.VIRTUAL_MODEL_INSTANCE_MARKER);
 		}
 		return JDBCIconLibrary.JDBC_TECHNOLOGY_ICON;
 	}
