@@ -22,11 +22,13 @@ package org.openflexo.technologyadapter.jdbc.controller;
 
 import javax.swing.ImageIcon;
 
+import org.openflexo.fml.rt.controller.view.VirtualModelInstanceView;
 import org.openflexo.foundation.fml.FlexoBehaviour;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.gina.utils.InspectorGroup;
+import org.openflexo.icon.FMLIconLibrary;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -36,6 +38,7 @@ import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualM
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.view.JDBCModuleView;
@@ -99,6 +102,9 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public ImageIcon getIconForTechnologyObject(final Class<? extends TechnologyObject<?>> objectClass) {
+		if (HbnVirtualModelInstance.class.isAssignableFrom(objectClass)) {
+			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, FMLIconLibrary.VIRTUAL_MODEL_MARKER);
+		}
 		return JDBCIconLibrary.JDBC_TECHNOLOGY_ICON;
 	}
 
@@ -107,6 +113,9 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 			final FlexoPerspective perspective) {
 		if (object instanceof JDBCConnection) {
 			return new JDBCModuleView((JDBCConnection) object, controller, perspective);
+		}
+		if (object instanceof HbnVirtualModelInstance) {
+			return new VirtualModelInstanceView((HbnVirtualModelInstance) object, controller, perspective);
 		}
 		return new EmptyPanel<>(controller, perspective, object);
 	}
@@ -134,7 +143,13 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public boolean hasModuleViewForObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
-		return obj instanceof JDBCConnection;
+		if (obj instanceof HbnVirtualModelInstance) {
+			return true;
+		}
+		if (obj instanceof JDBCConnection) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override

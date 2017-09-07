@@ -278,6 +278,14 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		// Stores all FCIs related to their identifier
 		private Map<FlexoConcept, Map<Object, HbnFlexoConceptInstance>> instances = new HashMap<>();
 
+		@Override
+		public JDBCTechnologyAdapter getTechnologyAdapter() {
+			if (getResource() != null) {
+				return getResource().getTechnologyAdapter();
+			}
+			return null;
+		}
+
 		/**
 		 * Return boolean indicating if this {@link HbnVirtualModelInstance} is connected to database
 		 * 
