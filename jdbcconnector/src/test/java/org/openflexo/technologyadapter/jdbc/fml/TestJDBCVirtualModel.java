@@ -90,9 +90,6 @@ public class TestJDBCVirtualModel extends JDBCTestCase {
 	private final String ROOT_VIRTUAL_MODEL_NAME = "RootVirtualModel";
 	private final String ROOT_VIRTUAL_MODEL_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_NAME + ".fml";
 
-	private final String ROOT_VIRTUAL_MODEL_INSTANCE_NAME = "TestRootVirtualModel";
-	private final String ROOT_VIRTUAL_MODEL_INSTANCE_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_INSTANCE_NAME + ".fml.rt";
-
 	private final String PROJECT_NAME = "TestJDBCVirtualModelProject";
 
 	private final String VIRTUAL_MODEL_NAME = "MappingVirtualModel";
@@ -295,6 +292,7 @@ public class TestJDBCVirtualModel extends JDBCTestCase {
 		assertTrue(createMS1.hasActionExecutionSucceeded());
 
 		assertNotNull(modelSlot = (HbnModelSlot) createMS1.getNewModelSlot());
+		System.out.println("Created " + modelSlot);
 
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(rootVirtualModel, null, _editor);
 		createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
