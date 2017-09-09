@@ -39,6 +39,7 @@ public class JDBCIconLibrary {
 	public static final ImageIcon JDBC_SCHEMA_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-text.gif"));
 	public static final ImageIcon JDBC_TABLE_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-table.png"));
 	public static final ImageIcon JDBC_COLUMN_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-column.png"));
+	public static final ImageIcon JDBC_ROW_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-row.png"));
 	public static final ImageIcon JDBC_KEY_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/key_16x16.png"));
 
 	public static ImageIcon iconForObject(Class<? extends TechnologyObject> objectClass) {
