@@ -35,8 +35,12 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCConnectionInitializer;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCMappingVirtualModelInitializer;
 import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelInitializer;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
+import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
@@ -122,6 +126,18 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public ImageIcon getIconForFlexoRole(Class<? extends FlexoRole<?>> flexoRoleClass) {
+		if (HbnReferenceRole.class.isAssignableFrom(flexoRoleClass)) {
+			return IconFactory.getImageIcon(FMLRTIconLibrary.FLEXO_CONCEPT_INSTANCE_ICON, IconLibrary.SYNC);
+		}
+		if (JDBCTableRole.class.isAssignableFrom(flexoRoleClass)) {
+			return JDBCIconLibrary.JDBC_TABLE_ICON;
+		}
+		if (JDBCColumnRole.class.isAssignableFrom(flexoRoleClass)) {
+			return JDBCIconLibrary.JDBC_COLUMN_ICON;
+		}
+		if (JDBCLineRole.class.isAssignableFrom(flexoRoleClass)) {
+			return JDBCIconLibrary.JDBC_ROW_ICON;
+		}
 		return JDBCIconLibrary.JDBC_TECHNOLOGY_ICON;
 	}
 

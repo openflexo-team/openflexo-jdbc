@@ -39,9 +39,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.foundation.fml.AbstractProperty;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -63,6 +66,7 @@ import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -227,6 +231,31 @@ public class TestJDBCVirtualModel extends JDBCTestCase {
 		assertNotNull(clientConcept);
 		assertNotNull(salesmanConcept);
 
+		AbstractProperty<Integer> clientId = (AbstractProperty<Integer>) clientConcept.getAccessibleProperty("id");
+		assertNotNull(clientId);
+		AbstractProperty<String> name = (AbstractProperty<String>) clientConcept.getAccessibleProperty("name");
+		assertNotNull(name);
+		AbstractProperty<String> adress = (AbstractProperty<String>) clientConcept.getAccessibleProperty("adress");
+		assertNotNull(adress);
+		AbstractProperty<String> hobby = (AbstractProperty<String>) clientConcept.getAccessibleProperty("hobby");
+		assertNotNull(hobby);
+		AbstractProperty<String> comments = (AbstractProperty<String>) clientConcept.getAccessibleProperty("comments");
+		assertNotNull(comments);
+		AbstractProperty<Date> lastMeeting = (AbstractProperty<Date>) clientConcept.getAccessibleProperty("lastmeeting");
+		assertNotNull(lastMeeting);
+		HbnReferenceRole salesman = (HbnReferenceRole) clientConcept.getAccessibleProperty("salesman");
+		assertNotNull(salesman);
+
+		assertEquals("container", salesman.getVirtualModelInstance().toString());
+		assertEquals(salesmanConcept, salesman.getFlexoConceptType());
+
+		AbstractProperty<Integer> salesmanId = (AbstractProperty<Integer>) salesmanConcept.getAccessibleProperty("id");
+		assertNotNull(salesmanId);
+		AbstractProperty<String> lastname = (AbstractProperty<String>) salesmanConcept.getAccessibleProperty("lastname");
+		assertNotNull(lastname);
+		AbstractProperty<String> firstname = (AbstractProperty<String>) salesmanConcept.getAccessibleProperty("firstname");
+		assertNotNull(firstname);
+
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
 		createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
 		createCreationScheme.doAction();
@@ -369,11 +398,43 @@ public class TestJDBCVirtualModel extends JDBCTestCase {
 
 		assertEquals(13, dbVMI.getFlexoConceptInstances().size());
 		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
+		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
+		HbnFlexoConceptInstance client3 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(2);
+		HbnFlexoConceptInstance client4 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(3);
+		HbnFlexoConceptInstance client5 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(4);
+		HbnFlexoConceptInstance client6 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(5);
+		HbnFlexoConceptInstance client7 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(6);
+		HbnFlexoConceptInstance client8 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(7);
+		HbnFlexoConceptInstance client9 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(8);
+		HbnFlexoConceptInstance client10 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(9);
+		HbnFlexoConceptInstance client11 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(10);
+		HbnFlexoConceptInstance client12 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(11);
+		HbnFlexoConceptInstance client13 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(12);
 
 		assertEquals(1, (long) client1.execute("id"));
 
 		assertEquals("Préseau", client1.execute("name"));
 		assertEquals("22 rue Solferino", client1.execute("adress"));
+
+		assertNotNull(client1.execute("salesman"));
+		HbnFlexoConceptInstance salesman1 = client1.execute("salesman");
+		assertNotNull(client2.execute("salesman"));
+		HbnFlexoConceptInstance salesman2 = client2.execute("salesman");
+		assertNotNull(client3.execute("salesman"));
+		HbnFlexoConceptInstance salesman3 = client3.execute("salesman");
+		assertNotNull(client4.execute("salesman"));
+		HbnFlexoConceptInstance salesman4 = client4.execute("salesman");
+
+		assertEquals(salesman1, client5.execute("salesman"));
+		assertEquals(salesman2, client6.execute("salesman"));
+		assertEquals(salesman3, client7.execute("salesman"));
+		assertEquals(salesman4, client8.execute("salesman"));
+		assertEquals(salesman1, client9.execute("salesman"));
+		assertEquals(salesman2, client10.execute("salesman"));
+		assertEquals(salesman3, client11.execute("salesman"));
+		assertEquals(salesman4, client12.execute("salesman"));
+		assertEquals(salesman1, client13.execute("salesman"));
+
 	}
 
 }

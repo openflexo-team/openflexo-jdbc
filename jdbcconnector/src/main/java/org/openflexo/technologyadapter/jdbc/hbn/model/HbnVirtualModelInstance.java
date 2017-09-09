@@ -57,6 +57,7 @@ import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.spi.MetadataBuildingContext;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.mapping.Column;
+import org.hibernate.mapping.ManyToOne;
 import org.hibernate.mapping.PrimaryKey;
 import org.hibernate.mapping.Property;
 import org.hibernate.mapping.RootClass;
@@ -85,6 +86,7 @@ import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance.HbnVirtualModelInstanceImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -548,7 +550,18 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					else {
 						pClass.addProperty(prop);
 					}
-
+				}
+				else if (flexoProperty instanceof HbnReferenceRole) {
+					HbnReferenceRole referenceRole = (HbnReferenceRole) flexoProperty;
+					prop = new Property();
+					prop.setName(referenceRole.getName());
+					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);
+					manyToOne.setReferencedPropertyName(referenceRole.getForeignKeyAttributeName());
+					manyToOne.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
+					manyToOne.addColumn(col);
+					manyToOne.setTable(table);
+					prop.setValue(manyToOne);
+					pClass.addProperty(prop);
 				}
 			}
 

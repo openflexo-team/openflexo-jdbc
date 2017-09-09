@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.DataBinding;
 import org.openflexo.fge.DrawingGraphicalRepresentation;
 import org.openflexo.fge.FGEModelFactory;
 import org.openflexo.fge.FGEModelFactoryImpl;
@@ -69,6 +70,7 @@ import org.openflexo.localization.LocalizedDelegate;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnReferenceRole;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
@@ -185,19 +187,47 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 					case Primitive:
 						propertyEntry.setPropertyType(PropertyType.ABSTRACT_PROPERTY);
 						propertyEntry.setType(columnMapping.getColumn().getJavaType());
+						break;
+					case ForeignKey:
+						propertyEntry.setPropertyType(PropertyType.TECHNOLOGY_ROLE);
+						propertyEntry.setFlexoRoleClass(HbnReferenceRole.class);
+						break;
 					default:
 						// TODO
 				}
 			}
 			createConceptAction.setDefineInspector(true);
 			createConceptAction.doAction();
+
 			tableMapping.concept = createConceptAction.getNewFlexoConcept();
 			tableMapping.concept.setAbstract(true);
+
 			for (ColumnMapping columnMapping : tableMapping.getColumnMappings()) {
 				columnMapping.property = tableMapping.concept.getDeclaredProperty(columnMapping.getPropertyName());
 				if (columnMapping.getColumn().isPrimaryKey()) {
 					tableMapping.concept.addToKeyProperties(columnMapping.property);
 				}
+			}
+		}
+
+		for (TableMapping tableMapping : getTableMappings()) {
+			for (ColumnMapping columnMapping : tableMapping.getColumnMappings()) {
+				FlexoProperty<?> property = tableMapping.concept.getDeclaredProperty(columnMapping.getPropertyName());
+				if (property instanceof HbnReferenceRole) {
+					((HbnReferenceRole) property).setForeignKeyAttributeName(columnMapping.getPropertyName());
+					((HbnReferenceRole) property).setVirtualModelInstance(new DataBinding<>("container"));
+					System.out.println("Maintenant on cherche " + columnMapping.getOppositeTable().getName());
+					for (TableMapping oppositeTableMapping : getTableMappings()) {
+						if (oppositeTableMapping.getTable().getName().equals(columnMapping.getOppositeTable().getName())) {
+							System.out.println("opposite concept name: " + columnMapping.getOppositeTable().getName());
+							System.out.println("opposite concept: " + oppositeTableMapping.getConcept());
+							((HbnReferenceRole) property).setFlexoConceptType(oppositeTableMapping.getConcept());
+							break;
+						}
+					}
+
+				}
+
 			}
 		}
 

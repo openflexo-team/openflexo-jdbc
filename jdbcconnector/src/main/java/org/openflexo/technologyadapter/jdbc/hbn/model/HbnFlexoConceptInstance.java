@@ -50,6 +50,7 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnReferenceRole;
 
 /**
  * A JDBC/Hibernate-specific {@link FlexoConceptInstance} reflecting a distant object accessible in an {@link HbnVirtualModelInstance}
@@ -132,11 +133,33 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			return (HbnVirtualModelInstance) super.getVirtualModelInstance();
 		}
 
+		private HbnFlexoConceptInstance getReferencedObject(HbnReferenceRole referenceRole) {
+			System.out.println("Tiens c'est qui le " + referenceRole);
+			Map<String, Object> refHbnMap = (Map<String, Object>) hbnMap.get(referenceRole.getName());
+			if (refHbnMap != null) {
+				System.out.println("Ce serait pas: " + refHbnMap);
+				return getVirtualModelInstance().getFlexoConceptInstance(refHbnMap, null, referenceRole.getFlexoConceptType());
+			}
+			return null;
+		}
+
+		@Override
+		public <T> T getFlexoActor(FlexoRole<T> flexoRole) {
+			if (flexoRole instanceof HbnReferenceRole) {
+				return (T) getReferencedObject((HbnReferenceRole) flexoRole);
+			}
+			return super.getFlexoActor(flexoRole);
+		}
+
 		@Override
 		public <T> T getFlexoPropertyValue(FlexoProperty<T> flexoProperty) {
 			if (flexoProperty instanceof AbstractProperty) {
-				T returned = (T) hbnMap.get(((AbstractProperty) flexoProperty).getName());
+				T returned = (T) hbnMap.get(flexoProperty.getName());
 				return returned;
+			}
+
+			if (flexoProperty instanceof HbnReferenceRole) {
+				return (T) getReferencedObject((HbnReferenceRole) flexoProperty);
 			}
 
 			return super.getFlexoPropertyValue(flexoProperty);
