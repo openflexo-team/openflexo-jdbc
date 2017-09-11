@@ -38,10 +38,14 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
+import java.util.Map;
+
+import org.apache.commons.collections15.map.HashedMap;
 import org.openflexo.connie.type.CustomTypeFactory;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
@@ -54,7 +58,7 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 
 	public static HbnVirtualModelInstanceType UNDEFINED_VIRTUAL_MODEL_INSTANCE_TYPE = new HbnVirtualModelInstanceType((VirtualModel) null);
 
-	public HbnVirtualModelInstanceType(VirtualModel aVirtualModel) {
+	private HbnVirtualModelInstanceType(VirtualModel aVirtualModel) {
 		super(aVirtualModel);
 	}
 
@@ -66,4 +70,51 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 	public Class<?> getBaseClass() {
 		return HbnVirtualModelInstance.class;
 	}
+
+	private static Map<VirtualModel, HbnVirtualModelInstanceType> types = new HashedMap<>();
+
+	public static HbnVirtualModelInstanceType getVirtualModelInstanceType(VirtualModel aVirtualModel) {
+		if (aVirtualModel != null) {
+			HbnVirtualModelInstanceType returned = types.get(aVirtualModel);
+			if (returned == null) {
+				returned = new HbnVirtualModelInstanceType(aVirtualModel);
+				types.put(aVirtualModel, returned);
+			}
+			return returned;
+		}
+		else {
+			// logger.warning("Trying to get a VirtualModelInstanceType for a null VirtualModel");
+			return UNDEFINED_VIRTUAL_MODEL_INSTANCE_TYPE;
+		}
+	}
+
+	/**
+	 * Factory for {@link VirtualModelInstanceType} instances
+	 * 
+	 * @author sylvain
+	 * 
+	 */
+	public static class HbnVirtualModelInstanceTypeFactory extends AbstractVirtualModelInstanceTypeFactory<HbnVirtualModelInstanceType> {
+
+		public HbnVirtualModelInstanceTypeFactory(JDBCTechnologyAdapter technologyAdapter) {
+			super(technologyAdapter);
+		}
+
+		@Override
+		public Class<HbnVirtualModelInstanceType> getCustomType() {
+			return HbnVirtualModelInstanceType.class;
+		}
+
+		@Override
+		public HbnVirtualModelInstanceType getType(String configuration, CustomTypeFactory<?> factory) {
+			return new HbnVirtualModelInstanceType(configuration, this);
+		}
+
+		@Override
+		public HbnVirtualModelInstanceType getType(VirtualModel virtualModel) {
+			return getVirtualModelInstanceType(virtualModel);
+		}
+
+	}
+
 }

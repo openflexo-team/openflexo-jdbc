@@ -184,7 +184,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 		@Override
 		public Type getType() {
 			if (type == null || type.getVirtualModel() != getAccessedVirtualModel()) {
-				type = new HbnVirtualModelInstanceType(getAccessedVirtualModel());
+				type = HbnVirtualModelInstanceType.getVirtualModelInstanceType(getAccessedVirtualModel());
 			}
 			return type;
 		}
@@ -193,7 +193,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 		public void setAccessedVirtualModel(VirtualModel aVirtualModel) {
 			if (aVirtualModel != getAccessedVirtualModel()) {
 				super.setAccessedVirtualModel(aVirtualModel);
-				type = new HbnVirtualModelInstanceType(getAccessedVirtualModel());
+				type = HbnVirtualModelInstanceType.getVirtualModelInstanceType(getAccessedVirtualModel());
 			}
 		}
 
