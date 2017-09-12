@@ -36,6 +36,7 @@
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.openflexo.foundation.fml.AbstractProperty;
@@ -116,6 +117,10 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		private Serializable identifier = null;
 		private String identifierAsString = null;
 
+		// This map stores references for this object
+		// TODO: support modification
+		private Map<HbnReferenceRole, HbnFlexoConceptInstance> referencedMap = new HashMap<>();
+
 		/**
 		 * Initialize this {@link HbnFlexoConceptInstance} with supplied Hibernate support object, and explicit concept (type)
 		 * 
@@ -134,13 +139,19 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		}
 
 		private HbnFlexoConceptInstance getReferencedObject(HbnReferenceRole referenceRole) {
-			System.out.println("Tiens c'est qui le " + referenceRole);
-			Map<String, Object> refHbnMap = (Map<String, Object>) hbnMap.get(referenceRole.getName());
-			if (refHbnMap != null) {
-				System.out.println("Ce serait pas: " + refHbnMap);
-				return getVirtualModelInstance().getFlexoConceptInstance(refHbnMap, null, referenceRole.getFlexoConceptType());
+			// TODO: support modification !!!
+			// With this implementation, we will always return cached value
+			HbnFlexoConceptInstance returned = referencedMap.get(referenceRole);
+			if (returned == null) {
+				Map<String, Object> refHbnMap = (Map<String, Object>) hbnMap.get(referenceRole.getName());
+				if (refHbnMap != null) {
+					returned = getVirtualModelInstance().getFlexoConceptInstance(refHbnMap, null, referenceRole.getFlexoConceptType());
+					if (returned != null) {
+						referencedMap.put(referenceRole, returned);
+					}
+				}
 			}
-			return null;
+			return returned;
 		}
 
 		@Override

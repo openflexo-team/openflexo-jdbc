@@ -258,6 +258,23 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 	public HbnFlexoConceptInstance getFlexoConceptInstance(Map<String, Object> hbnMap, FlexoConceptInstance container,
 			FlexoConcept concept);
 
+	/**
+	 * Retrieve (build if not existant) {@link HbnFlexoConceptInstance} with supplied identifier asserting returned
+	 * {@link HbnFlexoConceptInstance} object has supplied concept type and container<br>
+	 * 
+	 * This {@link HbnVirtualModelInstance} has an internal caching scheme allowing to store {@link HbnFlexoConceptInstance} relatively to
+	 * their related {@link FlexoConcept} (their type) and their identifier
+	 * 
+	 * @param identifier
+	 *            identifier for searched object
+	 * @param container
+	 *            container (eventually null) of returned {@link HbnFlexoConceptInstance}
+	 * @param concept
+	 *            type of returned {@link HbnFlexoConceptInstance}
+	 * @return
+	 */
+	public HbnFlexoConceptInstance getFlexoConceptInstance(Serializable identifier, FlexoConceptInstance container, FlexoConcept concept);
+
 	abstract class HbnVirtualModelInstanceImpl extends VirtualModelInstanceImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnVirtualModelInstance {
 
@@ -667,7 +684,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 				logger.warning("Could not obtain HbnFlexoConceptInstance with null FlexoConcept");
 			}
 
-			Object identifier = getIdentifier(hbnMap, concept).toString();
+			Object identifier = getIdentifier(hbnMap, concept);
 			// System.out.println("Building object with: " + hbnMap + " id=" + identifier);
 
 			Map<Object, HbnFlexoConceptInstance> mapForConcept = instances.computeIfAbsent(concept, (newConcept) -> {
@@ -676,6 +693,41 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 			return mapForConcept.computeIfAbsent(identifier, (newId) -> {
 				return getFactory().newFlexoConceptInstance(this, container, hbnMap, concept);
+			});
+		}
+
+		/**
+		 * Retrieve (build if not existant) {@link HbnFlexoConceptInstance} with supplied identifier asserting returned
+		 * {@link HbnFlexoConceptInstance} object has supplied concept type and container<br>
+		 * 
+		 * This {@link HbnVirtualModelInstance} has an internal caching scheme allowing to store {@link HbnFlexoConceptInstance} relatively
+		 * to their related {@link FlexoConcept} (their type) and their identifier
+		 * 
+		 * @param identifier
+		 *            identifier for searched object
+		 * @param container
+		 *            container (eventually null) of returned {@link HbnFlexoConceptInstance}
+		 * @param concept
+		 *            type of returned {@link HbnFlexoConceptInstance}
+		 * @return
+		 */
+		@Override
+		public HbnFlexoConceptInstance getFlexoConceptInstance(Serializable identifier, FlexoConceptInstance container,
+				FlexoConcept concept) {
+
+			Map<Object, HbnFlexoConceptInstance> mapForConcept = instances.computeIfAbsent(concept, (newConcept) -> {
+				return new HashMap<>();
+			});
+
+			return mapForConcept.computeIfAbsent(identifier, (newId) -> {
+				Map<String, Object> hbnMap;
+				try {
+					hbnMap = (Map<String, Object>) getDefaultSession().get(concept.getName(), identifier);
+					return getFactory().newFlexoConceptInstance(this, container, hbnMap, concept);
+				} catch (HbnException e) {
+					e.printStackTrace();
+					return null;
+				}
 			});
 		}
 

@@ -38,8 +38,13 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
+import java.io.Serializable;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoProperty;
+import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.ActorReference;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.model.annotations.Getter;
@@ -49,6 +54,7 @@ import org.openflexo.model.annotations.PropertyIdentifier;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResource;
 
 /**
  * Implements {@link ActorReference} for {@link HbnFlexoConceptInstance}<br>
@@ -113,16 +119,45 @@ public interface HbnObjectActorReference extends ActorReference<HbnFlexoConceptI
 		}
 
 		@Override
-		public HbnFlexoConceptInstance getModellingElement() {
+		public HbnFlexoConceptInstance getModellingElement(boolean forceLoading) {
 			// TODO: instantiate cache when retrieving fails and return null value
 			// Otherwise, this will continuously loop
-			if (modellingElement == null) {
+			if (modellingElement == null && forceLoading) {
 				modellingElement = retrieveModellingElement();
 			}
 			return modellingElement;
 		}
 
-		protected abstract HbnFlexoConceptInstance retrieveModellingElement();
+		protected HbnFlexoConceptInstance retrieveModellingElement() {
+			HbnVirtualModelInstanceResource httpVMIResource = (HbnVirtualModelInstanceResource) getServiceManager().getResourceManager()
+					.getResource(getResourceURI());
+			HbnVirtualModelInstance hbnVMI = httpVMIResource.getVirtualModelInstance();
+			VirtualModel vm = httpVMIResource.getVirtualModel();
+			FlexoConcept concept = vm.getFlexoConcept(getFlexoConceptURI());
+			// TODO: find the container !!!
+
+			if (concept.getKeyProperties().size() == 0) {
+				logger.warning("Could not retrieve JDBC object when no key defined on concept");
+				return null;
+			}
+			Serializable identifier = null;
+			if (concept.getKeyProperties().size() == 1) {
+				FlexoProperty<?> uniqueKey = concept.getKeyProperties().get(0);
+				if (TypeUtils.isInteger(uniqueKey.getType()) || TypeUtils.isLong(uniqueKey.getType())) {
+					identifier = Integer.parseInt(getKey());
+				}
+				else if (TypeUtils.isString(uniqueKey.getType())) {
+					identifier = getKey();
+				}
+			}
+			else {
+				// TODO
+				logger.warning("Composite key not implemented here");
+				return null;
+			}
+
+			return hbnVMI.getFlexoConceptInstance(identifier, hbnVMI, concept);
+		}
 
 		@Override
 		public String toString() {

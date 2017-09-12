@@ -64,7 +64,6 @@ public class HbnVirtualModelInstanceModelFactory extends AbstractVirtualModelIns
 
 	public HbnFlexoConceptInstance newFlexoConceptInstance(HbnVirtualModelInstance owner, FlexoConceptInstance container,
 			Map<String, Object> hbnMap, FlexoConcept concept) {
-		// System.out.println("On cree un nouveau HbnFlexoConceptInstance avec " + hbnMap);
 		HbnFlexoConceptInstance returned = newInstance(HbnFlexoConceptInstance.class, hbnMap, concept);
 		owner.addToFlexoConceptInstances(returned);
 		if (container != null && container != owner) {
