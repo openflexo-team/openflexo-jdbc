@@ -56,13 +56,15 @@ public interface JDBCColumnActorReference extends JDBCActorReference<JDBCColumn>
 	String TABLE_ID = "tableId";
 	String COLUMN_ID = "columnId";
 
-	@Getter(TABLE_ID) @XMLAttribute
+	@Getter(TABLE_ID)
+	@XMLAttribute
 	String getTableId();
 
 	@Setter(TABLE_ID)
 	void setTableId(String newId);
 
-	@Getter(COLUMN_ID) @XMLAttribute
+	@Getter(COLUMN_ID)
+	@XMLAttribute
 	String getColumnId();
 
 	@Setter(COLUMN_ID)
@@ -74,18 +76,20 @@ public interface JDBCColumnActorReference extends JDBCActorReference<JDBCColumn>
 
 		@Override
 		public String getTableId() {
-			if (column != null) return column.getTable().getName();
+			if (column != null)
+				return column.getTable().getName();
 			return (String) performSuperGetter(TABLE_ID);
 		}
 
 		@Override
 		public String getColumnId() {
-			if (column != null) return column.getName();
+			if (column != null)
+				return column.getName();
 			return (String) performSuperGetter(COLUMN_ID);
 		}
 
 		@Override
-		public JDBCColumn getModellingElement() {
+		public JDBCColumn getModellingElement(boolean forceLoading) {
 			if (column == null) {
 				JDBCConnection connection = getConnection();
 				if (connection != null) {

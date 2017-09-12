@@ -37,6 +37,7 @@ package org.openflexo.technologyadapter.jdbc.fml;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -62,14 +63,16 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 
 	String KEYS = "keys";
 
-	@Getter(RESULTSET_DESCRIPTION) @XMLElement(xmlTag = "resultSet")
+	@Getter(RESULTSET_DESCRIPTION)
+	@XMLElement(xmlTag = "resultSet")
 
 	JDBCResultSetDescription getResultSetDescription();
 
 	@Setter(RESULTSET_DESCRIPTION)
 	void setResultSetDescription(JDBCResultSetDescription resultRestDescription);
 
-	@Getter(value=KEYS, cardinality = Getter.Cardinality.LIST) @XMLElement(xmlTag = "keys")
+	@Getter(value = KEYS, cardinality = Getter.Cardinality.LIST)
+	@XMLElement(xmlTag = "keys")
 	List<String> getKeys();
 
 	@Adder(KEYS)
@@ -84,7 +87,8 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 
 		@Override
 		public JDBCResultSetDescription getResultSetDescription() {
-			if (line != null) return line.getResultSet().getResultSetDescription();
+			if (line != null)
+				return line.getResultSet().getResultSetDescription();
 			return (JDBCResultSetDescription) performSuperGetter(RESULTSET_DESCRIPTION);
 		}
 
@@ -103,7 +107,7 @@ public interface JDBCLineActorReference extends JDBCActorReference<JDBCLine> {
 		}
 
 		@Override
-		public JDBCLine getModellingElement() {
+		public JDBCLine getModellingElement(boolean forceLoading) {
 			if (line == null) {
 				JDBCConnection connection = getConnection();
 				if (connection != null) {

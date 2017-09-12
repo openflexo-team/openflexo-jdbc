@@ -53,7 +53,8 @@ public interface JDBCTableActorReference extends JDBCActorReference<JDBCTable> {
 
 	String TABLE_ID = "tableId";
 
-	@Getter(TABLE_ID) @XMLAttribute
+	@Getter(TABLE_ID)
+	@XMLAttribute
 	String getTableId();
 
 	@Setter(TABLE_ID)
@@ -65,12 +66,13 @@ public interface JDBCTableActorReference extends JDBCActorReference<JDBCTable> {
 
 		@Override
 		public String getTableId() {
-			if (table != null) return table.getName();
+			if (table != null)
+				return table.getName();
 			return (String) performSuperGetter(TABLE_ID);
 		}
 
 		@Override
-		public JDBCTable getModellingElement() {
+		public JDBCTable getModellingElement(boolean forceLoading) {
 			if (table == null) {
 				String tableId = getTableId();
 				table = getConnection().getSchema().getTable(tableId);

@@ -55,7 +55,8 @@ public interface JDBCResultSetActorReference extends JDBCActorReference<JDBCResu
 
 	String RESULTSET_DESCRIPTION = "requestDescription";
 
-	@Getter(RESULTSET_DESCRIPTION) @Embedded
+	@Getter(RESULTSET_DESCRIPTION)
+	@Embedded
 	JDBCResultSetDescription getResultSetDescription();
 
 	@Setter(RESULTSET_DESCRIPTION)
@@ -67,12 +68,13 @@ public interface JDBCResultSetActorReference extends JDBCActorReference<JDBCResu
 
 		@Override
 		public JDBCResultSetDescription getResultSetDescription() {
-			if (resultSet != null) return resultSet.getResultSetDescription();
+			if (resultSet != null)
+				return resultSet.getResultSetDescription();
 			return (JDBCResultSetDescription) performSuperGetter(RESULTSET_DESCRIPTION);
 		}
 
 		@Override
-		public JDBCResultSet getModellingElement() {
+		public JDBCResultSet getModellingElement(boolean forceLoading) {
 			if (resultSet == null) {
 				resultSet = getConnection().select(getResultSetDescription());
 			}
