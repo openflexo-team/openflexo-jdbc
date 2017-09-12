@@ -86,7 +86,7 @@ import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance.HbnVirtualModelInstanceImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -568,8 +568,8 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 						pClass.addProperty(prop);
 					}
 				}
-				else if (flexoProperty instanceof HbnReferenceRole) {
-					HbnReferenceRole referenceRole = (HbnReferenceRole) flexoProperty;
+				else if (flexoProperty instanceof HbnToOneReferenceRole) {
+					HbnToOneReferenceRole referenceRole = (HbnToOneReferenceRole) flexoProperty;
 					prop = new Property();
 					prop.setName(referenceRole.getName());
 					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);

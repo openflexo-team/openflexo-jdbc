@@ -37,15 +37,8 @@ package org.openflexo.technologyadapter.jdbc.fml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.util.Date;
-import java.util.List;
-
-import org.hibernate.Transaction;
-import org.hibernate.query.NativeQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
@@ -54,7 +47,6 @@ import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
-import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.PropertyCardinality;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.AddUseDeclaration;
@@ -63,6 +55,7 @@ import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreateGenericBehaviourParameter;
 import org.openflexo.foundation.fml.action.CreateModelSlot;
+import org.openflexo.foundation.fml.action.CreateTechnologyRole;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
@@ -72,7 +65,7 @@ import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -95,7 +88,7 @@ import org.openflexo.test.TestOrder;
  *
  */
 @RunWith(OrderedRunner.class)
-public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
+public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 
 	private final String ROOT_VIRTUAL_MODEL_NAME = "RootVirtualModel";
 	private final String ROOT_VIRTUAL_MODEL_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_NAME + ".fml";
@@ -107,6 +100,7 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 
 	private static JDBCTable clientTable;
 	private static JDBCTable salesmanTable;
+	private static JDBCTable visitTable;
 
 	private static VirtualModel rootVirtualModel;
 	private static VirtualModel mappingVirtualModel;
@@ -135,11 +129,13 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		log("initializeDatabase");
 
 		createTable("CLIENT", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("NAME", 256),
-				createStringAttribute("ADRESS", 512), createStringAttribute("HOBBY", 512), createStringAttribute("COMMENTS", 512),
-				createDateAttribute("LASTMEETING"), createForeignKeyIntegerAttribute("SALESMAN"));
+				createStringAttribute("ADRESS", 512), createStringAttribute("HOBBY", 512), createStringAttribute("COMMENTS", 512));
 
 		createTable("SALESMAN", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("LASTNAME", 256),
 				createStringAttribute("FIRSTNAME", 256));
+
+		createTable("VISIT", createPrimaryKeyIntegerAttribute("ID"), createForeignKeyIntegerAttribute("SALESMAN"),
+				createForeignKeyIntegerAttribute("CLIENT"));
 
 		for (JDBCTable table : connection.getSchema().getTables()) {
 			System.out.println("JDBCTable:  " + table);
@@ -148,13 +144,15 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 			}
 		}
 
-		assertEquals(2, connection.getSchema().getTables().size());
+		assertEquals(3, connection.getSchema().getTables().size());
 
 		clientTable = connection.getSchema().getTables().get(0);
 		salesmanTable = connection.getSchema().getTables().get(1);
+		visitTable = connection.getSchema().getTables().get(2);
 
-		assertEquals(7, clientTable.getColumns().size());
+		assertEquals(5, clientTable.getColumns().size());
 		assertEquals(3, salesmanTable.getColumns().size());
+		assertEquals(3, visitTable.getColumns().size());
 
 	}
 
@@ -163,37 +161,44 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 	public void populateDatabase() throws Exception {
 		log("populateDatabase");
 
-		assertNotNull(clientTable.insert(new String[] { "ID", "1", "NAME", "Pr\u00e9seau", "ADRESS", "22 rue Solferino", "HOBBY",
-				"Banana eater", "COMMENTS", "", "LASTMEETING", null, "SALESMAN", "1" }));
+		assertNotNull(clientTable.insert(
+				new String[] { "ID", "1", "NAME", "Pr\u00e9seau", "ADRESS", "22 rue Solferino", "HOBBY", "Banana eater", "COMMENTS", "" }));
 		assertNotNull(clientTable.insert(new String[] { "ID", "2", "NAME", "Carrington", "ADRESS", "609 rue du 5ieme r\u00e9giment",
-				"HOBBY", "Likes Cowboys", "COMMENTS", "", "LASTMEETING", null, "SALESMAN", "2" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "3", "NAME", "Barnowsky", "ADRESS", "548 rue Creeptown", "HOBBY",
-				"Not cooking", "COMMENTS", "", "LASTMEETING", null, "SALESMAN", "3" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "4", "NAME", "Brown", "ADRESS", "34 rue Californie", "HOBBY", "Nursering",
-				"COMMENTS", "", "LASTMEETING", null, "SALESMAN", "4" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "5", "NAME", "Giordino", "ADRESS", "1234 rue Harvard", "HOBBY",
-				"Intelligence", "COMMENTS", "", "LASTMEETING", null, "SALESMAN", "1" }));
+				"HOBBY", "Likes Cowboys", "COMMENTS", "" }));
+		assertNotNull(clientTable.insert(
+				new String[] { "ID", "3", "NAME", "Barnowsky", "ADRESS", "548 rue Creeptown", "HOBBY", "Not cooking", "COMMENTS", "" }));
+		assertNotNull(clientTable
+				.insert(new String[] { "ID", "4", "NAME", "Brown", "ADRESS", "34 rue Californie", "HOBBY", "Nursering", "COMMENTS", "" }));
+		assertNotNull(clientTable.insert(
+				new String[] { "ID", "5", "NAME", "Giordino", "ADRESS", "1234 rue Harvard", "HOBBY", "Intelligence", "COMMENTS", "" }));
 		assertNotNull(clientTable.insert(new String[] { "ID", "6", "NAME", "Svetlanova", "ADRESS", "16 rue de Minsk", "HOBBY",
-				"Poisons and cooking", "COMMENTS", "", "LASTMEETING", null, "SALESMAN", "2" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "7", "NAME", "Martin", "ADRESS", "18 rue Giordino", "HOBBY", "Keyboards",
-				"COMMENTS", "", "LASTMEETING", null, "SALESMAN", "3" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "8", "NAME", "Jones", "ADRESS", "374 rue Watts", "HOBBY",
-				"Piloting Helicopters", "COMMENTS", "", "LASTMEETING", null, "SALESMAN", "4" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "9", "NAME", "Mangouste", "ADRESS", "12 rue Greenfalls", "HOBBY", "Hunting",
-				"COMMENTS", "", "LASTMEETING", null, "SALESMAN", "1" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "10", "NAME", "Los Santos", "ADRESS", "56 rue Jacinto", "HOBBY", "Parkour",
-				"COMMENTS", "", "LASTMEETING", null, "SALESMAN", "2" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "11", "NAME", "Amos", "ADRESS", "1927 rue Irgoun", "HOBBY", "Conspirations",
-				"COMMENTS", "", "LASTMEETING", null, "SALESMAN", "3" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "12", "NAME", "Mullway", "ADRESS", "7 rue Verde", "HOBBY", "Jungle",
-				"COMMENTS", "", "LASTMEETING", null, "SALESMAN", "4" }));
-		assertNotNull(clientTable.insert(new String[] { "ID", "13", "NAME", "Sheridan", "ADRESS", "22 rue Wally", "HOBBY", "Leadership",
-				"COMMENTS", "", "LASTMEETING", null, "SALESMAN", "1" }));
+				"Poisons and cooking", "COMMENTS", "" }));
+		assertNotNull(clientTable
+				.insert(new String[] { "ID", "7", "NAME", "Martin", "ADRESS", "18 rue Giordino", "HOBBY", "Keyboards", "COMMENTS", "" }));
+		assertNotNull(clientTable.insert(
+				new String[] { "ID", "8", "NAME", "Jones", "ADRESS", "374 rue Watts", "HOBBY", "Piloting Helicopters", "COMMENTS", "" }));
+		assertNotNull(clientTable.insert(
+				new String[] { "ID", "9", "NAME", "Mangouste", "ADRESS", "12 rue Greenfalls", "HOBBY", "Hunting", "COMMENTS", "" }));
+		assertNotNull(clientTable
+				.insert(new String[] { "ID", "10", "NAME", "Los Santos", "ADRESS", "56 rue Jacinto", "HOBBY", "Parkour", "COMMENTS", "" }));
+		assertNotNull(clientTable.insert(
+				new String[] { "ID", "11", "NAME", "Amos", "ADRESS", "1927 rue Irgoun", "HOBBY", "Conspirations", "COMMENTS", "" }));
+		assertNotNull(clientTable
+				.insert(new String[] { "ID", "12", "NAME", "Mullway", "ADRESS", "7 rue Verde", "HOBBY", "Jungle", "COMMENTS", "" }));
+		assertNotNull(clientTable
+				.insert(new String[] { "ID", "13", "NAME", "Sheridan", "ADRESS", "22 rue Wally", "HOBBY", "Leadership", "COMMENTS", "" }));
 
 		assertNotNull(salesmanTable.insert(new String[] { "ID", "1", "LASTNAME", "Smith", "FIRSTNAME", "Alan" }));
 		assertNotNull(salesmanTable.insert(new String[] { "ID", "2", "LASTNAME", "Rowland", "FIRSTNAME", "Steve" }));
 		assertNotNull(salesmanTable.insert(new String[] { "ID", "3", "LASTNAME", "Mac Lane", "FIRSTNAME", "Jason" }));
 		assertNotNull(salesmanTable.insert(new String[] { "ID", "4", "LASTNAME", "Brian", "FIRSTNAME", "Kelly" }));
+
+		assertNotNull(visitTable.insert(new String[] { "ID", "1", "SALESMAN", "1", "CLIENT", "1" }));
+		assertNotNull(visitTable.insert(new String[] { "ID", "2", "SALESMAN", "2", "CLIENT", "1" }));
+		assertNotNull(visitTable.insert(new String[] { "ID", "3", "SALESMAN", "3", "CLIENT", "2" }));
+		assertNotNull(visitTable.insert(new String[] { "ID", "4", "SALESMAN", "2", "CLIENT", "2" }));
+		assertNotNull(visitTable.insert(new String[] { "ID", "5", "SALESMAN", "1", "CLIENT", "2" }));
+
 	}
 
 	@Test
@@ -247,13 +252,6 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		assertNotNull(hobby);
 		AbstractProperty<String> comments = (AbstractProperty<String>) clientConcept.getAccessibleProperty("comments");
 		assertNotNull(comments);
-		AbstractProperty<Date> lastMeeting = (AbstractProperty<Date>) clientConcept.getAccessibleProperty("lastmeeting");
-		assertNotNull(lastMeeting);
-		HbnToOneReferenceRole salesman = (HbnToOneReferenceRole) clientConcept.getAccessibleProperty("salesman");
-		assertNotNull(salesman);
-
-		assertEquals("container", salesman.getVirtualModelInstance().toString());
-		assertEquals(salesmanConcept, salesman.getFlexoConceptType());
 
 		AbstractProperty<Integer> salesmanId = (AbstractProperty<Integer>) salesmanConcept.getAccessibleProperty("id");
 		assertNotNull(salesmanId);
@@ -261,6 +259,15 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		assertNotNull(lastname);
 		AbstractProperty<String> firstname = (AbstractProperty<String>) salesmanConcept.getAccessibleProperty("firstname");
 		assertNotNull(firstname);
+
+		// We create a HbnToManyReferenceRole role
+		CreateTechnologyRole createSalesmenRole = CreateTechnologyRole.actionType.makeNewAction(clientConcept, null, _editor);
+		createSalesmenRole.setRoleName("salesmen");
+		createSalesmenRole.setFlexoRoleClass(HbnToManyReferenceRole.class);
+		createSalesmenRole.doAction();
+		assertTrue(createSalesmenRole.hasActionExecutionSucceeded());
+		HbnToManyReferenceRole salesmenRole = (HbnToManyReferenceRole) createSalesmenRole.getNewFlexoRole();
+		assertNotNull(salesmenRole);
 
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
 		createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
@@ -422,7 +429,7 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		assertEquals("Préseau", client1.execute("name"));
 		assertEquals("22 rue Solferino", client1.execute("adress"));
 
-		assertNotNull(client1.execute("salesman"));
+		/*assertNotNull(client1.execute("salesman"));
 		HbnFlexoConceptInstance salesman1 = client1.execute("salesman");
 		assertNotNull(client2.execute("salesman"));
 		HbnFlexoConceptInstance salesman2 = client2.execute("salesman");
@@ -430,7 +437,7 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		HbnFlexoConceptInstance salesman3 = client3.execute("salesman");
 		assertNotNull(client4.execute("salesman"));
 		HbnFlexoConceptInstance salesman4 = client4.execute("salesman");
-
+		
 		assertEquals(salesman1, client5.execute("salesman"));
 		assertEquals(salesman2, client6.execute("salesman"));
 		assertEquals(salesman3, client7.execute("salesman"));
@@ -439,78 +446,79 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		assertEquals(salesman2, client10.execute("salesman"));
 		assertEquals(salesman3, client11.execute("salesman"));
 		assertEquals(salesman4, client12.execute("salesman"));
-		assertEquals(salesman1, client13.execute("salesman"));
+		assertEquals(salesman1, client13.execute("salesman"));*/
+
+		debugTable(dbVMI.getDefaultSession(), "Client");
+		debugTable(dbVMI.getDefaultSession(), "Salesman");
+		debugTable(dbVMI.getDefaultSession(), "Visit");
 
 	}
 
+	/*
 	@Test
 	@TestOrder(8)
 	public void modifySimpleData() throws Exception {
-
+	
 		log("modifySimpleData");
-
+	
 		Transaction transaction = dbVMI.getDefaultSession().beginTransaction();
-
+	
 		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
 		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
 		FlexoConcept clientConcept = client1.getFlexoConcept();
-
+	
 		client1.setFlexoPropertyValue((FlexoProperty<String>) clientConcept.getAccessibleProperty("name"), "another name");
 		client2.setFlexoPropertyValue((FlexoProperty<String>) clientConcept.getAccessibleProperty("adress"), "another address");
-
-		debugTable(dbVMI.getDefaultSession(), "Client");
+	
 		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
-
+	
 		// Still not changed in the database
 		assertNativeQueryResult(sqlQ, 0, 1, "Préseau");
 		assertNativeQueryResult(sqlQ, 1, 2, "609 rue du 5ieme régiment");
-
+	
 		System.out.println("C'est parti pour le commit");
 		transaction.commit();
-
+	
 		// Should have been changed now
-		debugTable(dbVMI.getDefaultSession(), "Client");
 		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
 		assertNativeQueryResult(sqlQ2, 0, 1, "another name");
 		assertNativeQueryResult(sqlQ2, 1, 2, "another address");
-
+	
 	}
-
+	
 	@Test
 	@TestOrder(9)
 	public void modifyReferencedData() throws Exception {
-
+	
 		log("modifyReferencedData");
-
+	
 		Transaction transaction = dbVMI.getDefaultSession().beginTransaction();
-
+	
 		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
 		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
-
+	
 		HbnFlexoConceptInstance salesman1 = client1.execute("salesman");
 		HbnFlexoConceptInstance salesman2 = client2.execute("salesman");
-
+	
 		FlexoConcept clientConcept = client1.getFlexoConcept();
-
+	
 		client1.setFlexoPropertyValue((FlexoProperty<HbnFlexoConceptInstance>) clientConcept.getAccessibleProperty("salesman"), salesman2);
-
+	
 		assertSame(salesman2, client1.execute("salesman"));
-
+	
 		// Still not changed in the database
-		debugTable(dbVMI.getDefaultSession(), "Client");
 		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
 		assertNativeQueryResult(sqlQ, 0, 6, 1);
-
+	
 		System.out.println("C'est parti pour le commit");
 		transaction.commit();
-
+	
 		// Should have been changed now
-		debugTable(dbVMI.getDefaultSession(), "Client");
 		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
 		assertNativeQueryResult(sqlQ, 0, 6, 2);
-
+	
 	}
-
+	
 	private static void assertNativeQueryResult(NativeQuery<?> query, int rowIndex, int colIndex, Object expectedObject) {
 		List<?> resultList = query.getResultList();
 		Object rowResult = resultList.get(rowIndex);
@@ -521,6 +529,6 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		else {
 			fail("Not an array");
 		}
-	}
+	}*/
 
 }

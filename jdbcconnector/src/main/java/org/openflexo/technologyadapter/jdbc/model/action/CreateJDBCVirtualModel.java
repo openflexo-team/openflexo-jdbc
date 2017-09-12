@@ -70,7 +70,7 @@ import org.openflexo.localization.LocalizedDelegate;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
@@ -190,7 +190,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 						break;
 					case ForeignKey:
 						propertyEntry.setPropertyType(PropertyType.TECHNOLOGY_ROLE);
-						propertyEntry.setFlexoRoleClass(HbnReferenceRole.class);
+						propertyEntry.setFlexoRoleClass(HbnToOneReferenceRole.class);
 						break;
 					default:
 						// TODO
@@ -213,15 +213,15 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 		for (TableMapping tableMapping : getTableMappings()) {
 			for (ColumnMapping columnMapping : tableMapping.getColumnMappings()) {
 				FlexoProperty<?> property = tableMapping.concept.getDeclaredProperty(columnMapping.getPropertyName());
-				if (property instanceof HbnReferenceRole) {
-					((HbnReferenceRole) property).setForeignKeyAttributeName(columnMapping.getPropertyName());
-					((HbnReferenceRole) property).setVirtualModelInstance(new DataBinding<>("container"));
+				if (property instanceof HbnToOneReferenceRole) {
+					((HbnToOneReferenceRole) property).setForeignKeyAttributeName(columnMapping.getPropertyName());
+					((HbnToOneReferenceRole) property).setVirtualModelInstance(new DataBinding<>("container"));
 					System.out.println("Maintenant on cherche " + columnMapping.getOppositeTable().getName());
 					for (TableMapping oppositeTableMapping : getTableMappings()) {
 						if (oppositeTableMapping.getTable().getName().equals(columnMapping.getOppositeTable().getName())) {
 							System.out.println("opposite concept name: " + columnMapping.getOppositeTable().getName());
 							System.out.println("opposite concept: " + oppositeTableMapping.getConcept());
-							((HbnReferenceRole) property).setFlexoConceptType(oppositeTableMapping.getConcept());
+							((HbnToOneReferenceRole) property).setFlexoConceptType(oppositeTableMapping.getConcept());
 							break;
 						}
 					}

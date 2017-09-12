@@ -58,9 +58,9 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
  *
  */
 @ModelEntity
-@ImplementationClass(HbnReferenceRole.HbnReferenceRoleImpl.class)
+@ImplementationClass(HbnToOneReferenceRole.HbnToOneReferenceRoleImpl.class)
 @XMLElement
-public interface HbnReferenceRole extends FlexoConceptInstanceRole {
+public interface HbnToOneReferenceRole extends FlexoConceptInstanceRole {
 
 	@PropertyIdentifier(type = String.class)
 	String FOREIGN_KEY_ATTRIBUTE_NAME_KEY = "foreignKeyAttributeName";
@@ -72,9 +72,9 @@ public interface HbnReferenceRole extends FlexoConceptInstanceRole {
 	@Setter(FOREIGN_KEY_ATTRIBUTE_NAME_KEY)
 	void setForeignKeyAttributeName(String foreignKeyAttributeName);
 
-	public static abstract class HbnReferenceRoleImpl extends FlexoConceptInstanceRoleImpl implements HbnReferenceRole {
+	public static abstract class HbnToOneReferenceRoleImpl extends FlexoConceptInstanceRoleImpl implements HbnToOneReferenceRole {
 
-		private static final Logger logger = Logger.getLogger(HbnReferenceRoleImpl.class.getPackage().getName());
+		private static final Logger logger = Logger.getLogger(HbnToOneReferenceRoleImpl.class.getPackage().getName());
 
 		@Override
 		public Class<? extends TechnologyAdapter> getRoleTechnologyAdapterClass() {

@@ -35,6 +35,8 @@
 
 package org.openflexo.technologyadapter.jdbc.fml;
 
+import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
@@ -97,5 +99,19 @@ public abstract class JDBCTestCase extends OpenflexoProjectAtRunTimeTestCase {
 	protected static String[] createDateAttribute(String name) {
 		String[] returned = { name, "DATE" };
 		return returned;
+	}
+
+	public void debugTable(Session session, String entityName) {
+		NativeQuery<?> sqlQ = session.createNativeQuery("select * from " + entityName + ";");
+		System.out.println("select * from " + entityName + ";");
+		for (Object rowResult : sqlQ.getResultList()) {
+			if (rowResult.getClass().isArray()) {
+				StringBuffer sb = new StringBuffer();
+				for (Object o : (Object[]) rowResult) {
+					sb.append(" " + o);
+				}
+				System.out.println(" > " + sb.toString());
+			}
+		}
 	}
 }
