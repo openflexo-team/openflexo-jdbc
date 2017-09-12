@@ -287,10 +287,6 @@ public interface PerformSQLQuery extends FetchRequest<HbnModelSlot, HbnVirtualMo
 
 			if (vmi != null) {
 
-				System.out.println("La on y est, faut faire un select * from bidule...");
-
-				// vmi.getDefaultSession().createQuery(queryString)
-
 				try {
 
 					Query<?> sqlQ = vmi.getDefaultSession().createQuery("select o from " + getFlexoConceptType().getName() + " o");

@@ -37,10 +37,15 @@ package org.openflexo.technologyadapter.jdbc.fml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.List;
 
+import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
@@ -49,6 +54,7 @@ import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
+import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.PropertyCardinality;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.AddUseDeclaration;
@@ -77,7 +83,7 @@ import org.openflexo.test.OrderedRunner;
 import org.openflexo.test.TestOrder;
 
 /**
- * Testing {@link HbnModelSlot}
+ * Testing {@link HbnModelSlot} in the context of manyToOne relationship
  * 
  * <ul>
  * <li>Create a database and populate it</li>
@@ -89,7 +95,7 @@ import org.openflexo.test.TestOrder;
  *
  */
 @RunWith(OrderedRunner.class)
-public class TestJDBCVirtualModel extends JDBCTestCase {
+public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 
 	private final String ROOT_VIRTUAL_MODEL_NAME = "RootVirtualModel";
 	private final String ROOT_VIRTUAL_MODEL_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_NAME + ".fml";
@@ -435,6 +441,82 @@ public class TestJDBCVirtualModel extends JDBCTestCase {
 		assertEquals(salesman4, client12.execute("salesman"));
 		assertEquals(salesman1, client13.execute("salesman"));
 
+	}
+
+	@Test
+	@TestOrder(8)
+	public void modifySimpleData() throws Exception {
+
+		log("modifySimpleData");
+
+		Transaction transaction = dbVMI.getDefaultSession().beginTransaction();
+
+		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
+		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
+		FlexoConcept clientConcept = client1.getFlexoConcept();
+
+		client1.setFlexoPropertyValue((FlexoProperty<String>) clientConcept.getAccessibleProperty("name"), "another name");
+		client2.setFlexoPropertyValue((FlexoProperty<String>) clientConcept.getAccessibleProperty("adress"), "another address");
+
+		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+
+		// Still not changed in the database
+		assertNativeQueryResult(sqlQ, 0, 1, "Préseau");
+		assertNativeQueryResult(sqlQ, 1, 2, "609 rue du 5ieme régiment");
+
+		System.out.println("C'est parti pour le commit");
+		transaction.commit();
+
+		// Should have been changed now
+		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+		assertNativeQueryResult(sqlQ2, 0, 1, "another name");
+		assertNativeQueryResult(sqlQ2, 1, 2, "another address");
+
+	}
+
+	@Test
+	@TestOrder(9)
+	public void modifyReferencedData() throws Exception {
+
+		log("modifyReferencedData");
+
+		Transaction transaction = dbVMI.getDefaultSession().beginTransaction();
+
+		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
+		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
+
+		HbnFlexoConceptInstance salesman1 = client1.execute("salesman");
+		HbnFlexoConceptInstance salesman2 = client2.execute("salesman");
+
+		FlexoConcept clientConcept = client1.getFlexoConcept();
+
+		client1.setFlexoPropertyValue((FlexoProperty<HbnFlexoConceptInstance>) clientConcept.getAccessibleProperty("salesman"), salesman2);
+
+		assertSame(salesman2, client1.execute("salesman"));
+
+		// Still not changed in the database
+		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+		assertNativeQueryResult(sqlQ, 0, 6, 1);
+
+		System.out.println("C'est parti pour le commit");
+		transaction.commit();
+
+		// Should have been changed now
+		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+		assertNativeQueryResult(sqlQ, 0, 6, 2);
+
+	}
+
+	private static void assertNativeQueryResult(NativeQuery<?> query, int rowIndex, int colIndex, Object expectedObject) {
+		List<?> resultList = query.getResultList();
+		Object rowResult = resultList.get(rowIndex);
+		if (rowResult.getClass().isArray()) {
+			Object result = ((Object[]) rowResult)[colIndex];
+			assertEquals(expectedObject, result);
+		}
+		else {
+			fail("Not an array");
+		}
 	}
 
 }

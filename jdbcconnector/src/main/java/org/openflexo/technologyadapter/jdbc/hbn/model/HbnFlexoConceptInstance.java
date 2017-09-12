@@ -104,6 +104,13 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 	void initialize(Map<String, Object> hbnMap, FlexoConcept concept);
 
 	/**
+	 * Return Hibernate support object (a map)
+	 * 
+	 * @return
+	 */
+	public Map<String, Object> getHbnSupportObject();
+
+	/**
 	 * Default implementation for {@link HbnFlexoConceptInstance}
 	 * 
 	 * @author sylvain
@@ -138,6 +145,11 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			return (HbnVirtualModelInstance) super.getVirtualModelInstance();
 		}
 
+		@Override
+		public Map<String, Object> getHbnSupportObject() {
+			return hbnMap;
+		}
+
 		private HbnFlexoConceptInstance getReferencedObject(HbnReferenceRole referenceRole) {
 			// TODO: support modification !!!
 			// With this implementation, we will always return cached value
@@ -154,12 +166,33 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			return returned;
 		}
 
+		private void setReferencedObject(HbnFlexoConceptInstance newValue, HbnReferenceRole referenceRole) {
+			HbnFlexoConceptInstance oldValue = getReferencedObject(referenceRole);
+			if (oldValue != newValue) {
+				hbnMap.put(referenceRole.getName(), newValue.getHbnSupportObject());
+				identifier = null;
+				identifierAsString = null;
+				referencedMap.remove(referenceRole);
+				setIsModified();
+				getPropertyChangeSupport().firePropertyChange(referenceRole.getPropertyName(), oldValue, newValue);
+			}
+
+		}
+
 		@Override
 		public <T> T getFlexoActor(FlexoRole<T> flexoRole) {
 			if (flexoRole instanceof HbnReferenceRole) {
 				return (T) getReferencedObject((HbnReferenceRole) flexoRole);
 			}
 			return super.getFlexoActor(flexoRole);
+		}
+
+		@Override
+		public <T> void setFlexoActor(T object, FlexoRole<T> flexoRole) {
+			if (flexoRole instanceof HbnReferenceRole) {
+				setReferencedObject((HbnFlexoConceptInstance) object, (HbnReferenceRole) flexoRole);
+			}
+			super.setFlexoActor(object, flexoRole);
 		}
 
 		@Override
@@ -187,6 +220,9 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 					setIsModified();
 					getPropertyChangeSupport().firePropertyChange(flexoProperty.getPropertyName(), oldValue, value);
 				}
+			}
+			else if (flexoProperty instanceof HbnReferenceRole) {
+				setReferencedObject((HbnFlexoConceptInstance) value, (HbnReferenceRole) flexoProperty);
 			}
 			else {
 				super.setFlexoPropertyValue(flexoProperty, value);
