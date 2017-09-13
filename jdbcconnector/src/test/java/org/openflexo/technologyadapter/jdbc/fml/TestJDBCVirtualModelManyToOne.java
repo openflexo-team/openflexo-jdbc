@@ -459,7 +459,7 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 		client2.setFlexoPropertyValue((FlexoProperty<String>) clientConcept.getAccessibleProperty("adress"), "another address");
 
 		debugTable(dbVMI.getDefaultSession(), "Client");
-		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
 
 		// Still not changed in the database
 		assertNativeQueryResult(sqlQ, 0, 1, "Préseau");
@@ -470,7 +470,7 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 
 		// Should have been changed now
 		debugTable(dbVMI.getDefaultSession(), "Client");
-		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
 		assertNativeQueryResult(sqlQ2, 0, 1, "another name");
 		assertNativeQueryResult(sqlQ2, 1, 2, "another address");
 
@@ -498,7 +498,7 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 
 		// Still not changed in the database
 		debugTable(dbVMI.getDefaultSession(), "Client");
-		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
 		assertNativeQueryResult(sqlQ, 0, 6, 1);
 
 		System.out.println("C'est parti pour le commit");
@@ -506,7 +506,7 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 
 		// Should have been changed now
 		debugTable(dbVMI.getDefaultSession(), "Client");
-		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from Client;");
+		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
 		assertNativeQueryResult(sqlQ, 0, 6, 2);
 
 	}
