@@ -45,28 +45,24 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
-import org.openflexo.fge.DrawingGraphicalRepresentation;
-import org.openflexo.fge.FGEModelFactory;
-import org.openflexo.fge.FGEModelFactoryImpl;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.FMLObject;
-import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
-import org.openflexo.foundation.fml.action.AbstractCreateVirtualModel;
+import org.openflexo.foundation.fml.action.AbstractCreateNatureSpecificVirtualModel;
 import org.openflexo.foundation.fml.action.AddUseDeclaration;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.PropertyEntry;
 import org.openflexo.foundation.fml.action.PropertyEntry.PropertyType;
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
-import org.openflexo.foundation.fml.rm.VirtualModelResourceFactory;
+import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.task.Progress;
-import org.openflexo.localization.LocalizedDelegate;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -76,14 +72,13 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel.TableMapping.ColumnMapping;
-import org.openflexo.toolbox.StringUtils;
 
-public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDBCVirtualModel, VirtualModel, FMLObject> {
+public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualModel<CreateJDBCVirtualModel> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CreateJDBCVirtualModel.class.getPackage().getName());
 
-	public static FlexoActionFactory<CreateJDBCVirtualModel, VirtualModel, FMLObject> actionType = new FlexoActionFactory<CreateJDBCVirtualModel, VirtualModel, FMLObject>(
+	public static FlexoActionFactory<CreateJDBCVirtualModel, FlexoObject, FMLObject> actionType = new FlexoActionFactory<CreateJDBCVirtualModel, FlexoObject, FMLObject>(
 			"create_jdbc_virtual_model", FlexoActionFactory.newVirtualModelMenu, FlexoActionFactory.defaultGroup,
 			FlexoActionFactory.ADD_ACTION_TYPE) {
 
@@ -91,17 +86,17 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 		 * Factory method
 		 */
 		@Override
-		public CreateJDBCVirtualModel makeNewAction(VirtualModel focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
+		public CreateJDBCVirtualModel makeNewAction(FlexoObject focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
 			return new CreateJDBCVirtualModel(focusedObject, globalSelection, editor);
 		}
 
 		@Override
-		public boolean isVisibleForSelection(VirtualModel object, Vector<FMLObject> globalSelection) {
+		public boolean isVisibleForSelection(FlexoObject object, Vector<FMLObject> globalSelection) {
 			return true;
 		}
 
 		@Override
-		public boolean isEnabledForSelection(VirtualModel object, Vector<FMLObject> globalSelection) {
+		public boolean isEnabledForSelection(FlexoObject object, Vector<FMLObject> globalSelection) {
 			return object != null;
 		}
 
@@ -109,40 +104,25 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 
 	static {
 		FlexoObjectImpl.addActionForClass(CreateJDBCVirtualModel.actionType, VirtualModel.class);
+		FlexoObjectImpl.addActionForClass(CreateJDBCVirtualModel.actionType, RepositoryFolder.class);
 	}
 
-	private String newVirtualModelName;
-	private String newVirtualModelDescription;
 	private VirtualModel newVirtualModel;
 
 	private String address = "jdbc:hsqldb:hsql://localhost/";
 	private String user = "SA";
 	private String password = "";
 
-	CreateJDBCVirtualModel(VirtualModel focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
+	private JDBCConnection jdbcConnection = null;
+	private List<JDBCTable> tablesToBeReflected;
+
+	CreateJDBCVirtualModel(FlexoObject focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 
 	@Override
-	public LocalizedDelegate getLocales() {
-		if (getServiceManager() != null) {
-			return getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class).getLocales();
-		}
-		return super.getLocales();
-	}
-
-	public JDBCTechnologyAdapter getDiagramTechnologyAdapter() {
+	public JDBCTechnologyAdapter getTechnologyAdapter() {
 		return getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class);
-	}
-
-	protected DrawingGraphicalRepresentation makePaletteGraphicalRepresentation() throws ModelDefinitionException {
-		FGEModelFactory factory = new FGEModelFactoryImpl();
-		DrawingGraphicalRepresentation gr = factory.makeDrawingGraphicalRepresentation();
-		gr.setDrawWorkingArea(true);
-		gr.setWidth(260);
-		gr.setHeight(300);
-		gr.setIsVisible(true);
-		return gr;
 	}
 
 	@Override
@@ -150,15 +130,10 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 
 		Progress.progress(getLocales().localizedForKey("create_virtual_model"));
 
-		FMLTechnologyAdapter fmlTechnologyAdapter = getServiceManager().getTechnologyAdapterService()
-				.getTechnologyAdapter(FMLTechnologyAdapter.class);
-		VirtualModelResourceFactory factory = fmlTechnologyAdapter.getVirtualModelResourceFactory();
-
 		try {
-			VirtualModelResource vmResource = factory.makeContainedVirtualModelResource(getNewVirtualModelName(),
-					(VirtualModelResource) getFocusedObject().getResource(), fmlTechnologyAdapter.getTechnologyContextManager(), true);
+			VirtualModelResource vmResource = makeVirtualModelResource();
 			newVirtualModel = vmResource.getLoadedResourceData();
-			newVirtualModel.setDescription(newVirtualModelDescription);
+			newVirtualModel.setDescription(getNewVirtualModelDescription());
 			newVirtualModel.setAbstract(true);
 		} catch (SaveResourceException e) {
 			throw new SaveResourceException(null);
@@ -235,24 +210,6 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 		newVirtualModel.getResource().getPropertyChangeSupport().firePropertyChange("name", null, newVirtualModel.getName());
 	}
 
-	public boolean isNewVirtualModelNameValid() {
-		if (StringUtils.isEmpty(newVirtualModelName)) {
-			return false;
-		}
-		if (getFocusedObject().getVirtualModelNamed(newVirtualModelName) != null) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean isValid() {
-		if (!isNewVirtualModelNameValid()) {
-			return false;
-		}
-		return true;
-	}
-
 	@Override
 	public VirtualModel getNewVirtualModel() {
 		return newVirtualModel;
@@ -281,29 +238,6 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public String getNewVirtualModelName() {
-		return newVirtualModelName;
-	}
-
-	public void setNewVirtualModelName(String newVirtualModelName) {
-		this.newVirtualModelName = newVirtualModelName;
-
-		getPropertyChangeSupport().firePropertyChange("newVirtualModelName", null, newVirtualModelName);
-
-	}
-
-	public String getNewVirtualModelDescription() {
-		return newVirtualModelDescription;
-	}
-
-	public void setNewVirtualModelDescription(String newVirtualModelDescription) {
-		this.newVirtualModelDescription = newVirtualModelDescription;
-		getPropertyChangeSupport().firePropertyChange("newVirtualModelDescription", null, newVirtualModelDescription);
-	}
-
-	private JDBCConnection jdbcConnection = null;
-	private List<JDBCTable> tablesToBeReflected;
 
 	public JDBCConnection getJDBCConnection() {
 		if (jdbcConnection == null) {
@@ -351,11 +285,6 @@ public class CreateJDBCVirtualModel extends AbstractCreateVirtualModel<CreateJDB
 	public void clearTableMappings() {
 		tableMappings.clear();
 		tableMappings = null;
-	}
-
-	@Override
-	public int getExpectedProgressSteps() {
-		return 15;
 	}
 
 	public enum ColumnPropertyMappingType {
