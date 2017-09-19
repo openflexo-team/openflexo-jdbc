@@ -465,7 +465,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 		@Override
 		public DataBinding<String> getAddress() {
 			if (address == null) {
-				address = new DataBinding<String>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				address = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
 				address.setBindingName("address");
 			}
 			return address;
@@ -485,7 +485,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 		@Override
 		public DataBinding<String> getUser() {
 			if (user == null) {
-				user = new DataBinding<String>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				user = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
 				user.setBindingName("user");
 			}
 			return user;
