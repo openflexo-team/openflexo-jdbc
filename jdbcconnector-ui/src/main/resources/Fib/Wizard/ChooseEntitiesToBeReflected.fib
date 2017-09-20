@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel id="0" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" titleFont="Lucida Grande,0,13" layout="twocols" borderRight="0" controllerClassName="org.openflexo.view.controller.FlexoFIBController">
+<Panel id="0" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" titleFont="Lucida Grande,0,13" layout="twocols" borderRight="0" useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" controllerClassName="org.openflexo.view.controller.FlexoFIBController">
   <CheckboxList id="1" autoSelectFirstRow="true" staticList="" iteratorClassName="org.openflexo.technologyadapter.jdbc.model.JDBCTable" showText="true" list="data.action.allTables" showIcon="true" valueChangedAction="data.changedSelection()" icon="data.tableIcon" format="object.name" data="data.action.tablesToBeReflected" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=30;insetsTop=0;location=right)" font="SansSerif,0,11" name="CheckboxList" />
-  <FIBVariable id="2" type="org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelWizard$ChooseEntitiesToBeReflected" name="data" />
-  <LocalizedDictionary id="3" />
+  <LocalizedDictionary id="2" />
+  <FIBVariable id="3" type="org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualModelWizard$ChooseEntitiesToBeReflected" name="data" />
 </Panel>
