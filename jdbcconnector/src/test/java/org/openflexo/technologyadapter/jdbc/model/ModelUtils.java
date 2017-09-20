@@ -73,6 +73,7 @@ public class ModelUtils {
 	public static JDBCConnection createJDBCConnection(String protocolAndName) throws ModelDefinitionException {
 		JDBCFactory factory = new JDBCFactory(null, null);
 		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
+		connection.setDbType(JDBCDbType.DbType.HSQLDB);
 		connection.setAddress("jdbc:hsqldb:" + protocolAndName);
 		connection.setUser("SA");
 		connection.getConnection();

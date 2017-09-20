@@ -51,6 +51,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
@@ -98,7 +99,8 @@ public class SQLHelper {
 	 *            the factory used to create the new tables if needed
 	 */
 	public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final JDBCFactory factory) throws SQLException {
-		Connection connection = schema.getResourceData().getConnection();
+		JDBCConnection jdbcConn = schema.getResourceData();
+		Connection connection = jdbcConn.getConnection();
 
 		// prepare case ignoring map to match tables
 		final Map<String, JDBCTable> sortedTables = new HashMap<>();
@@ -112,7 +114,7 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), "PUBLIC", "%", null);
+		ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), JDBCDbType.getSchemaPattern(jdbcConn.getDbType()), "%", null);
 		while (jdbcTables.next()) {
 			String tableName = jdbcTables.getString("TABLE_NAME");
 
@@ -159,7 +161,8 @@ public class SQLHelper {
 	 *            the factory used to create the new columns if needed
 	 */
 	public static void updateColumns(final JDBCTable table, List<JDBCColumn> columns, final JDBCFactory factory) throws SQLException {
-		Connection connection = table.getResourceData().getConnection();
+		JDBCConnection jdbcConn = table.getResourceData();
+		Connection connection = jdbcConn.getConnection();
 
 		// retrieves keys
 		final Set<String> keys = getKeys(table);
@@ -176,35 +179,36 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), "PUBLIC", sqlName(table.getName()), "%");
+		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), JDBCDbType.getSchemaPattern(jdbcConn.getDbType()),
+				sqlName(table.getName()), "%");
 		while (jdbcCols.next()) {
-
-			/*System.out.println(" --------------------> " + jdbcCols.getString("COLUMN_NAME"));
-			System.out.println("TABLE_CAT: " + jdbcCols.getObject("TABLE_CAT"));
-			System.out.println("TABLE_SCHEM: " + jdbcCols.getObject("TABLE_SCHEM"));
-			System.out.println("TABLE_NAME: " + jdbcCols.getObject("TABLE_NAME"));
-			System.out.println("COLUMN_NAME: " + jdbcCols.getObject("COLUMN_NAME"));
-			System.out.println("DATA_TYPE: " + jdbcCols.getObject("DATA_TYPE"));
-			System.out.println("TYPE_NAME: " + jdbcCols.getObject("TYPE_NAME"));
-			System.out.println("COLUMN_SIZE: " + jdbcCols.getObject("COLUMN_SIZE"));
-			System.out.println("BUFFER_LENGTH: " + jdbcCols.getObject("BUFFER_LENGTH"));
-			System.out.println("DECIMAL_DIGITS: " + jdbcCols.getObject("DECIMAL_DIGITS"));
-			System.out.println("NUM_PREC_RADIX: " + jdbcCols.getObject("NUM_PREC_RADIX"));
-			System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
-			System.out.println("REMARKS: " + jdbcCols.getObject("REMARKS"));
-			System.out.println("COLUMN_DEF: " + jdbcCols.getObject("COLUMN_DEF"));
-			System.out.println("SQL_DATA_TYPE: " + jdbcCols.getObject("SQL_DATA_TYPE"));
-			System.out.println("SQL_DATETIME_SUB: " + jdbcCols.getObject("SQL_DATETIME_SUB"));
-			System.out.println("CHAR_OCTET_LENGTH: " + jdbcCols.getObject("CHAR_OCTET_LENGTH"));
-			System.out.println("ORDINAL_POSITION: " + jdbcCols.getObject("ORDINAL_POSITION"));
-			System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
-			System.out.println("SCOPE_CATALOG: " + jdbcCols.getObject("SCOPE_CATALOG"));
-			System.out.println("SCOPE_SCHEMA: " + jdbcCols.getObject("SCOPE_SCHEMA"));
-			System.out.println("SCOPE_TABLE: " + jdbcCols.getObject("SCOPE_TABLE"));
-			System.out.println("SOURCE_DATA_TYPE: " + jdbcCols.getObject("SOURCE_DATA_TYPE"));
-			System.out.println("IS_AUTOINCREMENT: " + jdbcCols.getObject("IS_AUTOINCREMENT"));
-			System.out.println("IS_GENERATEDCOLUMN: " + jdbcCols.getObject("IS_GENERATEDCOLUMN"));*/
-
+			/*
+						System.out.println(" --------------------> " + jdbcCols.getString("COLUMN_NAME"));
+						System.out.println("TABLE_CAT: " + jdbcCols.getObject("TABLE_CAT"));
+						System.out.println("TABLE_SCHEM: " + jdbcCols.getObject("TABLE_SCHEM"));
+						System.out.println("TABLE_NAME: " + jdbcCols.getObject("TABLE_NAME"));
+						System.out.println("COLUMN_NAME: " + jdbcCols.getObject("COLUMN_NAME"));
+						System.out.println("DATA_TYPE: " + jdbcCols.getObject("DATA_TYPE"));
+						System.out.println("TYPE_NAME: " + jdbcCols.getObject("TYPE_NAME"));
+						System.out.println("COLUMN_SIZE: " + jdbcCols.getObject("COLUMN_SIZE"));
+						System.out.println("BUFFER_LENGTH: " + jdbcCols.getObject("BUFFER_LENGTH"));
+						System.out.println("DECIMAL_DIGITS: " + jdbcCols.getObject("DECIMAL_DIGITS"));
+						System.out.println("NUM_PREC_RADIX: " + jdbcCols.getObject("NUM_PREC_RADIX"));
+						System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
+						System.out.println("REMARKS: " + jdbcCols.getObject("REMARKS"));
+						System.out.println("COLUMN_DEF: " + jdbcCols.getObject("COLUMN_DEF"));
+						System.out.println("SQL_DATA_TYPE: " + jdbcCols.getObject("SQL_DATA_TYPE"));
+						System.out.println("SQL_DATETIME_SUB: " + jdbcCols.getObject("SQL_DATETIME_SUB"));
+						System.out.println("CHAR_OCTET_LENGTH: " + jdbcCols.getObject("CHAR_OCTET_LENGTH"));
+						System.out.println("ORDINAL_POSITION: " + jdbcCols.getObject("ORDINAL_POSITION"));
+						System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
+						System.out.println("SCOPE_CATALOG: " + jdbcCols.getObject("SCOPE_CATALOG"));
+						System.out.println("SCOPE_SCHEMA: " + jdbcCols.getObject("SCOPE_SCHEMA"));
+						System.out.println("SCOPE_TABLE: " + jdbcCols.getObject("SCOPE_TABLE"));
+						System.out.println("SOURCE_DATA_TYPE: " + jdbcCols.getObject("SOURCE_DATA_TYPE"));
+						System.out.println("IS_AUTOINCREMENT: " + jdbcCols.getObject("IS_AUTOINCREMENT"));
+						System.out.println("IS_GENERATEDCOLUMN: " + jdbcCols.getObject("IS_GENERATEDCOLUMN"));
+			*/
 			// [TABLE_CAT, TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, COLUMN_SIZE, BUFFER_LENGTH, DECIMAL_DIGITS,
 			// NUM_PREC_RADIX, IS_NULLABLE, REMARKS, COLUMN_DEF, SQL_DATA_TYPE, SQL_DATETIME_SUB, CHAR_OCTET_LENGTH, ORDINAL_POSITION,
 			// IS_NULLABLE, SCOPE_CATALOG, SCOPE_SCHEMA, SCOPE_TABLE, SOURCE_DATA_TYPE, IS_AUTOINCREMENT, IS_GENERATEDCOLUMN]

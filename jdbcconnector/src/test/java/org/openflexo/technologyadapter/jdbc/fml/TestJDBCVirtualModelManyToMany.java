@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
@@ -70,6 +71,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel;
 import org.openflexo.test.OrderedRunner;
@@ -114,14 +116,18 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 	private static FMLRTVirtualModelInstance vmi;
 	private static HbnVirtualModelInstance dbVMI;
 
-	/*@AfterClass
+	@AfterClass
 	public static void tearDownClass() {
-		deleteProject();
-		deleteTestResourceCenters();
-		unloadServiceManager();
-		// System.out.println(_project.getProjectDirectory());
-		// System.exit(-1);
-	}*/
+		if (clientTable != null){
+			dropTable(clientTable);
+		}
+		if (salesmanTable != null) {
+			dropTable(salesmanTable);
+		}
+		if (visitTable != null) {
+			dropTable(visitTable);
+		}
+	}
 
 	@Test
 	@TestOrder(1)
@@ -365,6 +371,14 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		FlexoBehaviourParameter passwordParam = createParameter3.getNewParameter();
 		assertNotNull(passwordParam);
 
+		CreateGenericBehaviourParameter createParameter4 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
+				_editor);
+		createParameter4.setParameterName("dbtype");
+		createParameter4.setParameterType(DbType.class);
+		createParameter4.doAction();
+		FlexoBehaviourParameter dbTypeParam = createParameter4.getNewParameter();
+		assertNotNull(dbTypeParam);
+
 		CreateEditionAction createEditionAction1 = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
 				_editor);
 		createEditionAction1.setEditionActionClass(CreateHbnResource.class);
@@ -377,6 +391,7 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
 		createHbnResourceAction.setUser(new DataBinding<String>("parameters.user"));
 		createHbnResourceAction.setPassword(new DataBinding<String>("parameters.password"));
+		createHbnResourceAction.setDbType(new DataBinding<DbType>("parameters.dbtype"));
 		createHbnResourceAction.setResourceName(new DataBinding<String>("(this.name + \"_db\")"));
 		createHbnResourceAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
@@ -402,6 +417,7 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		action.setParameterValue(creationScheme.getParameter("address"), "jdbc:hsqldb:mem:db");
 		action.setParameterValue(creationScheme.getParameter("user"), "SA");
 		action.setParameterValue(creationScheme.getParameter("password"), "");
+		action.setParameterValue(creationScheme.getParameter("dbtype"), DbType.HSQLDB);
 		action.doAction();
 		assertTrue(action.hasActionExecutionSucceeded());
 		vmi = action.getNewVirtualModelInstance();

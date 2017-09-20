@@ -80,6 +80,7 @@ import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Import;
 import org.openflexo.model.annotations.Imports;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.PropertyIdentifier;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
@@ -90,6 +91,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance.HbnVirtualModelInstanceImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
@@ -112,9 +114,18 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @XMLElement
 public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
+	@PropertyIdentifier(type = JDBCDbType.DbType.class)
+	String DB_TYPE = "dbtype";
 	String ADDRESS_KEY = "address";
 	String USER_KEY = "user";
 	String PASSWORD_KEY = "password";
+
+	@Getter(DB_TYPE)
+	@XMLAttribute
+	JDBCDbType.DbType getDbType();
+
+	@Setter(DB_TYPE)
+	void setDbType(JDBCDbType.DbType aType);
 
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute
@@ -280,9 +291,6 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 		private static final Logger logger = FlexoLogger.getLogger(HbnVirtualModelInstance.class.getPackage().toString());
 
-		protected final static String JDBC_DRIVER_CLASS_NAME = "org.hsqldb.jdbcDriver";
-		protected final static String HBN_DIALECT = "org.hibernate.dialect.HSQLDialect";
-
 		private JDBCConnection jdbcConnection;
 
 		protected HbnConfig config;
@@ -372,7 +380,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 				JDBCFactory factory;
 				try {
 					factory = new JDBCFactory();
-					jdbcConnection = factory.makeNewModel(getAddress(), getUser(), getPassword());
+					jdbcConnection = factory.makeNewModel(getDbType(), getAddress(), getUser(), getPassword());
 				} catch (ModelDefinitionException e) {
 					return null;
 				}
@@ -426,12 +434,12 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 			config = new HbnConfig(new BootstrapServiceRegistryBuilder().build());
 
-			config.setProperty("hibernate.connection.driver_class", JDBC_DRIVER_CLASS_NAME);
+			config.setProperty("hibernate.connection.driver_class", JDBCDbType.getDriverClassName(getJDBCConnection().getDbType()));
 			config.setProperty("hibernate.connection.url", getAddress());
 			config.setProperty("hibernate.connection.username", getUser());
 			config.setProperty("hibernate.connection.password", getPassword());
 			config.setProperty("hibernate.connection.pool_size", "1");
-			config.setProperty("hibernate.dialect", HBN_DIALECT);
+			config.setProperty("hibernate.dialect", JDBCDbType.getHibernateDialect(getJDBCConnection().getDbType()));
 			config.setProperty("hibernate.show_sql", "true");
 			// creates object, wipe out if already exists
 			// config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
