@@ -84,7 +84,4 @@ extends
     @Setter(TECHNOLOGY_CONTEXT_MANAGER)
     void setTechnologyContextManager(JDBCTechnologyContextManager paramJDBCTechnologyContextManager);
 
-    // TODO connect to model
-    @Getter("model")
-    JDBCConnection getModel();
 }
