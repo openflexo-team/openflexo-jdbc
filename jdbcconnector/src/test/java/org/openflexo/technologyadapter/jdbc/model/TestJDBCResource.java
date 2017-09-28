@@ -37,8 +37,10 @@ package org.openflexo.technologyadapter.jdbc.model;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -218,14 +220,19 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		Connection conn = model.getConnection();
 
 		if (conn == null) {
-			if (model.getException() != null) {
-				log("Pas de connection" + model.getException().getMessage());
+			Exception exc = model.getException();
+			if (exc != null) {
+				if (exc.getCause() instanceof SQLException) {
+					log("Pas de connection, mais test OK:  " + exc.getMessage());
+				}
+				else {
+					fail(exc.getMessage());
+				}
 			}
 			else {
-				log("Pas de connection MAIS pas d'exception ");
+				fail("Pas de connection MAIS pas d'exception ");
 			}
 		}
-		assertNotNull(conn);
 		resource.save(null);
 	}
 
