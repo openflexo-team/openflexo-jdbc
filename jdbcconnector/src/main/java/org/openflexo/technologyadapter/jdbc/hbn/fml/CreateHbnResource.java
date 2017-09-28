@@ -438,8 +438,8 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 						if (getDbType().isValid()) {
 							dbType = getDbType().getBindingValue(evaluationContext);
 						}
-						else if (hbnModelSlot.getDbType().isValid()) {
-							dbType = hbnModelSlot.getDbType().getBindingValue(evaluationContext);
+						else if (hbnModelSlot.getDbType() != null) {
+							dbType = hbnModelSlot.getDbType();
 						}
 					} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 						e.printStackTrace();

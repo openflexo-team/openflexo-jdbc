@@ -109,7 +109,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
 
-	@PropertyIdentifier(type = DataBinding.class)
+	@PropertyIdentifier(type = DbType.class)
 	String DB_TYPE = "dbtype";
 	@PropertyIdentifier(type = DataBinding.class)
 	String ADDRESS_KEY = "address";
@@ -120,10 +120,10 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 
 	@Getter(DB_TYPE)
 	@XMLAttribute
-	DataBinding<DbType> getDbType();
+	DbType getDbType();
 
 	@Setter(DB_TYPE)
-	void setDbType(DataBinding<DbType> aType);
+	void setDbType(DbType aType);
 
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute

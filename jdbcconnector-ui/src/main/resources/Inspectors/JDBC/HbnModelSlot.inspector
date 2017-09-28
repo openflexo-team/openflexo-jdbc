@@ -1,51 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Inspector xmlns:p="http://www.openflexo.org/pamela/" id="0"
-	p:modelEntity="org.openflexo.gina.utils.FIBInspector" align="left"
-	borderTop="0" borderLeft="0" trackViewPortHeight="true"
-	trackViewPortWidth="true" borderBottom="0" border="empty"
-	sizeAdjustment="OriginalSize" titleFont="SansSerif,0,12" layout="border"
-	borderRight="0" controllerClassName="org.openflexo.inspector.FIBInspectorController"
-	font="SansSerif,0,12" name="Inspector">
-	<TabPanel id="1" constraints="border(location=center)" name="Tab">
-		<Tab id="2" title="Basic" align="left" borderTop="0" borderLeft="0"
-			trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0"
-			border="empty" sizeAdjustment="OriginalSize" titleFont="SansSerif,0,11"
-			layout="twocols" borderRight="0" useScrollBar="true"
-			verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" index="0"
-			horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" font="SansSerif,0,11"
-			name="BasicTab">
-			<Label id="3" label="address" align="right" index="23"
-				constraints="twocols(expandHorizontally=false;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)"
-				name="address_label" />
-			<Custom componentClassName="org.openflexo.gina.swing.utils.BindingSelector"
-				localize="true" index="24" data="data.address"
-				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)">
-			</Custom>
-			<Label index="25" label="user" align="left" localize="true"
-				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)"
-				name="UserLabel" />
-			<Custom componentClassName="org.openflexo.gina.swing.utils.BindingSelector"
-				localize="true" index="26" data="data.user"
-				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)">
-			</Custom>
-			<Label index="27" label="password" align="left"
-				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)"
-				name="PasswordLabel" />
-			<Custom componentClassName="org.openflexo.gina.swing.utils.BindingSelector"
-				localize="true" index="28" data="data.password"
-				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)">
-			</Custom>
-
-		</Tab>
-		<Tab id="12" title="Advanced" align="left" borderTop="0"
-			borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true"
-			borderBottom="0" border="empty" sizeAdjustment="OriginalSize"
-			titleFont="SansSerif,0,11" layout="twocols" borderRight="0"
-			useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED"
-			index="2" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED"
-			font="SansSerif,0,11" name="AdvancedTab" />
-	</TabPanel>
-	<FIBVariable id="13"
-		type="org.openflexo.technologyadapter.jdbc.HbnModelSlot" name="data" />
-	<LocalizedDictionary id="14" />
+<Inspector xmlns:p="http://www.openflexo.org/pamela/" id="0" p:modelEntity="org.openflexo.gina.utils.FIBInspector" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" titleFont="SansSerif,0,12" layout="border" borderRight="0" controllerClassName="org.openflexo.inspector.FIBInspectorController" font="SansSerif,0,12" name="Inspector">
+  <TabPanel id="1" constraints="border(location=center)" name="Tab">
+    <Tab id="2" title="Basic" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" titleFont="SansSerif,0,11" layout="twocols" borderRight="0" useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" index="0" font="SansSerif,0,11" name="BasicTab">
+      <Label id="3" label="type" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="0" name="ClassLabel" />
+      <TextField id="4" columns="10" localize="true" readOnly="true" data="data.implementedInterface.simpleName" constraints="twocols(expandHorizontally=true;expandVertically=false;index=1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="1" name="TypeTextField" />
+      <Label id="5" label="name" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="2" name="NameLabel" />
+      <TextField id="6" columns="10" localize="true" data="data.name" constraints="twocols(expandHorizontally=true;expandVertically=false;index=1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="3" name="Name" />
+      <Label id="7" label="technology" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=2;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="6" name="TechnologyAdapterLabel" />
+      <DropDown id="8" iteratorClassName="org.openflexo.foundation.technologyadapter.TechnologyAdapter" showText="true" list="data.serviceManager.technologyAdapterService.technologyAdapters" showIcon="true" localize="true" manageDynamicModel="true" format="object.name" icon="controller.getTechnologyAdapterController(object).technologyIcon" readOnly="true" data="data.roleTechnologyAdapter" constraints="twocols(expandHorizontally=true;expandVertically=false;index=3;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="7" name="TechnologyAdapterDD" />
+      <Label id="9" label="read_only" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=10;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="15" name="ReadOnly" />
+      <CheckBox id="10" localize="true" data="data.isReadOnly" constraints="twocols(expandHorizontally=false;expandVertically=false;index=11;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="16" name="ReadOnlyCB" />
+      <Label id="11" label="virtual_model" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="16" name="VirtualModelLabel" />
+      <Custom id="12" componentClassName="org.openflexo.fml.controller.widget.FIBVirtualModelSelector" dataClassForComponent="org.openflexo.foundation.fml.rm.VirtualModelResource" localize="true" manageDynamicModel="true" data="data.accessedVirtualModelResource" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="17" name="VirtualModelSelector">
+        <Assignment id="13" variable="component.containerVirtualModel" mandatory="true" />
+        <Assignment id="14" variable="component.serviceManager" mandatory="true" />
+        <Assignment id="15" variable="component.flexoController" mandatory="true" />
+        <Assignment id="16" variable="component.selectableCondition" mandatory="true" />
+        <Assignment id="17" variable="component.virtualModelLibrary" value="data.virtualModelLibrary" mandatory="true" />
+      </Custom>
+      <Label id="18" label="db_type" align="left" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" name="Label" />
+      <DropDown id="19" autoSelectFirstRow="true" staticList="" iteratorClassName="org.openflexo.technologyadapter.jdbc.model.JDBCDbType$DbType" showText="true" list="" showIcon="false" format="object" data="data.dbType" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" name="dropdown" />
+      <Label id="20" label="address" align="right" constraints="twocols(expandHorizontally=false;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="23" name="address_label" />
+      <Custom id="21" componentClassName="org.openflexo.gina.swing.utils.BindingSelector" dataClassForComponent="org.openflexo.connie.DataBinding" localize="true" manageDynamicModel="true" data="data.address" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="24" name="CustomSelector">
+        <Assignment id="22" variable="component.bindable" mandatory="true" />
+      </Custom>
+      <Label id="23" label="user" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="25" name="UserLabel" />
+      <Custom id="24" componentClassName="org.openflexo.gina.swing.utils.BindingSelector" dataClassForComponent="org.openflexo.connie.DataBinding" localize="true" manageDynamicModel="true" data="data.user" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="26" name="CustomSelector2">
+        <Assignment id="25" variable="component.bindable" mandatory="true" />
+      </Custom>
+      <Label id="26" label="password" align="left" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="27" name="PasswordLabel" />
+      <Custom id="27" componentClassName="org.openflexo.gina.swing.utils.BindingSelector" dataClassForComponent="org.openflexo.connie.DataBinding" localize="true" manageDynamicModel="true" data="data.password" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="28" name="CustomSelector3">
+        <Assignment id="28" variable="component.bindable" mandatory="true" />
+      </Custom>
+      <Label id="29" label="cardinality" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=2;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="40" name="CardinalityLabel" />
+      <DropDown id="30" iteratorClassName="org.openflexo.foundation.fml.PropertyCardinality" showText="true" showIcon="false" format="object.stringRepresentation" data="data.cardinality" constraints="twocols(expandHorizontally=false;expandVertically=false;index=3;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="41" name="CardinalityDD" />
+      <Label id="31" label="container" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=2;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="42" name="Label4" />
+      <Custom id="32" componentClassName="org.openflexo.gina.swing.utils.BindingSelector" dataClassForComponent="org.openflexo.connie.DataBinding" manageDynamicModel="true" data="data.container" constraints="twocols(expandHorizontally=true;expandVertically=false;index=3;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="43" name="ContainerSelector">
+        <Assignment id="33" variable="component.bindable" mandatory="true" />
+      </Custom>
+      <Label id="34" label="default_value" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=2;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="44" name="Label5" />
+      <Custom id="35" componentClassName="org.openflexo.gina.swing.utils.BindingSelector" dataClassForComponent="org.openflexo.connie.DataBinding" manageDynamicModel="true" data="data.defaultValue" constraints="twocols(expandHorizontally=true;expandVertically=false;index=3;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="45" name="DefaultValueSelector">
+        <Assignment id="36" variable="component.bindable" mandatory="true" />
+      </Custom>
+      <Label id="37" label="required" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=2;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="46" name="Label7" />
+      <CheckBox id="38" selected="true" data="data.isRequired" constraints="twocols(expandHorizontally=false;expandVertically=false;index=3;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="47" name="checkbox" />
+    </Tab>
+    <Tab id="39" title="Advanced" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" titleFont="SansSerif,0,11" layout="twocols" borderRight="0" useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" index="2" font="SansSerif,0,11" name="AdvancedTab">
+      <Label id="40" label="object_type" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="0" name="ObjectTypeLabel" />
+      <TextField id="41" columns="10" localize="true" readOnly="true" data="data.implementedInterface.simpleName" constraints="twocols(expandHorizontally=true;expandVertically=false;index=1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="1" name="ObjectTypeTextField" />
+      <Label id="42" label="viewpoint" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="2" name="ViewPointLabel" />
+      <TextField id="43" columns="10" localize="true" readOnly="true" data="data.declaringVirtualModel.name" constraints="twocols(expandHorizontally=true;expandVertically=false;index=1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="3" name="ViewPointTextField" />
+      <Label id="44" label="uri" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=4;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="4" name="URILabel" />
+      <TextField id="45" columns="10" localize="true" readOnly="true" data="data.uRI" constraints="twocols(expandHorizontally=true;expandVertically=false;index=5;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="5" name="URITextField" />
+      <Label id="46" label="flexo_concept" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=4;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="6" name="FlexoConceptLabel" />
+      <TextField id="47" columns="10" localize="true" readOnly="true" data="data.flexoConcept.name" constraints="twocols(expandHorizontally=true;expandVertically=false;index=5;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="7" name="FlexoConceptTextField" />
+      <Label id="48" label="flexo_id" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="100" name="FlexoIDLabel" />
+      <TextField id="49" localize="true" readOnly="true" data="data.flexoID.toString" constraints="twocols(expandHorizontally=true;expandVertically=false;index=1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="101" name="FlexoID" />
+      <Label id="50" label="hash" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=3;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="102" name="HashLabel" />
+      <TextField id="51" localize="true" readOnly="true" data="data.hash" constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="103" name="HashCode" />
+    </Tab>
+    <Tab id="52" title="Doc" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" titleFont="SansSerif,0,11" layout="twocols" borderRight="0" useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" index="3" font="SansSerif,0,11" name="DocTab">
+      <Label id="53" label="author" align="left" localize="true" constraints="twocols(expandHorizontally=false;expandVertically=false;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="0" name="AuthorLabel" />
+      <TextField id="54" columns="10" localize="true" data="data.author" constraints="twocols(expandHorizontally=true;expandVertically=false;index=1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" index="1" name="AuthorTextField" />
+      <Label id="55" label="description" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)" index="10" name="DescriptionLabel" />
+      <TextArea id="56" rows="3" columns="8" validateOnReturn="true" data="data.description" useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" index="11" name="TextArea" />
+    </Tab>
+  </TabPanel>
+  <LocalizedDictionary id="57" />
+  <FIBVariable id="58" type="org.openflexo.technologyadapter.jdbc.HbnModelSlot" name="data" />
 </Inspector>
