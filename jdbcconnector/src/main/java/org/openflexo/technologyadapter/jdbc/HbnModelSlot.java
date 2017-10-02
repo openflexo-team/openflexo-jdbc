@@ -64,12 +64,9 @@ import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
 import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoBehaviours;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoRoles;
-import org.openflexo.foundation.fml.rt.FMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
-import org.openflexo.foundation.fml.rt.action.ModelSlotInstanceConfiguration;
-import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -151,33 +148,6 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 		@Override
 		public JDBCTechnologyAdapter getModelSlotTechnologyAdapter() {
 			return (JDBCTechnologyAdapter) super.getModelSlotTechnologyAdapter();
-		}
-
-		/*@Override
-		public ModelSlotInstanceConfiguration<? extends FreeModelSlot<JDBCConnection>, JDBCConnection> createConfiguration(
-				FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {
-			return new JDBCModelSlotInstanceConfiguration(this, fci, rc);
-		}
-		
-		@Override
-		public TechnologyAdapterResource<JDBCConnection, ?> createProjectSpecificEmptyResource(VirtualModelInstance<?, ?> view,
-				String filename, String modelUri) {
-			// TODO create empty resource
-			return null;
-		}
-		
-		@Override
-		public TechnologyAdapterResource<JDBCConnection, ?> createSharedEmptyResource(FlexoResourceCenter<?> resourceCenter,
-				String relativePath, String filename, String modelUri) {
-			// TODO create empty resource
-			return null;
-		}*/
-
-		@Override
-		public ModelSlotInstanceConfiguration<? extends FMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter>, HbnVirtualModelInstance> createConfiguration(
-				FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {
-			// TODO Auto-generated method stub
-			return super.createConfiguration(fci, rc);
 		}
 
 		private HbnVirtualModelInstanceType type;
