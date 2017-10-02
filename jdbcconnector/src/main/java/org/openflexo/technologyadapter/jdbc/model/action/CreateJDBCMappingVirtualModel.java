@@ -77,6 +77,7 @@ import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCResource
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
@@ -117,9 +118,10 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		FlexoObjectImpl.addActionForClass(CreateJDBCMappingVirtualModel.actionType, VirtualModel.class);
 	}
 
-	private String address = "jdbc:hsqldb:hsql://localhost/";
-	private String user = "SA";
-	private String password = "";
+	private JDBCDbType dbType;
+	private String address;
+	private String user;
+	private String password;
 
 	private String virtualModelName = "Data";
 
@@ -128,6 +130,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 	private Map<JDBCTable, FlexoConcept> tableToConcepts = new HashMap<>();
 
 	private VirtualModel virtualModel = null;
+
+	public JDBCDbType getDbType() {
+		return dbType;
+	}
+
+	public void setDbType(JDBCDbType dbType) {
+		this.dbType = dbType;
+	}
 
 	public String getAddress() {
 		return address;
@@ -242,7 +252,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	public JDBCConnection createJdbcConnection() throws ModelDefinitionException {
 		JDBCFactory factory = new JDBCFactory();
-		return factory.makeNewModel(getAddress(), getUser(), getPassword());
+		return factory.makeNewModel(getDbType(), getAddress(), getUser(), getPassword());
 	}
 
 	public VirtualModel getVirtualModel() {
@@ -253,6 +263,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		CreationScheme creationScheme = fmlFactory.newCreationScheme();
 		creationScheme.setName("create");
 
+		addParameter(fmlFactory, creationScheme, "dbtype", JDBCDbType.class, getDbType());
 		addParameter(fmlFactory, creationScheme, "address", String.class, getAddress());
 		addParameter(fmlFactory, creationScheme, "user", String.class, getUser());
 		addParameter(fmlFactory, creationScheme, "password", String.class, null);
@@ -267,6 +278,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		action.setAddress(new DataBinding("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setUser(new DataBinding("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setPassword(new DataBinding("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setDbType(new DataBinding("parameters.dbtype", creationScheme, JDBCDbType.class, DataBinding.BindingDefinitionType.GET));
 		assignation.setAssignableAction(action);
 
 		creationScheme.setControlGraph(assignation);
@@ -324,7 +336,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		}
 	}
 
-	private void addParameter(FMLModelFactory fmlFactory, CreationScheme creationScheme, String address, Type type, String defaultValue) {
+	private void addParameter(FMLModelFactory fmlFactory, CreationScheme creationScheme, String address, Type type, Object defaultValue) {
 		FlexoBehaviourParameter parameter = fmlFactory.newParameter(creationScheme);
 		parameter.setName(address);
 		parameter.setType(type);

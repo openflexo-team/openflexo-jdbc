@@ -81,6 +81,10 @@ public abstract class JDBCTestCase extends OpenflexoProjectAtRunTimeTestCase {
 		return connection.getSchema().createTable(tableName, attributes);
 	}
 
+	protected static void dropTable(JDBCTable table) {
+		connection.getSchema().dropTable(table);
+	}
+
 	protected static String[] createPrimaryKeyIntegerAttribute(String name) {
 		String[] returned = { name, "INT", "PRIMARY KEY", "NOT NULL", "IDENTITY" };
 		return returned;

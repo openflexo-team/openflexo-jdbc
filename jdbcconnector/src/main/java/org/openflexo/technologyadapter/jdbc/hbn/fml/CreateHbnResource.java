@@ -79,6 +79,7 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResource;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResourceFactory;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 
 /**
  * {@link EditionAction} used to create an empty {@link HbnVirtualModelInstance} resource
@@ -101,11 +102,13 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 	@PropertyIdentifier(type = CreateHbnResourceParameter.class, cardinality = Cardinality.LIST)
 	public static final String PARAMETERS_KEY = "parameters";
 
-	@PropertyIdentifier(type = String.class)
+	@PropertyIdentifier(type = DataBinding.class)
+	String DB_TYPE = "dbtype";
+	@PropertyIdentifier(type = DataBinding.class)
 	String ADDRESS_KEY = "address";
-	@PropertyIdentifier(type = String.class)
+	@PropertyIdentifier(type = DataBinding.class)
 	String USER_KEY = "user";
-	@PropertyIdentifier(type = String.class)
+	@PropertyIdentifier(type = DataBinding.class)
 	String PASSWORD_KEY = "password";
 
 	public VirtualModelResource getVirtualModelResource();
@@ -115,6 +118,13 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 	public VirtualModel getVirtualModel();
 
 	public void setVirtualModel(VirtualModel virtualModel);
+
+	@Getter(DB_TYPE)
+	@XMLAttribute
+	DataBinding<JDBCDbType> getDbType();
+
+	@Setter(DB_TYPE)
+	void setDbType(DataBinding<JDBCDbType> aType);
 
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute
@@ -172,6 +182,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 	abstract class CreateHbnResourceImpl extends AbstractCreateResourceImpl<HbnModelSlot, HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements CreateHbnResource {
 
+		private DataBinding<JDBCDbType> dbType;
 		private DataBinding<String> address;
 		private DataBinding<String> user;
 		private DataBinding<String> password;
@@ -212,6 +223,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				getPropertyChangeSupport().firePropertyChange("virtualModelResource", oldValue, virtualModelResource);
 			}
 		}
+
 
 		@Override
 		public VirtualModel getVirtualModel() {
@@ -421,10 +433,22 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 						e.printStackTrace();
 					}
+					JDBCDbType dbType = null;
+					try {
+						if (getDbType().isValid()) {
+							dbType = getDbType().getBindingValue(evaluationContext);
+						}
+						else if (hbnModelSlot.getDbType() != null) {
+							dbType = hbnModelSlot.getDbType();
+						}
+					} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
+						e.printStackTrace();
+					}
 
 					data.setAddress(url);
 					data.setUser(user);
 					data.setPassword(password);
+					data.setDbType(dbType);
 
 					// Now we should execute CreationScheme
 					System.out.println("Executing FML: " + getCreationScheme().getFMLRepresentation());
@@ -441,7 +465,6 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 						}
 					}
 
-					System.out.println("Et hop....");
 					creationSchemeAction.doAction();
 
 					// newResource.getFactory().initializeModel(data, getCreationScheme(), getParameters(), evaluationContext);
@@ -460,6 +483,26 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				throw new FlexoException(e);
 			}
 
+		}
+
+		@Override
+		public DataBinding<JDBCDbType> getDbType() {
+			if (dbType == null) {
+				dbType = new DataBinding<>(this, JDBCDbType.class, DataBinding.BindingDefinitionType.GET);
+				dbType.setBindingName("dbtype");
+			}
+			return dbType;
+		}
+
+		@Override
+		public void setDbType(DataBinding<JDBCDbType> aDbType) {
+			if (aDbType != null) {
+				aDbType.setOwner(this);
+				aDbType.setDeclaredType(JDBCDbType.class);
+				aDbType.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				aDbType.setBindingName("dbtype");
+			}
+			this.dbType = aDbType;
 		}
 
 		@Override

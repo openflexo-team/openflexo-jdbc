@@ -54,6 +54,7 @@ import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel.TableMapping;
 import org.openflexo.toolbox.StringUtils;
@@ -145,6 +146,19 @@ public class CreateJDBCVirtualModelWizard extends FlexoWizard {
 				String oldValue = getNewVirtualModelName();
 				action.setNewVirtualModelName(newVirtualModelName);
 				getPropertyChangeSupport().firePropertyChange("newVirtualModelName", oldValue, newVirtualModelName);
+				checkValidity();
+			}
+		}
+
+		public JDBCDbType getDbType() {
+			return action.getDbType();
+		}
+
+		public void setDbType(JDBCDbType aDbType) {
+			if (!aDbType.equals(getDbType())) {
+				JDBCDbType oldValue = getDbType();
+				action.setDbType(aDbType);
+				getPropertyChangeSupport().firePropertyChange("dbType", oldValue, aDbType);
 				checkValidity();
 			}
 		}

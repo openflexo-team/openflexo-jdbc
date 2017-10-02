@@ -50,6 +50,7 @@ import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.PropertyIdentifier;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
@@ -57,6 +58,7 @@ import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 
@@ -72,9 +74,18 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 @FML("CreateJDBCResource")
 public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter> {
 
+	@PropertyIdentifier(type = JDBCDbType.class)
+	String DB_TYPE = "dbtype";
 	String USER = "user";
 	String PASSWORD = "password";
 	String ADDRESS = "address";
+
+	@Getter(DB_TYPE)
+	@XMLAttribute
+	DataBinding<JDBCDbType> getDbType();
+
+	@Setter(DB_TYPE)
+	void setDbType(DataBinding<JDBCDbType> aType);
 
 	@Getter(USER)
 	@XMLAttribute
@@ -187,6 +198,7 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 				connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
 				connection.setUser(evaluateDataBinding(getUser(), evaluationContext));
 				connection.setPassword(evaluateDataBinding(getPassword(), evaluationContext));
+				connection.setDbType(evaluateDataBinding(getDbType(), evaluationContext));
 
 				return connection;
 			} catch (ModelDefinitionException | FileNotFoundException | ResourceLoadingCancelledException e) {

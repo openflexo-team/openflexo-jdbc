@@ -33,29 +33,12 @@
  *
  */
 
-/*
- * (c) Copyright 2013 Openflexo
- *
- * This file is part of OpenFlexo.
- *
- * OpenFlexo is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenFlexo is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 package org.openflexo.technologyadapter.jdbc.model;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -71,10 +54,12 @@ import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Import;
 import org.openflexo.model.annotations.Imports;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.PropertyIdentifier;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.util.DriverWrapper;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 @ModelEntity
@@ -84,11 +69,36 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 		@Import(JDBCLine.class), @Import(JDBCValue.class), @Import(JDBCResultSetDescription.class) })
 public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCConnection> {
 
+	@PropertyIdentifier(type = JDBCDbType.class)
+	String DB_TYPE = "dbtype";
+	String DRIVER_JAR_NAME = "driver_jar";
+	String DRIVER_CLASS_NAME = "driver_class_name";
 	String ADDRESS = "address";
 	String USER = "user";
 	String PASSWORD = "password";
 	String SCHEMA = "schema";
 	String CONNECTION = "connection";
+
+	@Getter(DRIVER_CLASS_NAME)
+	@XMLAttribute
+	String getDriverClassName();
+
+	@Setter(DRIVER_CLASS_NAME)
+	void setDriverClassName(String className);
+
+	@Getter(DRIVER_JAR_NAME)
+	@XMLAttribute
+	String getDriverJarName();
+
+	@Setter(DRIVER_JAR_NAME)
+	void setDriverJarName(String aType);
+
+	@Getter(DB_TYPE)
+	@XMLAttribute
+	JDBCDbType getDbType();
+
+	@Setter(DB_TYPE)
+	void setDbType(JDBCDbType aType);
 
 	@Getter(ADDRESS)
 	@XMLAttribute
@@ -114,12 +124,17 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 	@Getter(SCHEMA)
 	JDBCSchema getSchema();
 
+	/**
+	 * returns a new SQLConnection, after loading driver if necesary
+	 * 
+	 * @return
+	 */
 	@Getter(value = CONNECTION, ignoreType = true)
 	Connection getConnection();
 
 	JDBCResultSet select(JDBCResultSetDescription description);
 
-	public SQLException getException();
+	public Exception getException();
 
 	/**
 	 * Abstract JDBCConnection implementation using Pamela.
@@ -135,7 +150,32 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 
 		private Connection connection;
 
+		private Exception exception;
+
+		@Override
+		public Exception getException() {
+			return exception;
+		}
+
 		public JDBCConnectionImpl() {
+		}
+
+		@Override
+		public void setDriverJarName(String aName) {
+			performSuperSetter(DRIVER_JAR_NAME, aName);
+			reinitConnection();
+		}
+
+		@Override
+		public void setDriverClassName(String aName) {
+			performSuperSetter(DRIVER_CLASS_NAME, aName);
+			reinitConnection();
+		}
+
+		@Override
+		public void setDbType(JDBCDbType aType) {
+			performSuperSetter(DB_TYPE, aType);
+			reinitConnection();
 		}
 
 		@Override
@@ -157,9 +197,11 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 		}
 
 		private void reinitConnection() {
-			Connection oldValue = connection;
-			connection = null;
-			getPropertyChangeSupport().firePropertyChange(CONNECTION, oldValue, null);
+			if (connection != null) {
+				Connection oldValue = connection;
+				connection = null;
+				getPropertyChangeSupport().firePropertyChange(CONNECTION, oldValue, null);
+			}
 		}
 
 		@Override
@@ -188,6 +230,55 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 			if (connection == null && getAddress() != null) {
 				try {
 					System.out.println("Open connection " + getAddress());
+
+					// try DriverClass and DriverJAr info to connect
+					String classname = getDriverClassName();
+					if (classname != null) {
+
+						Class<?> cl = null;
+						try {
+							cl = Class.forName(classname);
+						} catch (ClassNotFoundException e) {
+							LOGGER.warning("Cannot load JDBC Driver: " + e.getMessage());
+						}
+
+						try {
+							if (cl == null & getDriverJarName() != null) {
+								URL u;
+								u = new URL("file:" + getDriverJarName());
+
+								URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+								cl = Class.forName(classname, true, ucl);
+								if (cl != null) {
+									Driver d = (Driver) cl.newInstance();
+									DriverManager.registerDriver(new DriverWrapper(d));
+								}
+								else {
+									LOGGER.warning("Cannot load JDBC Driver: did not found " + classname + " In Jar " + u.toString());
+									return null;
+								}
+							}
+						} catch (Exception e) {
+							LOGGER.warning("Cannot load JDBC Driver: " + e.getMessage());
+							exception = e;
+							return null;
+						}
+
+						// Use DbType if set
+						if (cl == null && getDbType() != null) {
+
+							try {
+								cl = Class.forName(getDbType().getDriverClassName());
+							} catch (ClassNotFoundException e) {
+								LOGGER.warning(e.getMessage());
+								return null;
+							}
+						}
+						if (cl == null) {
+							LOGGER.warning("Cannot find any driver to connect to Database");
+							return null;
+						}
+					}
 					connection = DriverManager.getConnection(getAddress(), getUser(), getPassword());
 					getPropertyChangeSupport().firePropertyChange(CONNECTION, null, connection);
 				} catch (SQLException e) {
@@ -196,13 +287,6 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 				}
 			}
 			return connection;
-		}
-
-		private SQLException exception;
-
-		@Override
-		public SQLException getException() {
-			return exception;
 		}
 
 		@Override

@@ -69,6 +69,7 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel.TableMapping.ColumnMapping;
@@ -109,9 +110,10 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 
 	private VirtualModel newVirtualModel;
 
-	private String address = "jdbc:hsqldb:hsql://localhost/";
-	private String user = "SA";
-	private String password = "";
+	private JDBCDbType dbType;
+	private String address;
+	private String user;
+	private String password;
 
 	private JDBCConnection jdbcConnection = null;
 	private List<JDBCTable> tablesToBeReflected;
@@ -215,6 +217,14 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 		return newVirtualModel;
 	}
 
+	public JDBCDbType getDbType() {
+		return dbType;
+	}
+
+	public void setDbType(JDBCDbType dbType) {
+		this.dbType = dbType;
+	}
+
 	public String getAddress() {
 		return address;
 	}
@@ -244,7 +254,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 			JDBCFactory factory;
 			try {
 				factory = new JDBCFactory();
-				jdbcConnection = factory.makeNewModel(getAddress(), getUser(), getPassword());
+				jdbcConnection = factory.makeNewModel(getDbType(), getAddress(), getUser(), getPassword());
 				tablesToBeReflected = new ArrayList<>();
 			} catch (ModelDefinitionException e) {
 				e.printStackTrace();

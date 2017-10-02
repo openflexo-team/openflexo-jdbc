@@ -92,11 +92,12 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 		return newInstance(JDBCConnection.class);
 	}
 
-	public JDBCConnection makeNewModel(String address, String user, String password) {
+	public JDBCConnection makeNewModel(JDBCDbType dbType, String address, String user, String password) {
 		JDBCConnection returned = newInstance(JDBCConnection.class);
 		returned.setAddress(address);
 		returned.setUser(user);
 		returned.setPassword(password);
+		returned.setDbType(dbType);
 
 		// System.out.println("Connect to " + address + " user=" + user + " password=" + password);
 		if (returned.getConnection() != null) {

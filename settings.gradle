@@ -7,3 +7,7 @@ include 'jdbcconnector',
 //        includeBuild otherProject
 //    }
 //}
+
+// includeBuild '../pamela'
+// includeBuild '../gina'
+// includeBuild '../diana'
