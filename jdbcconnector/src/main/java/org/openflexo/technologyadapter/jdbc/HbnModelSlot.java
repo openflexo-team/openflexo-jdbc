@@ -86,7 +86,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnVirtualModelInstanceType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnObjectActorReference;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
-import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 
 /**
  * An implementation of a {@link ModelSlot} providing basic access to a relational database, based on Hibernate technology<br>
@@ -109,7 +109,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
 
-	@PropertyIdentifier(type = DbType.class)
+	@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
 	@PropertyIdentifier(type = DataBinding.class)
 	String ADDRESS_KEY = "address";
@@ -120,10 +120,10 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 
 	@Getter(DB_TYPE)
 	@XMLAttribute
-	DbType getDbType();
+	JDBCDbType getDbType();
 
 	@Setter(DB_TYPE)
-	void setDbType(DbType aType);
+	void setDbType(JDBCDbType aType);
 
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute

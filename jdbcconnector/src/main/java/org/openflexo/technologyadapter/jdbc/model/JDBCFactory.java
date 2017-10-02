@@ -50,7 +50,6 @@ import org.openflexo.model.converter.RelativePathResourceConverter;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.model.factory.EditingContext;
 import org.openflexo.model.factory.ModelFactory;
-import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 /**
@@ -93,7 +92,7 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 		return newInstance(JDBCConnection.class);
 	}
 
-	public JDBCConnection makeNewModel(DbType dbType, String address, String user, String password) {
+	public JDBCConnection makeNewModel(JDBCDbType dbType, String address, String user, String password) {
 		JDBCConnection returned = newInstance(JDBCConnection.class);
 		returned.setAddress(address);
 		returned.setUser(user);

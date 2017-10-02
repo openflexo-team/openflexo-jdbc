@@ -114,7 +114,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @XMLElement
 public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
-	@PropertyIdentifier(type = JDBCDbType.DbType.class)
+	@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
 	String ADDRESS_KEY = "address";
 	String USER_KEY = "user";
@@ -122,10 +122,10 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 	@Getter(DB_TYPE)
 	@XMLAttribute
-	JDBCDbType.DbType getDbType();
+	JDBCDbType getDbType();
 
 	@Setter(DB_TYPE)
-	void setDbType(JDBCDbType.DbType aType);
+	void setDbType(JDBCDbType aType);
 
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute
@@ -434,12 +434,12 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 			config = new HbnConfig(new BootstrapServiceRegistryBuilder().build());
 
-			config.setProperty("hibernate.connection.driver_class", JDBCDbType.getDriverClassName(getJDBCConnection().getDbType()));
+			config.setProperty("hibernate.connection.driver_class", getJDBCConnection().getDbType().getDriverClassName());
 			config.setProperty("hibernate.connection.url", getAddress());
 			config.setProperty("hibernate.connection.username", getUser());
 			config.setProperty("hibernate.connection.password", getPassword());
 			config.setProperty("hibernate.connection.pool_size", "1");
-			config.setProperty("hibernate.dialect", JDBCDbType.getHibernateDialect(getJDBCConnection().getDbType()));
+			config.setProperty("hibernate.dialect", getJDBCConnection().getDbType().getHibernateDialect());
 			config.setProperty("hibernate.show_sql", "true");
 			// creates object, wipe out if already exists
 			// config.setProperty("hibernate.hbm2ddl.auto", "create-drop");

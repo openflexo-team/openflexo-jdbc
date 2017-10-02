@@ -71,7 +71,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
-import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel;
 import org.openflexo.test.OrderedRunner;
@@ -374,7 +374,7 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		CreateGenericBehaviourParameter createParameter4 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
 				_editor);
 		createParameter4.setParameterName("dbtype");
-		createParameter4.setParameterType(DbType.class);
+		createParameter4.setParameterType(JDBCDbType.class);
 		createParameter4.doAction();
 		FlexoBehaviourParameter dbTypeParam = createParameter4.getNewParameter();
 		assertNotNull(dbTypeParam);
@@ -391,7 +391,7 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
 		createHbnResourceAction.setUser(new DataBinding<String>("parameters.user"));
 		createHbnResourceAction.setPassword(new DataBinding<String>("parameters.password"));
-		createHbnResourceAction.setDbType(new DataBinding<DbType>("parameters.dbtype"));
+		createHbnResourceAction.setDbType(new DataBinding<JDBCDbType>("parameters.dbtype"));
 		createHbnResourceAction.setResourceName(new DataBinding<String>("(this.name + \"_db\")"));
 		createHbnResourceAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
@@ -417,7 +417,7 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		action.setParameterValue(creationScheme.getParameter("address"), "jdbc:hsqldb:mem:db");
 		action.setParameterValue(creationScheme.getParameter("user"), "SA");
 		action.setParameterValue(creationScheme.getParameter("password"), "");
-		action.setParameterValue(creationScheme.getParameter("dbtype"), DbType.HSQLDB);
+		action.setParameterValue(creationScheme.getParameter("dbtype"), JDBCDbType.HSQLDB);
 		action.doAction();
 		assertTrue(action.hasActionExecutionSucceeded());
 		vmi = action.getNewVirtualModelInstance();

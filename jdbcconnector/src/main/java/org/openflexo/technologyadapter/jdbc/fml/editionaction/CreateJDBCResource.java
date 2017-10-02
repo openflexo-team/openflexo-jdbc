@@ -59,7 +59,6 @@ import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
-import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 
@@ -75,7 +74,7 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 @FML("CreateJDBCResource")
 public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter> {
 
-	@PropertyIdentifier(type = JDBCDbType.DbType.class)
+	@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
 	String USER = "user";
 	String PASSWORD = "password";
@@ -83,10 +82,10 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 
 	@Getter(DB_TYPE)
 	@XMLAttribute
-	DataBinding<DbType> getDbType();
+	DataBinding<JDBCDbType> getDbType();
 
 	@Setter(DB_TYPE)
-	void setDbType(DataBinding<DbType> aType);
+	void setDbType(DataBinding<JDBCDbType> aType);
 
 	@Getter(USER)
 	@XMLAttribute
@@ -199,7 +198,7 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 				connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
 				connection.setUser(evaluateDataBinding(getUser(), evaluationContext));
 				connection.setPassword(evaluateDataBinding(getPassword(), evaluationContext));
-				connection.setDbType(DbType.HSQLDB);
+				connection.setDbType(evaluateDataBinding(getDbType(), evaluationContext));
 
 				return connection;
 			} catch (ModelDefinitionException | FileNotFoundException | ResourceLoadingCancelledException e) {

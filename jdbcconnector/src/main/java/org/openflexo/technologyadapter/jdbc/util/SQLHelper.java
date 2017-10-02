@@ -51,7 +51,6 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
@@ -114,7 +113,7 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), JDBCDbType.getSchemaPattern(jdbcConn.getDbType()), "%", null);
+		ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(), "%", null);
 		while (jdbcTables.next()) {
 			String tableName = jdbcTables.getString("TABLE_NAME");
 
@@ -179,7 +178,7 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), JDBCDbType.getSchemaPattern(jdbcConn.getDbType()),
+		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(),
 				sqlName(table.getName()), "%");
 		while (jdbcCols.next()) {
 			/*

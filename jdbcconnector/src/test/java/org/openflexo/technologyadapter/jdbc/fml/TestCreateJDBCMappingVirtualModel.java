@@ -60,7 +60,7 @@ import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.ModelUtils;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCMappingVirtualModel;
@@ -115,7 +115,7 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 		CreateJDBCMappingVirtualModel action = CreateJDBCMappingVirtualModel.actionType.makeNewAction(viewPoint, new Vector<>(), project);
 		action.setVirtualModelName(VIRTUAL_MODEL_NAME);
 		action.setAddress(address);
-		action.setDbType(DbType.HSQLDB);
+		action.setDbType(JDBCDbType.HSQLDB);
 		action.setGenerateSynchronizationScheme(synchronizationScheme);
 		action.doAction();
 		return action.getVirtualModel();

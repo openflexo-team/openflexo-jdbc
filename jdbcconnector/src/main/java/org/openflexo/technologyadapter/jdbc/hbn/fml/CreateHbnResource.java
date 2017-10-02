@@ -79,7 +79,7 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResource;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResourceFactory;
-import org.openflexo.technologyadapter.jdbc.model.JDBCDbType.DbType;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 
 /**
  * {@link EditionAction} used to create an empty {@link HbnVirtualModelInstance} resource
@@ -121,10 +121,10 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 
 	@Getter(DB_TYPE)
 	@XMLAttribute
-	DataBinding<DbType> getDbType();
+	DataBinding<JDBCDbType> getDbType();
 
 	@Setter(DB_TYPE)
-	void setDbType(DataBinding<DbType> aType);
+	void setDbType(DataBinding<JDBCDbType> aType);
 
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute
@@ -182,7 +182,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 	abstract class CreateHbnResourceImpl extends AbstractCreateResourceImpl<HbnModelSlot, HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements CreateHbnResource {
 
-		private DataBinding<DbType> dbType;
+		private DataBinding<JDBCDbType> dbType;
 		private DataBinding<String> address;
 		private DataBinding<String> user;
 		private DataBinding<String> password;
@@ -433,7 +433,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 						e.printStackTrace();
 					}
-					DbType dbType = null;
+					JDBCDbType dbType = null;
 					try {
 						if (getDbType().isValid()) {
 							dbType = getDbType().getBindingValue(evaluationContext);
@@ -486,19 +486,19 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 		}
 
 		@Override
-		public DataBinding<DbType> getDbType() {
+		public DataBinding<JDBCDbType> getDbType() {
 			if (dbType == null) {
-				dbType = new DataBinding<>(this, DbType.class, DataBinding.BindingDefinitionType.GET);
+				dbType = new DataBinding<>(this, JDBCDbType.class, DataBinding.BindingDefinitionType.GET);
 				dbType.setBindingName("dbtype");
 			}
 			return dbType;
 		}
 
 		@Override
-		public void setDbType(DataBinding<DbType> aDbType) {
+		public void setDbType(DataBinding<JDBCDbType> aDbType) {
 			if (aDbType != null) {
 				aDbType.setOwner(this);
-				aDbType.setDeclaredType(DbType.class);
+				aDbType.setDeclaredType(JDBCDbType.class);
 				aDbType.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
 				aDbType.setBindingName("dbtype");
 			}

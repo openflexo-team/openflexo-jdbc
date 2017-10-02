@@ -130,7 +130,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		assertNotNull(model);
 
-		model.setDbType(JDBCDbType.DbType.GENERIC);
+		model.setDbType(JDBCDbType.GENERIC);
 		model.setAddress(jdbcURL);
 		model.setDriverClassName(jdbcDriverClassname);
 		
@@ -146,7 +146,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		JDBCConnection model = resource.getResourceData(null);
 
-		model.setDbType(JDBCDbType.DbType.HSQLDB);
+		model.setDbType(JDBCDbType.HSQLDB);
 		model.setAddress(jdbcURL);
 		model.setDriverClassName(jdbcDriverClassname);
 
@@ -195,7 +195,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		assertNull(conn);
 		model.setDriverClassName(jdbcDriverClassname);
-		model.setDbType(JDBCDbType.DbType.HSQLDB);
+		model.setDbType(JDBCDbType.HSQLDB);
 	}
 
 	@Test

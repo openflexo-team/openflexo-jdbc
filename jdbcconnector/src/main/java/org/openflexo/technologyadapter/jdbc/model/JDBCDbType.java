@@ -35,20 +35,82 @@
 
 package org.openflexo.technologyadapter.jdbc.model;
 
-public final class JDBCDbType {
+/**
+ * List of Database Types known to Openflexo
+ * 
+ * @author xtof
+ *
+ */
+public enum JDBCDbType {
+	HSQLDB // Hsql in memory dabatase server
+	{
+		@Override
+		public String getDriverClassName() {
+			return "org.hsqldb.jdbcDriver";
+		}
 
-	/**
-	 * List of Database Types known to Openflexo
-	 * 
-	 * @author xtof
-	 *
-	 */
-	public enum DbType {
-		HSQLDB, // Hsql in memory dabatase server
-		POSTGRESQL,
-		SQLSERVER, // Microsoft SQL Server
-		GENERIC // to enable testing with other database not completely supported
-	}
+		@Override
+		public String getHibernateDialect() {
+			return "org.hibernate.dialect.HSQLDialect";
+		}
+
+		@Override
+		public String getSchemaPattern() {
+			return null;
+		}
+	},
+	POSTGRESQL // POSTGRESQL Dababase
+	{
+		@Override
+		public String getDriverClassName() {
+			return "org.postgresql.Driver";
+
+		}
+
+		@Override
+		public String getHibernateDialect() {
+			return "org.hibernate.dialect.PostgreSQLDialect";
+		}
+
+		@Override
+		public String getSchemaPattern() {
+			return "%";
+		}
+	},
+	SQLSERVER // Microsoft SQL Server
+	{
+		@Override
+		public String getDriverClassName() {
+			return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		}
+
+		@Override
+		public String getHibernateDialect() {
+			return "org.hibernate.dialect.SQLServerDialect";
+		}
+
+		@Override
+		public String getSchemaPattern() {
+			return "dbo";
+		}
+	},
+	GENERIC // to enable testing with other database not completely supported
+	{
+		@Override
+		public String getDriverClassName() {
+			return null;
+		}
+
+		@Override
+		public String getHibernateDialect() {
+			return null;
+		}
+
+		@Override
+		public String getSchemaPattern() {
+			return "%";
+		}
+	};
 
 	/**
 	 * 
@@ -58,20 +120,7 @@ public final class JDBCDbType {
 	 *            Database Type
 	 * @return
 	 */
-	public static String getDriverClassName(DbType d) {
-		switch (d) {
-			case HSQLDB:
-				return "org.hsqldb.jdbcDriver";
-			case POSTGRESQL:
-				return "org.postgresql.Driver";
-			case SQLSERVER:
-				return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-			case GENERIC:
-				return null;
-			default:
-				return null;
-		}
-	}
+	abstract public String getDriverClassName();
 
 	/**
 	 * 
@@ -81,20 +130,7 @@ public final class JDBCDbType {
 	 *            Database Type
 	 * @return
 	 */
-	public static String getHibernateDialect(DbType d) {
-		switch (d) {
-			case HSQLDB:
-				return "org.hibernate.dialect.HSQLDialect";
-			case POSTGRESQL:
-				return "org.hsqldb.PostgreSQLDialect";
-			case SQLSERVER:
-				return "org.hibernate.dialect.SQLServerDialect";
-			case GENERIC:
-				return null;
-			default:
-				return null;
-		}
-	}
+	abstract public String getHibernateDialect();
 
 	/**
 	 * 
@@ -104,19 +140,5 @@ public final class JDBCDbType {
 	 *            Database Type
 	 * @return
 	 */
-	public static String getSchemaPattern(DbType d) {
-		switch (d) {
-			case HSQLDB:
-				return "PUBLIC";
-			case POSTGRESQL:
-				return "%";
-			case SQLSERVER:
-				return "dbo";
-			case GENERIC:
-				return "%";
-			default:
-				return "%";
-		}
-	}
-
+	abstract public String getSchemaPattern();
 }

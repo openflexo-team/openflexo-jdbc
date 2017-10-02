@@ -69,7 +69,7 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 		@Import(JDBCLine.class), @Import(JDBCValue.class), @Import(JDBCResultSetDescription.class) })
 public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>, ResourceData<JDBCConnection> {
 
-	@PropertyIdentifier(type = JDBCDbType.DbType.class)
+	@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
 	String DRIVER_JAR_NAME = "driver_jar";
 	String DRIVER_CLASS_NAME = "driver_class_name";
@@ -95,10 +95,10 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 
 	@Getter(DB_TYPE)
 	@XMLAttribute
-	JDBCDbType.DbType getDbType();
+	JDBCDbType getDbType();
 
 	@Setter(DB_TYPE)
-	void setDbType(JDBCDbType.DbType aType);
+	void setDbType(JDBCDbType aType);
 
 	@Getter(ADDRESS)
 	@XMLAttribute
@@ -173,7 +173,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 		}
 
 		@Override
-		public void setDbType(JDBCDbType.DbType aType) {
+		public void setDbType(JDBCDbType aType) {
 			performSuperSetter(DB_TYPE, aType);
 			reinitConnection();
 		}
@@ -262,7 +262,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 						if (cl == null && getDbType() != null) {
 
 							try {
-								cl = Class.forName(JDBCDbType.getDriverClassName(getDbType()));
+								cl = Class.forName(getDbType().getDriverClassName());
 							} catch (ClassNotFoundException e) {
 								LOGGER.warning(e.getMessage());
 								return null;
