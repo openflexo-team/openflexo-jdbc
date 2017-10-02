@@ -164,25 +164,6 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			return (JDBCTechnologyAdapter) super.getModelSlotTechnologyAdapter();
 		}
 
-		/*@Override
-		public ModelSlotInstanceConfiguration<? extends FreeModelSlot<JDBCConnection>, JDBCConnection> createConfiguration(
-				FlexoConceptInstance fci, FlexoResourceCenter<?> rc) {
-			return new JDBCModelSlotInstanceConfiguration(this, fci, rc);
-		}
-		
-		@Override
-		public TechnologyAdapterResource<JDBCConnection, ?> createProjectSpecificEmptyResource(VirtualModelInstance<?, ?> view,
-				String filename, String modelUri) {
-			// TODO create empty resource
-			return null;
-		}
-		
-		@Override
-		public TechnologyAdapterResource<JDBCConnection, ?> createSharedEmptyResource(FlexoResourceCenter<?> resourceCenter,
-				String relativePath, String filename, String modelUri) {
-			// TODO create empty resource
-			return null;
-		}*/
 
 		@Override
 		public ModelSlotInstanceConfiguration<? extends FMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter>, HbnVirtualModelInstance> createConfiguration(

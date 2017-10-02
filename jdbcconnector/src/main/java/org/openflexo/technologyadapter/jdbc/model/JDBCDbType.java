@@ -56,7 +56,7 @@ public enum JDBCDbType {
 
 		@Override
 		public String getSchemaPattern() {
-			return null;
+			return "PUBLIC";
 		}
 	},
 	POSTGRESQL // POSTGRESQL Dababase
