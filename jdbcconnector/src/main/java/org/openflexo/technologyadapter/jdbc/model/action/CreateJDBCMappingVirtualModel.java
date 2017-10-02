@@ -278,7 +278,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		action.setAddress(new DataBinding("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setUser(new DataBinding("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setPassword(new DataBinding("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setPassword(new DataBinding("parameters.dbtype", creationScheme, JDBCDbType.class, DataBinding.BindingDefinitionType.GET));
+		action.setDbType(new DataBinding("parameters.dbtype", creationScheme, JDBCDbType.class, DataBinding.BindingDefinitionType.GET));
 		assignation.setAssignableAction(action);
 
 		creationScheme.setControlGraph(assignation);

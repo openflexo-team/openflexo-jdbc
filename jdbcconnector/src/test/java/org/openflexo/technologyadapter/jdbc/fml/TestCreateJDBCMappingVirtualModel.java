@@ -43,7 +43,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openflexo.foundation.FlexoEditor;
+import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
+import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelRepository;
@@ -53,6 +55,7 @@ import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstanceRepository;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.action.CreationSchemeAction;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResourceFactory;
 import org.openflexo.foundation.resource.SaveResourceException;
@@ -82,6 +85,12 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 
 	private final String VIRTUAL_MODEL_NAME = "TestVirtualModel";
 	private final String VIRTUAL_MODEL_INSTANCE_NAME = "testVirtualModel";
+
+	protected final static String jdbcBaseURL = "jdbc:hsqldb:mem:";
+	protected final static String jdbcDriverClassname = "org.hsqldb.jdbcDriver";
+	protected final static String jdbcUser = "sa";
+	protected final static String jdbcPwd = "";
+
 
 	@AfterClass
 	public static void tearDownClass() {
@@ -116,6 +125,8 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 		action.setVirtualModelName(VIRTUAL_MODEL_NAME);
 		action.setAddress(address);
 		action.setDbType(JDBCDbType.HSQLDB);
+		action.setUser(jdbcUser);
+		action.setPassword(jdbcPwd);
 		action.setGenerateSynchronizationScheme(synchronizationScheme);
 		action.doAction();
 		return action.getVirtualModel();
@@ -153,12 +164,22 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 	}
 
 	private FMLRTVirtualModelInstance createVirtualModelInstance(FlexoEditor project, FMLRTVirtualModelInstance containerVMI,
-			VirtualModel virtualModel) throws SaveResourceException, ModelDefinitionException {
+			VirtualModel virtualModel, String address) throws SaveResourceException, ModelDefinitionException {
 		CreateBasicVirtualModelInstance action = CreateBasicVirtualModelInstance.actionType.makeNewAction(containerVMI, null, project);
 		action.setNewVirtualModelInstanceName("data");
 		action.setNewVirtualModelInstanceTitle("data");
 		action.setVirtualModel(virtualModel);
-		action.setCreationScheme(virtualModel.getCreationSchemes().get(0));
+		CreationScheme creationScheme = virtualModel.getCreationSchemes().get(0);
+		action.setCreationScheme(creationScheme);
+		CreationSchemeAction creationAction = action.getCreationSchemeAction();
+		FlexoBehaviourParameter pDbType = creationScheme.getParameter("dbtype");
+		FlexoBehaviourParameter pAddress = creationScheme.getParameter("address");
+		FlexoBehaviourParameter pPwd = creationScheme.getParameter("password");
+		FlexoBehaviourParameter pUser = creationScheme.getParameter("user");
+		creationAction.setParameterValue(pDbType, JDBCDbType.HSQLDB);
+		creationAction.setParameterValue(pAddress, address);
+		creationAction.setParameterValue(pUser, jdbcUser);
+		creationAction.setParameterValue(pPwd, jdbcPwd);
 		action.doAction();
 
 		return action.getNewVirtualModelInstance();
@@ -176,7 +197,7 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Generate VirtualModel");
-		VirtualModel virtualModel = generateVirtualModel(project, viewPoint, "jdbc:hsqldb:mem:.", false);
+		VirtualModel virtualModel = generateVirtualModel(project, viewPoint, jdbcBaseURL + ".", false);
 		Assert.assertNotNull(virtualModel);
 		Assert.assertEquals(0, virtualModel.getFlexoConcepts().size());
 	}
@@ -196,7 +217,7 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Prepare database");
-		JDBCConnection connection = prepareDatabase("noSync");
+		JDBCConnection connection = prepareDatabase(jdbcBaseURL + "noSync");
 
 		log("Generate VirtualModel");
 		VirtualModel virtualModel = generateVirtualModel(project, viewPoint, connection.getAddress(), false);
@@ -219,7 +240,7 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Prepare database");
-		JDBCConnection connection = prepareDatabase("sync");
+		JDBCConnection connection = prepareDatabase(jdbcBaseURL + "sync");
 
 		log("Generate VirtualModel");
 		VirtualModel virtualModel = generateVirtualModel(project, viewPoint, connection.getAddress(), true);
@@ -242,18 +263,21 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 		VirtualModel viewPoint = createViewPoint(project);
 
 		log("Prepare database");
-		JDBCConnection connection = prepareDatabase("syncAndView");
+		JDBCConnection connection = prepareDatabase(jdbcBaseURL + "syncAndView");
 
 		log("Generate VirtualModel");
 		VirtualModel virtualModel = generateVirtualModel(project, viewPoint, connection.getAddress(), true);
 		checkVirtualModel(virtualModel);
+
+		System.out.println(virtualModel.getStringRepresentation());
+
 		Assert.assertEquals(2, virtualModel.getFlexoBehaviours().size());
 
 		log("Create view " + ROOT_VIRTUAL_MODEL_INSTANCE_NAME);
 		FMLRTVirtualModelInstance view = createView(project, viewPoint);
 
 		log("Create virtual model instance " + VIRTUAL_MODEL_INSTANCE_NAME);
-		FMLRTVirtualModelInstance instance = createVirtualModelInstance(project, view, virtualModel);
+		FMLRTVirtualModelInstance instance = createVirtualModelInstance(project, view, virtualModel, connection.getAddress());
 
 		System.out.println("FML=" + virtualModel.getFMLRepresentation());
 

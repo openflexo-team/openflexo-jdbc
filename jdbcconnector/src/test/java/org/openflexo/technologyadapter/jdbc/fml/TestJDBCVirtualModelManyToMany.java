@@ -231,6 +231,7 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		action.setAddress(connection.getAddress());
 		action.setUser(connection.getUser());
 		action.setPassword(connection.getPassword());
+		action.setDbType(connection.getDbType());
 		action.getTablesToBeReflected().add(clientTable);
 		action.getTablesToBeReflected().add(salesmanTable);
 		action.doAction();

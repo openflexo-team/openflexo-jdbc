@@ -248,9 +248,15 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 								u = new URL("file:" + getDriverJarName());
 
 								URLClassLoader ucl = new URLClassLoader(new URL[] { u });
-
-								Driver d = (Driver) Class.forName(classname, true, ucl).newInstance();
-								DriverManager.registerDriver(new DriverWrapper(d));
+								cl = Class.forName(classname, true, ucl);
+								if (cl != null) {
+									Driver d = (Driver) cl.newInstance();
+									DriverManager.registerDriver(new DriverWrapper(d));
+								}
+								else {
+									LOGGER.warning("Cannot load JDBC Driver: did not found " + classname + " In Jar " + u.toString());
+									return null;
+								}
 							}
 						} catch (Exception e) {
 							LOGGER.warning("Cannot load JDBC Driver: " + e.getMessage());
