@@ -41,6 +41,7 @@ import static org.junit.Assert.fail;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -215,14 +216,14 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		model.setDriverClassName(jdbcJarDriverClassname);
 		model.setDriverJarName(jdbcDriverJarname);
 		model.setAddress(jdbcJarURL);
-		model.setDbType(null);
+		model.setDbType(JDBCDbType.GENERIC);
 
 		Connection conn = model.getConnection();
 
 		if (conn == null) {
 			Exception exc = model.getException();
 			if (exc != null) {
-				if (exc.getCause() instanceof SQLException) {
+				if (exc.getCause() instanceof SQLException | exc instanceof SQLNonTransientConnectionException) {
 					log("Pas de connection, mais test OK:  " + exc.getMessage());
 				}
 				else {
