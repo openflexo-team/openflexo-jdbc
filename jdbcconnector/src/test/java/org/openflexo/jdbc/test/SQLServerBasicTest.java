@@ -63,7 +63,7 @@ import org.openflexo.test.OnlyOnWindowsRunner;
  */
 
 @RunWith(OnlyOnWindowsRunner.class)
-public class SQLServerBasicTest extends SQLServerTest {
+public class SQLServerBasicTest extends SQLServerTestCase {
 
 	private EntityManager hbnEM;
 	private HbnConfig config;

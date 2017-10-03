@@ -56,7 +56,7 @@ import org.openflexo.test.OnlyOnWindowsRunner;
  */
 
 @RunWith(OnlyOnWindowsRunner.class)
-public abstract class SQLServerTest extends JDBCTestCase {
+public abstract class SQLServerTestCase extends JDBCTestCase {
 
 	// JDBC configuration to use SQLServer
 	protected final static String jdbcURL = "jdbc:sqlserver://localhost;databaseName=nessy_guyot;";

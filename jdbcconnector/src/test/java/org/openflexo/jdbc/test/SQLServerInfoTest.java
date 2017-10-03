@@ -54,7 +54,7 @@ import org.junit.runner.RunWith;
 import org.openflexo.test.OnlyOnWindowsRunner;
 
 @RunWith(OnlyOnWindowsRunner.class)
-public class SQLServerInfoTest extends SQLServerTest {
+public class SQLServerInfoTest extends SQLServerTestCase {
 
 	private JdbcEnvironment jdbcEnv = null;
 	private Metadata metadata;
