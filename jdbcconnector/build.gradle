@@ -14,3 +14,10 @@ dependencies {
   testRuntime project(':jdbc-test-rc')
   
 }
+
+apply plugin: 'java'
+
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+}
