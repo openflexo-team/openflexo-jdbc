@@ -67,10 +67,10 @@ public class ModelUtils {
 	}
 
 	public static JDBCConnection createJDBCMemoryConnection(String name) throws ModelDefinitionException {
-		return createJDBCConnection("mem:" + name);
+		return createJDBCHSQLConnection("mem:" + name);
 	}
 
-	public static JDBCConnection createJDBCConnection(String protocolAndName) throws ModelDefinitionException {
+	public static JDBCConnection createJDBCHSQLConnection(String protocolAndName) throws ModelDefinitionException {
 		JDBCFactory factory = new JDBCFactory(null, null);
 		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
 		connection.setDbType(JDBCDbType.HSQLDB);
