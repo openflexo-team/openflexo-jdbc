@@ -23,8 +23,4 @@ task testJar(type: Jar) {
 
  publishing.publications.mavenJava.artifact(testJar)
  
- artifactoryPublish {
-	    publications (publishing.publications.mavenJava)
-	}
- 
  
