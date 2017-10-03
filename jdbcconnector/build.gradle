@@ -21,22 +21,10 @@ task testJar(type: Jar) {
     from sourceSets.test.output
 }
 
-
- publishing {
-      publications {
-           mavenJava(MavenPublication) {
-                    }
-  
-             mavenTest(MavenPublication) {
-             	  from components.java
-             	  
-                  artifact testJar
-              }
-       }
- }
+ publishing.publications.mavenJava.artifact(testJar)
  
  artifactoryPublish {
-	    publications (publishing.publications.mavenTest)
+	    publications (publishing.publications.mavenJava)
 	}
  
  
