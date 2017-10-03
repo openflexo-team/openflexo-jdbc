@@ -66,7 +66,7 @@ public class ModelUtils {
 		return schema.createTable(tableName, id, name, lastName, otherId);
 	}
 
-	public static JDBCConnection createJDBCMemoryConnection(String name) throws ModelDefinitionException {
+	public static JDBCConnection createHSQLMemoryConnection(String name) throws ModelDefinitionException {
 		return createJDBCHSQLConnection("mem:" + name);
 	}
 
