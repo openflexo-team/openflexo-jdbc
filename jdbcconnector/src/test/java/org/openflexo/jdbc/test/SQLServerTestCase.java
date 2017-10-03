@@ -37,15 +37,13 @@
 
 package org.openflexo.jdbc.test;
 
-import static org.junit.Assert.fail;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.test.OnlyOnWindowsRunner;
 
 /**
@@ -59,10 +57,8 @@ import org.openflexo.test.OnlyOnWindowsRunner;
 public abstract class SQLServerTestCase extends JDBCTestCase {
 
 	// JDBC configuration to use SQLServer
-	protected final static String jdbcURL = "jdbc:sqlserver://localhost;databaseName=nessy_guyot;";
 	protected final static String jdbcDriverClassname = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	protected final static String jdbcUser = "sa";
-	protected final static String jdbcPwd = "bonjour";
+	protected final static String jdbcBaseURL = "jdbc:sqlserver://localhost;databaseName=";
 
 	// Hibernate configuration
 
@@ -76,18 +72,19 @@ public abstract class SQLServerTestCase extends JDBCTestCase {
 
 		// Loads JdbcDriver and tru to connect to Db
 
-		try {
-			Class.forName(jdbcDriverClassname);
-			Connection conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
-			if (conn != null) {
-				System.out.println("Got Connection.");
-				conn.close();
-			}
-		} catch (Exception e) {
-			fail("Cannot connect to DB: " + jdbcURL + " -- " + e.getMessage());
-			e.printStackTrace();
-		}
+	}
 
+	public static JDBCConnection createJDBCSQLServerConnection(String db_name, String jdbcUser, String jdbcPwd)
+			throws ModelDefinitionException {
+		JDBCFactory factory = new JDBCFactory(null, null);
+		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
+		connection.setDbType(JDBCDbType.SQLSERVER);
+		connection.setDriverClassName(jdbcDriverClassname);
+		connection.setAddress(jdbcBaseURL + db_name + ";");
+		connection.setUser(jdbcUser);
+		connection.setPassword(jdbcPwd);
+		connection.getConnection();
+		return connection;
 	}
 
 

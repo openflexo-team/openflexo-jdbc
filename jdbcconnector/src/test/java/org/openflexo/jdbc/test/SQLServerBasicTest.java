@@ -65,6 +65,10 @@ import org.openflexo.test.OnlyOnWindowsRunner;
 @RunWith(OnlyOnWindowsRunner.class)
 public class SQLServerBasicTest extends SQLServerTestCase {
 
+	protected final static String jdbcURL = "jdbc:sqlserver://localhost;databaseName=nessy_guyot;";
+	protected final static String jdbcUser = "sa";
+	protected final static String jdbcPwd = "bonjour";
+
 	private EntityManager hbnEM;
 	private HbnConfig config;
 
