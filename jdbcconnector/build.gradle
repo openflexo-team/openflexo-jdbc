@@ -24,13 +24,12 @@ task testJar(type: Jar) {
 
  publishing {
       publications {
-             maven(MavenPublication) {
-                  from components.java
+             mavenTest(MavenPublication) {
                   artifact testJar
               }
        }
  }
  
 artifactoryPublish {
-    publications ('maven')
+    publications ('mavenTest','mavenJava')
 }
