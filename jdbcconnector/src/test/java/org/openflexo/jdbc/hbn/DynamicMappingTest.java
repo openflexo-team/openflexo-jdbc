@@ -35,7 +35,7 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.hbn;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +50,7 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
-import org.openflexo.hbn.test.model.DynamicModelBuilder;
+import org.openflexo.technologyadapter.jdbc.model.DynamicModelBuilder;
 
 public class DynamicMappingTest extends HbnTest {
 

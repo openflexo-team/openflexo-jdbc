@@ -69,6 +69,7 @@ import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
+import org.openflexo.jdbc.test.HsqlTestCase;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
@@ -78,6 +79,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel;
@@ -97,7 +99,7 @@ import org.openflexo.test.TestOrder;
  *
  */
 @RunWith(OrderedRunner.class)
-public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
+public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 
 	private final String ROOT_VIRTUAL_MODEL_NAME = "RootVirtualModel";
 	private final String ROOT_VIRTUAL_MODEL_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_NAME + ".fml";
@@ -122,13 +124,21 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 	private static FMLRTVirtualModelInstance vmi;
 	private static HbnVirtualModelInstance dbVMI;
 
+	private static JDBCConnection connection;
+
 	@AfterClass
 	public static void tearDownClass() {
 		if (clientTable != null) {
-			dropTable(clientTable);
+			dropTable(connection, clientTable);
 		}
 		if (salesmanTable != null) {
-			dropTable(salesmanTable);
+			dropTable(connection, salesmanTable);
+
+			try {
+				connection.getConnection().close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	@Test
@@ -136,11 +146,13 @@ public class TestJDBCVirtualModelManyToOne extends JDBCTestCase {
 	public void initializeDatabaseStructure() throws Exception {
 		log("initializeDatabase");
 
-		createTable("CLIENT", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("NAME", 256),
+		connection = createHSQLMemoryConnection("db");
+
+		clientTable = createTable(connection, "CLIENT", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("NAME", 256),
 				createStringAttribute("ADRESS", 512), createStringAttribute("HOBBY", 512), createStringAttribute("COMMENTS", 512),
 				createDateAttribute("LASTMEETING"), createForeignKeyIntegerAttribute("SALESMAN"));
 
-		createTable("SALESMAN", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("LASTNAME", 256),
+		salesmanTable = createTable(connection, "SALESMAN", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("LASTNAME", 256),
 				createStringAttribute("FIRSTNAME", 256));
 
 		for (JDBCTable table : connection.getSchema().getTables()) {

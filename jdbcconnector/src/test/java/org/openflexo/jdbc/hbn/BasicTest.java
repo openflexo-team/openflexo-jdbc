@@ -35,92 +35,93 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.hbn;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
+import org.openflexo.technologyadapter.jdbc.model.Vehicle;
 
-public class HashMapTest extends HbnTest {
+/**
+ * Testing standard Hobernage Mapping with annotated class
+ * 
+ * @author xtof
+ *
+ */
+public class BasicTest extends HbnTest {
 
-	private Session hbnSession;
+	private EntityManager hbnEM;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		// adds a class with annotations
-		config.addResource("/org/openflexo/hbn/test/vehicle.xml");
-
-		SessionFactory hbnSessionFactory = config.getSessionFactory();
-		hbnSession = hbnSessionFactory.withOptions().openSession();
-
-		// bindingFactory = new JpaBindingFactory(hbnSession.getMetamodel());
-
-		// entityManager = new EntityManagerCtxt(bindingFactory, hbnSession);
+		config.addAnnotatedClass(Vehicle.class);
+		hbnEM = config.createEntityManager();
+		// bindingFactory = new JpaBindingFactory(hbnEM.getMetamodel());
+		// entityManager = new EntityManagerCtxt(bindingFactory, hbnEM);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 
 		// Close session
-		hbnSession.close();
+		hbnEM.close();
 
 		super.tearDown();
 	}
 
-	public void test1() {
+	public void testCreateData() {
 
-		System.out.println("*********** test1");
+		System.out.println("*********** testCreateData");
+
+		// adds a class with annotations
+
+		SessionFactory hbnSessionFactory = config.getSessionFactory();
+		EntityManager hbnEM = hbnSessionFactory.createEntityManager();
+		Session hbnSession = hbnSessionFactory.withOptions().openSession();
 
 		// Hibernate native
 		Transaction trans = hbnSession.beginTransaction();
-
-		Map<String, Object> record = new HashMap<>();
-		record.put("number", 1);
-		record.put("name", "A");
-		record.put("mineralogic", "EEB75");
-		hbnSession.save("Vehicle", record);
-
-		record = new HashMap<>();
-		record.put("number", 2);
-		record.put("name", "B");
-		record.put("mineralogic", "A54B85");
-		hbnSession.save("Vehicle", record);
-
-		record = new HashMap<>();
-		record.put("number", 3);
-		record.put("name", "C");
-		record.put("mineralogic", "Prout");
-		hbnSession.save("Vehicle", record);
-
-		record = new HashMap<>();
-		record.put("number", 4);
-		record.put("name", "D");
-		record.put("mineralogic", "Pouet");
-		hbnSession.save("Vehicle", record);
-
+		hbnSession.save(new Vehicle(1, "A", "EEB75"));
+		hbnSession.save(new Vehicle(2, "B", "A54B85"));
 		trans.commit();
 
+		// JPA Entity Manager
+		hbnEM.getTransaction().begin();
+		hbnEM.persist(new Vehicle(3, "C", "Prout"));
+		hbnEM.persist(new Vehicle(4, "D", "Pouet"));
+		hbnEM.getTransaction().commit();
+
 		// Standard SQL
-		NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from Vehicle;");
+		NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Vehicles;");
 		List<?> result = sqlQ.getResultList();
-		assertEquals(4, result.size());
+		for (Object o : result) {
+			System.out.println("o=" + o + " of " + o.getClass());
+			if (o.getClass().isArray()) {
+				Object[] array = (Object[]) o;
+				for (Object o2 : array) {
+					System.out.println("> " + o2);
+				}
+			}
+		}
+		assertEquals(result.size(), 4);
 
 		// Close session
 		hbnSession.close();
+		hbnEM.close();
 	}
 
 	/*public void testBindingModel() {
 	
 		System.out.println("*********** testBindingModel");
 	
-		assertNotNull(hbnSession);
+		assertNotNull(hbnEM);
 		assertNotNull(bindingFactory);
 		assertNotNull(entityManager.getBindingModel());
 	
@@ -136,4 +137,5 @@ public class HashMapTest extends HbnTest {
 		genericTest(entityManager, "self.Vehicle", EntityType.class, null);
 		genericTest(entityManager, "self.Vehicle.mineralogic", Attribute.class, null);
 	}*/
+
 }

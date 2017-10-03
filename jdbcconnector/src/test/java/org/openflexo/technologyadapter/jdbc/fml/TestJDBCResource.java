@@ -33,7 +33,7 @@
  *
  */
 
-package org.openflexo.technologyadapter.jdbc.model;
+package org.openflexo.technologyadapter.jdbc.fml;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -53,6 +53,8 @@ import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 import org.openflexo.test.OrderedRunner;

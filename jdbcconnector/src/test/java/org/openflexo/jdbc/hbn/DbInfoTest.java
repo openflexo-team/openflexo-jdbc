@@ -35,7 +35,7 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.hbn;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -45,24 +45,17 @@ import java.sql.Statement;
 
 import org.hibernate.boot.Metadata;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openflexo.hbn.test.model.DynamicModelBuilder;
-import org.openflexo.hbn.test.model.Vehicle;
-import org.openflexo.test.OnlyOnWindowsRunner;
+import org.openflexo.technologyadapter.jdbc.model.DynamicModelBuilder;
+import org.openflexo.technologyadapter.jdbc.model.Vehicle;
 
-@RunWith(OnlyOnWindowsRunner.class)
-public class SQLServerInfoTest extends SQLServerTest {
+public class DbInfoTest extends HbnTest {
 
 	private JdbcEnvironment jdbcEnv = null;
 	private Metadata metadata;
 	private Connection conn;
 
 	@Override
-	@Before
-	public void setUp() throws Exception {
+	protected void setUp() throws Exception {
 		super.setUp();
 
 		// ******
@@ -70,16 +63,8 @@ public class SQLServerInfoTest extends SQLServerTest {
 		conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
 		Statement stmt = conn.createStatement();
 
-		try {
-			stmt.execute("drop table test");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		try {
-			stmt.execute("create table test (id integer, nom char(16));");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+		stmt.executeQuery("drop table test if exists");
+		stmt.executeQuery("create table test (id integer, nom char(16));");
 
 		stmt.close();
 
@@ -96,13 +81,13 @@ public class SQLServerInfoTest extends SQLServerTest {
 	}
 
 	@Override
-	@After
-	public void tearDown() throws Exception {
+	protected void tearDown() throws Exception {
+		Statement stmt = conn.createStatement();
+		stmt.executeQuery("drop table test if exists");
 		conn.close();
 		super.tearDown();
 	}
 
-	@Test
 	public void testPrintSchemaInfo() {
 
 		System.out.println("*********** test1");

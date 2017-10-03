@@ -59,7 +59,7 @@ import org.openflexo.foundation.fml.rt.action.CreationSchemeAction;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResourceFactory;
 import org.openflexo.foundation.resource.SaveResourceException;
-import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
+import org.openflexo.jdbc.test.HsqlTestCase;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -73,7 +73,7 @@ import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCMappingVirtua
  * Tests for {@link CreateJDBCMappingVirtualModel}, testing
  *
  */
-public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTimeTestCase {
+public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 
 	private final String ROOT_VIRTUAL_MODEL_NAME = "TestCreateJDBCMappingVirtualModel";
 	private final String ROOT_VIRTUAL_MODEL_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_NAME + ".viewpoint";
@@ -111,7 +111,7 @@ public class TestCreateJDBCMappingVirtualModel extends OpenflexoProjectAtRunTime
 	}
 
 	private JDBCConnection prepareDatabase(String name) throws ModelDefinitionException {
-		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection(name);
+		JDBCConnection connection = createHSQLMemoryConnection(name);
 		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
 		ModelUtils.addLinesForTable1(table1);
 		ModelUtils.createTable2("table2", connection.getSchema());

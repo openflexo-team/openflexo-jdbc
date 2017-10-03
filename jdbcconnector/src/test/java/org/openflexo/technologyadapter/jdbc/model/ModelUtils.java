@@ -37,8 +37,6 @@ package org.openflexo.technologyadapter.jdbc.model;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.openflexo.model.exceptions.ModelDefinitionException;
-
 /**
  * Sets of utility methods
  */
@@ -64,20 +62,6 @@ public class ModelUtils {
 		String[] lastName = { "c2", "VARCHAR(100)" };
 		String[] otherId = { "other_id", "INT" };
 		return schema.createTable(tableName, id, name, lastName, otherId);
-	}
-
-	public static JDBCConnection createHSQLMemoryConnection(String name) throws ModelDefinitionException {
-		return createJDBCHSQLConnection("mem:" + name);
-	}
-
-	public static JDBCConnection createJDBCHSQLConnection(String protocolAndName) throws ModelDefinitionException {
-		JDBCFactory factory = new JDBCFactory(null, null);
-		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
-		connection.setDbType(JDBCDbType.HSQLDB);
-		connection.setAddress("jdbc:hsqldb:" + protocolAndName);
-		connection.setUser("SA");
-		connection.getConnection();
-		return connection;
 	}
 
 	public static void addLinesForTable1(JDBCTable table) {

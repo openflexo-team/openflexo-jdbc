@@ -1,4 +1,4 @@
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.hbn;
 
 import static org.junit.Assert.fail;
 

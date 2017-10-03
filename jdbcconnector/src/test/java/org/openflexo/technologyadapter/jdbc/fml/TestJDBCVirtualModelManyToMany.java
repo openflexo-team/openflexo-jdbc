@@ -62,6 +62,7 @@ import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
+import org.openflexo.jdbc.test.HsqlTestCase;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
@@ -71,6 +72,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel;
@@ -90,7 +92,7 @@ import org.openflexo.test.TestOrder;
  *
  */
 @RunWith(OrderedRunner.class)
-public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
+public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 
 	private final String ROOT_VIRTUAL_MODEL_NAME = "RootVirtualModel";
 	private final String ROOT_VIRTUAL_MODEL_URI = "http://openflexo.org/test/" + ROOT_VIRTUAL_MODEL_NAME + ".fml";
@@ -116,16 +118,24 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 	private static FMLRTVirtualModelInstance vmi;
 	private static HbnVirtualModelInstance dbVMI;
 
+	private static JDBCConnection connection;
+
 	@AfterClass
 	public static void tearDownClass() {
 		if (clientTable != null){
-			dropTable(clientTable);
+			dropTable(connection, clientTable);
 		}
 		if (salesmanTable != null) {
-			dropTable(salesmanTable);
+			dropTable(connection, salesmanTable);
 		}
 		if (visitTable != null) {
-			dropTable(visitTable);
+			dropTable(connection, visitTable);
+		}
+
+		try {
+			connection.getConnection().close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -134,13 +144,15 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 	public void initializeDatabaseStructure() throws Exception {
 		log("initializeDatabase");
 
-		createTable("CLIENT", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("NAME", 256),
+		connection = createHSQLMemoryConnection("many2many");
+
+		createTable(connection, "CLIENT", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("NAME", 256),
 				createStringAttribute("ADRESS", 512), createStringAttribute("HOBBY", 512), createStringAttribute("COMMENTS", 512));
 
-		createTable("SALESMAN", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("LASTNAME", 256),
+		createTable(connection, "SALESMAN", createPrimaryKeyIntegerAttribute("ID"), createStringAttribute("LASTNAME", 256),
 				createStringAttribute("FIRSTNAME", 256));
 
-		createTable("VISIT", createPrimaryKeyIntegerAttribute("ID"), createForeignKeyIntegerAttribute("SALESMAN"),
+		createTable(connection, "VISIT", createPrimaryKeyIntegerAttribute("ID"), createForeignKeyIntegerAttribute("SALESMAN"),
 				createForeignKeyIntegerAttribute("CLIENT"));
 
 		for (JDBCTable table : connection.getSchema().getTables()) {
@@ -415,7 +427,7 @@ public class TestJDBCVirtualModelManyToMany extends JDBCTestCase {
 		action.setNewVirtualModelInstanceName(VIRTUAL_MODEL_INSTANCE_NAME);
 		action.setVirtualModel(rootVirtualModel);
 		action.setCreationScheme(creationScheme);
-		action.setParameterValue(creationScheme.getParameter("address"), "jdbc:hsqldb:mem:db");
+		action.setParameterValue(creationScheme.getParameter("address"), "jdbc:hsqldb:mem:many2many");
 		action.setParameterValue(creationScheme.getParameter("user"), "SA");
 		action.setParameterValue(creationScheme.getParameter("password"), "");
 		action.setParameterValue(creationScheme.getParameter("dbtype"), JDBCDbType.HSQLDB);

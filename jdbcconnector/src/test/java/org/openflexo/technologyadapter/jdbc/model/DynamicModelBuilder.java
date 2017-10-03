@@ -35,7 +35,7 @@
  * 
  */
 
-package org.openflexo.hbn.test.model;
+package org.openflexo.technologyadapter.jdbc.model;
 
 import org.hibernate.boot.MappingException;
 import org.hibernate.boot.Metadata;

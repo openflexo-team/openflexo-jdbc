@@ -35,7 +35,7 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.hbn;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

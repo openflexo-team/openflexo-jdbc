@@ -35,7 +35,9 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.test;
+
+import static org.junit.Assert.assertNotNull;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -45,47 +47,50 @@ import java.sql.Statement;
 
 import org.hibernate.boot.Metadata;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
-import org.openflexo.hbn.test.model.DynamicModelBuilder;
-import org.openflexo.hbn.test.model.Vehicle;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openflexo.test.OnlyOnWindowsRunner;
 
-public class DbInfoTest extends HbnTest {
+@RunWith(OnlyOnWindowsRunner.class)
+public class SQLServerInfoTest extends SQLServerTest {
 
 	private JdbcEnvironment jdbcEnv = null;
 	private Metadata metadata;
 	private Connection conn;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() throws Exception {
 
 		// ******
 		// Create temp schema
 		conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
 		Statement stmt = conn.createStatement();
 
-		stmt.executeQuery("drop table test if exists");
-		stmt.executeQuery("create table test (id integer, nom char(16));");
+		try {
+			stmt.execute("drop table test");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		try {
+			stmt.execute("create table test (id integer, nom char(16));");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 
 		stmt.close();
-
-		// ******
-		// Set up Hibernate configuration
-		// adds a class with annotations
-		config.addAnnotatedClass(Vehicle.class);
-
-		// Creation du model
-		DynamicModelBuilder modelBuilder = new DynamicModelBuilder(config);
-
-		metadata = modelBuilder.buildDynamicModel();
 
 	}
 
 	@Override
-	protected void tearDown() throws Exception {
+	@After
+	public void tearDown() throws Exception {
 		conn.close();
 		super.tearDown();
 	}
 
+	@Test
 	public void testPrintSchemaInfo() {
 
 		System.out.println("*********** test1");

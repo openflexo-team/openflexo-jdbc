@@ -33,16 +33,38 @@
  *
  */
 
-package org.openflexo.technologyadapter.jdbc.model;
+package org.openflexo.jdbc.test;
 
-import org.hsqldb.util.DatabaseManagerSwing;
+import org.junit.BeforeClass;
+import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 
 /**
- * Created by charlie on 18/10/2016.
+ * Provides testing environment in JDBC context
+ *
  */
-public class HsqlManager {
+public abstract class HsqlTestCase extends JDBCTestCase {
 
-	public static void main(String[] args) {
-		DatabaseManagerSwing.main(args);
+	@BeforeClass
+	public static void setupClass() throws ModelDefinitionException {
+		serviceManager = instanciateTestServiceManager(JDBCTechnologyAdapter.class);
 	}
+
+	public static JDBCConnection createHSQLMemoryConnection(String name) throws ModelDefinitionException {
+		return createJDBCHSQLConnection("mem:" + name);
+	}
+
+	public static JDBCConnection createJDBCHSQLConnection(String protocolAndName) throws ModelDefinitionException {
+		JDBCFactory factory = new JDBCFactory(null, null);
+		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
+		connection.setDbType(JDBCDbType.HSQLDB);
+		connection.setAddress("jdbc:hsqldb:" + protocolAndName);
+		connection.setUser("SA");
+		connection.getConnection();
+		return connection;
+	}
+
 }

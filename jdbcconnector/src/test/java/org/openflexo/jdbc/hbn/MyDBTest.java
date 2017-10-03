@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.hbn;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -45,7 +45,15 @@ import java.io.InputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openflexo.foundation.test.OpenflexoTestCase;
+import org.openflexo.jdbc.test.HsqlTestCase;
+import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
+import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
+import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
+import org.openflexo.technologyadapter.jdbc.model.JDBCSchema;
+import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
 import org.openflexo.test.OrderedRunner;
 
 /**
@@ -55,7 +63,7 @@ import org.openflexo.test.OrderedRunner;
  *
  */
 @RunWith(OrderedRunner.class)
-public class TestJDBCModel extends OpenflexoTestCase {
+public class TestHsqlJDBCModel extends HsqlTestCase {
 
 	@Test
 	public void testLoad() throws Exception {
@@ -74,7 +82,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		String[] description = { "description", "VARCHAR(1512)" };
 		String tableName = "testCreateColumns_table1";
 
-		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("createColumns//localhost/");
+		JDBCConnection connection = createHSQLMemoryConnection("createColumns//localhost/");
 
 		JDBCSchema schema = connection.getSchema();
 
@@ -94,7 +102,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 		String[] description = { "description", "VARCHAR(1512)" };
 		String tableName = "testDropColumns_table1";
 
-		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("dropColumns");
+		JDBCConnection connection = createHSQLMemoryConnection("dropColumns");
 
 		JDBCSchema schema = connection.getSchema();
 
@@ -114,7 +122,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
 	public void testInsertAndSelectLines1() throws Exception {
-		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("insertLine");
+		JDBCConnection connection = createHSQLMemoryConnection("insertLine");
 		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
 
 		// insert some values
@@ -139,7 +147,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
 	public void testUpdateValues() throws Exception {
-		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("updateValues");
+		JDBCConnection connection = createHSQLMemoryConnection("updateValues");
 		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
 		assertNotNull(table1.insert(new String[] { "ID", "1", "NAME", "toto1" }));
 
@@ -157,7 +165,7 @@ public class TestJDBCModel extends OpenflexoTestCase {
 
 	@Test
 	public void testJoin() throws Exception {
-		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection("join");
+		JDBCConnection connection = createHSQLMemoryConnection("join");
 		JDBCSchema schema = connection.getSchema();
 		JDBCTable t1 = ModelUtils.createTable1("t1", schema);
 		t1.insert(new String[] { "ID", "1", "NAME", "name1" });

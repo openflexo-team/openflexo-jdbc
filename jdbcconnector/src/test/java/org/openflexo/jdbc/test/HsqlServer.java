@@ -33,7 +33,7 @@
  *
  */
 
-package org.openflexo.technologyadapter.jdbc.model;
+package org.openflexo.jdbc.test;
 
 import org.hsqldb.server.Server;
 

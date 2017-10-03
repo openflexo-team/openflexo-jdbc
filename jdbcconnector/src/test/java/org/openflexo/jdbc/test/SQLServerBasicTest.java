@@ -35,7 +35,9 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.test;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -45,7 +47,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
-import org.openflexo.hbn.test.model.Vehicle;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openflexo.connie.hbn.HbnConfig;
+import org.openflexo.technologyadapter.jdbc.model.Vehicle;
+import org.openflexo.test.OnlyOnWindowsRunner;
 
 /**
  * Testing standard Hobernage Mapping with annotated class
@@ -53,22 +61,26 @@ import org.openflexo.hbn.test.model.Vehicle;
  * @author xtof
  *
  */
-public class BasicTest extends HbnTest {
+
+@RunWith(OnlyOnWindowsRunner.class)
+public class SQLServerBasicTest extends SQLServerTest {
 
 	private EntityManager hbnEM;
+	private HbnConfig config;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
 
+	@Before
+	public void setUp() throws Exception {
+		config = createHbnConfig(jdbcDriverClassname, jdbcURL, jdbcUser, jdbcPwd, hbnDialect);
 		config.addAnnotatedClass(Vehicle.class);
+		// creates object, wipe out if already exists
+		config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
 		hbnEM = config.createEntityManager();
-		// bindingFactory = new JpaBindingFactory(hbnEM.getMetamodel());
-		// entityManager = new EntityManagerCtxt(bindingFactory, hbnEM);
 	}
 
 	@Override
-	protected void tearDown() throws Exception {
+	@After
+	public void tearDown() throws Exception {
 
 		// Close session
 		hbnEM.close();
@@ -76,6 +88,7 @@ public class BasicTest extends HbnTest {
 		super.tearDown();
 	}
 
+	@Test
 	public void testCreateData() {
 
 		System.out.println("*********** testCreateData");
@@ -116,26 +129,5 @@ public class BasicTest extends HbnTest {
 		hbnSession.close();
 		hbnEM.close();
 	}
-
-	/*public void testBindingModel() {
-	
-		System.out.println("*********** testBindingModel");
-	
-		assertNotNull(hbnEM);
-		assertNotNull(bindingFactory);
-		assertNotNull(entityManager.getBindingModel());
-	
-		assertEquals(2, entityManager.getBindingModel().getBindingVariablesCount());
-	
-	}
-	
-	public void testBindings() {
-	
-		System.out.println("*********** testBindings");
-	
-		genericTest(entityManager, "self", EntityManagerCtxt.class, entityManager);
-		genericTest(entityManager, "self.Vehicle", EntityType.class, null);
-		genericTest(entityManager, "self.Vehicle.mineralogic", Attribute.class, null);
-	}*/
 
 }

@@ -35,7 +35,7 @@
  * 
  */
 
-package org.openflexo.hbn.test.model;
+package org.openflexo.technologyadapter.jdbc.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

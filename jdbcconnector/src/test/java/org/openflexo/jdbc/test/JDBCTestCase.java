@@ -33,26 +33,22 @@
  *
  */
 
-package org.openflexo.technologyadapter.jdbc.fml;
+package org.openflexo.jdbc.test;
 
 import org.hibernate.Session;
+import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.query.NativeQuery;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.openflexo.connie.hbn.HbnConfig;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
-import org.openflexo.model.exceptions.ModelDefinitionException;
-import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
-import org.openflexo.technologyadapter.jdbc.model.ModelUtils;
 
 /**
  * Provides testing environment in JDBC context
  *
  */
 public abstract class JDBCTestCase extends OpenflexoProjectAtRunTimeTestCase {
-
-	protected static JDBCConnection connection;
 
 	@AfterClass
 	public static void tearDownClass() {
@@ -61,22 +57,39 @@ public abstract class JDBCTestCase extends OpenflexoProjectAtRunTimeTestCase {
 		unloadServiceManager();
 	}
 
-	@BeforeClass
-	public static void setupClass() throws ModelDefinitionException {
-		serviceManager = instanciateTestServiceManager(JDBCTechnologyAdapter.class);
-		connection = prepareDatabase("db");
+	/**
+	 *
+	 * Setup hibernate configuration
+	 * 
+	 * @param jdbcDriverClassname
+	 * @param jdbcURL
+	 * @param jdbcUser
+	 * @param jdbcPwd
+	 * @param hbnDialect
+	 * @return
+	 */
+	protected static HbnConfig createHbnConfig(String jdbcDriverClassname, String jdbcURL, String jdbcUser, String jdbcPwd,
+			String hbnDialect) {
+
+		HbnConfig config = new HbnConfig(new BootstrapServiceRegistryBuilder().build());
+
+		config.setProperty("hibernate.connection.driver_class", jdbcDriverClassname);
+		config.setProperty("hibernate.connection.url", jdbcURL);
+		config.setProperty("hibernate.connection.username", jdbcUser);
+		config.setProperty("hibernate.connection.password", jdbcPwd);
+		config.setProperty("hibernate.connection.pool_size", "1");
+		config.setProperty("hibernate.dialect", hbnDialect);
+		config.setProperty("hibernate.show_sql", "true");
+
+		return config;
 	}
 
-	protected static JDBCConnection prepareDatabase(String name) throws ModelDefinitionException {
-		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection(name);
-		return connection;
-	}
-
-	protected static JDBCTable createTable(String tableName, String[]... attributes) {
+	protected static JDBCTable createTable(JDBCConnection connection, String tableName, String[]... attributes) {
 		return connection.getSchema().createTable(tableName, attributes);
 	}
 
-	protected static void dropTable(JDBCTable table) {
+	protected static void dropTable(JDBCConnection connection, JDBCTable table) {
+		if (table != null)
 		connection.getSchema().dropTable(table);
 	}
 

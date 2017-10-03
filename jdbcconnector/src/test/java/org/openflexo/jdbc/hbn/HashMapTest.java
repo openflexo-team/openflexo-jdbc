@@ -35,103 +35,92 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.hbn;
 
+import java.util.HashMap;
 import java.util.List;
-
-import javax.persistence.EntityManager;
+import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openflexo.hbn.test.model.Vehicle;
-import org.openflexo.test.OnlyOnWindowsRunner;
 
-/**
- * Testing standard Hobernage Mapping with annotated class
- * 
- * @author xtof
- *
- */
+public class HashMapTest extends HbnTest {
 
-@RunWith(OnlyOnWindowsRunner.class)
-public class SQLServerBasicTest extends SQLServerTest {
-
-	private EntityManager hbnEM;
+	private Session hbnSession;
 
 	@Override
-	@Before
-	public void setUp() throws Exception {
+	protected void setUp() throws Exception {
 		super.setUp();
 
-		config.addAnnotatedClass(Vehicle.class);
-		hbnEM = config.createEntityManager();
-		// bindingFactory = new JpaBindingFactory(hbnEM.getMetamodel());
-		// entityManager = new EntityManagerCtxt(bindingFactory, hbnEM);
+		// adds a class with annotations
+		config.addResource("/org/openflexo/hbn/test/vehicle.xml");
+
+		SessionFactory hbnSessionFactory = config.getSessionFactory();
+		hbnSession = hbnSessionFactory.withOptions().openSession();
+
+		// bindingFactory = new JpaBindingFactory(hbnSession.getMetamodel());
+
+		// entityManager = new EntityManagerCtxt(bindingFactory, hbnSession);
 	}
 
 	@Override
-	@After
-	public void tearDown() throws Exception {
+	protected void tearDown() throws Exception {
 
 		// Close session
-		hbnEM.close();
+		hbnSession.close();
 
 		super.tearDown();
 	}
 
-	@Test
-	public void testCreateData() {
+	public void test1() {
 
-		System.out.println("*********** testCreateData");
-
-		// adds a class with annotations
-
-		SessionFactory hbnSessionFactory = config.getSessionFactory();
-		EntityManager hbnEM = hbnSessionFactory.createEntityManager();
-		Session hbnSession = hbnSessionFactory.withOptions().openSession();
+		System.out.println("*********** test1");
 
 		// Hibernate native
 		Transaction trans = hbnSession.beginTransaction();
-		hbnSession.save(new Vehicle(1, "A", "EEB75"));
-		hbnSession.save(new Vehicle(2, "B", "A54B85"));
+
+		Map<String, Object> record = new HashMap<>();
+		record.put("number", 1);
+		record.put("name", "A");
+		record.put("mineralogic", "EEB75");
+		hbnSession.save("Vehicle", record);
+
+		record = new HashMap<>();
+		record.put("number", 2);
+		record.put("name", "B");
+		record.put("mineralogic", "A54B85");
+		hbnSession.save("Vehicle", record);
+
+		record = new HashMap<>();
+		record.put("number", 3);
+		record.put("name", "C");
+		record.put("mineralogic", "Prout");
+		hbnSession.save("Vehicle", record);
+
+		record = new HashMap<>();
+		record.put("number", 4);
+		record.put("name", "D");
+		record.put("mineralogic", "Pouet");
+		hbnSession.save("Vehicle", record);
+
 		trans.commit();
 
-		// JPA Entity Manager
-		hbnEM.getTransaction().begin();
-		hbnEM.persist(new Vehicle(3, "C", "Prout"));
-		hbnEM.persist(new Vehicle(4, "D", "Pouet"));
-		hbnEM.getTransaction().commit();
-
 		// Standard SQL
-		NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Vehicles;");
+		NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from Vehicle;");
 		List<?> result = sqlQ.getResultList();
-		for (Object o : result) {
-			System.out.println("o=" + o + " of " + o.getClass());
-			if (o.getClass().isArray()) {
-				Object[] array = (Object[]) o;
-				for (Object o2 : array) {
-					System.out.println("> " + o2);
-				}
-			}
-		}
-		assertEquals(result.size(), 4);
+		assertEquals(4, result.size());
 
 		// Close session
 		hbnSession.close();
-		hbnEM.close();
 	}
 
 	/*public void testBindingModel() {
 	
 		System.out.println("*********** testBindingModel");
 	
-		assertNotNull(hbnEM);
+		assertNotNull(hbnSession);
 		assertNotNull(bindingFactory);
 		assertNotNull(entityManager.getBindingModel());
 	
@@ -147,5 +136,4 @@ public class SQLServerBasicTest extends SQLServerTest {
 		genericTest(entityManager, "self.Vehicle", EntityType.class, null);
 		genericTest(entityManager, "self.Vehicle.mineralogic", Attribute.class, null);
 	}*/
-
 }

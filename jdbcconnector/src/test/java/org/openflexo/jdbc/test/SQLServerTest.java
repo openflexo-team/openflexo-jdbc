@@ -35,19 +35,18 @@
  * 
  */
 
-package org.openflexo.hbn.test;
+package org.openflexo.jdbc.test;
+
+import static org.junit.Assert.fail;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.openflexo.connie.hbn.HbnConfig;
+import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.test.OnlyOnWindowsRunner;
-
-import junit.framework.TestCase;
 
 /**
  * Provides an environment with a connection to an HSQLDB database
@@ -57,10 +56,9 @@ import junit.framework.TestCase;
  */
 
 @RunWith(OnlyOnWindowsRunner.class)
-public abstract class SQLServerTest extends TestCase {
+public abstract class SQLServerTest extends JDBCTestCase {
 
-	// JDBC configuration to use HSQLdb
-
+	// JDBC configuration to use SQLServer
 	protected final static String jdbcURL = "jdbc:sqlserver://localhost;databaseName=nessy_guyot;";
 	protected final static String jdbcDriverClassname = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	protected final static String jdbcUser = "sa";
@@ -70,52 +68,27 @@ public abstract class SQLServerTest extends TestCase {
 
 	protected final static String hbnDialect = "org.hibernate.dialect.SQLServerDialect";
 
-	protected HbnConfig config = null;
 
-	// Connie configuration
+	@BeforeClass
+	public static void setupBeforeClass() throws ModelDefinitionException {
 
-	@Override
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
+		serviceManager = instanciateTestServiceManager(JDBCTechnologyAdapter.class);
 
-		// Loads JdbcDriver
-		Class.forName(jdbcDriverClassname);
-		Connection conn = null;
+		// Loads JdbcDriver and tru to connect to Db
 
 		try {
-			conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
+			Class.forName(jdbcDriverClassname);
+			Connection conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
+			if (conn != null) {
+				System.out.println("Got Connection.");
+				conn.close();
+			}
 		} catch (Exception e) {
 			fail("Cannot connect to DB: " + jdbcURL + " -- " + e.getMessage());
 			e.printStackTrace();
-			conn = null;
-		}
-		if (conn != null) {
-			System.out.println("Got Connection.");
-
-			// Setup Hibernate config
-
-			config = new HbnConfig(new BootstrapServiceRegistryBuilder().build());
-
-			config.setProperty("hibernate.connection.driver_class", jdbcDriverClassname);
-			config.setProperty("hibernate.connection.url", jdbcURL);
-			config.setProperty("hibernate.connection.username", jdbcUser);
-			config.setProperty("hibernate.connection.password", jdbcPwd);
-			config.setProperty("hibernate.connection.pool_size", "1");
-			config.setProperty("hibernate.dialect", hbnDialect);
-			config.setProperty("hibernate.show_sql", "true");
-			// creates object, wipe out if already exists
-			config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-
-			conn.close();
 		}
 
 	}
 
-	@Override
-	@After
-	public void tearDown() throws Exception {
-		super.tearDown();
-	}
 
 }
