@@ -134,11 +134,12 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		if (salesmanTable != null) {
 			dropTable(connection, salesmanTable);
 
-			try {
-				connection.getConnection().close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		}
+
+		try {
+			connection.getConnection().close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	@Test
