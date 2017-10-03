@@ -69,11 +69,6 @@ public abstract class JDBCTestCase extends OpenflexoProjectAtRunTimeTestCase {
 
 	protected static JDBCConnection prepareDatabase(String name) throws ModelDefinitionException {
 		JDBCConnection connection = ModelUtils.createJDBCMemoryConnection(name);
-		/*JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
-		ModelUtils.addLinesForTable1(table1);
-		ModelUtils.createTable2("table2", connection.getSchema());
-		JDBCTable table3 = ModelUtils.createTable3("table3", connection.getSchema());
-		ModelUtils.addLinesForTable3(table3);*/
 		return connection;
 	}
 
