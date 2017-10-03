@@ -1,0 +1,15 @@
+dependencies {
+
+    compile project(':jdbcconnector')
+    compile flexoFoundation()
+    
+    compile group: "org.hsqldb", name: "hsqldb", version: "2.4.0"
+
+    compile testUtils()
+    compile flexoFoundationTest()
+
+	  // Test resource center
+	  testRuntime project(':jdbc-test-rc')
+  
+}
+

@@ -15,19 +15,3 @@ dependencies {
   
 }
 
-
-task testJar(type: Jar) {
-    baseName = 'jdbcconnector-test'
-    from sourceSets.test.output
-}
-
- publishing {
- 	publications {
- 		mavenTest(MavenPublication) {
-            artifactId 'jdbcconnector-test'
- 		 	artifact testJar
- 		}
- 	}
- }
-
- 
