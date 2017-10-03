@@ -15,7 +15,6 @@ dependencies {
   
 }
 
-apply plugin: 'java'
 
 task testJar(type: Jar) {
     classifier = 'tests'
@@ -23,12 +22,15 @@ task testJar(type: Jar) {
 }
 
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact testJar {
-                classifier "tests"
-            }
-        }
-    }
+ publishing {
+      publications {
+             maven(MavenPublication) {
+                  from components.java
+                  artifact testJar
+              }
+       }
+ }
+ 
+artifactoryPublish {
+    publications ('maven')
 }
