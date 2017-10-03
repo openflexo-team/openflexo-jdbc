@@ -23,12 +23,10 @@ task testJar(type: Jar) {
 
  publishing {
  	publications {
- 		mavenTest(MavenPublication) {
+ 		mavenJava(MavenPublication) {
+            artifactId 'jdbcconnector-test'
  		 	artifact testJar
  		}
  	}
  }
- 
- artifactoryPublish {
-    publications ('mavenJava','mavenTest')
- }
+   
