@@ -17,7 +17,7 @@ dependencies {
 
 
 task testJar(type: Jar) {
-    classifier = 'tests'
+    baseName = 'jdbcconnector-test'
     from sourceSets.test.output
 }
 
