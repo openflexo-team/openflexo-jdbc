@@ -59,6 +59,7 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.util.DriverWrapper;
 import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
@@ -226,6 +227,15 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 		}
 
 		@Override
+		public String getDriverClassName() {
+			String returned = (String) performSuperGetter(DRIVER_CLASS_NAME);
+			if (returned == null && getDbType() != null) {
+				return getDbType().getDriverClassName();
+			}
+			return returned;
+		}
+
+		@Override
 		public Connection getConnection() {
 			if (connection == null && getAddress() != null) {
 				try {
@@ -234,12 +244,11 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 					// try DriverClass and DriverJAr info to connect
 					String classname = getDriverClassName();
 					if (classname != null) {
-
 						Class<?> cl = null;
 						try {
 							cl = Class.forName(classname);
 						} catch (ClassNotFoundException e) {
-							LOGGER.warning("Cannot load JDBC Driver: " + e.getMessage());
+							// LOGGER.warning("Cannot load JDBC Driver: " + e.getMessage());
 						}
 
 						try {
@@ -252,6 +261,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 								if (cl != null) {
 									Driver d = (Driver) cl.newInstance();
 									DriverManager.registerDriver(new DriverWrapper(d));
+									LOGGER.info("Installed JDBCDriver " + cl.getSimpleName());
 								}
 								else {
 									LOGGER.warning("Cannot load JDBC Driver: did not found " + classname + " In Jar " + u.toString());
@@ -264,16 +274,6 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 							return null;
 						}
 
-						// Use DbType if set
-						if (cl == null && getDbType() != null) {
-
-							try {
-								cl = Class.forName(getDbType().getDriverClassName());
-							} catch (ClassNotFoundException e) {
-								LOGGER.warning(e.getMessage());
-								return null;
-							}
-						}
 						if (cl == null) {
 							LOGGER.warning("Cannot find any driver to connect to Database");
 							return null;

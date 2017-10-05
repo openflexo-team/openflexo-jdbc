@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2013-2017, Openflexo
  *
  * This file is part of Flexo-foundation, a component of the software infrastructure
@@ -33,31 +33,28 @@
  *
  */
 
-package org.openflexo.jdbc.test;
+package org.openflexo.technologyadapter.jdbc.dbtype;
 
-import org.junit.BeforeClass;
 import org.openflexo.model.exceptions.ModelDefinitionException;
-import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.dbtype.HSQLUtils;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 
-/**
- * Provides testing environment in JDBC context
- *
- */
-public abstract class HsqlTestCase extends JDBCTestCase {
-
-	@BeforeClass
-	public static void setupClass() throws ModelDefinitionException {
-		serviceManager = instanciateTestServiceManager(JDBCTechnologyAdapter.class);
-	}
+public class HSQLUtils {
 
 	public static JDBCConnection createHSQLMemoryConnection(String name) throws ModelDefinitionException {
-		return HSQLUtils.createHSQLMemoryConnection(name);
+		return createJDBCHSQLConnection("mem:" + name);
 	}
 
 	public static JDBCConnection createJDBCHSQLConnection(String protocolAndName) throws ModelDefinitionException {
-		return HSQLUtils.createJDBCHSQLConnection(protocolAndName);
+		JDBCFactory factory = new JDBCFactory(null, null);
+		JDBCConnection connection = factory.newInstance(JDBCConnection.class);
+		// String jdbcDriverJarname = HSQLUtils.class.getResource("/jars/hsqldb.jar").getPath();
+		// connection.setDriverJarName(jdbcDriverJarname);
+		connection.setDbType(JDBCDbType.HSQLDB);
+		connection.setAddress("jdbc:hsqldb:" + protocolAndName);
+		connection.setUser("SA");
+		connection.getConnection();
+		return connection;
 	}
 
 }

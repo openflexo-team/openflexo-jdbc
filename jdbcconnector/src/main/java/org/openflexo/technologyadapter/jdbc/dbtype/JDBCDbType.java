@@ -33,7 +33,7 @@
  *
  */
 
-package org.openflexo.technologyadapter.jdbc.model;
+package org.openflexo.technologyadapter.jdbc.dbtype;
 
 /**
  * List of Database Types known to Openflexo
