@@ -248,7 +248,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 						try {
 							cl = Class.forName(classname);
 						} catch (ClassNotFoundException e) {
-							// LOGGER.warning("Cannot load JDBC Driver: " + e.getMessage());
+							LOGGER.warning("Cannot load JDBC Driver " + classname + ": " + e.getMessage());
 						}
 
 						try {

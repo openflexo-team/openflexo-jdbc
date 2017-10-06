@@ -25,7 +25,7 @@
 				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)"
 				name="Label" />
 			<DropDown index="26" autoSelectFirstRow="true" staticList=""
-				iteratorClassName="org.openflexo.technologyadapter.jdbc.model.JDBCDbType"
+				iteratorClassName="org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType"
 				showText="true" list="" showIcon="false" format="object.name" data="data.dbType"
 				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)"
 				name="dropdown" />

@@ -126,17 +126,13 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter {
 		return returned;
 	}
 
-	// Hacking area
-	// I'm not proud of that, this should be handled from a more elegant way
-	// TODO: find a better solution
 	@Override
-	@Deprecated
 	public VirtualModelInstanceType getInferedVirtualModelInstanceType(VirtualModel vm,
-			Class<? extends InferedFMLRTModelSlot<?, ?>> modelSlotClass) {
-		if (HbnModelSlot.class.equals(modelSlotClass)) {
+			Class<? extends InferedFMLRTModelSlot<?, ?>> modelSlotNatureClass) {
+		if (HbnModelSlot.class.equals(modelSlotNatureClass)) {
 			return HbnVirtualModelInstanceType.getVirtualModelInstanceType(vm);
 		}
-		return super.getInferedVirtualModelInstanceType(vm, modelSlotClass);
+		return super.getInferedVirtualModelInstanceType(vm, modelSlotNatureClass);
 	}
 
 	@Override

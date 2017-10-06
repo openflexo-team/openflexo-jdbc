@@ -39,6 +39,7 @@ import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 
+// jdbc:hsqldb:mem:db
 public class HSQLUtils {
 
 	public static JDBCConnection createHSQLMemoryConnection(String name) throws ModelDefinitionException {
