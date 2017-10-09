@@ -137,6 +137,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 			newVirtualModel = vmResource.getLoadedResourceData();
 			newVirtualModel.setDescription(getNewVirtualModelDescription());
 			newVirtualModel.setAbstract(true);
+			newVirtualModel.setModelSlotNatureClass(HbnModelSlot.class);
 		} catch (SaveResourceException e) {
 			throw new SaveResourceException(null);
 		} catch (ModelDefinitionException e) {
