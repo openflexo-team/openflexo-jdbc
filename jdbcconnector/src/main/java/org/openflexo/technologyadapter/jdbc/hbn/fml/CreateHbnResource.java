@@ -40,6 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
@@ -63,6 +64,7 @@ import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.CloningStrategy;
 import org.openflexo.model.annotations.CloningStrategy.StrategyType;
+import org.openflexo.model.annotations.DefineValidationRule;
 import org.openflexo.model.annotations.Embedded;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.Getter.Cardinality;
@@ -74,6 +76,10 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.model.validation.FixProposal;
+import org.openflexo.model.validation.ValidationError;
+import org.openflexo.model.validation.ValidationIssue;
+import org.openflexo.model.validation.ValidationRule;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
@@ -223,7 +229,6 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				getPropertyChangeSupport().firePropertyChange("virtualModelResource", oldValue, virtualModelResource);
 			}
 		}
-
 
 		@Override
 		public VirtualModel getVirtualModel() {
@@ -576,4 +581,49 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 		}
 
 	}
+
+	@DefineValidationRule
+	public static class CreateHbnResourceMustAddressAValidCreationScheme
+			extends ValidationRule<CreateHbnResourceMustAddressAValidCreationScheme, CreateHbnResource> {
+		public CreateHbnResourceMustAddressAValidCreationScheme() {
+			super(CreateHbnResource.class, "create_hbn_resource_must_address_a_valid_creation_scheme");
+		}
+
+		@Override
+		public ValidationIssue<CreateHbnResourceMustAddressAValidCreationScheme, CreateHbnResource> applyValidation(
+				CreateHbnResource action) {
+			if (action.getCreationScheme() == null) {
+				Vector<FixProposal<CreateHbnResourceMustAddressAValidCreationScheme, CreateHbnResource>> v = new Vector<>();
+				if (action.getVirtualModel() != null) {
+					for (CreationScheme cs : action.getVirtualModel().getCreationSchemes()) {
+						v.add(new SetsCreationScheme(cs));
+					}
+				}
+				return new ValidationError<>(this, action, "create_hbn_resource_does_not_address_a_valid_creation_scheme", v);
+			}
+			return null;
+		}
+
+		protected static class SetsCreationScheme extends FixProposal<CreateHbnResourceMustAddressAValidCreationScheme, CreateHbnResource> {
+
+			private final CreationScheme creationScheme;
+
+			public SetsCreationScheme(CreationScheme creationScheme) {
+				super("sets_creation_scheme_to_($creationScheme.name)");
+				this.creationScheme = creationScheme;
+			}
+
+			public CreationScheme getCreationScheme() {
+				return creationScheme;
+			}
+
+			@Override
+			protected void fixAction() {
+				CreateHbnResource action = getValidable();
+				action.setCreationScheme(getCreationScheme());
+			}
+
+		}
+	}
+
 }

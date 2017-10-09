@@ -105,7 +105,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @DeclareActorReferences({ HbnObjectActorReference.class })
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
-
 	@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
 	@PropertyIdentifier(type = DataBinding.class)
@@ -146,6 +145,11 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 	abstract class HbnModelSlotImpl extends InferedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnModelSlot {
 
+		private DataBinding<String> address;
+		private DataBinding<String> user;
+		private DataBinding<String> password;
+		private HbnVirtualModelInstanceType type;
+
 		@Override
 		public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
 			return JDBCTechnologyAdapter.class;
@@ -161,8 +165,6 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			return (JDBCTechnologyAdapter) super.getModelSlotTechnologyAdapter();
 		}
 
-		private HbnVirtualModelInstanceType type;
-
 		@Override
 		public Type getType() {
 			if (type == null || type.getVirtualModel() != getAccessedVirtualModel()) {
@@ -177,6 +179,66 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 				super.setAccessedVirtualModel(aVirtualModel);
 				type = HbnVirtualModelInstanceType.getVirtualModelInstanceType(getAccessedVirtualModel());
 			}
+		}
+
+		@Override
+		public DataBinding<String> getAddress() {
+			if (address == null) {
+				address = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				address.setBindingName("address");
+			}
+			return address;
+		}
+
+		@Override
+		public void setAddress(DataBinding<String> address) {
+			if (address != null) {
+				address.setOwner(this);
+				address.setDeclaredType(String.class);
+				address.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				address.setBindingName("address");
+			}
+			this.address = address;
+		}
+
+		@Override
+		public DataBinding<String> getUser() {
+			if (user == null) {
+				user = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				user.setBindingName("user");
+			}
+			return user;
+		}
+
+		@Override
+		public void setUser(DataBinding<String> user) {
+			if (user != null) {
+				user.setOwner(this);
+				user.setDeclaredType(String.class);
+				user.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				user.setBindingName("user");
+			}
+			this.user = user;
+		}
+
+		@Override
+		public DataBinding<String> getPassword() {
+			if (password == null) {
+				password = new DataBinding<String>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				password.setBindingName("password");
+			}
+			return password;
+		}
+
+		@Override
+		public void setPassword(DataBinding<String> password) {
+			if (password != null) {
+				password.setOwner(this);
+				password.setDeclaredType(String.class);
+				password.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				password.setBindingName("password");
+			}
+			this.password = password;
 		}
 
 	}

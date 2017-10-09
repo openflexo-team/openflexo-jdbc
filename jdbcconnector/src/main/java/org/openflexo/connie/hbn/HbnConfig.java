@@ -95,7 +95,9 @@ public class HbnConfig {
 	}
 
 	public HbnConfig setProperty(String propertyName, String value) {
-		properties.setProperty(propertyName, value);
+		if (value != null) {
+			properties.setProperty(propertyName, value);
+		}
 		return this;
 	}
 
@@ -146,7 +148,7 @@ public class HbnConfig {
 
 			serviceRegistry = getServiceRegistry();
 
-			metadataBuilder = metadataSrc.getMetadataBuilder((StandardServiceRegistry) serviceRegistry);
+			metadataBuilder = metadataSrc.getMetadataBuilder(serviceRegistry);
 		}
 		else {
 			LOGGER.warning("MetadataBuilder has already been configured");
