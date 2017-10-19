@@ -225,7 +225,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					|| (virtualModelResource != null && !virtualModelResource.equals(getVirtualModelResource()))) {
 				VirtualModelResource oldValue = getVirtualModelResource();
 				this.virtualModelResource = virtualModelResource;
-				setVirtualModel(virtualModelResource.getVirtualModel());
+				setVirtualModel(virtualModelResource != null ? virtualModelResource.getVirtualModel() : null);
 				getPropertyChangeSupport().firePropertyChange("virtualModelResource", oldValue, virtualModelResource);
 			}
 		}
@@ -250,7 +250,10 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				VirtualModel oldValue = this.virtualModel;
 				this.virtualModel = aVirtualModel;
 				this.virtualModelResource = aVirtualModel.getVirtualModelResource();
-				if (getCreationScheme() != null && getCreationScheme().getFlexoConcept() != aVirtualModel) {
+				if (aVirtualModel != null) {
+					getPropertyChangeSupport().firePropertyChange("availableCreationSchemes", null, aVirtualModel.getCreationSchemes());
+				}
+				if (creationScheme == null || creationScheme.getFlexoConcept() != aVirtualModel) {
 					if (aVirtualModel.getCreationSchemes().size() > 0) {
 						setCreationScheme(aVirtualModel.getCreationSchemes().get(0));
 					}
@@ -389,6 +392,11 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 
 		@Override
 		public HbnVirtualModelInstance execute(RunTimeEvaluationContext evaluationContext) throws FlexoException {
+
+			if (getCreationScheme() == null) {
+				throw new InvalidArgumentException("No creation scheme defined");
+			}
+
 			try {
 				String resourceName = getResourceName(evaluationContext);
 				String resourceURI = getResourceURI(evaluationContext);
@@ -471,6 +479,13 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					}
 
 					creationSchemeAction.doAction();
+
+					if (data.getVirtualModel().getFlexoBehaviours(HbnInitializer.class).size() > 0) {
+						HbnInitializer initializer = data.getVirtualModel().getFlexoBehaviours(HbnInitializer.class).get(0);
+						HbnInitializerAction action = new HbnInitializerAction(initializer, data, null,
+								(FlexoBehaviourAction<?, ?, ?>) evaluationContext);
+						action.doAction();
+					}
 
 					// newResource.getFactory().initializeModel(data, getCreationScheme(), getParameters(), evaluationContext);
 

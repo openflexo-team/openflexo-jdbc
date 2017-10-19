@@ -63,7 +63,16 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 public interface HbnToOneReferenceRole extends FlexoConceptInstanceRole {
 
 	@PropertyIdentifier(type = String.class)
+	String COLUMN_NAME_KEY = "columnName";
+	@PropertyIdentifier(type = String.class)
 	String FOREIGN_KEY_ATTRIBUTE_NAME_KEY = "foreignKeyAttributeName";
+
+	@Getter(COLUMN_NAME_KEY)
+	@XMLAttribute
+	public String getColumnName();
+
+	@Setter(COLUMN_NAME_KEY)
+	public void setColumnName(String columnName);
 
 	@Getter(FOREIGN_KEY_ATTRIBUTE_NAME_KEY)
 	@XMLAttribute

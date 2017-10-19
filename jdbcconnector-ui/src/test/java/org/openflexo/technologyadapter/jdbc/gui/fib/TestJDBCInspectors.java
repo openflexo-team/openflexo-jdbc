@@ -70,6 +70,11 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
+	public void testPerformSQLQueryInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/PerformSQLQuery.inspector");
+	}
+
+	@Test
 	public void testSelectJDBCColumnInspector() {
 		validateFIB("Inspectors/JDBC/EditionAction/SelectJDBCColumn.inspector");
 	}
@@ -85,8 +90,18 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
+	public void testHbnColumnRoleInspector() {
+		validateFIB("Inspectors/JDBC/HbnColumnRole.inspector");
+	}
+
+	@Test
 	public void testHbnModelSlotInspector() {
 		validateFIB("Inspectors/JDBC/HbnModelSlot.inspector");
+	}
+
+	@Test
+	public void testHbnToOneReferenceRoleInspector() {
+		validateFIB("Inspectors/JDBC/HbnToOneReferenceRole.inspector");
 	}
 
 	@Test

@@ -52,10 +52,12 @@ import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoConceptInstanceType;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.AbstractCreateNatureSpecificVirtualModel;
 import org.openflexo.foundation.fml.action.AddUseDeclaration;
+import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.PropertyEntry;
 import org.openflexo.foundation.fml.action.PropertyEntry.PropertyType;
@@ -67,6 +69,8 @@ import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -128,6 +132,20 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 	}
 
 	@Override
+	protected void performCreateBehaviours() {
+		setDefineSomeBehaviours(true);
+
+		super.performCreateBehaviours();
+
+		CreateFlexoBehaviour createHbnInitializer = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(getNewFlexoConcept(), null, this);
+		createHbnInitializer.setFlexoBehaviourName("initialize");
+		createHbnInitializer.setFlexoBehaviourClass(HbnInitializer.class);
+		createHbnInitializer.doAction();
+		HbnInitializer initializer = (HbnInitializer) createHbnInitializer.getNewFlexoBehaviour();
+
+	}
+
+	@Override
 	protected void doAction(Object context) throws FlexoException {
 
 		Progress.progress(getLocales().localizedForKey("create_virtual_model"));
@@ -144,15 +162,15 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 			throw new FlexoException(e);
 		}
 
+		AddUseDeclaration useDeclarationAction = AddUseDeclaration.actionType.makeNewEmbeddedAction(newVirtualModel, null, this);
+		useDeclarationAction.setModelSlotClass(HbnModelSlot.class);
+		useDeclarationAction.doAction();
+
 		performSetParentConcepts();
 		performCreateProperties();
 		performCreateBehaviours();
 		performCreateInspectors();
 		performPostProcessings();
-
-		AddUseDeclaration useDeclarationAction = AddUseDeclaration.actionType.makeNewEmbeddedAction(newVirtualModel, null, this);
-		useDeclarationAction.setModelSlotClass(HbnModelSlot.class);
-		useDeclarationAction.doAction();
 
 		for (TableMapping tableMapping : getTableMappings()) {
 			CreateFlexoConcept createConceptAction = CreateFlexoConcept.actionType.makeNewEmbeddedAction(newVirtualModel, null, this);
@@ -163,18 +181,27 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 				propertyEntry.setName(columnMapping.getPropertyName());
 				switch (columnMapping.getMappingType()) {
 					case Primitive:
-						propertyEntry.setPropertyType(PropertyType.ABSTRACT_PROPERTY);
-						propertyEntry.setType(columnMapping.getColumn().getJavaType());
+						propertyEntry.setPropertyType(PropertyType.TECHNOLOGY_ROLE);
+						propertyEntry.setFlexoRoleClass(HbnColumnRole.class);
+						propertyEntry.setType(columnMapping.getColumn().getDataType().getJavaType());
+						System.out.println("Property " + propertyEntry + " type=" + propertyEntry.getType());
 						break;
 					case ForeignKey:
 						propertyEntry.setPropertyType(PropertyType.TECHNOLOGY_ROLE);
 						propertyEntry.setFlexoRoleClass(HbnToOneReferenceRole.class);
+						propertyEntry.setType(FlexoConceptInstanceType.UNDEFINED_FLEXO_CONCEPT_INSTANCE_TYPE);
+						for (TableMapping oppositeTableMapping : getTableMappings()) {
+							if (oppositeTableMapping.getTable().getName().equals(columnMapping.getOppositeTable().getName())) {
+								propertyEntry.setType(oppositeTableMapping.getConcept().getInstanceType());
+								break;
+							}
+						}
 						break;
 					default:
 						// TODO
 				}
 			}
-			createConceptAction.setDefineInspector(true);
+			createConceptAction.setDefineInspector(false);
 			createConceptAction.doAction();
 
 			tableMapping.concept = createConceptAction.getNewFlexoConcept();
@@ -182,10 +209,26 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 
 			for (ColumnMapping columnMapping : tableMapping.getColumnMappings()) {
 				columnMapping.property = tableMapping.concept.getDeclaredProperty(columnMapping.getPropertyName());
+				switch (columnMapping.getMappingType()) {
+					case Primitive:
+						HbnColumnRole columnRole = (HbnColumnRole) columnMapping.property;
+						columnRole.setColumnName(columnMapping.getColumnName());
+						columnRole.setDataType(columnMapping.getColumn().getDataType());
+						break;
+					case ForeignKey:
+						HbnToOneReferenceRole toOneReferenceRole = (HbnToOneReferenceRole) columnMapping.property;
+						toOneReferenceRole.setColumnName(columnMapping.getColumnName());
+						break;
+					default:
+						// TODO
+				}
 				if (columnMapping.getColumn().isPrimaryKey()) {
 					tableMapping.concept.addToKeyProperties(columnMapping.property);
 				}
 			}
+
+			createConceptAction.setDefineInspector(true);
+			createConceptAction.performCreateInspectors();
 		}
 
 		for (TableMapping tableMapping : getTableMappings()) {
@@ -339,6 +382,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 		public class ColumnMapping {
 			private JDBCColumn column;
 			private String propertyName;
+			private String columnName;
 			private FlexoProperty<?> property;
 			private ColumnPropertyMappingType mappingType;
 			private boolean selectIt;
@@ -347,6 +391,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 
 			public ColumnMapping(JDBCColumn column) {
 				this.column = column;
+				columnName = column.getName();
 				propertyName = column.getName().toLowerCase();
 				mappingType = ColumnPropertyMappingType.Primitive;
 				selectIt = true;
@@ -365,6 +410,10 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 
 			public String getPropertyName() {
 				return propertyName;
+			}
+
+			public String getColumnName() {
+				return columnName;
 			}
 
 			public boolean isPrimaryKey() {

@@ -35,8 +35,6 @@
 
 package org.openflexo.technologyadapter.jdbc.model;
 
-import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.Objects;
 
 import org.openflexo.foundation.FlexoObject;
@@ -77,7 +75,7 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 	@Getter(TYPE_AS_STRING)
 	String getTypeAsString();
 
-	Type getJavaType();
+	JDBCMappingType getDataType();
 
 	String getSQLType();
 
@@ -108,20 +106,8 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 		}
 
 		@Override
-		public Type getJavaType() {
-			if (getTypeAsString().equalsIgnoreCase("INTEGER")) {
-				return Integer.class;
-			}
-			else if (getTypeAsString().equalsIgnoreCase("VARCHAR")) {
-				return String.class;
-			}
-			else if (getTypeAsString().toUpperCase().contains("CHAR")) {
-				return String.class;
-			}
-			else if (getTypeAsString().equalsIgnoreCase("DATE")) {
-				return Date.class;
-			}
-			return String.class;
+		public JDBCMappingType getDataType() {
+			return JDBCMappingType.getJDBCMappingType(getTypeAsString());
 		}
 
 		@Override

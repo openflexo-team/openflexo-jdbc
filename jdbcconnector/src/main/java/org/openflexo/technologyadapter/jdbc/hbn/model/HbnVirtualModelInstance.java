@@ -88,6 +88,7 @@ import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance.HbnVirtualModelInstanceImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
@@ -475,8 +476,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 			for (JDBCColumn jdbcColumn : jdbcTable.getColumns()) {
 				Column col = new Column();
 				col.setName(jdbcColumn.getName());
-				System.out.println("Define new column " + jdbcColumn.getName() + " type=" + jdbcColumn.getTypeAsString() + " javaType="
-						+ jdbcColumn.getJavaType());
+				System.out.println("Define new column " + jdbcColumn.getName() + " type=" + jdbcColumn.getDataType());
 				col.setLength(jdbcColumn.getLength());
 				col.setSqlType(jdbcColumn.getSQLType());
 				col.setNullable(jdbcColumn.isNullable());
@@ -547,12 +547,49 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
 				Property prop;
-				Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(flexoProperty.getName());
-				// System.out.println("colIdentifier: " + colIdentifier);
-				Column col = table.getColumn(colIdentifier);
-				// System.out.println("col: " + col);
+
+				if (flexoProperty instanceof HbnColumnRole) {
+
+					HbnColumnRole hbnColumnRole = (HbnColumnRole) flexoProperty;
+
+					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(hbnColumnRole.getColumnName());
+					// System.out.println("colIdentifier: " + colIdentifier);
+					Column col = table.getColumn(colIdentifier);
+					// System.out.println("col: " + col);
+
+					prop = new Property();
+					prop.setName(hbnColumnRole.getName());
+					SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
+					value.setTypeName(TypeUtils.getBaseClass(hbnColumnRole.getType()).getCanonicalName());
+					value.addColumn(col);
+					value.setTable(table);
+					prop.setValue(value);
+					if (concept.getKeyProperties().contains(flexoProperty)) {
+						// This is a key !
+						if (hbnColumnRole.getType().equals(Integer.class)) {
+							value.setIdentifierGeneratorStrategy("native");
+						}
+						else {
+							value.setIdentifierGeneratorStrategy("assigned");
+						}
+						pClass.setDeclaredIdentifierProperty(prop);
+						pClass.setIdentifierProperty(prop);
+						pClass.setIdentifier(value);
+					}
+					else {
+						pClass.addProperty(prop);
+					}
+				}
+
+				// Following is deprecated
 				if (flexoProperty instanceof AbstractProperty) {
 					AbstractProperty<?> abstractProperty = (AbstractProperty<?>) flexoProperty;
+
+					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(abstractProperty.getName());
+					// System.out.println("colIdentifier: " + colIdentifier);
+					Column col = table.getColumn(colIdentifier);
+					// System.out.println("col: " + col);
+
 					prop = new Property();
 					prop.setName(abstractProperty.getName());
 					SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
@@ -576,8 +613,17 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 						pClass.addProperty(prop);
 					}
 				}
+				// End deprecated
+
 				else if (flexoProperty instanceof HbnToOneReferenceRole) {
 					HbnToOneReferenceRole referenceRole = (HbnToOneReferenceRole) flexoProperty;
+
+					// TODO: define a column name
+					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(referenceRole.getName());
+					// System.out.println("colIdentifier: " + colIdentifier);
+					Column col = table.getColumn(colIdentifier);
+					// System.out.println("col: " + col);
+
 					prop = new Property();
 					prop.setName(referenceRole.getName());
 					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);

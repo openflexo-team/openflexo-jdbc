@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Panel className="org.openflexo.gina.utils.FIBInspector" layout="border"
 	titleFont="SansSerif,0,12" darkLevel="0"
-	dataClassName="org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole"
+	dataClassName="org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole"
 	controllerClassName="org.openflexo.fml.controller.FMLFIBInspectorController"
 	font="SansSerif,0,12" name="Inspector">
 	<TabPanel name="Tab" constraints="border(location=center)">
@@ -15,12 +15,14 @@
 			<TextField index="15" columns="7" data="data.columnName"
 				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)"
 				name="columnNameTextField" />
-			<Label index="16" label="foreignKeyAttributeName" align="left"
+			<Label index="16" label="data_type" align="left"
 				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left)"
-				name="foreignKeyAttributeName_label" />
-			<TextField index="17" columns="7" data="data.foreignKeyAttributeName"
+				name="DataTypeLabel" />
+			<DropDown index="17" autoSelectFirstRow="true"
+				iteratorClassName="org.openflexo.technologyadapter.jdbc.model.JDBCMappingType"
+				showText="true" showIcon="false" format="object.name" data="data.dataType"
 				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)"
-				name="pointer_field" />
+				name="DataTypeDD" />
 		</Tab>
 		<Tab title="Advanced" layout="twocols" titleFont="SansSerif,0,11"
 			darkLevel="0" index="2" font="SansSerif,0,11" useScrollBar="true"

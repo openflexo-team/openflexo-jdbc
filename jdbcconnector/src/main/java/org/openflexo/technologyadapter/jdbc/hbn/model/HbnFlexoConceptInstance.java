@@ -51,6 +51,7 @@ import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 
 /**
@@ -184,24 +185,46 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			if (flexoRole instanceof HbnToOneReferenceRole) {
 				return (T) getReferencedObject((HbnToOneReferenceRole) flexoRole);
 			}
+			if (flexoRole instanceof HbnColumnRole) {
+				T returned = (T) hbnMap.get(flexoRole.getName());
+				return returned;
+			}
 			return super.getFlexoActor(flexoRole);
 		}
 
 		@Override
 		public <T> void setFlexoActor(T object, FlexoRole<T> flexoRole) {
-			if (flexoRole instanceof HbnToOneReferenceRole) {
+			if (flexoRole instanceof HbnColumnRole) {
+				T oldValue = getFlexoActor(flexoRole);
+				if ((object == null && oldValue != null) || (object != null && !object.equals(oldValue))) {
+					hbnMap.put(flexoRole.getName(), object);
+					identifier = null;
+					identifierAsString = null;
+					setIsModified();
+					getPropertyChangeSupport().firePropertyChange(flexoRole.getPropertyName(), oldValue, object);
+				}
+			}
+			else if (flexoRole instanceof HbnToOneReferenceRole) {
 				setReferencedObject((HbnFlexoConceptInstance) object, (HbnToOneReferenceRole) flexoRole);
 			}
-			super.setFlexoActor(object, flexoRole);
+			else {
+				super.setFlexoActor(object, flexoRole);
+			}
 		}
 
 		@Override
 		public <T> T getFlexoPropertyValue(FlexoProperty<T> flexoProperty) {
+			// Deprecated
 			if (flexoProperty instanceof AbstractProperty) {
 				T returned = (T) hbnMap.get(flexoProperty.getName());
 				return returned;
 			}
+			// End deprecated
 
+			if (flexoProperty instanceof HbnColumnRole) {
+				T returned = (T) hbnMap.get(flexoProperty.getName());
+				return returned;
+			}
 			if (flexoProperty instanceof HbnToOneReferenceRole) {
 				return (T) getReferencedObject((HbnToOneReferenceRole) flexoProperty);
 			}
@@ -211,7 +234,19 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 
 		@Override
 		public <T> void setFlexoPropertyValue(FlexoProperty<T> flexoProperty, T value) {
+			// Deprecated
 			if (flexoProperty instanceof AbstractProperty) {
+				T oldValue = getFlexoPropertyValue(flexoProperty);
+				if ((value == null && oldValue != null) || (value != null && !value.equals(oldValue))) {
+					hbnMap.put(flexoProperty.getName(), value);
+					identifier = null;
+					identifierAsString = null;
+					setIsModified();
+					getPropertyChangeSupport().firePropertyChange(flexoProperty.getPropertyName(), oldValue, value);
+				}
+			}
+			// End deprecated
+			else if (flexoProperty instanceof HbnColumnRole) {
 				T oldValue = getFlexoPropertyValue(flexoProperty);
 				if ((value == null && oldValue != null) || (value != null && !value.equals(oldValue))) {
 					hbnMap.put(flexoProperty.getName(), value);

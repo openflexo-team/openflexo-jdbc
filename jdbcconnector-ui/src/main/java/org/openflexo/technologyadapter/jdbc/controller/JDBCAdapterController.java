@@ -39,6 +39,7 @@ import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
@@ -126,6 +127,9 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 
 	@Override
 	public ImageIcon getIconForFlexoRole(Class<? extends FlexoRole<?>> flexoRoleClass) {
+		if (HbnColumnRole.class.isAssignableFrom(flexoRoleClass)) {
+			return JDBCIconLibrary.JDBC_COLUMN_ICON;
+		}
 		if (HbnToOneReferenceRole.class.isAssignableFrom(flexoRoleClass)) {
 			return IconFactory.getImageIcon(FMLRTIconLibrary.FLEXO_CONCEPT_INSTANCE_ICON, IconLibrary.SYNC);
 		}

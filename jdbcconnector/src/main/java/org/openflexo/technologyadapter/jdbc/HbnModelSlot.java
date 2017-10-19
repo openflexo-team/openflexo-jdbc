@@ -77,6 +77,7 @@ import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
@@ -99,7 +100,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ModelEntity
 @XMLElement
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
-@DeclareFlexoRoles({ HbnToOneReferenceRole.class, HbnToManyReferenceRole.class })
+@DeclareFlexoRoles({ HbnColumnRole.class, HbnToOneReferenceRole.class, HbnToManyReferenceRole.class })
 @DeclareEditionActions({ CreateHbnResource.class, PerformSQLQuery.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
