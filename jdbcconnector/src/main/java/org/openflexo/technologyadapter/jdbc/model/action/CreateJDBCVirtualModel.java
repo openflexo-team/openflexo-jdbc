@@ -192,7 +192,9 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 						propertyEntry.setType(FlexoConceptInstanceType.UNDEFINED_FLEXO_CONCEPT_INSTANCE_TYPE);
 						for (TableMapping oppositeTableMapping : getTableMappings()) {
 							if (oppositeTableMapping.getTable().getName().equals(columnMapping.getOppositeTable().getName())) {
-								propertyEntry.setType(oppositeTableMapping.getConcept().getInstanceType());
+								if (oppositeTableMapping.getConcept() != null) {
+									propertyEntry.setType(oppositeTableMapping.getConcept().getInstanceType());
+								}
 								break;
 							}
 						}
