@@ -42,6 +42,14 @@ public class JDBCIconLibrary {
 	public static final ImageIcon JDBC_ROW_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/jdbc-row.png"));
 	public static final ImageIcon JDBC_KEY_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/key_16x16.png"));
 
+	public static final ImageIcon OPEN_TRANSACTION_ICON = new ImageIconResource(
+			ResourceLocator.locateResource("Icons/OpenTransaction_16x16.png"));
+	public static final ImageIcon COMMIT_TRANSACTION_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/Commit_16x16.png"));
+	public static final ImageIcon ROLLBACK_TRANSACTION_ICON = new ImageIconResource(
+			ResourceLocator.locateResource("Icons/Rollback_16x16.png"));
+	public static final ImageIcon PERFORM_SQL_QUERY_ICON = new ImageIconResource(
+			ResourceLocator.locateResource("Icons/PerformSQLQuery_16x16.png"));
+
 	public static ImageIcon iconForObject(Class<? extends TechnologyObject> objectClass) {
 		return JDBC_TECHNOLOGY_ICON;
 	}

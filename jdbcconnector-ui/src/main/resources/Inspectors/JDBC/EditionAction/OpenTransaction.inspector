@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel className="org.openflexo.gina.utils.FIBInspector" layout="border"
+	titleFont="SansSerif,0,12" darkLevel="0"
+	dataClassName="org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction"
+	controllerClassName="org.openflexo.fml.controller.FMLFIBInspectorController"
+	font="SansSerif,0,12" name="Inspector">
+	<TabPanel name="Tab" constraints="border(location=center)">
+		<Tab title="Basic" layout="twocols" titleFont="SansSerif,0,11"
+			darkLevel="0" index="0" font="SansSerif,0,11" useScrollBar="true"
+			horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED"
+			verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" name="BasicTab">
+			
+			<CheckBox name="TimeOutCheckbox" 
+				data="data.hasTimeOut" index="8" localize="true"
+				constraints="twocols(expandHorizontally=true;expandVertically=false;index=16;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=5;location=left)" />
+			<Panel vGap="0" borderLeft="0" hGap="0" sizeAdjustment="OriginalSize"
+				border="empty" borderRight="0" trackViewPortWidth="true" index="9" 
+				align="left"
+				constraints="twocols(expandHorizontally=true;expandVertically=false;index=17;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=right)"
+				borderBottom="0" borderTitle="Panel" titleFont="SansSerif,0,11"
+				borderTop="0" trackViewPortHeight="true" layout="flow" name="PopupSizePanel"
+				flowAlignment="LEADING">
+				<Label name="DefineTimeOutLabel" index="0" localize="true"
+					align="left"
+					constraints="flow(anchor=center;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=-5;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+					label="define_time_out" />
+				<Number minValue="0" columns="3"
+					enable="data.hasTimeOut" name="Integer" data="data.timeOut"
+					maxValue="3600" increment="1" index="1" localize="true"
+					constraints="flow(anchor=center;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=-5;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+					numberType="IntegerType" />
+				<Label name="SecondsLabel" index="0" localize="true"
+					align="left"
+					constraints="flow(anchor=center;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=0;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=-5;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+					label="seconds" />
+			</Panel>
+			<CheckBox name="RollBackOnlyCheckbox" 
+				data="data.rollbackOnly" index="10" localize="true"
+				constraints="twocols(expandHorizontally=true;expandVertically=false;index=16;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=5;location=left)" />
+			<Label label="rollback_only" align="left" index="11"
+				constraints="twocols(expandHorizontally=true;expandVertically=false;index=6;insetsBottom=0;insetsLeft=2;insetsRight=4;insetsTop=5;location=right)"
+				localize="true" />
+		</Tab>
+	</TabPanel>
+	<LocalizedDictionary>
+		<Localized key="Advanced" lang="French" value="Avancé" />
+		<Localized key="Basic" lang="French" value="Basique" />
+	</LocalizedDictionary>
+	<Parameter name="title" value="OpenTransaction" />
+</Panel>

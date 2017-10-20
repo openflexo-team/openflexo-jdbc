@@ -38,11 +38,14 @@ import org.openflexo.technologyadapter.jdbc.controller.action.CreateJDBCVirtualM
 import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.RollbackTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -178,7 +181,16 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, IconLibrary.NEW_MARKER);
 		}
 		if (PerformSQLQuery.class.isAssignableFrom(editionActionClass)) {
-			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, IconLibrary.IMPORT);
+			return JDBCIconLibrary.PERFORM_SQL_QUERY_ICON;
+		}
+		if (OpenTransaction.class.isAssignableFrom(editionActionClass)) {
+			return JDBCIconLibrary.OPEN_TRANSACTION_ICON;
+		}
+		if (CommitTransaction.class.isAssignableFrom(editionActionClass)) {
+			return JDBCIconLibrary.COMMIT_TRANSACTION_ICON;
+		}
+		if (RollbackTransaction.class.isAssignableFrom(editionActionClass)) {
+			return JDBCIconLibrary.ROLLBACK_TRANSACTION_ICON;
 		}
 		return super.getIconForEditionAction(editionActionClass);
 	}

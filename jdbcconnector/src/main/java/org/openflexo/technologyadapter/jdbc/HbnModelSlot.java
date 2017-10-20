@@ -76,13 +76,16 @@ import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnVirtualModelInstanceType;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.RollbackTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnObjectActorReference;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -101,7 +104,8 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @XMLElement
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
 @DeclareFlexoRoles({ HbnColumnRole.class, HbnToOneReferenceRole.class, HbnToManyReferenceRole.class })
-@DeclareEditionActions({ CreateHbnResource.class, PerformSQLQuery.class })
+@DeclareEditionActions({ CreateHbnResource.class, PerformSQLQuery.class, OpenTransaction.class, CommitTransaction.class,
+		RollbackTransaction.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {

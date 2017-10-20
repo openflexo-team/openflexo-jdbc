@@ -65,13 +65,28 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
+	public void testCommitTransactionInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/CommitTransaction.inspector");
+	}
+
+	@Test
 	public void testCreateJDBCResourceInspector() {
 		validateFIB("Inspectors/JDBC/EditionAction/CreateJDBCResource.inspector");
 	}
 
 	@Test
+	public void testOpenTransactionInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/OpenTransaction.inspector");
+	}
+
+	@Test
 	public void testPerformSQLQueryInspector() {
 		validateFIB("Inspectors/JDBC/EditionAction/PerformSQLQuery.inspector");
+	}
+
+	@Test
+	public void testRollbackTransactionInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/RollbackTransaction.inspector");
 	}
 
 	@Test
