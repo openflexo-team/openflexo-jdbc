@@ -60,7 +60,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCMappingType;
 @ImplementationClass(HbnColumnRole.HbnColumnRoleImpl.class)
 @XMLElement
 @FML("HbnColumnRole")
-public interface HbnColumnRole extends FlexoRole<Object> {
+public interface HbnColumnRole<T> extends FlexoRole<T> {
 
 	@PropertyIdentifier(type = String.class)
 	String COLUMN_NAME_KEY = "columnName";
@@ -81,7 +81,7 @@ public interface HbnColumnRole extends FlexoRole<Object> {
 	@Setter(DATA_TYPE_KEY)
 	public void setDataType(JDBCMappingType dataType);
 
-	public abstract static class HbnColumnRoleImpl extends FlexoRoleImpl<Object> implements HbnColumnRole {
+	public abstract static class HbnColumnRoleImpl<T> extends FlexoRoleImpl<T> implements HbnColumnRole<T> {
 
 		@Override
 		public PropertyCardinality getCardinality() {
@@ -118,7 +118,7 @@ public interface HbnColumnRole extends FlexoRole<Object> {
 		}
 
 		@Override
-		public ActorReference<Object> makeActorReference(Object object, FlexoConceptInstance fci) {
+		public ActorReference<T> makeActorReference(T object, FlexoConceptInstance fci) {
 			return null;
 		}
 
