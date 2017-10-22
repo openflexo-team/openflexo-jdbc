@@ -77,6 +77,7 @@ import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
@@ -105,7 +106,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
 @DeclareFlexoRoles({ HbnColumnRole.class, HbnToOneReferenceRole.class, HbnToManyReferenceRole.class })
 @DeclareEditionActions({ CreateHbnResource.class, PerformSQLQuery.class, OpenTransaction.class, CommitTransaction.class,
-		RollbackTransaction.class })
+		RollbackTransaction.class, CreateHbnObject.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {

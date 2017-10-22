@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 import org.hibernate.MappingException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.internal.ClassLoaderAccessImpl;
 import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
@@ -203,6 +204,25 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 	public void closeSession(Session session);
 
 	/**
+	 * Begin an Hibernate transaction
+	 * 
+	 * If a current transaction is active, commit it first.
+	 * 
+	 * @return
+	 */
+	public Transaction beginTransaction() throws HbnException;
+
+	/**
+	 * Commit current active transaction
+	 */
+	public void commit() throws HbnException;
+
+	/**
+	 * Rollback current active transaction
+	 */
+	public void rollback() throws HbnException;
+
+	/**
 	 * Build and return a {@link Serializable} object which acts as key identifier for supplied hbnMap, asserting this is the support object
 	 * for a {@link HbnFlexoConceptInstance} of supplied {@link FlexoConcept}
 	 * 
@@ -286,6 +306,24 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 	 * @return
 	 */
 	public HbnFlexoConceptInstance getFlexoConceptInstance(Serializable identifier, FlexoConceptInstance container, FlexoConcept concept);
+
+	/**
+	 * Instantiate and register a new {@link HbnFlexoConceptInstance}
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	@Override
+	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept);
+
+	/**
+	 * Instantiate and register a new {@link HbnFlexoConceptInstance} in a container FlexoConceptInstance
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	@Override
+	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, FlexoConceptInstance container);
 
 	abstract class HbnVirtualModelInstanceImpl extends VirtualModelInstanceImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnVirtualModelInstance {
@@ -476,7 +514,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 			for (JDBCColumn jdbcColumn : jdbcTable.getColumns()) {
 				Column col = new Column();
 				col.setName(jdbcColumn.getName());
-				System.out.println("Define new column " + jdbcColumn.getName() + " type=" + jdbcColumn.getDataType());
+				// System.out.println("Define new column " + jdbcColumn.getName() + " type=" + jdbcColumn.getDataType());
 				col.setLength(jdbcColumn.getLength());
 				col.setSqlType(jdbcColumn.getSQLType());
 				col.setNullable(jdbcColumn.isNullable());
@@ -567,6 +605,11 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					if (concept.getKeyProperties().contains(flexoProperty)) {
 						// This is a key !
 						if (hbnColumnRole.getType().equals(Integer.class)) {
+							/*System.out.println("Je declare le generator d'id pour " + flexoProperty.getName());
+							value.setIdentifierGeneratorStrategy("native");
+							Properties params = new Properties();
+							params.setProperty(PersistentIdentifierGenerator.PK, flexoProperty.getName());
+							value.setIdentifierGeneratorProperties(params);*/
 							value.setIdentifierGeneratorStrategy("native");
 						}
 						else {
@@ -619,7 +662,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					HbnToOneReferenceRole referenceRole = (HbnToOneReferenceRole) flexoProperty;
 
 					// TODO: define a column name
-					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(referenceRole.getName());
+					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(referenceRole.getColumnName());
 					// System.out.println("colIdentifier: " + colIdentifier);
 					Column col = table.getColumn(colIdentifier);
 					// System.out.println("col: " + col);
@@ -809,6 +852,66 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 				}
 			}
 			return returned;
+		}
+
+		/**
+		 * Instanciate and register a new {@link FlexoConceptInstance}
+		 * 
+		 * @param pattern
+		 * @return
+		 */
+		@Override
+		public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept) {
+
+			return makeNewFlexoConceptInstance(concept, null);
+		}
+
+		/**
+		 * Instantiate and register a new {@link FlexoConceptInstance} in a container FlexoConceptInstance
+		 * 
+		 * @param pattern
+		 * @return
+		 */
+		@Override
+		public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, FlexoConceptInstance container) {
+
+			HbnFlexoConceptInstance returned = getResource().getFactory().newInstance(HbnFlexoConceptInstance.class, new HashMap<>(),
+					concept);
+
+			if (container != null) {
+				container.addToEmbeddedFlexoConceptInstances(returned);
+			}
+			addToFlexoConceptInstances(returned);
+			return returned;
+		}
+
+		@Override
+		public Transaction beginTransaction() throws HbnException {
+			if (getDefaultSession().getTransaction() == null) {
+				return getDefaultSession().beginTransaction();
+			}
+			Transaction trans = getDefaultSession().getTransaction();
+			if (trans.isActive()) {
+				trans.commit();
+			}
+			trans.begin();
+			return trans;
+		}
+
+		@Override
+		public void commit() throws HbnException {
+			if (getDefaultSession().getTransaction() == null) {
+				throw new HbnException("No transaction associated to session");
+			}
+			getDefaultSession().getTransaction().commit();
+		}
+
+		@Override
+		public void rollback() throws HbnException {
+			if (getDefaultSession().getTransaction() == null) {
+				throw new HbnException("No transaction associated to session");
+			}
+			getDefaultSession().getTransaction().rollback();
 		}
 
 	}

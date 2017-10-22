@@ -117,8 +117,6 @@ public class SQLHelper {
 		while (jdbcTables.next()) {
 			String tableName = jdbcTables.getString("TABLE_NAME");
 
-			System.out.println("Je cherche la table " + tableName + " dans " + sortedTables.keySet());
-
 			JDBCTable aTable = sortedTables.get(tableName.toLowerCase());
 			if (aTable == null) {
 				// new table, add it to the list
@@ -178,8 +176,8 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(),
-				sqlName(table.getName()), "%");
+		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(), sqlName(table.getName()),
+				"%");
 		while (jdbcCols.next()) {
 			/*
 						System.out.println(" --------------------> " + jdbcCols.getString("COLUMN_NAME"));

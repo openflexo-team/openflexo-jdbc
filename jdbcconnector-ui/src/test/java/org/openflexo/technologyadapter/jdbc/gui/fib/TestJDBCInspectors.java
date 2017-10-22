@@ -70,6 +70,11 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
+	public void testCreateHbnObjectInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/CreateHbnObject.inspector");
+	}
+
+	@Test
 	public void testCreateJDBCResourceInspector() {
 		validateFIB("Inspectors/JDBC/EditionAction/CreateJDBCResource.inspector");
 	}

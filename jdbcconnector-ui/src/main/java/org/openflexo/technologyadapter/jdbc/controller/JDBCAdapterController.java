@@ -39,6 +39,7 @@ import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
@@ -191,6 +192,9 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 		}
 		if (RollbackTransaction.class.isAssignableFrom(editionActionClass)) {
 			return JDBCIconLibrary.ROLLBACK_TRANSACTION_ICON;
+		}
+		if (CreateHbnObject.class.isAssignableFrom(editionActionClass)) {
+			return IconFactory.getImageIcon(FMLRTIconLibrary.FLEXO_CONCEPT_INSTANCE_ICON, IconLibrary.DUPLICATE);
 		}
 		return super.getIconForEditionAction(editionActionClass);
 	}

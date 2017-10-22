@@ -59,7 +59,9 @@ import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
- * {@link EditionAction} used to instantiate a new Hibernate {@link Transaction}
+ * {@link EditionAction} used to instantiate a new Hibernate {@link Transaction}<br>
+ * 
+ * When existing and active, current {@link Transaction} will be commited prior to begin transaction
  * 
  * @author sylvain
  *
@@ -144,7 +146,7 @@ public interface OpenTransaction extends TechnologySpecificAction<HbnModelSlot, 
 				return null;
 			}
 
-			Transaction returned = vmi.getDefaultSession().beginTransaction();
+			Transaction returned = vmi.beginTransaction();
 
 			if (getRollbackOnly()) {
 				returned.setRollbackOnly();

@@ -38,27 +38,18 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import org.hibernate.Transaction;
-import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificAction;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext.ReturnException;
-import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.PropertyIdentifier;
-import org.openflexo.model.annotations.Setter;
-import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction.OpenTransactionImpl;
@@ -76,27 +67,50 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @FML("OpenTransaction")
 public interface CommitTransaction extends TechnologySpecificAction<HbnModelSlot, HbnVirtualModelInstance, Void> {
 
-	@PropertyIdentifier(type = DataBinding.class)
+	/*@PropertyIdentifier(type = DataBinding.class)
 	public static final String TRANSACTION_KEY = "transaction";
-
+	
 	@Getter(value = TRANSACTION_KEY)
 	@XMLAttribute
 	public DataBinding<Transaction> getTransaction();
-
+	
 	@Setter(TRANSACTION_KEY)
-	public void setTransaction(DataBinding<Transaction> transaction);
+	public void setTransaction(DataBinding<Transaction> transaction);*/
 
 	public static abstract class CommitTransactionImpl<T> extends TechnologySpecificActionImpl<HbnModelSlot, HbnVirtualModelInstance, Void>
 			implements CommitTransaction {
 
+		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());
+
+		/*private DataBinding<Transaction> transaction;
+		
+		@Override
+		public DataBinding<Transaction> getTransaction() {
+			if (transaction == null) {
+				transaction = new DataBinding<Transaction>(this, Transaction.class, BindingDefinitionType.GET);
+				transaction.setBindingName(TRANSACTION_KEY);
+			}
+			return transaction;
+		}
+		
+		@Override
+		public void setTransaction(DataBinding<Transaction> aTransaction) {
+			if (aTransaction != null) {
+				aTransaction.setOwner(this);
+				aTransaction.setBindingName(TRANSACTION_KEY);
+				aTransaction.setDeclaredType(Transaction.class);
+				aTransaction.setBindingDefinitionType(BindingDefinitionType.GET);
+			}
+			this.transaction = aTransaction;
+		}*/
 
 		@Override
 		public Type getAssignableType() {
 			return Void.class;
 		}
 
-		public Transaction getTransaction(BindingEvaluationContext evaluationContext) {
+		/*public Transaction getTransaction(BindingEvaluationContext evaluationContext) {
 			if (getTransaction().isValid()) {
 				try {
 					return getTransaction().getBindingValue(evaluationContext);
@@ -109,21 +123,16 @@ public interface CommitTransaction extends TechnologySpecificAction<HbnModelSlot
 				}
 			}
 			return null;
-		}
+		}*/
 
 		@Override
 		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FlexoException {
 
-			Transaction transaction = getTransaction(evaluationContext);
+			System.out.println("Commit transaction for " + getReceiver(evaluationContext));
 
-			System.out.println("Commit transaction " + getTransaction(evaluationContext));
+			HbnVirtualModelInstance vmi = getReceiver(evaluationContext);
 
-			if (transaction == null) {
-				logger.warning("Could not commit null transaction");
-				return null;
-			}
-
-			transaction.commit();
+			vmi.commit();
 
 			return null;
 		}
