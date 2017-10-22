@@ -43,7 +43,6 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.foundation.fml.AbstractProperty;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -67,6 +66,7 @@ import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
@@ -122,7 +122,7 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 
 	@AfterClass
 	public static void tearDownClass() {
-		if (clientTable != null){
+		if (clientTable != null) {
 			dropTable(connection, clientTable);
 		}
 		if (salesmanTable != null) {
@@ -233,6 +233,7 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		rootVirtualModel = createTopLevelVirtualModel(_project, ROOT_VIRTUAL_MODEL_NAME, ROOT_VIRTUAL_MODEL_URI);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@TestOrder(5)
 	public void generateMappingVirtualModel() throws Exception {
@@ -261,22 +262,22 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		assertNotNull(clientConcept);
 		assertNotNull(salesmanConcept);
 
-		AbstractProperty<Integer> clientId = (AbstractProperty<Integer>) clientConcept.getAccessibleProperty("id");
+		HbnColumnRole<Integer> clientId = (HbnColumnRole<Integer>) clientConcept.getAccessibleProperty("id");
 		assertNotNull(clientId);
-		AbstractProperty<String> name = (AbstractProperty<String>) clientConcept.getAccessibleProperty("name");
+		HbnColumnRole<String> name = (HbnColumnRole<String>) clientConcept.getAccessibleProperty("name");
 		assertNotNull(name);
-		AbstractProperty<String> adress = (AbstractProperty<String>) clientConcept.getAccessibleProperty("adress");
+		HbnColumnRole<String> adress = (HbnColumnRole<String>) clientConcept.getAccessibleProperty("adress");
 		assertNotNull(adress);
-		AbstractProperty<String> hobby = (AbstractProperty<String>) clientConcept.getAccessibleProperty("hobby");
+		HbnColumnRole<String> hobby = (HbnColumnRole<String>) clientConcept.getAccessibleProperty("hobby");
 		assertNotNull(hobby);
-		AbstractProperty<String> comments = (AbstractProperty<String>) clientConcept.getAccessibleProperty("comments");
+		HbnColumnRole<String> comments = (HbnColumnRole<String>) clientConcept.getAccessibleProperty("comments");
 		assertNotNull(comments);
 
-		AbstractProperty<Integer> salesmanId = (AbstractProperty<Integer>) salesmanConcept.getAccessibleProperty("id");
+		HbnColumnRole<Integer> salesmanId = (HbnColumnRole<Integer>) salesmanConcept.getAccessibleProperty("id");
 		assertNotNull(salesmanId);
-		AbstractProperty<String> lastname = (AbstractProperty<String>) salesmanConcept.getAccessibleProperty("lastname");
+		HbnColumnRole<String> lastname = (HbnColumnRole<String>) salesmanConcept.getAccessibleProperty("lastname");
 		assertNotNull(lastname);
-		AbstractProperty<String> firstname = (AbstractProperty<String>) salesmanConcept.getAccessibleProperty("firstname");
+		HbnColumnRole<String> firstname = (HbnColumnRole<String>) salesmanConcept.getAccessibleProperty("firstname");
 		assertNotNull(firstname);
 
 		// We create a HbnToManyReferenceRole role
@@ -303,10 +304,11 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		sqlQuery1.setReceiver(new DataBinding<>("this"));
 		sqlQuery1.setFlexoConceptType(clientConcept);
 
-		CreateFlexoBehaviour createInitializer = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
+		/*CreateFlexoBehaviour createInitializer = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
 		createInitializer.setFlexoBehaviourClass(HbnInitializer.class);
 		createInitializer.doAction();
-		mappingInitializer = (HbnInitializer) createInitializer.getNewFlexoBehaviour();
+		mappingInitializer = (HbnInitializer) createInitializer.getNewFlexoBehaviour();*/
+		mappingInitializer = mappingVirtualModel.getFlexoBehaviours(HbnInitializer.class).get(0);
 
 		CreateEditionAction createSelectClients2 = CreateEditionAction.actionType.makeNewAction(mappingInitializer.getControlGraph(), null,
 				_editor);
@@ -416,6 +418,7 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		assertVirtualModelIsValid(rootVirtualModel);
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	@TestOrder(7)
 	public void instantiate() throws Exception {
