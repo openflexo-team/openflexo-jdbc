@@ -671,7 +671,10 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					prop.setName(referenceRole.getName());
 					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);
 					manyToOne.setReferencedPropertyName(referenceRole.getForeignKeyAttributeName());
-					manyToOne.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
+					// When the Concept is not part of the mapping, cannot reference FlexoConceptType as it does not exist in VM
+					if (referenceRole.getFlexoConceptType() != null) {
+						manyToOne.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
+					}
 					manyToOne.addColumn(col);
 					manyToOne.setTable(table);
 					prop.setValue(manyToOne);
