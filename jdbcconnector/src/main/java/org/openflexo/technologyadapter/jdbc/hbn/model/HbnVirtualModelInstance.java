@@ -94,7 +94,7 @@ import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance.HbnVirtualModelInstanceImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
@@ -690,25 +690,20 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					pClass.addProperty(prop);
 				}
 
-				else if (flexoProperty instanceof HbnToManyReferenceRole) {
-					HbnToManyReferenceRole referenceRole = (HbnToManyReferenceRole) flexoProperty;
+				else if (flexoProperty instanceof HbnOneToManyReferenceRole) {
+					HbnOneToManyReferenceRole referenceRole = (HbnOneToManyReferenceRole) flexoProperty;
 
 					if (referenceRole.getFlexoConceptType() == null) {
 						logger.warning("Undefined reference concept for " + referenceRole);
 						break;
 					}
 
-					System.out.println("Bon, je cherche l'oppositeClass pour " + referenceRole.getFlexoConceptType());
 					PersistentClass oppositeClass = mappings.get(referenceRole.getFlexoConceptType());
 					Table oppositeTable = oppositeClass.getTable();
-					System.out.println("Table: " + oppositeTable);
-					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(referenceRole.getDestinationKeyAttributeName());
-					// System.out.println("colIdentifier: " + colIdentifier);
+					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(referenceRole.getDestinationKeyColumnName());
 					Column col = oppositeTable.getColumn(colIdentifier);
-					System.out.println("col: " + col);
 
 					Bag coll = new Bag((MetadataImplementor) metadata, pClass);
-					System.out.println("role: " + pClass.getEntityName() + "." + referenceRole.getPropertyName());
 					coll.setRole(pClass.getEntityName() + "." + referenceRole.getPropertyName());
 					coll.setCollectionTable(oppositeTable);
 
@@ -722,36 +717,10 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 					List<Column> manyColumns = new ArrayList<>(); // Relationship columns in tableMany
 					manyColumns.add(col);
-					System.out.println("Je cree une clef etrangere " + referenceRole.getDestinationKeyAttributeName());
-					// oppositeTable.createForeignKey(referenceRole.getDestinationKeyAttributeName(), manyColumns, pClass.getEntityName(),
-					// "prout");
+					// oppositeTable.createForeignKey(referenceRole.getDestinationKeyAttributeName(), manyColumns,
+					// pClass.getEntityName(),"prout");
 					dv.setNullable(false);
 					coll.setKey(dv);
-
-					/*prop = new Property();
-					prop.setName(referenceRole.getName());
-					OneToMany oneToMany = new OneToMany((MetadataImplementor) metadata, pClass);
-					if (referenceRole.getFlexoConceptType() != null) {
-						oneToMany.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
-					}
-					prop.setValue(oneToMany);
-					pClass.addProperty(prop);*/
-
-					// Set set = new Set((MetadataImplementor) metadata, pClass);
-					// set.setReferencedPropertyName(propertyRef);
-
-					/*OneToMany oneToMany = new OneToMany((MetadataImplementor) metadata, pClass);
-					oneToMany.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
-					oneToMany.setAssociatedClass(oppositeClass);*/
-
-					// SimpleValue key = new SimpleValue((MetadataImplementor) metadata, oppositeTable);
-					// key.setTypeName(
-					// Integer.class.getCanonicalName()/*TypeUtils.getBaseClass(abstractProperty.getType()).getCanonicalName()*/);
-					// key.addColumn(col);
-					// key.setTable(oppositeTable);
-
-					// set.setKey(key);
-					// set.setElement(oneToMany);
 
 					metadataCollector.addCollectionBinding(coll);
 
@@ -759,26 +728,6 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					prop.setName(referenceRole.getName());
 					prop.setValue(coll);
 					pClass.addProperty(prop);
-
-					/*
-					// TODO: define a column name
-					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(referenceRole.getColumnName());
-					// System.out.println("colIdentifier: " + colIdentifier);
-					Column col = table.getColumn(colIdentifier);
-					// System.out.println("col: " + col);
-					
-					prop = new Property();
-					prop.setName(referenceRole.getName());
-					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);
-					manyToOne.setReferencedPropertyName(referenceRole.getForeignKeyAttributeName());
-					// When the Concept is not part of the mapping, cannot reference FlexoConceptType as it does not exist in VM
-					if (referenceRole.getFlexoConceptType() != null) {
-						manyToOne.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
-					}
-					manyToOne.addColumn(col);
-					manyToOne.setTable(table);
-					prop.setValue(manyToOne);
-					pClass.addProperty(prop);*/
 
 				}
 			}

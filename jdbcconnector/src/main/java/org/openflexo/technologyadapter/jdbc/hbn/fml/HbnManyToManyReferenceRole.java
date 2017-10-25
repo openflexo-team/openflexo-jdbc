@@ -41,6 +41,7 @@ package org.openflexo.technologyadapter.jdbc.hbn.fml;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
+import org.openflexo.foundation.fml.PropertyCardinality;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -59,9 +60,9 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
  *
  */
 @ModelEntity
-@ImplementationClass(HbnToManyReferenceRole.HbnToManyReferenceRoleImpl.class)
+@ImplementationClass(HbnManyToManyReferenceRole.HbnToManyReferenceRoleImpl.class)
 @XMLElement
-public interface HbnToManyReferenceRole extends FlexoConceptInstanceRole {
+public interface HbnManyToManyReferenceRole extends FlexoConceptInstanceRole {
 
 	@PropertyIdentifier(type = String.class)
 	String RELATION_TABLE_NAME_KEY = "relationTableName";
@@ -91,7 +92,7 @@ public interface HbnToManyReferenceRole extends FlexoConceptInstanceRole {
 	@Setter(DESTINATION_KEY_ATTRIBUTE_NAME_KEY)
 	void setDestinationKeyAttributeName(String destinationKeyAttributeName);
 
-	public static abstract class HbnToManyReferenceRoleImpl extends FlexoConceptInstanceRoleImpl implements HbnToManyReferenceRole {
+	public static abstract class HbnToManyReferenceRoleImpl extends FlexoConceptInstanceRoleImpl implements HbnManyToManyReferenceRole {
 
 		private static final Logger logger = Logger.getLogger(HbnToManyReferenceRoleImpl.class.getPackage().getName());
 
@@ -100,5 +101,21 @@ public interface HbnToManyReferenceRole extends FlexoConceptInstanceRole {
 			return JDBCTechnologyAdapter.class;
 		}
 
+		@Override
+		public PropertyCardinality getCardinality() {
+			switch (super.getCardinality()) {
+				case ZeroOne:
+					return PropertyCardinality.ZeroMany;
+				case One:
+					return PropertyCardinality.OneMany;
+				case ZeroMany:
+					return PropertyCardinality.ZeroMany;
+				case OneMany:
+					return PropertyCardinality.OneMany;
+				default:
+					break;
+			}
+			return PropertyCardinality.ZeroMany;
+		}
 	}
 }

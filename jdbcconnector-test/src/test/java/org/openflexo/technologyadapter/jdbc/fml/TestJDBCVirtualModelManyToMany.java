@@ -68,7 +68,7 @@ import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -280,13 +280,13 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		HbnColumnRole<String> firstname = (HbnColumnRole<String>) salesmanConcept.getAccessibleProperty("firstname");
 		assertNotNull(firstname);
 
-		// We create a HbnToManyReferenceRole role
+		// We create a HbnOneToManyReferenceRole role
 		CreateTechnologyRole createSalesmenRole = CreateTechnologyRole.actionType.makeNewAction(clientConcept, null, _editor);
 		createSalesmenRole.setRoleName("salesmen");
-		createSalesmenRole.setFlexoRoleClass(HbnToManyReferenceRole.class);
+		createSalesmenRole.setFlexoRoleClass(HbnOneToManyReferenceRole.class);
 		createSalesmenRole.doAction();
 		assertTrue(createSalesmenRole.hasActionExecutionSucceeded());
-		HbnToManyReferenceRole salesmenRole = (HbnToManyReferenceRole) createSalesmenRole.getNewFlexoRole();
+		HbnOneToManyReferenceRole salesmenRole = (HbnOneToManyReferenceRole) createSalesmenRole.getNewFlexoRole();
 		assertNotNull(salesmenRole);
 
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);

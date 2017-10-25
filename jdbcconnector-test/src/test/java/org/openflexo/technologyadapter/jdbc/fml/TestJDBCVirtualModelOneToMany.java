@@ -37,15 +37,11 @@ package org.openflexo.technologyadapter.jdbc.fml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Transaction;
-import org.hibernate.query.NativeQuery;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +50,6 @@ import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
-import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.PropertyCardinality;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.AddUseDeclaration;
@@ -76,7 +71,8 @@ import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -119,7 +115,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 	private static HbnModelSlot modelSlot;
 	private static CreationScheme mappingCreationScheme;
 	private static HbnInitializer mappingInitializer;
-	private static FlexoConceptInstanceRole clientsProperty;
+	private static FlexoConceptInstanceRole salesmenProperty;
 	private static CreationScheme creationScheme;
 
 	private static FMLRTVirtualModelInstance vmi;
@@ -268,6 +264,11 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		assertNotNull(comments);
 		HbnColumnRole<Date> lastMeeting = (HbnColumnRole<Date>) clientConcept.getAccessibleProperty("lastmeeting");
 		assertNotNull(lastMeeting);
+		HbnToOneReferenceRole salesman = (HbnToOneReferenceRole) clientConcept.getAccessibleProperty("salesman");
+		assertNotNull(salesman);
+
+		assertEquals("container", salesman.getVirtualModelInstance().toString());
+		assertEquals(salesmanConcept, salesman.getFlexoConceptType());
 
 		HbnColumnRole<Integer> salesmanId = (HbnColumnRole<Integer>) salesmanConcept.getAccessibleProperty("id");
 		assertNotNull(salesmanId);
@@ -276,13 +277,15 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		HbnColumnRole<String> firstname = (HbnColumnRole<String>) salesmanConcept.getAccessibleProperty("firstname");
 		assertNotNull(firstname);
 
-		// We create a HbnToManyReferenceRole role
+		// We create a HbnOneToManyReferenceRole role
 		CreateTechnologyRole createClientsRole = CreateTechnologyRole.actionType.makeNewAction(salesmanConcept, null, _editor);
 		createClientsRole.setRoleName("clients");
-		createClientsRole.setFlexoRoleClass(HbnToManyReferenceRole.class);
+		createClientsRole.setFlexoRoleClass(HbnOneToManyReferenceRole.class);
 		createClientsRole.doAction();
 		assertTrue(createClientsRole.hasActionExecutionSucceeded());
-		HbnToManyReferenceRole clients = (HbnToManyReferenceRole) createClientsRole.getNewFlexoRole();
+		HbnOneToManyReferenceRole clients = (HbnOneToManyReferenceRole) createClientsRole.getNewFlexoRole();
+		clients.setFlexoConceptType(clientConcept);
+		clients.setDestinationKeyColumnName(salesman.getName());
 		assertNotNull(clients);
 
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
@@ -293,35 +296,35 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		CreateEditionAction createSelectClients1 = CreateEditionAction.actionType.makeNewAction(mappingCreationScheme.getControlGraph(),
 				null, _editor);
 		createSelectClients1.setEditionActionClass(PerformSQLQuery.class);
-		createSelectClients1.setAssignation(new DataBinding<Object>("clients"));
+		createSelectClients1.setAssignation(new DataBinding<Object>("salesmen"));
 		createSelectClients1.doAction();
 		AssignationAction<?> assignation1 = (AssignationAction<?>) createSelectClients1.getNewEditionAction();
 		PerformSQLQuery sqlQuery1 = (PerformSQLQuery) assignation1.getAssignableAction();
 		sqlQuery1.setReceiver(new DataBinding<>("this"));
-		sqlQuery1.setFlexoConceptType(clientConcept);
+		sqlQuery1.setFlexoConceptType(salesmanConcept);
 
 		mappingInitializer = mappingVirtualModel.getFlexoBehaviours(HbnInitializer.class).get(0);
 
 		CreateEditionAction createSelectClients2 = CreateEditionAction.actionType.makeNewAction(mappingInitializer.getControlGraph(), null,
 				_editor);
 		createSelectClients2.setEditionActionClass(PerformSQLQuery.class);
-		createSelectClients2.setAssignation(new DataBinding<Object>("clients"));
+		createSelectClients2.setAssignation(new DataBinding<Object>("salesmen"));
 		createSelectClients2.doAction();
 		AssignationAction<?> assignation2 = (AssignationAction<?>) createSelectClients2.getNewEditionAction();
 		PerformSQLQuery sqlQuery2 = (PerformSQLQuery) assignation2.getAssignableAction();
 		sqlQuery2.setReceiver(new DataBinding<>("this"));
-		sqlQuery2.setFlexoConceptType(clientConcept);
+		sqlQuery2.setFlexoConceptType(salesmanConcept);
 
-		CreateFlexoConceptInstanceRole createClientsProperty = CreateFlexoConceptInstanceRole.actionType.makeNewAction(mappingVirtualModel,
+		CreateFlexoConceptInstanceRole createSalesmenProperty = CreateFlexoConceptInstanceRole.actionType.makeNewAction(mappingVirtualModel,
 				null, _editor);
-		createClientsProperty.setRoleName("clients");
-		createClientsProperty.setVirtualModelInstance(new DataBinding<>("this"));
-		createClientsProperty.setFlexoConceptInstanceType(clientConcept);
-		createClientsProperty.setCardinality(PropertyCardinality.ZeroMany);
-		createClientsProperty.doAction();
-		assertTrue(createClientsProperty.hasActionExecutionSucceeded());
-		assertNotNull(clientsProperty = createClientsProperty.getNewFlexoRole());
-		assertNotNull(clientsProperty);
+		createSalesmenProperty.setRoleName("salesmen");
+		createSalesmenProperty.setVirtualModelInstance(new DataBinding<>("this"));
+		createSalesmenProperty.setFlexoConceptInstanceType(salesmanConcept);
+		createSalesmenProperty.setCardinality(PropertyCardinality.ZeroMany);
+		createSalesmenProperty.doAction();
+		assertTrue(createSalesmenProperty.hasActionExecutionSucceeded());
+		assertNotNull(salesmenProperty = createSalesmenProperty.getNewFlexoRole());
+		assertNotNull(salesmenProperty);
 
 		mappingVirtualModel.getResource().save(null);
 
@@ -433,8 +436,12 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		dbVMI = vmi.execute("db");
 		assertNotNull(dbVMI);
 
-		assertEquals(13, dbVMI.getFlexoConceptInstances().size());
-		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
+		assertEquals(4, dbVMI.getFlexoConceptInstances().size());
+		HbnFlexoConceptInstance salesman1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
+		HbnFlexoConceptInstance salesman2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
+		HbnFlexoConceptInstance salesman3 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(2);
+		HbnFlexoConceptInstance salesman4 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(3);
+		/*HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
 		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
 		HbnFlexoConceptInstance client3 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(2);
 		HbnFlexoConceptInstance client4 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(3);
@@ -446,104 +453,113 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		HbnFlexoConceptInstance client10 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(9);
 		HbnFlexoConceptInstance client11 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(10);
 		HbnFlexoConceptInstance client12 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(11);
-		HbnFlexoConceptInstance client13 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(12);
+		HbnFlexoConceptInstance client13 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(12);*/
+
+		assertEquals(1, (long) salesman1.execute("id"));
+		assertEquals("Smith", salesman1.execute("lastname"));
+		assertEquals("Alan", salesman1.execute("firstname"));
+
+		assertEquals(2, (long) salesman2.execute("id"));
+		assertEquals("Rowland", salesman2.execute("lastname"));
+		assertEquals("Steve", salesman2.execute("firstname"));
+
+		assertEquals(3, (long) salesman3.execute("id"));
+		assertEquals("Mac Lane", salesman3.execute("lastname"));
+		assertEquals("Jason", salesman3.execute("firstname"));
+
+		assertEquals(4, (long) salesman4.execute("id"));
+		assertEquals("Brian", salesman4.execute("lastname"));
+		assertEquals("Kelly", salesman4.execute("firstname"));
+
+		System.out.println("Requesting clients...");
+
+		List<HbnFlexoConceptInstance> smithClients = salesman1.execute("clients");
+
+		assertNotNull(smithClients);
+		assertEquals(4, smithClients.size());
+
+		HbnFlexoConceptInstance client1 = smithClients.get(0);
+		HbnFlexoConceptInstance client5 = smithClients.get(1);
+		HbnFlexoConceptInstance client9 = smithClients.get(2);
+		HbnFlexoConceptInstance client13 = smithClients.get(3);
 
 		assertEquals(1, (long) client1.execute("id"));
-
-		assertEquals("Préseau", client1.execute("name"));
-		assertEquals("22 rue Solferino", client1.execute("adress"));
-
-		assertNotNull(client1.execute("salesman"));
-		HbnFlexoConceptInstance salesman1 = client1.execute("salesman");
-		assertNotNull(client2.execute("salesman"));
-		HbnFlexoConceptInstance salesman2 = client2.execute("salesman");
-		assertNotNull(client3.execute("salesman"));
-		HbnFlexoConceptInstance salesman3 = client3.execute("salesman");
-		assertNotNull(client4.execute("salesman"));
-		HbnFlexoConceptInstance salesman4 = client4.execute("salesman");
-
-		assertEquals(salesman1, client5.execute("salesman"));
-		assertEquals(salesman2, client6.execute("salesman"));
-		assertEquals(salesman3, client7.execute("salesman"));
-		assertEquals(salesman4, client8.execute("salesman"));
-		assertEquals(salesman1, client9.execute("salesman"));
-		assertEquals(salesman2, client10.execute("salesman"));
-		assertEquals(salesman3, client11.execute("salesman"));
-		assertEquals(salesman4, client12.execute("salesman"));
-		assertEquals(salesman1, client13.execute("salesman"));
+		assertEquals(5, (long) client5.execute("id"));
+		assertEquals(9, (long) client9.execute("id"));
+		assertEquals(13, (long) client13.execute("id"));
 
 	}
 
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	@Test
 	@TestOrder(8)
 	public void modifySimpleData() throws Exception {
-
+	
 		log("modifySimpleData");
-
+	
 		Transaction transaction = dbVMI.getDefaultSession().beginTransaction();
-
+	
 		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
 		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
 		FlexoConcept clientConcept = client1.getFlexoConcept();
-
+	
 		client1.setFlexoPropertyValue((FlexoProperty<String>) clientConcept.getAccessibleProperty("name"), "another name");
 		client2.setFlexoPropertyValue((FlexoProperty<String>) clientConcept.getAccessibleProperty("adress"), "another address");
-
+	
 		debugTable(dbVMI.getDefaultSession(), "Client");
 		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
-
+	
 		// Still not changed in the database
 		assertNativeQueryResult(sqlQ, 0, 1, "Préseau");
 		assertNativeQueryResult(sqlQ, 1, 2, "609 rue du 5ieme régiment");
-
+	
 		System.out.println("C'est parti pour le commit");
 		transaction.commit();
-
+	
 		// Should have been changed now
 		debugTable(dbVMI.getDefaultSession(), "Client");
 		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
 		assertNativeQueryResult(sqlQ2, 0, 1, "another name");
 		assertNativeQueryResult(sqlQ2, 1, 2, "another address");
-
+	
 	}
-
+	
 	@Test
 	@TestOrder(9)
 	public void modifyReferencedData() throws Exception {
-
+	
 		log("modifyReferencedData");
-
+	
 		Transaction transaction = dbVMI.getDefaultSession().beginTransaction();
-
+	
 		HbnFlexoConceptInstance client1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
 		HbnFlexoConceptInstance client2 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(1);
-
+	
 		HbnFlexoConceptInstance salesman1 = client1.execute("salesman");
 		HbnFlexoConceptInstance salesman2 = client2.execute("salesman");
-
+	
 		FlexoConcept clientConcept = client1.getFlexoConcept();
-
+	
 		client1.setFlexoPropertyValue((FlexoProperty<HbnFlexoConceptInstance>) clientConcept.getAccessibleProperty("salesman"), salesman2);
-
+	
 		assertSame(salesman2, client1.execute("salesman"));
-
+	
 		// Still not changed in the database
 		debugTable(dbVMI.getDefaultSession(), "Client");
 		NativeQuery<?> sqlQ = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
 		assertNativeQueryResult(sqlQ, 0, 6, 1);
-
+	
 		System.out.println("C'est parti pour le commit");
 		transaction.commit();
-
+	
 		// Should have been changed now
 		debugTable(dbVMI.getDefaultSession(), "Client");
 		NativeQuery<?> sqlQ2 = dbVMI.getDefaultSession().createNativeQuery("select * from client;");
 		assertNativeQueryResult(sqlQ, 0, 6, 2);
+	
+	}*/
 
-	}
-
-	private static void assertNativeQueryResult(NativeQuery<?> query, int rowIndex, int colIndex, Object expectedObject) {
+	/*private static void assertNativeQueryResult(NativeQuery<?> query, int rowIndex, int colIndex, Object expectedObject) {
 		List<?> resultList = query.getResultList();
 		Object rowResult = resultList.get(rowIndex);
 		if (rowResult.getClass().isArray()) {
@@ -553,6 +569,6 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		else {
 			fail("Not an array");
 		}
-	}
+	}*/
 
 }

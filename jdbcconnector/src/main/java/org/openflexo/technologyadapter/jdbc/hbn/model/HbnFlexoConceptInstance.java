@@ -55,7 +55,7 @@ import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToManyReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 
 /**
@@ -132,7 +132,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		// This map stores references for this object
 		// TODO: support modification
 		private Map<HbnToOneReferenceRole, HbnFlexoConceptInstance> referencedMap = new HashMap<>();
-		private Map<HbnToManyReferenceRole, HbnReferenceCollection> referencedCollectionsMap = new HashMap<>();
+		private Map<HbnOneToManyReferenceRole, HbnReferenceCollection> referencedCollectionsMap = new HashMap<>();
 
 		/**
 		 * Initialize this {@link HbnFlexoConceptInstance} with supplied Hibernate support object, and explicit concept (type)
@@ -186,7 +186,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		}
 
 		/**
-		 * Wrapper for a collection of objects accessed though a HbnToManyReferenceRole<br>
+		 * Wrapper for a collection of objects accessed though a HbnOneToManyReferenceRole<br>
 		 * 
 		 * Internally wrap a {@link PersistentBag} object
 		 * 
@@ -197,10 +197,10 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		public class HbnReferenceCollection {
 
 			private final PersistentBag pBag;
-			private final HbnToManyReferenceRole referenceRole;
+			private final HbnOneToManyReferenceRole referenceRole;
 			private List<HbnFlexoConceptInstance> instances = null;
 
-			public HbnReferenceCollection(PersistentBag pBag, HbnToManyReferenceRole referenceRole) {
+			public HbnReferenceCollection(PersistentBag pBag, HbnOneToManyReferenceRole referenceRole) {
 				this.pBag = pBag;
 				this.referenceRole = referenceRole;
 			}
@@ -220,7 +220,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			}
 		}
 
-		private List<HbnFlexoConceptInstance> getReferencedObjectList(HbnToManyReferenceRole referenceRole) {
+		private List<HbnFlexoConceptInstance> getReferencedObjectList(HbnOneToManyReferenceRole referenceRole) {
 			HbnReferenceCollection referenceCollection = referencedCollectionsMap.get(referenceRole);
 			if (referenceCollection == null) {
 				PersistentBag pBag = (PersistentBag) hbnMap.get(referenceRole.getName());
@@ -264,8 +264,8 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 
 		@Override
 		public <T> List<T> getFlexoActorList(FlexoRole<T> flexoRole) {
-			if (flexoRole instanceof HbnToManyReferenceRole) {
-				return (List<T>) getReferencedObjectList((HbnToManyReferenceRole) flexoRole);
+			if (flexoRole instanceof HbnOneToManyReferenceRole) {
+				return (List<T>) getReferencedObjectList((HbnOneToManyReferenceRole) flexoRole);
 			}
 			return super.getFlexoActorList(flexoRole);
 		}
