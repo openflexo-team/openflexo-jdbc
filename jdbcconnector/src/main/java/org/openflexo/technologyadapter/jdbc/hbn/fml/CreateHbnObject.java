@@ -81,14 +81,14 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 
 				System.out.println("hop avec " + returned);
 
-				System.out.println("map=" + returned.getHbnSupportObject());
+				// System.out.println("map=" + returned.getHbnSupportObject());
 
 				// returned.getHbnSupportObject().put("ID_CARACTERISATION", new Integer(1));
 				// returned.getHbnSupportObject().put("id_caracterisation", new Integer(1));
 
-				for (Object o : returned.getHbnSupportObject().keySet()) {
+				/*for (Object o : returned.getHbnSupportObject().keySet()) {
 					System.out.println(" > " + o + " = " + returned.getHbnSupportObject().get(o));
-				}
+				}*/
 
 				vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
 

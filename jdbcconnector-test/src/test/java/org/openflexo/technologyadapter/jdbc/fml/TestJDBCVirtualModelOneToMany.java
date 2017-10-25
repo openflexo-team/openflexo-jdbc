@@ -46,6 +46,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.foundation.fml.ActionScheme;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -60,6 +61,8 @@ import org.openflexo.foundation.fml.action.CreateGenericBehaviourParameter;
 import org.openflexo.foundation.fml.action.CreateModelSlot;
 import org.openflexo.foundation.fml.action.CreateTechnologyRole;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
+import org.openflexo.foundation.fml.editionaction.DeclarationAction;
+import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
@@ -68,11 +71,14 @@ import org.openflexo.jdbc.test.HsqlTestCase;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -270,6 +276,28 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		assertEquals("container", salesman.getVirtualModelInstance().toString());
 		assertEquals(salesmanConcept, salesman.getFlexoConceptType());
 
+		CreateFlexoBehaviour createClientCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(clientConcept, null, _editor);
+		createClientCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
+		createClientCreationScheme.doAction();
+		CreationScheme clientCreationScheme = (CreationScheme) createClientCreationScheme.getNewFlexoBehaviour();
+
+		CreateGenericBehaviourParameter createSalesmanParameter = CreateGenericBehaviourParameter.actionType
+				.makeNewAction(clientCreationScheme, null, _editor);
+		createSalesmanParameter.setParameterName("salesman");
+		createSalesmanParameter.setParameterType(salesmanConcept.getInstanceType());
+		createSalesmanParameter.doAction();
+		FlexoBehaviourParameter param = createSalesmanParameter.getNewParameter();
+		assertNotNull(param);
+
+		CreateEditionAction createAssignSalesman = CreateEditionAction.actionType.makeNewAction(clientCreationScheme.getControlGraph(),
+				null, _editor);
+		createAssignSalesman.setEditionActionClass(ExpressionAction.class);
+		createAssignSalesman.setAssignation(new DataBinding<Object>("salesman"));
+		createAssignSalesman.doAction();
+		AssignationAction<?> assignation = (AssignationAction<?>) createAssignSalesman.getNewEditionAction();
+		ExpressionAction<?> expression = (ExpressionAction<?>) assignation.getAssignableAction();
+		expression.setExpression(new DataBinding<>("parameters.salesman"));
+
 		HbnColumnRole<Integer> salesmanId = (HbnColumnRole<Integer>) salesmanConcept.getAccessibleProperty("id");
 		assertNotNull(salesmanId);
 		HbnColumnRole<String> lastname = (HbnColumnRole<String>) salesmanConcept.getAccessibleProperty("lastname");
@@ -287,6 +315,36 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		clients.setFlexoConceptType(clientConcept);
 		clients.setDestinationKeyColumnName(salesman.getName());
 		assertNotNull(clients);
+
+		CreateFlexoBehaviour createClientScheme = CreateFlexoBehaviour.actionType.makeNewAction(salesmanConcept, null, _editor);
+		createClientScheme.setFlexoBehaviourClass(ActionScheme.class);
+		createClientScheme.setFlexoBehaviourName("createClient");
+		createClientScheme.doAction();
+		ActionScheme createClients = (ActionScheme) createClientScheme.getNewFlexoBehaviour();
+
+		CreateEditionAction createOpenTransaction = CreateEditionAction.actionType.makeNewAction(createClients.getControlGraph(), null,
+				_editor);
+		createOpenTransaction.setEditionActionClass(OpenTransaction.class);
+		createOpenTransaction.doAction();
+		OpenTransaction openTransaction = (OpenTransaction) createOpenTransaction.getBaseEditionAction();
+		openTransaction.setReceiver(new DataBinding<HbnVirtualModelInstance>("container"));
+
+		CreateEditionAction createClient = CreateEditionAction.actionType.makeNewAction(createClients.getControlGraph(), null, _editor);
+		createClient.setEditionActionClass(CreateHbnObject.class);
+		createClient.setDeclarationVariableName("newClient");
+		createClient.doAction();
+		DeclarationAction<?> declaration = (DeclarationAction<?>) createClient.getNewEditionAction();
+		CreateHbnObject createObject = (CreateHbnObject) declaration.getAssignableAction();
+		createObject.setReceiver(new DataBinding<>("container"));
+		createObject.setFlexoConceptType(clientConcept);
+		createObject.setCreationScheme(clientCreationScheme);
+		createObject.getParameter("salesman").setValue(new DataBinding<Object>("this"));
+
+		CreateEditionAction createCommit = CreateEditionAction.actionType.makeNewAction(createClients.getControlGraph(), null, _editor);
+		createCommit.setEditionActionClass(CommitTransaction.class);
+		createCommit.doAction();
+		CommitTransaction commitTransaction = (CommitTransaction) createCommit.getBaseEditionAction();
+		commitTransaction.setReceiver(new DataBinding<HbnVirtualModelInstance>("container"));
 
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
 		createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
@@ -487,6 +545,10 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		assertEquals(5, (long) client5.execute("id"));
 		assertEquals(9, (long) client9.execute("id"));
 		assertEquals(13, (long) client13.execute("id"));
+
+		System.out.println("On cree un nouveau client");
+		HbnFlexoConceptInstance newClient = salesman1.execute("this.createClient()");
+		System.out.println("Done");
 
 	}
 
