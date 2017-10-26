@@ -37,6 +37,7 @@ package org.openflexo.technologyadapter.jdbc.hbn.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -224,6 +225,9 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			HbnReferenceCollection referenceCollection = referencedCollectionsMap.get(referenceRole);
 			if (referenceCollection == null) {
 				PersistentBag pBag = (PersistentBag) hbnMap.get(referenceRole.getName());
+				if (pBag == null) {
+					return Collections.emptyList();
+				}
 				referenceCollection = new HbnReferenceCollection(pBag, referenceRole);
 				referencedCollectionsMap.put(referenceRole, referenceCollection);
 			}
@@ -247,7 +251,8 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			if (flexoRole instanceof HbnColumnRole) {
 				T oldValue = getFlexoActor(flexoRole);
 				if ((object == null && oldValue != null) || (object != null && !object.equals(oldValue))) {
-					hbnMap.put(flexoRole.getName(), object);
+					Object objectToBeStored = ((HbnColumnRole<?>) flexoRole).getDataType().encodeObjectForStoring(object);
+					hbnMap.put(flexoRole.getName(), objectToBeStored);
 					identifier = null;
 					identifierAsString = null;
 					setIsModified();

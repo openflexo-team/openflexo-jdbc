@@ -330,6 +330,8 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 	@Override
 	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, FlexoConceptInstance container);
 
+	public Map<FlexoConcept, PersistentClass> getMappings();
+
 	abstract class HbnVirtualModelInstanceImpl extends VirtualModelInstanceImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnVirtualModelInstance {
 
@@ -551,13 +553,30 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 			Namespace namespace = metadataCollector.getDatabase().getDefaultNamespace();
 
+			Map<FlexoConcept, RootClass> hbnMappings = new HashMap<>();
+			Map<FlexoConcept, Table> tables = new HashMap<>();
+
+			// Mapping is created in 3 passes, in order to facilitate cross references handling
+
 			for (FlexoConcept concept : getVirtualModel().getFlexoConcepts()) {
 				Identifier logicalName = metadataCollector.getDatabase().toIdentifier(concept.getName());
 				Table table = namespace.locateTable(logicalName);
 				if (table == null) {
 					throw new HbnException("Could not locate table " + concept.getName());
 				}
-				declareHbnMapping(concept, table, metadataBuildingContext);
+				RootClass newMapping = declareHbnMapping(concept, table, metadataBuildingContext);
+				hbnMappings.put(concept, newMapping);
+				tables.put(concept, table);
+			}
+
+			for (FlexoConcept concept : hbnMappings.keySet()) {
+				Table table = tables.get(concept);
+				configureHbnMapping(hbnMappings.get(concept), concept, table, metadataBuildingContext);
+			}
+
+			for (FlexoConcept concept : hbnMappings.keySet()) {
+				Table table = tables.get(concept);
+				finalizeHbnMapping(hbnMappings.get(concept), concept, table, metadataBuildingContext);
 			}
 
 			try {
@@ -574,16 +593,23 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 		private Map<FlexoConcept, PersistentClass> mappings = new HashMap<>();
 
+		@Override
+		public Map<FlexoConcept, PersistentClass> getMappings() {
+			return mappings;
+		}
+
 		/**
-		 * Internally called to declare mapping for a given {@link FlexoConcept}
+		 * Internally called to declare mapping for a given {@link FlexoConcept}<br>
+		 * 
+		 * This is the first pass
 		 * 
 		 * @param concept
 		 * @param table
 		 * @param metadataBuildingContext
 		 */
-		private void declareHbnMapping(FlexoConcept concept, Table table, MetadataBuildingContext metadataBuildingContext) {
+		private RootClass declareHbnMapping(FlexoConcept concept, Table table, MetadataBuildingContext metadataBuildingContext) {
 
-			System.out.println("Handle mapping for concept " + concept.getName() + " table=" + table);
+			System.out.println("1st pass : Declare mapping for concept " + concept.getName() + " table=" + table);
 
 			RootClass pClass = new RootClass(metadataBuildingContext);
 			mappings.put(concept, pClass);
@@ -592,12 +618,30 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 			pClass.setTable(table);
 			metadataCollector.addEntityBinding(pClass);
 
+			return pClass;
+
+		}
+
+		/**
+		 * Internally called to configure mapping for a given {@link FlexoConcept}
+		 * 
+		 * This is the second pass
+		 * 
+		 * @param concept
+		 * @param table
+		 * @param metadataBuildingContext
+		 */
+		private PersistentClass configureHbnMapping(RootClass pClass, FlexoConcept concept, Table table,
+				MetadataBuildingContext metadataBuildingContext) {
+
+			System.out.println("2nd pass : Configure mapping for concept " + concept.getName() + " table=" + table);
+
 			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
 				Property prop;
 
 				if (flexoProperty instanceof HbnColumnRole) {
 
-					HbnColumnRole hbnColumnRole = (HbnColumnRole) flexoProperty;
+					HbnColumnRole<?> hbnColumnRole = (HbnColumnRole<?>) flexoProperty;
 
 					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(hbnColumnRole.getColumnName());
 					// System.out.println("colIdentifier: " + colIdentifier);
@@ -614,8 +658,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					if (concept.getKeyProperties().contains(flexoProperty)) {
 						// This is a key !
 						if (hbnColumnRole.getType().equals(Integer.class)) {
-							/*System.out.println("Je declare le generator d'id pour " + flexoProperty.getName());
-							value.setIdentifierGeneratorStrategy("native");
+							/*value.setIdentifierGeneratorStrategy("native");
 							Properties params = new Properties();
 							params.setProperty(PersistentIdentifierGenerator.PK, flexoProperty.getName());
 							value.setIdentifierGeneratorProperties(params);*/
@@ -690,7 +733,29 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					pClass.addProperty(prop);
 				}
 
-				else if (flexoProperty instanceof HbnOneToManyReferenceRole) {
+			}
+
+			return pClass;
+
+		}
+
+		/**
+		 * Internally called to configure mapping for a given {@link FlexoConcept}
+		 * 
+		 * This is the third and last pass
+		 * 
+		 * @param concept
+		 * @param table
+		 * @param metadataBuildingContext
+		 */
+		private PersistentClass finalizeHbnMapping(RootClass pClass, FlexoConcept concept, Table table,
+				MetadataBuildingContext metadataBuildingContext) {
+
+			System.out.println("3rd pass: Configure mapping for concept " + concept.getName() + " table=" + table);
+
+			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
+
+				if (flexoProperty instanceof HbnOneToManyReferenceRole) {
 					HbnOneToManyReferenceRole referenceRole = (HbnOneToManyReferenceRole) flexoProperty;
 
 					if (referenceRole.getFlexoConceptType() == null) {
@@ -724,13 +789,15 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 					metadataCollector.addCollectionBinding(coll);
 
-					prop = new Property();
+					Property prop = new Property();
 					prop.setName(referenceRole.getName());
 					prop.setValue(coll);
 					pClass.addProperty(prop);
 
 				}
 			}
+
+			return pClass;
 
 		}
 

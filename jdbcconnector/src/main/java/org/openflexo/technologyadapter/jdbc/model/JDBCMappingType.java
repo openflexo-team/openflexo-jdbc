@@ -41,6 +41,9 @@ package org.openflexo.technologyadapter.jdbc.model;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.logging.Logger;
+
+import org.openflexo.connie.type.TypeUtils;
 
 /**
  * Hibernate mappings types: each driver should handle it
@@ -56,11 +59,36 @@ public enum JDBCMappingType {
 		public Type getJavaType() {
 			return String.class;
 		}
+
+		@Override
+		public Object encodeObjectForStoring(Object objectToBeStored) {
+			if (objectToBeStored instanceof String) {
+				return objectToBeStored;
+			}
+			if (objectToBeStored != null) {
+				logger.warning("Inconsistent data " + objectToBeStored + " as JDBC STRING");
+			}
+			return null;
+		}
 	},
 	INTEGER {
 		@Override
 		public Type getJavaType() {
 			return Integer.class;
+		}
+
+		@Override
+		public Object encodeObjectForStoring(Object objectToBeStored) {
+			if (objectToBeStored instanceof Integer) {
+				return objectToBeStored;
+			}
+			if (objectToBeStored instanceof Long) {
+				return TypeUtils.castTo(objectToBeStored, Integer.class);
+			}
+			if (objectToBeStored != null) {
+				logger.warning("Inconsistent data " + objectToBeStored + " as JDBC INTEGER");
+			}
+			return null;
 		}
 	},
 	DATE {
@@ -68,9 +96,22 @@ public enum JDBCMappingType {
 		public Type getJavaType() {
 			return Date.class;
 		}
+
+		@Override
+		public Object encodeObjectForStoring(Object objectToBeStored) {
+			if (objectToBeStored instanceof Date) {
+				return objectToBeStored;
+			}
+			if (objectToBeStored != null) {
+				logger.warning("Inconsistent data " + objectToBeStored + " as JDBC DATE");
+			}
+			return null;
+		}
 	};
 
 	public abstract Type getJavaType();
+
+	public abstract Object encodeObjectForStoring(Object objectToBeStored);
 
 	public static JDBCMappingType getJDBCMappingType(String typeAsString) {
 		if (typeAsString.equalsIgnoreCase("INTEGER")) {
@@ -88,4 +129,7 @@ public enum JDBCMappingType {
 		return JDBCMappingType.STRING;
 
 	}
+
+	private static final Logger logger = Logger.getLogger(JDBCMappingType.class.getPackage().getName());
+
 }

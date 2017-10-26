@@ -40,6 +40,7 @@ package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
 import java.util.logging.Logger;
 
+import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.editionaction.AbstractAddFlexoConceptInstance;
@@ -71,40 +72,39 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) {
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
 
-			System.out.println("Hop, je dois creer un HbnFlexoConceptInstance, concept=" + getFlexoConceptType());
+			// try {
+			// Transaction trans;
+			// trans = vmi.getDefaultSession().beginTransaction();
 
-			try {
-				// Transaction trans;
-				// trans = vmi.getDefaultSession().beginTransaction();
+			System.out.println("CreateHbnObject for receiver " + getReceiver() + " = " + vmi);
+			System.out.println("concept: " + getFlexoConceptType());
 
-				HbnFlexoConceptInstance returned = super.execute(evaluationContext);
+			HbnFlexoConceptInstance returned = super.execute(evaluationContext);
 
-				System.out.println("hop avec " + returned);
+			// System.out.println("map=" + returned.getHbnSupportObject());
 
-				// System.out.println("map=" + returned.getHbnSupportObject());
+			// returned.getHbnSupportObject().put("ID_CARACTERISATION", new Integer(1));
+			// returned.getHbnSupportObject().put("id_caracterisation", new Integer(1));
 
-				// returned.getHbnSupportObject().put("ID_CARACTERISATION", new Integer(1));
-				// returned.getHbnSupportObject().put("id_caracterisation", new Integer(1));
+			/*for (Object o : returned.getHbnSupportObject().keySet()) {
+				System.out.println(" > " + o + " = " + returned.getHbnSupportObject().get(o));
+			}*/
 
-				/*for (Object o : returned.getHbnSupportObject().keySet()) {
-					System.out.println(" > " + o + " = " + returned.getHbnSupportObject().get(o));
-				}*/
+			// vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
 
-				vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
+			// System.out.println("et on commite " + returned.getHbnSupportObject());
 
-				// System.out.println("et on commite " + returned.getHbnSupportObject());
+			// trans.commit();
 
-				// trans.commit();
+			System.out.println("done " + returned);
 
-				System.out.println("done " + returned);
+			return returned;
 
-				return returned;
-
-			} catch (HbnException e) {
+			/*} catch (HbnException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return null;
-			}
+			}*/
 
 			/*Map<String, String> syl = new HashMap<>();
 			syl.put("Nom", "Sylvain");
@@ -136,7 +136,22 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 				}
 			}
 
-			return vmi.makeNewFlexoConceptInstance(getFlexoConceptType(), container);
+			HbnFlexoConceptInstance returned = vmi.makeNewFlexoConceptInstance(getFlexoConceptType(), container);
+
+			System.out.println("ensuite on sauve comme " + getFlexoConceptType().getName());
+			for (FlexoConcept flexoConcept : vmi.getMappings().keySet()) {
+				System.out.println("Pourtant pour " + flexoConcept + " j'ai " + vmi.getMappings().get(flexoConcept) + " avec "
+						+ vmi.getMappings().get(flexoConcept).getEntityName());
+			}
+
+			try {
+				vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
+			} catch (HbnException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return returned;
 		}
 
 		@Override
