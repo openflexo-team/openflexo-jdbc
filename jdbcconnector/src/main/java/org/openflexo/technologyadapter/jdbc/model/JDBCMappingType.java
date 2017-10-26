@@ -82,11 +82,31 @@ public enum JDBCMappingType {
 			if (objectToBeStored instanceof Integer) {
 				return objectToBeStored;
 			}
-			if (objectToBeStored instanceof Long) {
+			if (objectToBeStored instanceof Long || objectToBeStored instanceof Short || objectToBeStored instanceof Byte) {
 				return TypeUtils.castTo(objectToBeStored, Integer.class);
 			}
 			if (objectToBeStored != null) {
 				logger.warning("Inconsistent data " + objectToBeStored + " as JDBC INTEGER");
+			}
+			return null;
+		}
+	},
+	FLOAT {
+		@Override
+		public Type getJavaType() {
+			return Float.class;
+		}
+
+		@Override
+		public Object encodeObjectForStoring(Object objectToBeStored) {
+			if (objectToBeStored instanceof Float) {
+				return objectToBeStored;
+			}
+			if (objectToBeStored instanceof Number) {
+				return TypeUtils.castTo(objectToBeStored, Float.class);
+			}
+			if (objectToBeStored != null) {
+				logger.warning("Inconsistent data " + objectToBeStored + " as JDBC FLOAT");
 			}
 			return null;
 		}
@@ -116,6 +136,9 @@ public enum JDBCMappingType {
 	public static JDBCMappingType getJDBCMappingType(String typeAsString) {
 		if (typeAsString.equalsIgnoreCase("INTEGER")) {
 			return JDBCMappingType.INTEGER;
+		}
+		else if (typeAsString.equalsIgnoreCase("FLOAT")) {
+			return JDBCMappingType.FLOAT;
 		}
 		else if (typeAsString.equalsIgnoreCase("VARCHAR")) {
 			return JDBCMappingType.STRING;
