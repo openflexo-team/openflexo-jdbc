@@ -90,7 +90,7 @@ public abstract class JDBCTestCase extends OpenflexoProjectAtRunTimeTestCase {
 
 	protected static void dropTable(JDBCConnection connection, JDBCTable table) {
 		if (table != null)
-		connection.getSchema().dropTable(table);
+			connection.getSchema().dropTable(table);
 	}
 
 	protected static String[] createPrimaryKeyIntegerAttribute(String name) {
@@ -99,7 +99,10 @@ public abstract class JDBCTestCase extends OpenflexoProjectAtRunTimeTestCase {
 	}
 
 	protected static String[] createForeignKeyIntegerAttribute(String name) {
-		String[] returned = { name, "INT", "NOT NULL" };
+		// String[] returned = { name, "INT", "NOT NULL" };
+		// Workaround for avoiding NOT NULL columns
+		// TODO: need to find a fix
+		String[] returned = { name, "INT", "NULL" };
 		return returned;
 	}
 
