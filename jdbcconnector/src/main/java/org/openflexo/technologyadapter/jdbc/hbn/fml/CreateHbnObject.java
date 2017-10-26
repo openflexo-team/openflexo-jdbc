@@ -40,6 +40,7 @@ package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
 import java.util.logging.Logger;
 
+import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.editionaction.AbstractAddFlexoConceptInstance;
@@ -68,7 +69,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		private static final Logger logger = Logger.getLogger(CreateHbnObject.class.getPackage().getName());
 
 		@Override
-		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) {
+		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) throws FlexoException {
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
 
 			System.out.println("CreateHbnObject for receiver " + getReceiver() + " = " + vmi + " concept=" + getFlexoConceptType());
@@ -80,7 +81,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		}
 
 		@Override
-		protected HbnFlexoConceptInstance makeNewFlexoConceptInstance(RunTimeEvaluationContext evaluationContext) {
+		protected HbnFlexoConceptInstance makeNewFlexoConceptInstance(RunTimeEvaluationContext evaluationContext) throws FlexoException {
 			FlexoConceptInstance container = null;
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
 
@@ -103,8 +104,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 				// No time yet to do it
 				vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
 			} catch (HbnException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new FlexoException(e);
 			}
 
 			return returned;
