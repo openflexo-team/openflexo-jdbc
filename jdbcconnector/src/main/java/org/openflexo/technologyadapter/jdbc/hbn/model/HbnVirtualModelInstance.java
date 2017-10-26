@@ -609,7 +609,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		 */
 		private RootClass declareHbnMapping(FlexoConcept concept, Table table, MetadataBuildingContext metadataBuildingContext) {
 
-			System.out.println("1st pass : Declare mapping for concept " + concept.getName() + " table=" + table);
+			// System.out.println("1st pass : Declare mapping for concept " + concept.getName() + " table=" + table);
 
 			RootClass pClass = new RootClass(metadataBuildingContext);
 			mappings.put(concept, pClass);
@@ -634,7 +634,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		private PersistentClass configureHbnMapping(RootClass pClass, FlexoConcept concept, Table table,
 				MetadataBuildingContext metadataBuildingContext) {
 
-			System.out.println("2nd pass : Configure mapping for concept " + concept.getName() + " table=" + table);
+			// System.out.println("2nd pass : Configure mapping for concept " + concept.getName() + " table=" + table);
 
 			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
 				Property prop;
@@ -751,7 +751,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		private PersistentClass finalizeHbnMapping(RootClass pClass, FlexoConcept concept, Table table,
 				MetadataBuildingContext metadataBuildingContext) {
 
-			System.out.println("3rd pass: Configure mapping for concept " + concept.getName() + " table=" + table);
+			// System.out.println("3rd pass: Configure mapping for concept " + concept.getName() + " table=" + table);
 
 			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
 

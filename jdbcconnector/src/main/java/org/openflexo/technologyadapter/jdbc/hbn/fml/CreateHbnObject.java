@@ -40,7 +40,6 @@ package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.editionaction.AbstractAddFlexoConceptInstance;
@@ -72,54 +71,11 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) {
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
 
-			// try {
-			// Transaction trans;
-			// trans = vmi.getDefaultSession().beginTransaction();
-
-			System.out.println("CreateHbnObject for receiver " + getReceiver() + " = " + vmi);
-			System.out.println("concept: " + getFlexoConceptType());
+			System.out.println("CreateHbnObject for receiver " + getReceiver() + " = " + vmi + " concept=" + getFlexoConceptType());
 
 			HbnFlexoConceptInstance returned = super.execute(evaluationContext);
 
-			// System.out.println("map=" + returned.getHbnSupportObject());
-
-			// returned.getHbnSupportObject().put("ID_CARACTERISATION", new Integer(1));
-			// returned.getHbnSupportObject().put("id_caracterisation", new Integer(1));
-
-			/*for (Object o : returned.getHbnSupportObject().keySet()) {
-				System.out.println(" > " + o + " = " + returned.getHbnSupportObject().get(o));
-			}*/
-
-			// vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
-
-			// System.out.println("et on commite " + returned.getHbnSupportObject());
-
-			// trans.commit();
-
-			System.out.println("done " + returned);
-
 			return returned;
-
-			/*} catch (HbnException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}*/
-
-			/*Map<String, String> syl = new HashMap<>();
-			syl.put("Nom", "Sylvain");
-			Map<String, String> chris = new HashMap<>();
-			chris.put("Nom", "Guychard");
-			chris.put("Prenom", "Christophe");
-			
-			// Sérialisation de l'instance
-			// Hibernate native
-			Transaction trans = hbnSession.beginTransaction();
-			
-			hbnSession.save("Dynamic_Class", syl);
-			hbnSession.save("Dynamic_Class", chris);
-			
-			trans.commit();*/
 
 		}
 
@@ -138,13 +94,13 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 
 			HbnFlexoConceptInstance returned = vmi.makeNewFlexoConceptInstance(getFlexoConceptType(), container);
 
-			System.out.println("ensuite on sauve comme " + getFlexoConceptType().getName());
-			for (FlexoConcept flexoConcept : vmi.getMappings().keySet()) {
-				System.out.println("Pourtant pour " + flexoConcept + " j'ai " + vmi.getMappings().get(flexoConcept) + " avec "
-						+ vmi.getMappings().get(flexoConcept).getEntityName());
-			}
-
 			try {
+				// Note that we immediately save the created object in Hibernate session
+				// This means that no NOT NULL values should be declared in related table
+				// We do that to be able to chain hibernate objects creation
+				// (we could also do it in execute(), but happen AFTER creation scheme, and sometimes it's too late)
+				// TODO: a good alternative could be to expose SAVE primitive and use it in CreationScheme to control save
+				// No time yet to do it
 				vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
 			} catch (HbnException e) {
 				// TODO Auto-generated catch block
