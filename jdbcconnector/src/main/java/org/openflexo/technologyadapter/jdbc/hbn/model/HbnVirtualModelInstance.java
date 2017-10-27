@@ -502,7 +502,6 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 			System.out.println("initializeDatabaseDefinition()");
 
 			for (JDBCTable table : getJDBCConnection().getSchema().getTables()) {
-				System.out.println("initTableDefinition for " + table);
 				initTableDefinition(table);
 			}
 		}
