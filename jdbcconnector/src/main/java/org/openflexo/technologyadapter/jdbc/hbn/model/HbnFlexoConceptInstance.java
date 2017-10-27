@@ -37,7 +37,6 @@ package org.openflexo.technologyadapter.jdbc.hbn.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,17 +196,52 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		// TODO improve instances list updating when objects change
 		public class HbnReferenceCollection {
 
-			private final PersistentBag pBag;
+			private PersistentBag pBag;
 			private final HbnOneToManyReferenceRole referenceRole;
 			private List<HbnFlexoConceptInstance> instances = null;
 
 			public HbnReferenceCollection(PersistentBag pBag, HbnOneToManyReferenceRole referenceRole) {
 				this.pBag = pBag;
 				this.referenceRole = referenceRole;
+				if (pBag == null) {
+					instances = new ArrayList<HbnFlexoConceptInstance>() {
+						@Override
+						public boolean add(HbnFlexoConceptInstance e) {
+							System.out.println("Coucou on fait un add pour " + HbnFlexoConceptInstanceImpl.this);
+							Map m2 = HbnFlexoConceptInstanceImpl.this.getHbnSupportObject();
+							for (Object key : m2.keySet()) {
+								System.out
+										.println(" > " + key + " = " + m2.get(key) /*(m.get(key) != null ? m.get(key).getClass() : null)*/);
+							}
+
+							try {
+								System.out.println("on ajoute " + e);
+								Map m = e.getHbnSupportObject();
+								for (Object key : m.keySet()) {
+									System.out.println(
+											" > " + key + " = " + m.get(key) /*(m.get(key) != null ? m.get(key).getClass() : null)*/);
+								}
+								System.out.println(
+										"AVANT : " + HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName()));
+								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().update(
+										HbnFlexoConceptInstanceImpl.this.getFlexoConcept().getName(),
+										HbnFlexoConceptInstanceImpl.this.getHbnSupportObject());
+								System.out.println(
+										"APRES : " + HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName()));
+							} catch (HbnException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							// return super.add(e);
+							return true;
+						}
+					};
+				}
 			}
 
 			public List<HbnFlexoConceptInstance> getInstances() {
-				if (instances == null || instances.size() != pBag.size()) {
+
+				if (instances == null || ((pBag != null) && (instances.size() != pBag.size()))) {
 					instances = new ArrayList<>();
 					for (Object o : pBag) {
 						if (o instanceof Map) {
@@ -225,9 +259,9 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			HbnReferenceCollection referenceCollection = referencedCollectionsMap.get(referenceRole);
 			if (referenceCollection == null) {
 				PersistentBag pBag = (PersistentBag) hbnMap.get(referenceRole.getName());
-				if (pBag == null) {
+				/*if (pBag == null) {
 					return Collections.emptyList();
-				}
+				}*/
 				referenceCollection = new HbnReferenceCollection(pBag, referenceRole);
 				referencedCollectionsMap.put(referenceRole, referenceCollection);
 			}
