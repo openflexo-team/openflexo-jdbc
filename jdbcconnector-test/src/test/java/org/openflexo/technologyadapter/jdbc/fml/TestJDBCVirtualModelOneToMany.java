@@ -42,6 +42,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.collection.internal.PersistentBag;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,6 +73,7 @@ import org.openflexo.jdbc.test.HsqlTestCase;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
@@ -353,7 +355,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		ExpressionAction assignReturn = (ExpressionAction) returnStatement.getBaseEditionAction();
 		assignReturn.setExpression(new DataBinding<>("newClient"));
 		assignReturn.addReturnStatement();
-		
+
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
 		createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
 		createCreationScheme.doAction();
@@ -447,13 +449,28 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		FlexoBehaviourParameter passwordParam = createParameter3.getNewParameter();
 		assertNotNull(passwordParam);
 
-		CreateGenericBehaviourParameter createParameter4 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
+		/*CreateGenericBehaviourParameter createParameter4 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
 				_editor);
 		createParameter4.setParameterName("dbtype");
 		createParameter4.setParameterType(JDBCDbType.class);
 		createParameter4.doAction();
 		FlexoBehaviourParameter dbTypeParam = createParameter4.getNewParameter();
-		assertNotNull(dbTypeParam);
+		assertNotNull(dbTypeParam);*/
+
+		CreateEditionAction createConnectionAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
+				_editor);
+		createConnectionAction.setEditionActionClass(CreateJDBCConnection.class);
+		createConnectionAction.setDeclarationVariableName("connection");
+		createConnectionAction.doAction();
+
+		CreateJDBCConnection createJDBCConnectionAction = (CreateJDBCConnection) createConnectionAction.getBaseEditionAction();
+		createJDBCConnectionAction.setReceiver(new DataBinding<JDBCConnection>("null"));
+		createJDBCConnectionAction.setAddress(new DataBinding<String>("parameters.address"));
+		createJDBCConnectionAction.setUser(new DataBinding<String>("parameters.user"));
+		createJDBCConnectionAction.setPassword(new DataBinding<String>("parameters.password"));
+		createJDBCConnectionAction.setDbType(JDBCDbType.HSQLDB);
+		createJDBCConnectionAction.setResourceName(new DataBinding<String>("(this.name + \"_connection\")"));
+		createJDBCConnectionAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 
 		CreateEditionAction createEditionAction1 = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
 				_editor);
@@ -465,10 +482,11 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		CreateHbnResource createHbnResourceAction = (CreateHbnResource) action1.getAssignableAction();
 		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
 		createHbnResourceAction.setReceiver(new DataBinding<HbnVirtualModelInstance>("null"));
-		createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
+		createHbnResourceAction.setConnection(new DataBinding<JDBCConnection>("connection"));
+		/*createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
 		createHbnResourceAction.setUser(new DataBinding<String>("parameters.user"));
 		createHbnResourceAction.setPassword(new DataBinding<String>("parameters.password"));
-		createHbnResourceAction.setDbType(new DataBinding<JDBCDbType>("parameters.dbtype"));
+		createHbnResourceAction.setDbType(new DataBinding<JDBCDbType>("parameters.dbtype"));*/
 		createHbnResourceAction.setResourceName(new DataBinding<String>("(this.name + \"_db\")"));
 		createHbnResourceAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
@@ -494,7 +512,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		action.setParameterValue(creationScheme.getParameter("address"), "jdbc:hsqldb:mem:db");
 		action.setParameterValue(creationScheme.getParameter("user"), "SA");
 		action.setParameterValue(creationScheme.getParameter("password"), "");
-		action.setParameterValue(creationScheme.getParameter("dbtype"), JDBCDbType.HSQLDB);
+		// action.setParameterValue(creationScheme.getParameter("dbtype"), JDBCDbType.HSQLDB);
 		action.doAction();
 		assertTrue(action.hasActionExecutionSucceeded());
 		vmi = action.getNewVirtualModelInstance();
@@ -563,15 +581,39 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		assertNotNull(clientNameProperty);
 		FlexoConceptInstanceRole clientSalesmanProperty = (FlexoConceptInstanceRole) clientConcept.getAccessibleProperty("salesman");
 		assertNotNull(clientSalesmanProperty);
-		
+
 		HbnFlexoConceptInstance clientN1 = salesman1.execute("this.createClient()");
 		assertNotNull(clientN1);
 		clientN1.setFlexoPropertyValue(clientNameProperty, "MON CLIENT NOUVEAU");
 		clientN1.setFlexoPropertyValue(clientSalesmanProperty, salesman1);
 
+		System.out.println("hop1: ");
+		for (String key : salesman1.getHbnSupportObject().keySet()) {
+			Object value = salesman1.getHbnSupportObject().get(key);
+			if (value instanceof PersistentBag) {
+				System.out.println(" > " + key + "= size:" + ((PersistentBag) value).size());
+			}
+			else {
+				System.out.println(" > " + key + "=" + (value != null ? value.getClass() : null));
+			}
+		}
+
+		System.out.println("On tente le refresh");
+		dbVMI.getDefaultSession().refresh(salesman1.getFlexoConcept().getName(), (Object) salesman1.getHbnSupportObject());
+		System.out.println("Fin d'update");
+		System.out.println("hop2: ");
+		for (String key : salesman1.getHbnSupportObject().keySet()) {
+			Object value = salesman1.getHbnSupportObject().get(key);
+			if (value instanceof PersistentBag) {
+				System.out.println(" > " + key + "= size:" + ((PersistentBag) value).size());
+			}
+			else {
+				System.out.println(" > " + key + "=" + (value != null ? value.getClass() : null));
+			}
+		}
+
 		assertEquals(((List<?>) salesman1.getFlexoPropertyValue("clients")).size(), 5);
 
 	}
-
 
 }

@@ -65,6 +65,7 @@ import org.openflexo.jdbc.test.HsqlTestCase;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
@@ -386,13 +387,28 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		FlexoBehaviourParameter passwordParam = createParameter3.getNewParameter();
 		assertNotNull(passwordParam);
 
-		CreateGenericBehaviourParameter createParameter4 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
+		/*CreateGenericBehaviourParameter createParameter4 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
 				_editor);
 		createParameter4.setParameterName("dbtype");
 		createParameter4.setParameterType(JDBCDbType.class);
 		createParameter4.doAction();
 		FlexoBehaviourParameter dbTypeParam = createParameter4.getNewParameter();
-		assertNotNull(dbTypeParam);
+		assertNotNull(dbTypeParam);*/
+
+		CreateEditionAction createConnectionAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
+				_editor);
+		createConnectionAction.setEditionActionClass(CreateJDBCConnection.class);
+		createConnectionAction.setDeclarationVariableName("connection");
+		createConnectionAction.doAction();
+
+		CreateJDBCConnection createJDBCConnectionAction = (CreateJDBCConnection) createConnectionAction.getBaseEditionAction();
+		createJDBCConnectionAction.setReceiver(new DataBinding<JDBCConnection>("null"));
+		createJDBCConnectionAction.setAddress(new DataBinding<String>("parameters.address"));
+		createJDBCConnectionAction.setUser(new DataBinding<String>("parameters.user"));
+		createJDBCConnectionAction.setPassword(new DataBinding<String>("parameters.password"));
+		createJDBCConnectionAction.setDbType(JDBCDbType.HSQLDB);
+		createJDBCConnectionAction.setResourceName(new DataBinding<String>("(this.name + \"_connection\")"));
+		createJDBCConnectionAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 
 		CreateEditionAction createEditionAction1 = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
 				_editor);
@@ -403,10 +419,11 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 
 		CreateHbnResource createHbnResourceAction = (CreateHbnResource) action1.getAssignableAction();
 		createHbnResourceAction.setReceiver(new DataBinding<HbnVirtualModelInstance>("null"));
-		createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
+		createHbnResourceAction.setConnection(new DataBinding<JDBCConnection>("connection"));
+		/*createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
 		createHbnResourceAction.setUser(new DataBinding<String>("parameters.user"));
 		createHbnResourceAction.setPassword(new DataBinding<String>("parameters.password"));
-		createHbnResourceAction.setDbType(new DataBinding<JDBCDbType>("parameters.dbtype"));
+		createHbnResourceAction.setDbType(new DataBinding<JDBCDbType>("parameters.dbtype"));*/
 		createHbnResourceAction.setResourceName(new DataBinding<String>("(this.name + \"_db\")"));
 		createHbnResourceAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 		createHbnResourceAction.setCreationScheme(mappingCreationScheme);

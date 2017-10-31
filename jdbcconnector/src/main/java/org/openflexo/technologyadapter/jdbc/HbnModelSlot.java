@@ -57,7 +57,6 @@ package org.openflexo.technologyadapter.jdbc;
 
 import java.lang.reflect.Type;
 
-import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
@@ -68,14 +67,10 @@ import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.technologyadapter.ModelSlot;
-import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.PropertyIdentifier;
-import org.openflexo.model.annotations.Setter;
-import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
@@ -105,13 +100,13 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @XMLElement
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
 @DeclareFlexoRoles({ HbnColumnRole.class, HbnToOneReferenceRole.class, HbnOneToManyReferenceRole.class })
-@DeclareEditionActions({ CreateHbnResource.class, PerformSQLQuery.class, OpenTransaction.class, CommitTransaction.class,
-		RollbackTransaction.class, CreateHbnObject.class })
+@DeclareEditionActions({ CreateJDBCConnection.class, CreateHbnResource.class, PerformSQLQuery.class, OpenTransaction.class,
+		CommitTransaction.class, RollbackTransaction.class, CreateHbnObject.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
 public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
-	@PropertyIdentifier(type = JDBCDbType.class)
+	/*@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
 	@PropertyIdentifier(type = DataBinding.class)
 	String ADDRESS_KEY = "address";
@@ -119,41 +114,41 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 	String USER_KEY = "user";
 	@PropertyIdentifier(type = DataBinding.class)
 	String PASSWORD_KEY = "password";
-
+	
 	@Getter(DB_TYPE)
 	@XMLAttribute
 	JDBCDbType getDbType();
-
+	
 	@Setter(DB_TYPE)
 	void setDbType(JDBCDbType aType);
-
+	
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute
 	DataBinding<String> getAddress();
-
+	
 	@Setter(ADDRESS_KEY)
 	void setAddress(DataBinding<String> address);
-
+	
 	@Getter(USER_KEY)
 	@XMLAttribute
 	DataBinding<String> getUser();
-
+	
 	@Setter(USER_KEY)
 	void setUser(DataBinding<String> user);
-
+	
 	@Getter(PASSWORD_KEY)
 	@XMLAttribute
 	DataBinding<String> getPassword();
-
+	
 	@Setter(PASSWORD_KEY)
-	void setPassword(DataBinding<String> password);
+	void setPassword(DataBinding<String> password);*/
 
 	abstract class HbnModelSlotImpl extends InferedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnModelSlot {
 
-		private DataBinding<String> address;
+		/*private DataBinding<String> address;
 		private DataBinding<String> user;
-		private DataBinding<String> password;
+		private DataBinding<String> password;*/
 		private HbnVirtualModelInstanceType type;
 
 		@Override
@@ -187,7 +182,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			}
 		}
 
-		@Override
+		/*@Override
 		public DataBinding<String> getAddress() {
 			if (address == null) {
 				address = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
@@ -195,7 +190,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			}
 			return address;
 		}
-
+		
 		@Override
 		public void setAddress(DataBinding<String> address) {
 			if (address != null) {
@@ -206,7 +201,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			}
 			this.address = address;
 		}
-
+		
 		@Override
 		public DataBinding<String> getUser() {
 			if (user == null) {
@@ -215,7 +210,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			}
 			return user;
 		}
-
+		
 		@Override
 		public void setUser(DataBinding<String> user) {
 			if (user != null) {
@@ -226,7 +221,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			}
 			this.user = user;
 		}
-
+		
 		@Override
 		public DataBinding<String> getPassword() {
 			if (password == null) {
@@ -235,7 +230,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 			}
 			return password;
 		}
-
+		
 		@Override
 		public void setPassword(DataBinding<String> password) {
 			if (password != null) {
@@ -245,7 +240,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 				password.setBindingName("password");
 			}
 			this.password = password;
-		}
+		}*/
 
 	}
 

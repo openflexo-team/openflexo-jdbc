@@ -9,31 +9,39 @@
              borderRight="0" trackViewPortWidth="true" index="0" font="SansSerif,0,11" align="left" borderBottom="0"
              titleFont="SansSerif,0,11" borderTop="0" trackViewPortHeight="true" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED"
              useScrollBar="true" title="Basic" layout="twocols" name="BasicTab">
-            <Label id="5" name="AddressLabel" align="right"
+			<Label label="db_type" align="left" index="14"
+				constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+				name="Label" />
+			<DropDown autoSelectFirstRow="true" data="data.dbType" index="15"
+				iteratorClassName="org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType"
+				showText="true" showIcon="false"
+				constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+				name="dropdown" />
+            <Label id="5" name="AddressLabel" align="right" index="16"
                    constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=left)"
                    label="address"/>
-            <Custom id="6" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding"
+            <Custom id="6" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding" index="17"
                     componentClassName="org.openflexo.gina.swing.utils.BindingSelector" name="AddressBinding" data="data.address"
                     constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=right)">
                 <Assignment id="7" mandatory="true" variable="component.bindable" value="data"/>
             </Custom>
-            <Label id="8" name="UserLabel" align="right"
+            <Label id="8" name="UserLabel" align="right" index="18"
                    constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=left)"
                    label="user"/>
-            <Custom id="9" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding"
+            <Custom id="9" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding" index="19"
                     componentClassName="org.openflexo.gina.swing.utils.BindingSelector" name="UserBinding" data="data.user"
                     constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=right)">
                 <Assignment id="10" mandatory="true" variable="component.bindable" value="data"/>
             </Custom>
-            <Label id="11" name="PasswordLabel" align="right"
+            <Label id="11" name="PasswordLabel" align="right" index="20"
                    constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=left)"
                    label="password"/>
-            <Custom id="12" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding"
+            <Custom id="12" manageDynamicModel="true" dataClassForComponent="org.openflexo.connie.DataBinding" index="21"
                     componentClassName="org.openflexo.gina.swing.utils.BindingSelector" name="PasswordBinding" data="data.password"
                     constraints="twocols(expandHorizontally=true;expandVertically=false;index=4;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=right)">
                 <Assignment id="13" mandatory="true" variable="component.bindable" value="data"/>
             </Custom>
         </Tab>
     </TabPanel>
-    <FIBVariable id="33" name="data" type="org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCResource"/>
+    <FIBVariable id="33" name="data" type="org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection"/>
 </Inspector>

@@ -35,6 +35,7 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,6 +80,7 @@ import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -89,18 +91,17 @@ import org.openflexo.model.annotations.PropertyIdentifier;
 import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
-import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance.HbnVirtualModelInstanceImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
+import org.openflexo.toolbox.StringUtils;
 
 /**
  * A JDBC/Hibernate-specific {@link VirtualModelInstance} reflecting distants objects accessible through a {@link HbnModelSlot} configured
@@ -121,39 +122,57 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @XMLElement
 public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
-	@PropertyIdentifier(type = JDBCDbType.class)
+	/*@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
 	String ADDRESS_KEY = "address";
 	String USER_KEY = "user";
-	String PASSWORD_KEY = "password";
+	String PASSWORD_KEY = "password";*/
 
-	@Getter(DB_TYPE)
+	/*@Getter(DB_TYPE)
 	@XMLAttribute
 	JDBCDbType getDbType();
-
+	
 	@Setter(DB_TYPE)
 	void setDbType(JDBCDbType aType);
-
+	
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute
 	String getAddress();
-
+	
 	@Setter(ADDRESS_KEY)
 	void setAddress(String address);
-
+	
 	@Getter(USER_KEY)
 	@XMLAttribute
 	String getUser();
-
+	
 	@Setter(USER_KEY)
 	void setUser(String user);
-
+	
 	@Getter(PASSWORD_KEY)
 	@XMLAttribute
 	String getPassword();
-
+	
 	@Setter(PASSWORD_KEY)
-	void setPassword(String password);
+	void setPassword(String password);*/
+
+	@PropertyIdentifier(type = JDBCResource.class)
+	String JDBC_CONNECTION_RESOURCE = "JDBCConnectionResource";
+	@PropertyIdentifier(type = String.class)
+	String JDBC_CONNECTION_URI = "JDBCConnectionURI";
+
+	@Getter(JDBC_CONNECTION_RESOURCE)
+	public JDBCResource getJDBCConnectionResource();
+
+	@Setter(JDBC_CONNECTION_RESOURCE)
+	public void setJDBCConnectionResource(JDBCResource jdbcConnectionResource);
+
+	@Getter(JDBC_CONNECTION_URI)
+	@XMLAttribute
+	public String getJDBCConnectionURI();
+
+	@Setter(JDBC_CONNECTION_URI)
+	public void setJDBCConnectionURI(String jdbcConnectionURI);
 
 	/**
 	 * Return {@link JDBCConnection}<br>
@@ -337,7 +356,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 		private static final Logger logger = FlexoLogger.getLogger(HbnVirtualModelInstance.class.getPackage().toString());
 
-		private JDBCConnection jdbcConnection;
+		// private JDBCConnection jdbcConnection;
 
 		protected HbnConfig config;
 		protected MetadataBuildingOptionsImpl buildingOptions;
@@ -350,6 +369,38 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 		// Stores all FCIs related to their identifier
 		private Map<FlexoConcept, Map<Object, HbnFlexoConceptInstance>> instances = new HashMap<>();
+
+		private JDBCResource jdbcConnectionResource;
+		private String jdbcConnectionURI;
+
+		@Override
+		public JDBCResource getJDBCConnectionResource() {
+			if (jdbcConnectionResource == null && StringUtils.isNotEmpty(jdbcConnectionURI) && getServiceManager() != null
+					&& getServiceManager().getResourceManager() != null) {
+				jdbcConnectionResource = (JDBCResource) getServiceManager().getResourceManager().getResource(jdbcConnectionURI,
+						JDBCConnection.class);
+				logger.info("Looked-up " + jdbcConnectionResource + " for " + jdbcConnectionURI);
+			}
+			return jdbcConnectionResource;
+		}
+
+		@Override
+		public void setJDBCConnectionResource(JDBCResource jdbcConnectionResource) {
+			this.jdbcConnectionResource = jdbcConnectionResource;
+		}
+
+		@Override
+		public String getJDBCConnectionURI() {
+			if (jdbcConnectionResource != null) {
+				return jdbcConnectionResource.getURI();
+			}
+			return jdbcConnectionURI;
+		}
+
+		@Override
+		public void setJDBCConnectionURI(String jdbcConnectionURI) {
+			this.jdbcConnectionURI = jdbcConnectionURI;
+		}
 
 		@Override
 		public JDBCTechnologyAdapter getTechnologyAdapter() {
@@ -395,7 +446,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 			// open connexion
 			if (getJDBCConnection().getConnection() == null) {
-				throw new HbnException("Could not connect to database " + getAddress());
+				throw new HbnException("Could not connect to database " + getJDBCConnection().getAddress());
 			}
 
 			// create config
@@ -417,21 +468,25 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 		/**
 		 * Return {@link JDBCConnection}<br>
-		 * Return null when not fully configured (address, user and password)
 		 * 
 		 */
 		@Override
 		public JDBCConnection getJDBCConnection() {
-			if (jdbcConnection == null) {
-				JDBCFactory factory;
+			if (getJDBCConnectionResource() != null) {
 				try {
-					factory = new JDBCFactory();
-					jdbcConnection = factory.makeNewModel(getDbType(), getAddress(), getUser(), getPassword());
-				} catch (ModelDefinitionException e) {
-					return null;
+					return getJDBCConnectionResource().getResourceData(null);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ResourceLoadingCancelledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (FlexoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-			return jdbcConnection;
+			return null;
 		}
 
 		/**
@@ -480,10 +535,14 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 			config = new HbnConfig(new BootstrapServiceRegistryBuilder().build());
 
+			System.out.println("Bon on est la avec " + jdbcConnectionResource);
+			System.out.println("Bon on est la avec " + getJDBCConnection());
+			System.out.println("Bon on est la avec " + getJDBCConnection().getDbType());
+
 			config.setProperty("hibernate.connection.driver_class", getJDBCConnection().getDbType().getDriverClassName());
-			config.setProperty("hibernate.connection.url", getAddress());
-			config.setProperty("hibernate.connection.username", getUser());
-			config.setProperty("hibernate.connection.password", getPassword());
+			config.setProperty("hibernate.connection.url", getJDBCConnection().getAddress());
+			config.setProperty("hibernate.connection.username", getJDBCConnection().getUser());
+			config.setProperty("hibernate.connection.password", getJDBCConnection().getPassword());
 			config.setProperty("hibernate.connection.pool_size", "1");
 			config.setProperty("hibernate.dialect", getJDBCConnection().getDbType().getHibernateDialect());
 			config.setProperty("hibernate.show_sql", "true");
@@ -775,6 +834,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 					coll.setElement(oneToMany);
 					oneToMany.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
 					oneToMany.setAssociatedClass(oppositeClass);
+					// coll.setReferencedPropertyName("ID");
 
 					DependantValue dv = new DependantValue((MetadataImplementor) metadata, oppositeTable, oppositeClass.getKey());
 					dv.addColumn(col);

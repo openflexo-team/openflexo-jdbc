@@ -69,10 +69,10 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
  *
  */
 @ModelEntity
-@ImplementationClass(CreateJDBCResource.CreateJDBCResourceImpl.class)
+@ImplementationClass(CreateJDBCConnection.CreateJDBCResourceImpl.class)
 @XMLElement
-@FML("CreateJDBCResource")
-public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter> {
+@FML("CreateJDBCConnection")
+public interface CreateJDBCConnection extends AbstractCreateResource<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter> {
 
 	@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
@@ -82,10 +82,10 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 
 	@Getter(DB_TYPE)
 	@XMLAttribute
-	DataBinding<JDBCDbType> getDbType();
+	JDBCDbType getDbType();
 
 	@Setter(DB_TYPE)
-	void setDbType(DataBinding<JDBCDbType> aType);
+	void setDbType(JDBCDbType aDBType);
 
 	@Getter(USER)
 	@XMLAttribute
@@ -109,7 +109,7 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 	void setAddress(DataBinding<String> address);
 
 	abstract class CreateJDBCResourceImpl extends AbstractCreateResourceImpl<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter>
-			implements CreateJDBCResource {
+			implements CreateJDBCConnection {
 
 		private static final Logger logger = Logger.getLogger(CreateJDBCResourceImpl.class.getPackage().getName());
 
@@ -184,6 +184,7 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 
 		@Override
 		public JDBCConnection execute(RunTimeEvaluationContext evaluationContext) throws FlexoException {
+
 			try {
 				String resourceName = getResourceName(evaluationContext);
 				String resourceURI = getResourceURI(evaluationContext);
@@ -198,7 +199,7 @@ public interface CreateJDBCResource extends AbstractCreateResource<JDBCModelSlot
 				connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
 				connection.setUser(evaluateDataBinding(getUser(), evaluationContext));
 				connection.setPassword(evaluateDataBinding(getPassword(), evaluationContext));
-				connection.setDbType(evaluateDataBinding(getDbType(), evaluationContext));
+				connection.setDbType(getDbType() != null ? getDbType() : JDBCDbType.GENERIC);
 
 				return connection;
 			} catch (ModelDefinitionException | FileNotFoundException | ResourceLoadingCancelledException e) {

@@ -210,24 +210,29 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 							System.out.println("Coucou on fait un add pour " + HbnFlexoConceptInstanceImpl.this);
 							Map m2 = HbnFlexoConceptInstanceImpl.this.getHbnSupportObject();
 							for (Object key : m2.keySet()) {
-								System.out
-										.println(" > " + key + " = " + m2.get(key) /*(m.get(key) != null ? m.get(key).getClass() : null)*/);
+								System.out.println(" > " + key + " = " + (m2.get(key) != null ? m2.get(key).getClass() : null));
 							}
 
 							try {
 								System.out.println("on ajoute " + e);
 								Map m = e.getHbnSupportObject();
 								for (Object key : m.keySet()) {
-									System.out.println(
-											" > " + key + " = " + m.get(key) /*(m.get(key) != null ? m.get(key).getClass() : null)*/);
+									System.out.println(" > " + key + " = " + (m.get(key) != null ? m.get(key).getClass() : null));
 								}
-								System.out.println(
-										"AVANT : " + HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName()));
-								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().update(
+								Object value = HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName());
+								System.out.println("AVANT : " + referenceRole.getName() + "/" + (value instanceof PersistentBag
+										? "PersistentBag/" + ((PersistentBag) value).size() : (value != null ? value.toString() : null)));
+								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().refresh(
 										HbnFlexoConceptInstanceImpl.this.getFlexoConcept().getName(),
-										HbnFlexoConceptInstanceImpl.this.getHbnSupportObject());
-								System.out.println(
-										"APRES : " + HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName()));
+										(Object) HbnFlexoConceptInstanceImpl.this.getHbnSupportObject());
+								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().flush();
+								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().refresh(
+										HbnFlexoConceptInstanceImpl.this.getFlexoConcept().getName(),
+										(Object) HbnFlexoConceptInstanceImpl.this.getHbnSupportObject());
+								Object newValue = HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName());
+								System.out.println("APRES : " + referenceRole.getName() + "/"
+										+ (newValue instanceof PersistentBag ? "PersistentBag/" + ((PersistentBag) newValue).size()
+												: (newValue != null ? newValue.toString() : null)));
 							} catch (HbnException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -324,6 +329,9 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			}
 			if (flexoProperty instanceof HbnToOneReferenceRole) {
 				return (T) getReferencedObject((HbnToOneReferenceRole) flexoProperty);
+			}
+			if (flexoProperty instanceof HbnOneToManyReferenceRole) {
+				return (T) getReferencedObjectList((HbnOneToManyReferenceRole) flexoProperty);
 			}
 
 			return super.getFlexoPropertyValue(flexoProperty);

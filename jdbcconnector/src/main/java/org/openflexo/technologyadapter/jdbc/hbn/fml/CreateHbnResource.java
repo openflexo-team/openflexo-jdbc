@@ -82,10 +82,11 @@ import org.openflexo.model.validation.ValidationIssue;
 import org.openflexo.model.validation.ValidationRule;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResource;
 import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResourceFactory;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 /**
  * {@link EditionAction} used to create an empty {@link HbnVirtualModelInstance} resource
@@ -109,13 +110,16 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 	public static final String PARAMETERS_KEY = "parameters";
 
 	@PropertyIdentifier(type = DataBinding.class)
+	String CONNECTION = "connection";
+
+	/*@PropertyIdentifier(type = DataBinding.class)
 	String DB_TYPE = "dbtype";
 	@PropertyIdentifier(type = DataBinding.class)
 	String ADDRESS_KEY = "address";
 	@PropertyIdentifier(type = DataBinding.class)
 	String USER_KEY = "user";
 	@PropertyIdentifier(type = DataBinding.class)
-	String PASSWORD_KEY = "password";
+	String PASSWORD_KEY = "password";*/
 
 	public VirtualModelResource getVirtualModelResource();
 
@@ -125,33 +129,40 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 
 	public void setVirtualModel(VirtualModel virtualModel);
 
-	@Getter(DB_TYPE)
+	@Getter(CONNECTION)
+	@XMLAttribute
+	DataBinding<JDBCConnection> getConnection();
+
+	@Setter(CONNECTION)
+	void setConnection(DataBinding<JDBCConnection> aConnection);
+
+	/*@Getter(DB_TYPE)
 	@XMLAttribute
 	DataBinding<JDBCDbType> getDbType();
-
+	
 	@Setter(DB_TYPE)
 	void setDbType(DataBinding<JDBCDbType> aType);
-
+	
 	@Getter(ADDRESS_KEY)
 	@XMLAttribute
 	DataBinding<String> getAddress();
-
+	
 	@Setter(ADDRESS_KEY)
 	void setAddress(DataBinding<String> address);
-
+	
 	@Getter(USER_KEY)
 	@XMLAttribute
 	DataBinding<String> getUser();
-
+	
 	@Setter(USER_KEY)
 	void setUser(DataBinding<String> user);
-
+	
 	@Getter(PASSWORD_KEY)
 	@XMLAttribute
 	DataBinding<String> getPassword();
-
+	
 	@Setter(PASSWORD_KEY)
-	void setPassword(DataBinding<String> password);
+	void setPassword(DataBinding<String> password);*/
 
 	@Getter(value = CREATION_SCHEME_URI_KEY)
 	@XMLAttribute
@@ -188,10 +199,11 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 	abstract class CreateHbnResourceImpl extends AbstractCreateResourceImpl<HbnModelSlot, HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements CreateHbnResource {
 
-		private DataBinding<JDBCDbType> dbType;
+		private DataBinding<JDBCConnection> connection;
+		/*private DataBinding<JDBCDbType> dbType;
 		private DataBinding<String> address;
 		private DataBinding<String> user;
-		private DataBinding<String> password;
+		private DataBinding<String> password;*/
 
 		private VirtualModel virtualModel;
 		private VirtualModelResource virtualModelResource;
@@ -413,7 +425,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				FlexoProperty<HbnVirtualModelInstance> flexoProperty = getAssignedFlexoProperty();
 				if (flexoProperty instanceof HbnModelSlot) {
 					HbnModelSlot hbnModelSlot = (HbnModelSlot) flexoProperty;
-					String url = null;
+					/*String url = null;
 					try {
 						if (getAddress().isValid()) {
 							url = getAddress().getBindingValue(evaluationContext);
@@ -456,12 +468,26 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 						}
 					} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 						e.printStackTrace();
+					}*/
+
+					try {
+						if (getConnection().isValid()) {
+							JDBCConnection connection = getConnection().getBindingValue(evaluationContext);
+							data.setJDBCConnectionResource((JDBCResource) connection.getResource());
+							System.out.println("Setting connection: " + connection.getAddress());
+						}
+						else {
+							throw new InvalidArgumentException("No valid connection while creating new HbnResource");
+						}
+
+					} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
+						e.printStackTrace();
 					}
 
-					data.setAddress(url);
+					/*data.setAddress(url);
 					data.setUser(user);
 					data.setPassword(password);
-					data.setDbType(dbType);
+					data.setDbType(dbType);*/
 
 					// Now we should execute CreationScheme
 					System.out.println("Executing FML: " + getCreationScheme().getFMLRepresentation());
@@ -506,6 +532,26 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 		}
 
 		@Override
+		public DataBinding<JDBCConnection> getConnection() {
+			if (connection == null) {
+				connection = new DataBinding<>(this, JDBCConnection.class, DataBinding.BindingDefinitionType.GET);
+				connection.setBindingName("connection");
+			}
+			return connection;
+		}
+
+		@Override
+		public void setConnection(DataBinding<JDBCConnection> aJDBCConnection) {
+			if (aJDBCConnection != null) {
+				aJDBCConnection.setOwner(this);
+				aJDBCConnection.setDeclaredType(JDBCConnection.class);
+				aJDBCConnection.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				aJDBCConnection.setBindingName("connection");
+			}
+			this.connection = aJDBCConnection;
+		}
+
+		/*@Override
 		public DataBinding<JDBCDbType> getDbType() {
 			if (dbType == null) {
 				dbType = new DataBinding<>(this, JDBCDbType.class, DataBinding.BindingDefinitionType.GET);
@@ -513,7 +559,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			}
 			return dbType;
 		}
-
+		
 		@Override
 		public void setDbType(DataBinding<JDBCDbType> aDbType) {
 			if (aDbType != null) {
@@ -524,7 +570,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			}
 			this.dbType = aDbType;
 		}
-
+		
 		@Override
 		public DataBinding<String> getAddress() {
 			if (address == null) {
@@ -533,7 +579,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			}
 			return address;
 		}
-
+		
 		@Override
 		public void setAddress(DataBinding<String> address) {
 			if (address != null) {
@@ -544,7 +590,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			}
 			this.address = address;
 		}
-
+		
 		@Override
 		public DataBinding<String> getUser() {
 			if (user == null) {
@@ -553,7 +599,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			}
 			return user;
 		}
-
+		
 		@Override
 		public void setUser(DataBinding<String> user) {
 			if (user != null) {
@@ -564,7 +610,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			}
 			this.user = user;
 		}
-
+		
 		@Override
 		public DataBinding<String> getPassword() {
 			if (password == null) {
@@ -573,7 +619,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			}
 			return password;
 		}
-
+		
 		@Override
 		public void setPassword(DataBinding<String> password) {
 			if (password != null) {
@@ -583,7 +629,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				password.setBindingName("password");
 			}
 			this.password = password;
-		}
+		}*/
 
 		@Override
 		public Class<HbnVirtualModelInstanceResourceFactory> getResourceFactoryClass() {
@@ -593,6 +639,19 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 		@Override
 		public String getSuffix() {
 			return HbnVirtualModelInstanceResourceFactory.JDBC_HBN_SUFFIX;
+		}
+
+	}
+
+	@DefineValidationRule
+	public static class ConnectionIsRequiredAndMustBeValid extends BindingIsRequiredAndMustBeValid<CreateHbnResource> {
+		public ConnectionIsRequiredAndMustBeValid() {
+			super("'connection'_binding_is_required_and_must_be_valid", CreateHbnResource.class);
+		}
+
+		@Override
+		public DataBinding<JDBCConnection> getBinding(CreateHbnResource object) {
+			return object.getConnection();
 		}
 
 	}

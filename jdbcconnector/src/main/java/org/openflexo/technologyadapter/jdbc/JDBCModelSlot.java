@@ -74,7 +74,7 @@ import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableActorReference;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.AddJDBCTable;
-import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCResource;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCColumn;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCLine;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCTable;
@@ -99,7 +99,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
 @DeclareActorReferences({ JDBCTableActorReference.class, JDBCColumnActorReference.class, JDBCLineActorReference.class })
 @DeclareFlexoRoles({ JDBCTableRole.class, JDBCColumnRole.class, JDBCLineRole.class })
-@DeclareEditionActions({ CreateJDBCResource.class, AddJDBCTable.class })
+@DeclareEditionActions({ CreateJDBCConnection.class, AddJDBCTable.class })
 @DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class })
 public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 

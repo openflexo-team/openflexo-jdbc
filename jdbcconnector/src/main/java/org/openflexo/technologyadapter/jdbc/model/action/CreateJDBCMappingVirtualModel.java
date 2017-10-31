@@ -74,7 +74,7 @@ import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
-import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCResource;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -263,14 +263,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		CreationScheme creationScheme = fmlFactory.newCreationScheme();
 		creationScheme.setName("create");
 
-		addParameter(fmlFactory, creationScheme, "dbtype", JDBCDbType.class, getDbType());
+		// addParameter(fmlFactory, creationScheme, "dbtype", JDBCDbType.class, getDbType());
 		addParameter(fmlFactory, creationScheme, "address", String.class, getAddress());
 		addParameter(fmlFactory, creationScheme, "user", String.class, getUser());
 		addParameter(fmlFactory, creationScheme, "password", String.class, null);
 
 		AssignationAction assignation = fmlFactory.newAssignationAction();
 		assignation.setAssignation(new DataBinding("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
-		CreateJDBCResource action = fmlFactory.newInstance(CreateJDBCResource.class);
+		CreateJDBCConnection action = fmlFactory.newInstance(CreateJDBCConnection.class);
 		action.setReceiver(new DataBinding("db", creationScheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
 		action.setResourceName(new DataBinding("'db_' + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setResourceCenter(new DataBinding("this.resource.resourceCenter", creationScheme, FlexoResourceCenter.class,
@@ -278,7 +278,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		action.setAddress(new DataBinding("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setUser(new DataBinding("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setPassword(new DataBinding("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setDbType(new DataBinding("parameters.dbtype", creationScheme, JDBCDbType.class, DataBinding.BindingDefinitionType.GET));
+		// action.setDbType(new DataBinding("parameters.dbtype", creationScheme, JDBCDbType.class, DataBinding.BindingDefinitionType.GET));
 		assignation.setAssignableAction(action);
 
 		creationScheme.setControlGraph(assignation);

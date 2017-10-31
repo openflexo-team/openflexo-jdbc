@@ -75,8 +75,8 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
-	public void testCreateJDBCResourceInspector() {
-		validateFIB("Inspectors/JDBC/EditionAction/CreateJDBCResource.inspector");
+	public void testCreateJDBCConnexionInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/CreateJDBCConnection.inspector");
 	}
 
 	@Test
