@@ -75,7 +75,7 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
-	public void testCreateJDBCConnexionInspector() {
+	public void testCreateJDBCConnectionInspector() {
 		validateFIB("Inspectors/JDBC/EditionAction/CreateJDBCConnection.inspector");
 	}
 
@@ -90,8 +90,18 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
+	public void testRefreshHbnObjectInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/RefreshHbnObject.inspector");
+	}
+
+	@Test
 	public void testRollbackTransactionInspector() {
 		validateFIB("Inspectors/JDBC/EditionAction/RollbackTransaction.inspector");
+	}
+
+	@Test
+	public void testSaveHbnObjectInspector() {
+		validateFIB("Inspectors/JDBC/EditionAction/SaveHbnObject.inspector");
 	}
 
 	@Test
@@ -117,6 +127,11 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	@Test
 	public void testHbnModelSlotInspector() {
 		validateFIB("Inspectors/JDBC/HbnModelSlot.inspector");
+	}
+
+	@Test
+	public void testHbnOneToManyReferenceRoleInspector() {
+		validateFIB("Inspectors/JDBC/HbnOneToManyReferenceRole.inspector");
 	}
 
 	@Test

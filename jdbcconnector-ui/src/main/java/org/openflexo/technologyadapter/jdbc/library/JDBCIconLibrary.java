@@ -50,6 +50,9 @@ public class JDBCIconLibrary {
 	public static final ImageIcon PERFORM_SQL_QUERY_ICON = new ImageIconResource(
 			ResourceLocator.locateResource("Icons/PerformSQLQuery_16x16.png"));
 
+	public static final ImageIcon SAVE_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/Save.png"));
+	public static final ImageIcon REFRESH_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/Refresh.png"));
+
 	public static ImageIcon iconForObject(Class<? extends TechnologyObject> objectClass) {
 		return JDBC_TECHNOLOGY_ICON;
 	}

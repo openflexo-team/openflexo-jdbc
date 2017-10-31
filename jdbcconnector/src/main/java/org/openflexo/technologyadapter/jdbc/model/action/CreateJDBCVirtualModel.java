@@ -50,6 +50,7 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
+import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceType;
@@ -57,11 +58,13 @@ import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.AbstractCreateNatureSpecificVirtualModel;
 import org.openflexo.foundation.fml.action.AddUseDeclaration;
+import org.openflexo.foundation.fml.action.CreateEditionAction;
 import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.PropertyEntry;
 import org.openflexo.foundation.fml.action.PropertyEntry.PropertyType;
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.task.Progress;
@@ -72,6 +75,8 @@ import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.SaveHbnObject;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
@@ -203,6 +208,8 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 						// TODO
 				}
 			}
+			createConceptAction.setDefineSomeBehaviours(true);
+			createConceptAction.setDefineDefaultCreationScheme(true);
 			createConceptAction.setDefineInspector(false);
 			createConceptAction.doAction();
 
@@ -231,6 +238,16 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 
 			createConceptAction.setDefineInspector(true);
 			createConceptAction.performCreateInspectors();
+
+			// Add SaveHbnObject to creation scheme
+			CreationScheme creationScheme = tableMapping.concept.getCreationSchemes().get(0);
+			CreateEditionAction createSaveAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(),
+					null, this);
+			createSaveAction.setEditionActionClass(SaveHbnObject.class);
+			createSaveAction.doAction();
+			SaveHbnObject saveHbnObject = (SaveHbnObject) createSaveAction.getBaseEditionAction();
+			saveHbnObject.setReceiver(new DataBinding<HbnVirtualModelInstance>("this.container"));
+			saveHbnObject.setObject(new DataBinding<FlexoConceptInstance>("this"));
 		}
 
 		for (TableMapping tableMapping : getTableMappings()) {

@@ -38,82 +38,102 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import org.hibernate.Transaction;
+import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DataBinding.BindingDefinitionType;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificAction;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext.ReturnException;
+import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.PropertyIdentifier;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction.OpenTransactionImpl;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
- * {@link EditionAction} used to commit an Hibernate {@link Transaction}
+ * {@link EditionAction} used to force refresh an Hibernate object<br>
+ * 
+ * Re-read the state of the given instance from the underlying database. It is inadvisable to use this to implement long-running sessions
+ * that span many business tasks. This action is, however, useful in certain special circumstances. For example
+ * <ul>
+ * <li>where a database trigger alters the object state upon insert or update
+ * <li>afterQuery executing direct SQL (eg. a mass update) in the same session
+ * <li>afterQuery inserting a <tt>Blob</tt> or <tt>Clob</tt>
+ * </ul>
+ * 
  * 
  * @author sylvain
  *
  */
 @ModelEntity
-@ImplementationClass(CommitTransaction.CommitTransactionImpl.class)
+@ImplementationClass(RefreshHbnObject.RefreshHbnObjectImpl.class)
 @XMLElement
-@FML("CommitTransaction")
-public interface CommitTransaction extends TechnologySpecificAction<HbnModelSlot, HbnVirtualModelInstance, Void> {
+@FML("SaveHbnObject")
+public interface RefreshHbnObject extends TechnologySpecificAction<HbnModelSlot, HbnVirtualModelInstance, Void> {
 
-	/*@PropertyIdentifier(type = DataBinding.class)
-	public static final String TRANSACTION_KEY = "transaction";
-	
+	@PropertyIdentifier(type = DataBinding.class)
+	public static final String TRANSACTION_KEY = "object";
+
 	@Getter(value = TRANSACTION_KEY)
 	@XMLAttribute
-	public DataBinding<Transaction> getTransaction();
-	
-	@Setter(TRANSACTION_KEY)
-	public void setTransaction(DataBinding<Transaction> transaction);*/
+	public DataBinding<FlexoConceptInstance> getObject();
 
-	public static abstract class CommitTransactionImpl<T> extends TechnologySpecificActionImpl<HbnModelSlot, HbnVirtualModelInstance, Void>
-			implements CommitTransaction {
+	@Setter(TRANSACTION_KEY)
+	public void setObject(DataBinding<FlexoConceptInstance> object);
+
+	public static abstract class RefreshHbnObjectImpl<T> extends TechnologySpecificActionImpl<HbnModelSlot, HbnVirtualModelInstance, Void>
+			implements RefreshHbnObject {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());
 
-		/*private DataBinding<Transaction> transaction;
-		
+		private DataBinding<FlexoConceptInstance> object;
+
 		@Override
-		public DataBinding<Transaction> getTransaction() {
-			if (transaction == null) {
-				transaction = new DataBinding<Transaction>(this, Transaction.class, BindingDefinitionType.GET);
-				transaction.setBindingName(TRANSACTION_KEY);
+		public DataBinding<FlexoConceptInstance> getObject() {
+			if (object == null) {
+				object = new DataBinding<FlexoConceptInstance>(this, FlexoConceptInstance.class, BindingDefinitionType.GET);
+				object.setBindingName(TRANSACTION_KEY);
 			}
-			return transaction;
+			return object;
 		}
-		
+
 		@Override
-		public void setTransaction(DataBinding<Transaction> aTransaction) {
-			if (aTransaction != null) {
-				aTransaction.setOwner(this);
-				aTransaction.setBindingName(TRANSACTION_KEY);
-				aTransaction.setDeclaredType(Transaction.class);
-				aTransaction.setBindingDefinitionType(BindingDefinitionType.GET);
+		public void setObject(DataBinding<FlexoConceptInstance> anObject) {
+			if (anObject != null) {
+				anObject.setOwner(this);
+				anObject.setBindingName(TRANSACTION_KEY);
+				anObject.setDeclaredType(FlexoConceptInstance.class);
+				anObject.setBindingDefinitionType(BindingDefinitionType.GET);
 			}
-			this.transaction = aTransaction;
-		}*/
+			this.object = anObject;
+		}
 
 		@Override
 		public Type getAssignableType() {
 			return Void.class;
 		}
 
-		/*public Transaction getTransaction(BindingEvaluationContext evaluationContext) {
-			if (getTransaction().isValid()) {
+		public HbnFlexoConceptInstance getObject(BindingEvaluationContext evaluationContext) {
+			if (getObject().isValid()) {
 				try {
-					return getTransaction().getBindingValue(evaluationContext);
+					return (HbnFlexoConceptInstance) getObject().getBindingValue(evaluationContext);
 				} catch (TypeMismatchException e) {
 					e.printStackTrace();
 				} catch (NullReferenceException e) {
@@ -123,16 +143,19 @@ public interface CommitTransaction extends TechnologySpecificAction<HbnModelSlot
 				}
 			}
 			return null;
-		}*/
+		}
 
 		@Override
 		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FlexoException {
 
-			System.out.println("Commit transaction for " + getReceiver(evaluationContext));
+			System.out.println("Refresh object " + getObject(evaluationContext));
 
 			HbnVirtualModelInstance vmi = getReceiver(evaluationContext);
+			HbnFlexoConceptInstance object = getObject(evaluationContext);
 
-			vmi.commit();
+			// vmi.getDefaultSession().refresh(object.getFlexoConcept().getName(), (Object) object.getHbnSupportObject());
+
+			object.refresh();
 
 			return null;
 		}

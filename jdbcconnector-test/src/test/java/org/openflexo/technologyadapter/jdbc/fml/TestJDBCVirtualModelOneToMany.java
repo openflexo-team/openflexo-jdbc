@@ -42,7 +42,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.collection.internal.PersistentBag;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,6 +66,7 @@ import org.openflexo.foundation.fml.editionaction.DeclarationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.rm.VirtualModelResource;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.jdbc.test.HsqlTestCase;
@@ -83,6 +83,8 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.RefreshHbnObject;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.SaveHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
@@ -301,6 +303,14 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		ExpressionAction<?> expression = (ExpressionAction<?>) assignation.getAssignableAction();
 		expression.setExpression(new DataBinding<>("parameters.salesman"));
 
+		CreateEditionAction createSave = CreateEditionAction.actionType.makeNewAction(clientCreationScheme.getControlGraph(), null,
+				_editor);
+		createSave.setEditionActionClass(SaveHbnObject.class);
+		createSave.doAction();
+		SaveHbnObject save = (SaveHbnObject) createSave.getBaseEditionAction();
+		save.setReceiver(new DataBinding<HbnVirtualModelInstance>("this.container"));
+		save.setObject(new DataBinding<FlexoConceptInstance>("this"));
+
 		HbnColumnRole<Integer> salesmanId = (HbnColumnRole<Integer>) salesmanConcept.getAccessibleProperty("id");
 		assertNotNull(salesmanId);
 		HbnColumnRole<String> lastname = (HbnColumnRole<String>) salesmanConcept.getAccessibleProperty("lastname");
@@ -342,6 +352,13 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		createObject.setFlexoConceptType(clientConcept);
 		createObject.setCreationScheme(clientCreationScheme);
 		createObject.getParameter("salesman").setValue(new DataBinding<Object>("this"));
+
+		CreateEditionAction createRefresh = CreateEditionAction.actionType.makeNewAction(createClients.getControlGraph(), null, _editor);
+		createRefresh.setEditionActionClass(RefreshHbnObject.class);
+		createRefresh.doAction();
+		RefreshHbnObject refresh = (RefreshHbnObject) createRefresh.getBaseEditionAction();
+		refresh.setReceiver(new DataBinding<HbnVirtualModelInstance>("this.container"));
+		refresh.setObject(new DataBinding<FlexoConceptInstance>("this"));
 
 		CreateEditionAction createCommit = CreateEditionAction.actionType.makeNewAction(createClients.getControlGraph(), null, _editor);
 		createCommit.setEditionActionClass(CommitTransaction.class);
@@ -559,9 +576,6 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		assertEquals(9, (long) client9.execute("id"));
 		assertEquals(13, (long) client13.execute("id"));
 
-		System.out.println("On cree un nouveau client");
-		HbnFlexoConceptInstance newClient = salesman1.execute("this.createClient()");
-		System.out.println("Done");
 	}
 
 	@Test
@@ -571,6 +585,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		log("createNew");
 		HbnFlexoConceptInstance salesman1 = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances().get(0);
 		assertNotNull(salesman1);
+
 		assertEquals(((List<?>) salesman1.getFlexoPropertyValue("clients")).size(), 4);
 
 		FlexoConcept clientConcept = mappingVirtualModel.getFlexoConcept("Client");
@@ -585,9 +600,9 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		HbnFlexoConceptInstance clientN1 = salesman1.execute("this.createClient()");
 		assertNotNull(clientN1);
 		clientN1.setFlexoPropertyValue(clientNameProperty, "MON CLIENT NOUVEAU");
-		clientN1.setFlexoPropertyValue(clientSalesmanProperty, salesman1);
+		// clientN1.setFlexoPropertyValue(clientSalesmanProperty, salesman1);
 
-		System.out.println("hop1: ");
+		/*System.out.println("hop1: ");
 		for (String key : salesman1.getHbnSupportObject().keySet()) {
 			Object value = salesman1.getHbnSupportObject().get(key);
 			if (value instanceof PersistentBag) {
@@ -597,7 +612,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 				System.out.println(" > " + key + "=" + (value != null ? value.getClass() : null));
 			}
 		}
-
+		
 		System.out.println("On tente le refresh");
 		dbVMI.getDefaultSession().refresh(salesman1.getFlexoConcept().getName(), (Object) salesman1.getHbnSupportObject());
 		System.out.println("Fin d'update");
@@ -610,7 +625,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 			else {
 				System.out.println(" > " + key + "=" + (value != null ? value.getClass() : null));
 			}
-		}
+		}*/
 
 		assertEquals(((List<?>) salesman1.getFlexoPropertyValue("clients")).size(), 5);
 

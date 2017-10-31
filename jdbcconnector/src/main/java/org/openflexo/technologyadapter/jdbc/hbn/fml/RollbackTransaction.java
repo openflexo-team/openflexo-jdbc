@@ -64,7 +64,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ModelEntity
 @ImplementationClass(RollbackTransaction.RollbackTransactionImpl.class)
 @XMLElement
-@FML("OpenTransaction")
+@FML("RollbackTransaction")
 public interface RollbackTransaction extends TechnologySpecificAction<HbnModelSlot, HbnVirtualModelInstance, Void> {
 
 	/*@PropertyIdentifier(type = DataBinding.class)

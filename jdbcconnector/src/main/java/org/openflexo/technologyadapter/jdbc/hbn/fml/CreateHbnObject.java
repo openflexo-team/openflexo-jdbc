@@ -49,7 +49,6 @@ import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.ModelEntity;
 import org.openflexo.model.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.hbn.model.HbnException;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -95,7 +94,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 
 			HbnFlexoConceptInstance returned = vmi.makeNewFlexoConceptInstance(getFlexoConceptType(), container);
 
-			try {
+			/*try {
 				// Note that we immediately save the created object in Hibernate session
 				// This means that no NOT NULL values should be declared in related table
 				// We do that to be able to chain hibernate objects creation
@@ -105,7 +104,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 				vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
 			} catch (HbnException e) {
 				throw new FlexoException(e);
-			}
+			}*/
 
 			return returned;
 		}

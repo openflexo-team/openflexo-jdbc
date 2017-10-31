@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.hibernate.collection.internal.PersistentBag;
 import org.openflexo.foundation.fml.AbstractProperty;
@@ -49,6 +50,7 @@ import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.logging.FlexoLogger;
 import org.openflexo.model.annotations.ImplementationClass;
 import org.openflexo.model.annotations.Initializer;
 import org.openflexo.model.annotations.ModelEntity;
@@ -116,12 +118,27 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 	public Map<String, Object> getHbnSupportObject();
 
 	/**
+	 * Re-read the state of the given instance from the underlying database. It is inadvisable to use this to implement long-running
+	 * sessions that span many business tasks. This action is, however, useful in certain special circumstances. For example
+	 * <ul>
+	 * <li>where a database trigger alters the object state upon insert or update
+	 * <li>afterQuery executing direct SQL (eg. a mass update) in the same session
+	 * <li>afterQuery inserting a <tt>Blob</tt> or <tt>Clob</tt>
+	 * </ul>
+	 *
+	 * @throws HbnException
+	 */
+	public void refresh() throws HbnException;
+
+	/**
 	 * Default implementation for {@link HbnFlexoConceptInstance}
 	 * 
 	 * @author sylvain
 	 *
 	 */
 	abstract class HbnFlexoConceptInstanceImpl extends FlexoConceptInstanceImpl implements HbnFlexoConceptInstance {
+
+		private static final Logger logger = FlexoLogger.getLogger(HbnFlexoConceptInstance.class.getPackage().toString());
 
 		// Hibernate support object
 		private Map<String, Object> hbnMap;
@@ -200,74 +217,82 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			private final HbnOneToManyReferenceRole referenceRole;
 			private List<HbnFlexoConceptInstance> instances = null;
 
-			public HbnReferenceCollection(PersistentBag pBag, HbnOneToManyReferenceRole referenceRole) {
-				this.pBag = pBag;
-				this.referenceRole = referenceRole;
-				if (pBag == null) {
-					instances = new ArrayList<HbnFlexoConceptInstance>() {
-						@Override
-						public boolean add(HbnFlexoConceptInstance e) {
-							System.out.println("Coucou on fait un add pour " + HbnFlexoConceptInstanceImpl.this);
-							Map m2 = HbnFlexoConceptInstanceImpl.this.getHbnSupportObject();
-							for (Object key : m2.keySet()) {
-								System.out.println(" > " + key + " = " + (m2.get(key) != null ? m2.get(key).getClass() : null));
-							}
+			private boolean isRefreshing = false;
 
-							try {
-								System.out.println("on ajoute " + e);
-								Map m = e.getHbnSupportObject();
-								for (Object key : m.keySet()) {
-									System.out.println(" > " + key + " = " + (m.get(key) != null ? m.get(key).getClass() : null));
-								}
-								Object value = HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName());
-								System.out.println("AVANT : " + referenceRole.getName() + "/" + (value instanceof PersistentBag
-										? "PersistentBag/" + ((PersistentBag) value).size() : (value != null ? value.toString() : null)));
-								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().refresh(
-										HbnFlexoConceptInstanceImpl.this.getFlexoConcept().getName(),
-										(Object) HbnFlexoConceptInstanceImpl.this.getHbnSupportObject());
-								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().flush();
-								HbnFlexoConceptInstanceImpl.this.getVirtualModelInstance().getDefaultSession().refresh(
-										HbnFlexoConceptInstanceImpl.this.getFlexoConcept().getName(),
-										(Object) HbnFlexoConceptInstanceImpl.this.getHbnSupportObject());
-								Object newValue = HbnFlexoConceptInstanceImpl.this.getHbnSupportObject().get(referenceRole.getName());
-								System.out.println("APRES : " + referenceRole.getName() + "/"
-										+ (newValue instanceof PersistentBag ? "PersistentBag/" + ((PersistentBag) newValue).size()
-												: (newValue != null ? newValue.toString() : null)));
-							} catch (HbnException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							// return super.add(e);
-							return true;
-						}
-					};
-				}
+			public HbnReferenceCollection(HbnOneToManyReferenceRole referenceRole) {
+				this.pBag = (PersistentBag) hbnMap.get(referenceRole.getName());
+				this.referenceRole = referenceRole;
 			}
 
 			public List<HbnFlexoConceptInstance> getInstances() {
 
-				if (instances == null || ((pBag != null) && (instances.size() != pBag.size()))) {
-					instances = new ArrayList<>();
-					for (Object o : pBag) {
-						if (o instanceof Map) {
-							HbnFlexoConceptInstance fci = getVirtualModelInstance().getFlexoConceptInstance((Map) o, null,
-									referenceRole.getFlexoConceptType());
-							instances.add(fci);
+				if (needsRefresh()) {
+					refresh();
+				}
+
+				if (instances == null) {
+					instances = new ArrayList<HbnFlexoConceptInstance>() {
+						@Override
+						public boolean add(HbnFlexoConceptInstance e) {
+							if (!isRefreshing) {
+								// TODO: handle this
+								// today, we can only set opposite property
+								logger.warning("ADDING not implemented yet");
+								return false;
+							}
+							else {
+								return super.add(e);
+							}
 						}
+					};
+
+					if (pBag != null) {
+						isRefreshing = true;
+						for (Object o : pBag) {
+							if (o instanceof Map) {
+								HbnFlexoConceptInstance fci = getVirtualModelInstance().getFlexoConceptInstance((Map) o, null,
+										referenceRole.getFlexoConceptType());
+								instances.add(fci);
+							}
+						}
+						isRefreshing = false;
 					}
 				}
+
 				return instances;
 			}
+
+			public boolean needsRefresh() {
+				return (instances != null && pBag != null && instances.size() != pBag.size());
+			}
+
+			public void refresh() {
+				this.pBag = (PersistentBag) hbnMap.get(referenceRole.getName());
+				instances = null;
+			}
+		}
+
+		@Override
+		public void refresh() throws HbnException {
+
+			// Hibernate refresh
+			getVirtualModelInstance().getDefaultSession().refresh(getFlexoConcept().getName(), (Object) getHbnSupportObject());
+
+			// We need now to refresh all HbnReferenceCollection
+			for (HbnReferenceCollection refCol : referencedCollectionsMap.values()) {
+				refCol.refresh();
+			}
+
 		}
 
 		private List<HbnFlexoConceptInstance> getReferencedObjectList(HbnOneToManyReferenceRole referenceRole) {
 			HbnReferenceCollection referenceCollection = referencedCollectionsMap.get(referenceRole);
 			if (referenceCollection == null) {
-				PersistentBag pBag = (PersistentBag) hbnMap.get(referenceRole.getName());
+				// PersistentBag pBag = (PersistentBag) hbnMap.get(referenceRole.getName());
 				/*if (pBag == null) {
 					return Collections.emptyList();
 				}*/
-				referenceCollection = new HbnReferenceCollection(pBag, referenceRole);
+				referenceCollection = new HbnReferenceCollection(referenceRole);
 				referencedCollectionsMap.put(referenceRole, referenceCollection);
 			}
 			return referenceCollection.getInstances();

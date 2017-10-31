@@ -48,7 +48,9 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.RefreshHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.RollbackTransaction;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.SaveHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -203,6 +205,12 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 		}
 		if (CreateHbnObject.class.isAssignableFrom(editionActionClass)) {
 			return IconFactory.getImageIcon(FMLRTIconLibrary.FLEXO_CONCEPT_INSTANCE_ICON, IconLibrary.DUPLICATE);
+		}
+		if (SaveHbnObject.class.isAssignableFrom(editionActionClass)) {
+			return JDBCIconLibrary.SAVE_ICON;
+		}
+		if (RefreshHbnObject.class.isAssignableFrom(editionActionClass)) {
+			return JDBCIconLibrary.REFRESH_ICON;
 		}
 		return super.getIconForEditionAction(editionActionClass);
 	}
