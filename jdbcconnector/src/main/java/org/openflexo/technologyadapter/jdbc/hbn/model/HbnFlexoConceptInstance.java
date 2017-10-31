@@ -379,12 +379,14 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 			else if (flexoProperty instanceof HbnColumnRole) {
 				T oldValue = getFlexoPropertyValue(flexoProperty);
 				if ((value == null && oldValue != null) || (value != null && !value.equals(oldValue))) {
-					hbnMap.put(flexoProperty.getName(), value);
+					Object objectToBeStored = ((HbnColumnRole<?>) flexoProperty).getDataType().encodeObjectForStoring(value);
+					hbnMap.put(flexoProperty.getName(), objectToBeStored);
 					identifier = null;
 					identifierAsString = null;
 					setIsModified();
 					getPropertyChangeSupport().firePropertyChange(flexoProperty.getPropertyName(), oldValue, value);
 				}
+
 			}
 			else if (flexoProperty instanceof HbnToOneReferenceRole) {
 				setReferencedObject((HbnFlexoConceptInstance) value, (HbnToOneReferenceRole) flexoProperty);
