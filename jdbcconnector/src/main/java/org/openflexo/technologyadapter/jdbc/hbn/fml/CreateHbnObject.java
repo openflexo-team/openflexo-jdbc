@@ -116,6 +116,11 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 			}
 			return super.getModelSlotTechnologyAdapter();
 		}
+
+		@Override
+		public Class<HbnVirtualModelInstance> getVirtualModelInstanceClass() {
+			return HbnVirtualModelInstance.class;
+		}
 	}
 
 }
