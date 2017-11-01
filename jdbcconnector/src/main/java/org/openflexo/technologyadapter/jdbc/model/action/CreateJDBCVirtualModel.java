@@ -208,8 +208,10 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 						// TODO
 				}
 			}
-			createConceptAction.setDefineSomeBehaviours(true);
-			createConceptAction.setDefineDefaultCreationScheme(true);
+
+			// createConceptAction.setDefineSomeBehaviours(true);
+			// createConceptAction.setDefineDefaultCreationScheme(true);
+
 			createConceptAction.setDefineInspector(false);
 			createConceptAction.doAction();
 
@@ -239,8 +241,15 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 			createConceptAction.setDefineInspector(true);
 			createConceptAction.performCreateInspectors();
 
+			// Create a default creation scheme
+			CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(tableMapping.concept, null,
+					this);
+			createCreationScheme.setFlexoBehaviourName("create");
+			createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
+			createCreationScheme.doAction();
+			CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
+
 			// Add SaveHbnObject to creation scheme
-			CreationScheme creationScheme = tableMapping.concept.getCreationSchemes().get(0);
 			CreateEditionAction createSaveAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(),
 					null, this);
 			createSaveAction.setEditionActionClass(SaveHbnObject.class);
