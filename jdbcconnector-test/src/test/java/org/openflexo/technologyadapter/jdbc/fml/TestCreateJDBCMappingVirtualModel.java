@@ -91,7 +91,6 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 	protected final static String jdbcUser = "sa";
 	protected final static String jdbcPwd = "";
 
-
 	@AfterClass
 	public static void tearDownClass() {
 		deleteTestResourceCenters();
@@ -172,11 +171,11 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		CreationScheme creationScheme = virtualModel.getCreationSchemes().get(0);
 		action.setCreationScheme(creationScheme);
 		CreationSchemeAction creationAction = action.getCreationSchemeAction();
-		FlexoBehaviourParameter pDbType = creationScheme.getParameter("dbtype");
+		// FlexoBehaviourParameter pDbType = creationScheme.getParameter("dbtype");
 		FlexoBehaviourParameter pAddress = creationScheme.getParameter("address");
 		FlexoBehaviourParameter pPwd = creationScheme.getParameter("password");
 		FlexoBehaviourParameter pUser = creationScheme.getParameter("user");
-		creationAction.setParameterValue(pDbType, JDBCDbType.HSQLDB);
+		// creationAction.setParameterValue(pDbType, JDBCDbType.HSQLDB);
 		creationAction.setParameterValue(pAddress, address);
 		creationAction.setParameterValue(pUser, jdbcUser);
 		creationAction.setParameterValue(pPwd, jdbcPwd);
