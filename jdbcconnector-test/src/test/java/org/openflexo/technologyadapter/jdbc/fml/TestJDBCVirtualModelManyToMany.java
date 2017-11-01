@@ -289,6 +289,7 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		assertTrue(createSalesmenRole.hasActionExecutionSucceeded());
 		HbnOneToManyReferenceRole salesmenRole = (HbnOneToManyReferenceRole) createSalesmenRole.getNewFlexoRole();
 		assertNotNull(salesmenRole);
+		salesmenRole.setVirtualModelInstance(new DataBinding<>("this.container"));
 
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(mappingVirtualModel, null, _editor);
 		createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
@@ -450,7 +451,7 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 		action.setParameterValue(creationScheme.getParameter("address"), "jdbc:hsqldb:mem:many2many");
 		action.setParameterValue(creationScheme.getParameter("user"), "SA");
 		action.setParameterValue(creationScheme.getParameter("password"), "");
-		action.setParameterValue(creationScheme.getParameter("dbtype"), JDBCDbType.HSQLDB);
+		// action.setParameterValue(creationScheme.getParameter("dbtype"), JDBCDbType.HSQLDB);
 		action.doAction();
 		assertTrue(action.hasActionExecutionSucceeded());
 		vmi = action.getNewVirtualModelInstance();
