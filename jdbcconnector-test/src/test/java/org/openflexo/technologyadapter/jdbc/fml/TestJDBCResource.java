@@ -50,7 +50,6 @@ import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
 import org.openflexo.foundation.resource.RepositoryFolder;
-import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
@@ -109,25 +108,23 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		jdbcTA = getFlexoServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class);
 		factory = jdbcTA.getResourceFactory(JDBCResourceFactory.class);
 
-		editor = createProject("TestJDBCResource");
+		editor = createStandaloneProject("TestJDBCResource");
 		project = editor.getProject();
 
 		assertNotNull(project);
 
 	}
 
-
 	@Test
 	@TestOrder(3)
 	public void createResource() throws Exception {
 		log("createResource()");
-		
+
 		assertNotNull(project);
-		
+
 		Object sa = null;
 		RepositoryFolder folder = project.getRootFolder();
-		resource = factory.makeJDBCResource(resourceName, folder,
-				(TechnologyContextManager<JDBCTechnologyAdapter>) jdbcTA.getTechnologyContextManager());
+		resource = factory.makeJDBCResource(resourceName, folder);
 
 		JDBCConnection model = resource.getResourceData(null);
 
@@ -136,7 +133,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		model.setDbType(JDBCDbType.GENERIC);
 		model.setAddress(jdbcURL);
 		model.setDriverClassName(jdbcDriverClassname);
-		
+
 		resource.save(null);
 	}
 

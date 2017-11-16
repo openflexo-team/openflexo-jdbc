@@ -97,13 +97,13 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		unloadServiceManager();
 	}
 
-	private VirtualModel createViewPoint(FlexoEditor project)
+	private VirtualModel createViewPoint(FlexoEditor editor)
 			throws org.openflexo.foundation.resource.SaveResourceException, ModelDefinitionException {
 		FMLTechnologyAdapter fmlTechnologyAdapter = getTA(FMLTechnologyAdapter.class);
 		VirtualModelResourceFactory factory = fmlTechnologyAdapter.getVirtualModelResourceFactory();
-		VirtualModelRepository<File> viewPointRepository = project.getProject().getVirtualModelRepository();
+		VirtualModelRepository<File> viewPointRepository = (VirtualModelRepository<File>) editor.getProject().getVirtualModelRepository();
 		VirtualModelResource viewPointResource = factory.makeTopLevelVirtualModelResource(ROOT_VIRTUAL_MODEL_NAME, ROOT_VIRTUAL_MODEL_URI,
-				viewPointRepository.getRootFolder(), fmlTechnologyAdapter.getTechnologyContextManager(), true);
+				viewPointRepository.getRootFolder(), true);
 
 		viewPointResource.save(null);
 		return viewPointResource.getLoadedResourceData();
@@ -157,7 +157,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 
 		FMLRTVirtualModelInstanceResource viewResource = factory.makeTopLevelFMLRTVirtualModelInstanceResource(
 				ROOT_VIRTUAL_MODEL_INSTANCE_NAME, ROOT_VIRTUAL_MODEL_INSTANCE_URI, virtualModel.getVirtualModelResource(),
-				viewLibrary.getRootFolder(), fmlRtTechnologyAdapter.getTechnologyContextManager(), true);
+				viewLibrary.getRootFolder(), true);
 
 		return viewResource.getLoadedResourceData();
 	}
@@ -190,7 +190,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 	@Test
 	public void testGenerateEmptyVirtualModel() throws Exception {
 		log("Creating project " + PROJECT_NAME);
-		FlexoEditor project = createProject(PROJECT_NAME);
+		FlexoEditor project = createStandaloneProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + ROOT_VIRTUAL_MODEL_NAME);
 		VirtualModel viewPoint = createViewPoint(project);
@@ -210,7 +210,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		getTA(JDBCTechnologyAdapter.class).activate();
 
 		log("Creating project " + PROJECT_NAME);
-		FlexoEditor project = createProject(PROJECT_NAME);
+		FlexoEditor project = createStandaloneProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + ROOT_VIRTUAL_MODEL_NAME);
 		VirtualModel viewPoint = createViewPoint(project);
@@ -233,7 +233,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		getTA(JDBCTechnologyAdapter.class).activate();
 
 		log("Creating project " + PROJECT_NAME);
-		FlexoEditor project = createProject(PROJECT_NAME);
+		FlexoEditor project = createStandaloneProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + ROOT_VIRTUAL_MODEL_NAME);
 		VirtualModel viewPoint = createViewPoint(project);
@@ -256,7 +256,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		getTA(JDBCTechnologyAdapter.class).activate();
 
 		log("Creating project " + PROJECT_NAME);
-		FlexoEditor project = createProject(PROJECT_NAME);
+		FlexoEditor project = createStandaloneProject(PROJECT_NAME);
 
 		log("Creating viewPoint " + ROOT_VIRTUAL_MODEL_NAME);
 		VirtualModel viewPoint = createViewPoint(project);

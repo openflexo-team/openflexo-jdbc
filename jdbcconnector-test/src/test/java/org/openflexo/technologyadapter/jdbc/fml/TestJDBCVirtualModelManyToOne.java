@@ -217,7 +217,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 	@TestOrder(3)
 	public void createProject() throws Exception {
 		log("createProject");
-		_editor = createProject(PROJECT_NAME);
+		_editor = createStandaloneProject(PROJECT_NAME);
 	}
 
 	@Test
