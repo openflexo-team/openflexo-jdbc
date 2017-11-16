@@ -192,7 +192,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 	@Remover(PARAMETERS_KEY)
 	public void removeFromParameters(CreateHbnResourceParameter aParameter);
 
-	public abstract Class<? extends HbnVirtualModelInstanceResourceFactory> getResourceFactoryClass();
+	public abstract Class<HbnVirtualModelInstanceResourceFactory> getResourceFactoryClass();
 
 	public abstract String getSuffix();
 

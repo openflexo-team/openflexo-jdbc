@@ -148,7 +148,7 @@ public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, Repo
 			JDBCResourceFactory resourceFactory = technologyAdapter.getResourceFactory(JDBCResourceFactory.class);
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager = (TechnologyContextManager<JDBCTechnologyAdapter>) technologyAdapter
 					.getTechnologyContextManager();
-			JDBCResource resource = resourceFactory.makeJDBCResource(resourceName, getFocusedObject(), technologyContextManager);
+			JDBCResource resource = resourceFactory.makeJDBCResource(resourceName, getFocusedObject());
 			JDBCConnection model = resource.getResourceData(null);
 			model.setAddress(getAddress());
 			model.setUser(getUser());

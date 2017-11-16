@@ -38,12 +38,18 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.rm;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openflexo.foundation.FlexoServiceManager;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceRepository;
+import org.openflexo.foundation.resource.ResourceRepositoryImpl;
+import org.openflexo.model.annotations.ImplementationClass;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -53,59 +59,76 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  * @author sylvain
  * 
  */
-public class HbnVirtualModelInstanceRepository<I> extends ResourceRepository<HbnVirtualModelInstanceResource, I> {
-	public HbnVirtualModelInstanceRepository(JDBCTechnologyAdapter adapter, FlexoResourceCenter<I> resourceCenter) {
-		super(resourceCenter, resourceCenter.getBaseArtefact());
-		getRootFolder().setRepositoryContext(null);
-	}
+@ModelEntity
+@ImplementationClass(HbnVirtualModelInstanceRepository.HbnVirtualModelInstanceRepositoryImpl.class)
+public interface HbnVirtualModelInstanceRepository<I> extends ResourceRepository<HbnVirtualModelInstanceResource, I> {
 
-	@Override
-	public FlexoServiceManager getServiceManager() {
-		if (getResourceCenter() != null) {
-			return getResourceCenter().getServiceManager();
+	public static <I> HbnVirtualModelInstanceRepository<I> instanciateNewRepository(JDBCTechnologyAdapter adapter,
+			FlexoResourceCenter<I> resourceCenter) throws IOException {
+		ModelFactory factory;
+		try {
+			factory = new ModelFactory(HbnVirtualModelInstanceRepository.class);
+			HbnVirtualModelInstanceRepository<I> newRepository = factory.newInstance(HbnVirtualModelInstanceRepository.class);
+			newRepository.setResourceCenter(resourceCenter);
+			newRepository.setBaseArtefact(resourceCenter.getBaseArtefact());
+			newRepository.getRootFolder().setRepositoryContext(null);
+			return newRepository;
+		} catch (ModelDefinitionException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public List<HbnVirtualModelInstance> getVirtualModelInstancesConformToVirtualModel(String virtualModelURI) {
-		List<HbnVirtualModelInstance> views = new ArrayList<>();
-		for (HbnVirtualModelInstanceResource vmiRes : getAllResources()) {
-			if (vmiRes.getVirtualModelResource() != null && vmiRes.getVirtualModelResource().getURI().equals(virtualModelURI)) {
-				views.add(vmiRes.getVirtualModelInstance());
+	public static abstract class HbnVirtualModelInstanceRepositoryImpl<I> extends ResourceRepositoryImpl<HbnVirtualModelInstanceResource, I>
+			implements HbnVirtualModelInstanceRepository<I> {
+
+		@Override
+		public FlexoServiceManager getServiceManager() {
+			if (getResourceCenter() != null) {
+				return getResourceCenter().getServiceManager();
 			}
-		}
-		return views;
-	}
-
-	public boolean isValidForANewVirtualModelInstanceName(String value) {
-		if (value == null) {
-			return false;
-		}
-		return getRootFolder().isValidResourceName(value);
-	}
-
-	public HbnVirtualModelInstanceResource getVirtualModelInstanceResourceNamed(String value) {
-		if (value == null) {
 			return null;
 		}
-		return getRootFolder().getResourceWithName(value);
-	}
 
-	public HbnVirtualModelInstanceResource getVirtualModelInstance(String virtualModelInstanceURI) {
-		if (virtualModelInstanceURI == null) {
-			return null;
+		public List<HbnVirtualModelInstance> getVirtualModelInstancesConformToVirtualModel(String virtualModelURI) {
+			List<HbnVirtualModelInstance> views = new ArrayList<>();
+			for (HbnVirtualModelInstanceResource vmiRes : getAllResources()) {
+				if (vmiRes.getVirtualModelResource() != null && vmiRes.getVirtualModelResource().getURI().equals(virtualModelURI)) {
+					views.add(vmiRes.getVirtualModelInstance());
+				}
+			}
+			return views;
 		}
-		return getResource(virtualModelInstanceURI);
-	}
 
-	@Override
-	public final String getDefaultBaseURI() {
-		return getResourceCenter().getDefaultBaseURI() /*+ "/" + getTechnologyAdapter().getIdentifier()*/;
-	}
+		public boolean isValidForANewVirtualModelInstanceName(String value) {
+			if (value == null) {
+				return false;
+			}
+			return getRootFolder().isValidResourceName(value);
+		}
 
-	@Override
-	public String getDisplayableName() {
-		return getResourceCenter().getDisplayableName();
-	}
+		public HbnVirtualModelInstanceResource getVirtualModelInstanceResourceNamed(String value) {
+			if (value == null) {
+				return null;
+			}
+			return getRootFolder().getResourceWithName(value);
+		}
 
+		public HbnVirtualModelInstanceResource getVirtualModelInstance(String virtualModelInstanceURI) {
+			if (virtualModelInstanceURI == null) {
+				return null;
+			}
+			return getResource(virtualModelInstanceURI);
+		}
+
+		@Override
+		public final String getDefaultBaseURI() {
+			return getResourceCenter().getDefaultBaseURI() /*+ "/" + getTechnologyAdapter().getIdentifier()*/;
+		}
+
+		@Override
+		public String getDisplayableName() {
+			return getResourceCenter().getDisplayableName();
+		}
+	}
 }

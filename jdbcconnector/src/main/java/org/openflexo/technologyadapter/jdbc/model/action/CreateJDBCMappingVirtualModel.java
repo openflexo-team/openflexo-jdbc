@@ -210,7 +210,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 			// creates the virtual model
 			VirtualModelResource vmResource = resourceFactory.makeContainedVirtualModelResource(getVirtualModelName(), viewPointResource,
-					fmlTechnologyAdapter.getTechnologyContextManager(), true);
+					true);
 
 			virtualModel = vmResource.getLoadedResourceData();
 			virtualModel.setDescription("This virtual model was generated to represent the database '" + getAddress() + "'");

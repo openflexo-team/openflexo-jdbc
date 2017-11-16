@@ -36,9 +36,9 @@
 package org.openflexo.technologyadapter.jdbc.rm;
 
 import org.openflexo.foundation.resource.FlexoResourceCenter;
-import org.openflexo.foundation.resource.PamelaResourceFactory;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.resource.SaveResourceException;
+import org.openflexo.foundation.resource.TechnologySpecificPamelaResourceFactory;
 import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -49,7 +49,8 @@ import org.openflexo.toolbox.StringUtils;
 /**
  *
  */
-public class JDBCResourceFactory extends PamelaResourceFactory<JDBCResource, JDBCConnection, JDBCTechnologyAdapter, JDBCFactory> {
+public class JDBCResourceFactory
+		extends TechnologySpecificPamelaResourceFactory<JDBCResource, JDBCConnection, JDBCTechnologyAdapter, JDBCFactory> {
 
 	public static final String JDBC_EXTENSION = ".jdbc";
 
@@ -79,14 +80,13 @@ public class JDBCResourceFactory extends PamelaResourceFactory<JDBCResource, JDB
 		return null;
 	}
 
-	public <I> JDBCResource makeJDBCResource(String baseName, RepositoryFolder<JDBCResource, I> folder,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager)
+	public <I> JDBCResource makeJDBCResource(String baseName, RepositoryFolder<JDBCResource, I> folder)
 			throws SaveResourceException, ModelDefinitionException {
 
 		FlexoResourceCenter<I> rc = folder.getResourceRepository().getResourceCenter();
 		String artefactName = baseName.endsWith(JDBC_EXTENSION) ? baseName : baseName + JDBC_EXTENSION;
 		I serializationArtefact = rc.createEntry(artefactName, folder.getSerializationArtefact());
-		JDBCResource newJDBCResource = makeResource(serializationArtefact, rc, technologyContextManager, true);
+		JDBCResource newJDBCResource = makeResource(serializationArtefact, rc, true);
 
 		return newJDBCResource;
 	}

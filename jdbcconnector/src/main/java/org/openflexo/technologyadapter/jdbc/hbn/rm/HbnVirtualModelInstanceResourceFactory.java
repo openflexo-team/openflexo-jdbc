@@ -84,18 +84,16 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 */
 	public <I> HbnVirtualModelInstanceResource makeTopLevelFMLRTVirtualModelInstanceResource(String baseName, String uri,
 			VirtualModelResource virtualModelResource, RepositoryFolder<HbnVirtualModelInstanceResource, I> folder,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager, boolean createEmptyContents)
-			throws SaveResourceException, ModelDefinitionException {
+			boolean createEmptyContents) throws SaveResourceException, ModelDefinitionException {
 
 		FlexoResourceCenter<I> resourceCenter = folder.getResourceRepository().getResourceCenter();
 		I serializationArtefact = resourceCenter.createDirectory(
 				(baseName.endsWith(getExpectedDirectorySuffix()) ? baseName : baseName + getExpectedDirectorySuffix()),
 				folder.getSerializationArtefact());
 
-		HbnVirtualModelInstanceResource returned = initResourceForCreation(serializationArtefact, resourceCenter, technologyContextManager,
-				baseName, uri);
+		HbnVirtualModelInstanceResource returned = initResourceForCreation(serializationArtefact, resourceCenter, baseName, uri);
 		returned.setVirtualModelResource(virtualModelResource);
-		registerResource(returned, resourceCenter, technologyContextManager);
+		registerResource(returned, resourceCenter);
 
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
@@ -138,10 +136,9 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		String viewURI = containerResource.getURI() + "/"
 				+ (baseName.endsWith(getExpectedDirectorySuffix()) ? baseName : (baseName + getExpectedDirectorySuffix()));
 
-		HbnVirtualModelInstanceResource returned = initResourceForCreation(serializationArtefact, resourceCenter, technologyContextManager,
-				baseName, viewURI);
+		HbnVirtualModelInstanceResource returned = initResourceForCreation(serializationArtefact, resourceCenter, baseName, viewURI);
 		returned.setVirtualModelResource(virtualModelResource);
-		registerResource(returned, resourceCenter, technologyContextManager);
+		registerResource(returned, resourceCenter);
 
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
@@ -171,9 +168,8 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws IOException
 	 */
 	public <I> HbnVirtualModelInstanceResource retrieveFMLRTVirtualModelInstanceResource(I serializationArtefact,
-			FlexoResourceCenter<I> resourceCenter, TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager)
-			throws ModelDefinitionException, IOException {
-		HbnVirtualModelInstanceResource returned = retrieveResource(serializationArtefact, resourceCenter, technologyContextManager);
+			FlexoResourceCenter<I> resourceCenter) throws ModelDefinitionException, IOException {
+		HbnVirtualModelInstanceResource returned = retrieveResource(serializationArtefact, resourceCenter);
 		return returned;
 	}
 
@@ -190,9 +186,9 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws IOException
 	 */
 	public <I> HbnVirtualModelInstanceResource retrieveFMLRTVirtualModelInstanceResource(I serializationArtefact,
-			FlexoResourceCenter<I> resourceCenter, TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager,
-			AbstractVirtualModelInstanceResource<?, ?> containerResource) throws ModelDefinitionException, IOException {
-		HbnVirtualModelInstanceResource returned = retrieveResource(serializationArtefact, resourceCenter, technologyContextManager);
+			FlexoResourceCenter<I> resourceCenter, AbstractVirtualModelInstanceResource<?, ?> containerResource)
+			throws ModelDefinitionException, IOException {
+		HbnVirtualModelInstanceResource returned = retrieveResource(serializationArtefact, resourceCenter);
 		containerResource.addToContents(returned);
 		containerResource.notifyContentsAdded(returned);
 		return returned;
@@ -225,37 +221,35 @@ public class HbnVirtualModelInstanceResourceFactory extends
 
 	@Override
 	protected <I> HbnVirtualModelInstanceResource registerResource(HbnVirtualModelInstanceResource resource,
-			FlexoResourceCenter<I> resourceCenter, TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) {
-		super.registerResource(resource, resourceCenter, technologyContextManager);
+			FlexoResourceCenter<I> resourceCenter) {
+		super.registerResource(resource, resourceCenter);
 
 		// Register the resource in the VirtualModelInstanceRepository of supplied resource center
-		registerResourceInResourceRepository(resource, (HbnVirtualModelInstanceRepository) technologyContextManager.getTechnologyAdapter()
-				.getVirtualModelInstanceRepository(resourceCenter));
+		registerResourceInResourceRepository(resource,
+				(HbnVirtualModelInstanceRepository) getTechnologyAdapter(resourceCenter.getServiceManager())
+						.getVirtualModelInstanceRepository(resourceCenter));
 
 		// Now look for virtual model instances and sub-views
 		// TODO: may be not required for HTTP ???
-		exploreViewContents(resource, technologyContextManager);
+		exploreViewContents(resource);
 
 		return resource;
 	}
 
 	@Override
 	protected <I> HbnVirtualModelInstanceResource initResourceForCreation(I serializationArtefact, FlexoResourceCenter<I> resourceCenter,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager, String name, String uri)
-			throws ModelDefinitionException {
-		HbnVirtualModelInstanceResource returned = super.initResourceForCreation(serializationArtefact, resourceCenter,
-				technologyContextManager, name, uri);
+			String name, String uri) throws ModelDefinitionException {
+		HbnVirtualModelInstanceResource returned = super.initResourceForCreation(serializationArtefact, resourceCenter, name, uri);
 		returned.setVersion(INITIAL_REVISION);
 		returned.setModelVersion(CURRENT_HBN_RT_VERSION);
 		return returned;
 	}
 
 	@Override
-	protected <I> HbnVirtualModelInstanceResource initResourceForRetrieving(I serializationArtefact, FlexoResourceCenter<I> resourceCenter,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException, IOException {
+	protected <I> HbnVirtualModelInstanceResource initResourceForRetrieving(I serializationArtefact, FlexoResourceCenter<I> resourceCenter)
+			throws ModelDefinitionException, IOException {
 
-		HbnVirtualModelInstanceResource returned = super.initResourceForRetrieving(serializationArtefact, resourceCenter,
-				technologyContextManager);
+		HbnVirtualModelInstanceResource returned = super.initResourceForRetrieving(serializationArtefact, resourceCenter);
 
 		String artefactName = resourceCenter.retrieveName(serializationArtefact);
 
@@ -309,14 +303,12 @@ public class HbnVirtualModelInstanceResourceFactory extends
 				getExpectedXMLFileSuffix(), this);
 	}
 
-	private void exploreViewContents(HbnVirtualModelInstanceResource viewResource,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) {
+	private void exploreViewContents(HbnVirtualModelInstanceResource viewResource) {
 
-		exploreResource(viewResource.getIODelegate().getSerializationArtefact(), viewResource, technologyContextManager);
+		exploreResource(viewResource.getIODelegate().getSerializationArtefact(), viewResource);
 	}
 
-	private <I> void exploreResource(I serializationArtefact, HbnVirtualModelInstanceResource containerResource,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) {
+	private <I> void exploreResource(I serializationArtefact, HbnVirtualModelInstanceResource containerResource) {
 		if (serializationArtefact == null) {
 			return;
 		}
@@ -327,7 +319,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 			if (isValidArtefact(child, resourceCenter)) {
 				try {
 					HbnVirtualModelInstanceResource virtualModelInstanceResource = retrieveFMLRTVirtualModelInstanceResource(child,
-							resourceCenter, technologyContextManager, containerResource);
+							resourceCenter, containerResource);
 				} catch (ModelDefinitionException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

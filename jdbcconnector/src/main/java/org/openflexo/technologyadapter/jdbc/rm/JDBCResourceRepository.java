@@ -55,20 +55,35 @@
 
 package org.openflexo.technologyadapter.jdbc.rm;
 
+import java.io.IOException;
+
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterResourceRepository;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 
+@ModelEntity
+public interface JDBCResourceRepository<I>
+		extends TechnologyAdapterResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCConnection, I> {
 
-public class JDBCResourceRepository<I> extends
-        TechnologyAdapterResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCConnection, I>
-{
-    private static final String DEFAULT_BASE_URI = "http://www.openflexo.org/JDBCTechnologyAdapter/Models";
-
-    public JDBCResourceRepository(JDBCTechnologyAdapter adapter, FlexoResourceCenter<I> resourceCenter) {
-        super(adapter, resourceCenter);
-    }
-
+	public static <I> JDBCResourceRepository<I> instanciateNewRepository(JDBCTechnologyAdapter technologyAdapter,
+			FlexoResourceCenter<I> resourceCenter) throws IOException {
+		ModelFactory factory;
+		try {
+			factory = new ModelFactory(JDBCResourceRepository.class);
+			JDBCResourceRepository<I> newRepository = factory.newInstance(JDBCResourceRepository.class);
+			newRepository.setTechnologyAdapter(technologyAdapter);
+			newRepository.setResourceCenter(resourceCenter);
+			newRepository.setBaseArtefact(resourceCenter.getBaseArtefact());
+			newRepository.getRootFolder().setRepositoryContext(null);
+			return newRepository;
+		} catch (ModelDefinitionException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

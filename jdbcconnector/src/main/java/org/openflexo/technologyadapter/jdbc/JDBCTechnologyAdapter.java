@@ -55,6 +55,8 @@
 
 package org.openflexo.technologyadapter.jdbc;
 
+import java.io.IOException;
+
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.foundation.fml.annotations.DeclareModelSlots;
@@ -120,7 +122,12 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter {
 	public <I> HbnVirtualModelInstanceRepository<I> getVirtualModelInstanceRepository(FlexoResourceCenter<I> resourceCenter) {
 		HbnVirtualModelInstanceRepository<I> returned = resourceCenter.retrieveRepository(HbnVirtualModelInstanceRepository.class, this);
 		if (returned == null) {
-			returned = new HbnVirtualModelInstanceRepository<I>(this, resourceCenter);
+			try {
+				returned = HbnVirtualModelInstanceRepository.instanciateNewRepository(this, resourceCenter);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			resourceCenter.registerRepository(returned, HbnVirtualModelInstanceRepository.class, this);
 		}
 		return returned;
