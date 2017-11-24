@@ -53,7 +53,7 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
- * Behaviour beeing called when loading an existing {@link HbnVirtualModelInstance} (which has been serialized)<br>
+ * Behaviour beeing called when initializing a {@link HbnVirtualModelInstance} (which is created or reloaded)<br>
  * 
  * This is a hook to perform required computation on a {@link HbnVirtualModelInstance} at reload.<br>
  * Note that related {@link VirtualModel} should not define more than one {@link HbnInitializer}
