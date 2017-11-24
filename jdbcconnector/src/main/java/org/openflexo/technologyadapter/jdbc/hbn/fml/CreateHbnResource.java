@@ -513,12 +513,6 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 						action.doAction();
 					}
 
-					// newResource.getFactory().initializeModel(data, getCreationScheme(), getParameters(), evaluationContext);
-
-					/*data.setModelSlot(httpModelSlot);
-					data.setOwnerInstance(evaluationContext.getVirtualModelInstance());
-					newResource.getFactory().initializeModel(data, httpModelSlot.getCreationScheme(), httpModelSlot.getParameters(),
-							evaluationContext);*/
 				}
 				else {
 					throw new InvalidArgumentException("HbnResource creation must be affected to a HbnModelSlot");
