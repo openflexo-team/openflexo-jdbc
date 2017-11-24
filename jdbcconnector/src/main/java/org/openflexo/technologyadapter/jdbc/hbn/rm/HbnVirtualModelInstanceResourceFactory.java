@@ -82,7 +82,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws SaveResourceException
 	 * @throws ModelDefinitionException
 	 */
-	public <I> HbnVirtualModelInstanceResource makeTopLevelFMLRTVirtualModelInstanceResource(String baseName, String uri,
+	public <I> HbnVirtualModelInstanceResource makeTopLevelHbnVirtualModelInstanceResource(String baseName, String uri,
 			VirtualModelResource virtualModelResource, RepositoryFolder<HbnVirtualModelInstanceResource, I> folder,
 			boolean createEmptyContents) throws SaveResourceException, ModelDefinitionException {
 
@@ -123,7 +123,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws SaveResourceException
 	 * @throws ModelDefinitionException
 	 */
-	public <I> HbnVirtualModelInstanceResource makeContainedFMLRTVirtualModelInstanceResource(String baseName,
+	public <I> HbnVirtualModelInstanceResource makeContainedHbnVirtualModelInstanceResource(String baseName,
 			VirtualModelResource virtualModelResource, AbstractVirtualModelInstanceResource<?, ?> containerResource,
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager, boolean createEmptyContents)
 			throws SaveResourceException, ModelDefinitionException {
@@ -167,7 +167,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws ModelDefinitionException
 	 * @throws IOException
 	 */
-	public <I> HbnVirtualModelInstanceResource retrieveFMLRTVirtualModelInstanceResource(I serializationArtefact,
+	public <I> HbnVirtualModelInstanceResource retrieveHbnVirtualModelInstanceResource(I serializationArtefact,
 			FlexoResourceCenter<I> resourceCenter) throws ModelDefinitionException, IOException {
 		HbnVirtualModelInstanceResource returned = retrieveResource(serializationArtefact, resourceCenter);
 		return returned;
@@ -185,7 +185,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws ModelDefinitionException
 	 * @throws IOException
 	 */
-	public <I> HbnVirtualModelInstanceResource retrieveFMLRTVirtualModelInstanceResource(I serializationArtefact,
+	public <I> HbnVirtualModelInstanceResource retrieveHbnVirtualModelInstanceResource(I serializationArtefact,
 			FlexoResourceCenter<I> resourceCenter, AbstractVirtualModelInstanceResource<?, ?> containerResource)
 			throws ModelDefinitionException, IOException {
 		HbnVirtualModelInstanceResource returned = retrieveResource(serializationArtefact, resourceCenter);
@@ -318,7 +318,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		for (I child : resourceCenter.getContents(resourceCenter.getContainer(serializationArtefact))) {
 			if (isValidArtefact(child, resourceCenter)) {
 				try {
-					HbnVirtualModelInstanceResource virtualModelInstanceResource = retrieveFMLRTVirtualModelInstanceResource(child,
+					HbnVirtualModelInstanceResource virtualModelInstanceResource = retrieveHbnVirtualModelInstanceResource(child,
 							resourceCenter, containerResource);
 				} catch (ModelDefinitionException e) {
 					e.printStackTrace();
