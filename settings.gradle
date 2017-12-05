@@ -1,5 +1,5 @@
 include 'jdbcconnector',
-		'jdbcconnector-test',
+	 'jdbcconnector-test',
         'jdbcconnector-ui',
         'jdbc-test-rc'
 

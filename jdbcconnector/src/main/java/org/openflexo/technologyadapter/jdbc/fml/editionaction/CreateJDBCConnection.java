@@ -111,6 +111,7 @@ public interface CreateJDBCConnection extends AbstractCreateResource<JDBCModelSl
 	abstract class CreateJDBCResourceImpl extends AbstractCreateResourceImpl<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter>
 			implements CreateJDBCConnection {
 
+		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(CreateJDBCResourceImpl.class.getPackage().getName());
 
 		private DataBinding<String> user;

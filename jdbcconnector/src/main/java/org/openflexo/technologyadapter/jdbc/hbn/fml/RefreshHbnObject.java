@@ -50,7 +50,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
-import org.openflexo.foundation.fml.editionaction.TechnologySpecificAction;
+import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext.ReturnException;
@@ -85,7 +85,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(RefreshHbnObject.RefreshHbnObjectImpl.class)
 @XMLElement
 @FML("SaveHbnObject")
-public interface RefreshHbnObject extends TechnologySpecificAction<HbnModelSlot, HbnVirtualModelInstance, Void> {
+public interface RefreshHbnObject extends TechnologySpecificActionDefiningReceiver<HbnModelSlot, HbnVirtualModelInstance, Void> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	public static final String TRANSACTION_KEY = "object";
@@ -97,8 +97,8 @@ public interface RefreshHbnObject extends TechnologySpecificAction<HbnModelSlot,
 	@Setter(TRANSACTION_KEY)
 	public void setObject(DataBinding<FlexoConceptInstance> object);
 
-	public static abstract class RefreshHbnObjectImpl<T> extends TechnologySpecificActionImpl<HbnModelSlot, HbnVirtualModelInstance, Void>
-			implements RefreshHbnObject {
+	public static abstract class RefreshHbnObjectImpl<T>
+			extends TechnologySpecificActionDefiningReceiverImpl<HbnModelSlot, HbnVirtualModelInstance, Void> implements RefreshHbnObject {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());

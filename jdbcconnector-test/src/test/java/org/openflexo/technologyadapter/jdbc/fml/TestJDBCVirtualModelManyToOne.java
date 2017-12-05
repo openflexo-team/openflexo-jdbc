@@ -393,7 +393,6 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		createConnectionAction.doAction();
 
 		CreateJDBCConnection createJDBCConnectionAction = (CreateJDBCConnection) createConnectionAction.getBaseEditionAction();
-		createJDBCConnectionAction.setReceiver(new DataBinding<JDBCConnection>("null"));
 		createJDBCConnectionAction.setAddress(new DataBinding<String>("parameters.address"));
 		createJDBCConnectionAction.setUser(new DataBinding<String>("parameters.user"));
 		createJDBCConnectionAction.setPassword(new DataBinding<String>("parameters.password"));
@@ -410,7 +409,6 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 
 		CreateHbnResource createHbnResourceAction = (CreateHbnResource) action1.getAssignableAction();
 		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
-		createHbnResourceAction.setReceiver(new DataBinding<HbnVirtualModelInstance>("null"));
 		createHbnResourceAction.setConnection(new DataBinding<JDBCConnection>("connection"));
 		/*createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
 		createHbnResourceAction.setUser(new DataBinding<String>("parameters.user"));

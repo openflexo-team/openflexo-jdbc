@@ -41,11 +41,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
-import org.openflexo.foundation.fml.editionaction.TechnologySpecificAction;
+import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.model.annotations.Adder;
 import org.openflexo.model.annotations.Getter;
@@ -70,7 +71,7 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 @ImplementationClass(AddJDBCLineImpl.class)
 @XMLElement
 @FML("AddJDBCLine")
-public interface AddJDBCLine extends TechnologySpecificAction<JDBCModelSlot, JDBCConnection, JDBCLine> {
+public interface AddJDBCLine extends TechnologySpecificActionDefiningReceiver<JDBCModelSlot, JDBCConnection, JDBCLine> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	String TABLE_KEY = "table";
@@ -95,7 +96,8 @@ public interface AddJDBCLine extends TechnologySpecificAction<JDBCModelSlot, JDB
 
 	void newValue();
 
-	abstract class AddJDBCLineImpl extends TechnologySpecificActionImpl<JDBCModelSlot, JDBCConnection, JDBCLine> implements AddJDBCLine {
+	abstract class AddJDBCLineImpl extends TechnologySpecificActionDefiningReceiverImpl<JDBCModelSlot, JDBCConnection, JDBCLine>
+			implements AddJDBCLine {
 
 		private static final Logger logger = Logger.getLogger(AddJDBCLine.class.getPackage().getName());
 
@@ -140,7 +142,7 @@ public interface AddJDBCLine extends TechnologySpecificAction<JDBCModelSlot, JDB
 					table.insert(line);
 					return line;
 				}
-			} catch (TypeMismatchException| NullReferenceException | InvocationTargetException e) {
+			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
 				logger.log(Level.WARNING, "Can't evaluate binding", e);
 			}
 

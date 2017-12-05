@@ -58,6 +58,7 @@ public interface SelectJDBCTable extends FetchRequest<JDBCModelSlot, JDBCConnect
 
 	abstract class SelectJDBCTableImpl extends FetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCTable> implements SelectJDBCTable {
 
+		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(SelectJDBCTable.class.getPackage().getName());
 
 		@Override
@@ -68,16 +69,7 @@ public interface SelectJDBCTable extends FetchRequest<JDBCModelSlot, JDBCConnect
 		@Override
 		public List<JDBCTable> execute(RunTimeEvaluationContext evaluationContext) {
 
-			if (getModelSlotInstance(evaluationContext) == null) {
-				logger.warning("Could not access model slot instance. Abort.");
-				return null;
-			}
-			if (getModelSlotInstance(evaluationContext).getResourceData() == null) {
-				logger.warning("Could not access model adressed by model slot instance. Abort.");
-				return null;
-			}
-
-			JDBCConnection connection = (JDBCConnection) getModelSlotInstance(evaluationContext).getAccessedResourceData();
+			JDBCConnection connection = getReceiver(evaluationContext);
 			List<JDBCTable> result = new ArrayList<>(connection.getSchema().getTables());
 			return filterWithConditions(result, evaluationContext);
 		}

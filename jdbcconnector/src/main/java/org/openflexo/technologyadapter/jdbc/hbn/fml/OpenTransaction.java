@@ -45,7 +45,7 @@ import org.hibernate.Transaction;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
-import org.openflexo.foundation.fml.editionaction.TechnologySpecificAction;
+import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext.ReturnException;
 import org.openflexo.model.annotations.Getter;
@@ -70,7 +70,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(OpenTransaction.OpenTransactionImpl.class)
 @XMLElement
 @FML("OpenTransaction")
-public interface OpenTransaction extends TechnologySpecificAction<HbnModelSlot, HbnVirtualModelInstance, Transaction> {
+public interface OpenTransaction extends TechnologySpecificActionDefiningReceiver<HbnModelSlot, HbnVirtualModelInstance, Transaction> {
 
 	@PropertyIdentifier(type = Integer.class)
 	public static final String TIME_OUT_KEY = "timeOut";
@@ -100,8 +100,8 @@ public interface OpenTransaction extends TechnologySpecificAction<HbnModelSlot, 
 
 	public void setHasTimeOut(boolean hasTimeOut);
 
-	public static abstract class OpenTransactionImpl<T>
-			extends TechnologySpecificActionImpl<HbnModelSlot, HbnVirtualModelInstance, Transaction> implements OpenTransaction {
+	public static abstract class OpenTransactionImpl<T> extends
+			TechnologySpecificActionDefiningReceiverImpl<HbnModelSlot, HbnVirtualModelInstance, Transaction> implements OpenTransaction {
 
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());
 

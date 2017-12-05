@@ -90,15 +90,6 @@ public interface SelectJDBCLine extends FetchRequest<JDBCModelSlot, JDBCConnecti
 		@Override
 		public List<JDBCLine> execute(RunTimeEvaluationContext evaluationContext) {
 
-			if (getModelSlotInstance(evaluationContext) == null) {
-				logger.warning("Could not access model slot instance. Abort.");
-				return null;
-			}
-			if (getModelSlotInstance(evaluationContext).getResourceData() == null) {
-				logger.warning("Could not access model adressed by model slot instance. Abort.");
-				return null;
-			}
-
 			List<JDBCLine> lines = new ArrayList<>();
 			JDBCTable table;
 			try {

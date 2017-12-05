@@ -44,8 +44,7 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
-import org.openflexo.foundation.fml.editionaction.TechnologySpecificAction;
-import org.openflexo.foundation.fml.rt.FreeModelSlotInstance;
+import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.model.annotations.Getter;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -63,7 +62,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @ImplementationClass(AddJDBCTable.AddJDBCTableImpl.class)
 @XMLElement
 @FML("AddJDBCTable")
-public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JDBCConnection, JDBCTable> {
+public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<JDBCModelSlot, JDBCConnection, JDBCTable> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	String TABLE_NAME = "tableName";
@@ -75,7 +74,7 @@ public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JD
 	@Setter(TABLE_NAME)
 	void setTableName(DataBinding<String> name);
 
-	abstract class AddJDBCTableImpl extends TechnologySpecificAction.TechnologySpecificActionImpl<JDBCModelSlot, JDBCConnection, JDBCTable>
+	abstract class AddJDBCTableImpl extends TechnologySpecificActionDefiningReceiverImpl<JDBCModelSlot, JDBCConnection, JDBCTable>
 			implements AddJDBCTable {
 
 		private static final Logger logger = Logger.getLogger(AddJDBCTable.class.getPackage().getName());
@@ -90,30 +89,24 @@ public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JD
 		@Override
 		public JDBCTable execute(RunTimeEvaluationContext evaluationContext) {
 
-			FreeModelSlotInstance<JDBCConnection, JDBCModelSlot> modelSlotInstance = getModelSlotInstance(evaluationContext);
-			if (modelSlotInstance.getResourceData() != null) {
-				JDBCConnection connection = modelSlotInstance.getAccessedResourceData();
-				try {
-					if (connection != null) {
-						String name = getTableName().getBindingValue(evaluationContext);
-						if (name != null) {
-							// Create or retrieve this sheet
-							return retrieveOrCreateTable(connection, name);
-						}
-						else {
-							logger.warning("Create a JDBC table requires a name");
-						}
+			JDBCConnection connection = getReceiver(evaluationContext);
+
+			try {
+				if (connection != null) {
+					String name = getTableName().getBindingValue(evaluationContext);
+					if (name != null) {
+						// Create or retrieve this sheet
+						return retrieveOrCreateTable(connection, name);
 					}
 					else {
-						logger.warning("Create a JDBC table requires a JDBC connection");
+						logger.warning("Create a JDBC table requires a name");
 					}
-				} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
-					logger.log(Level.WARNING, "Can't create JDBC table", e);
 				}
-
-			}
-			else {
-				logger.warning("Model slot not correctly initialised : model is null");
+				else {
+					logger.warning("Create a JDBC table requires a JDBC connection");
+				}
+			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
+				logger.log(Level.WARNING, "Can't create JDBC table", e);
 			}
 
 			return null;
@@ -129,10 +122,10 @@ public interface AddJDBCTable extends TechnologySpecificAction<JDBCModelSlot, JD
 			return table;
 		}
 
-		@Override
+		/*@Override
 		public FreeModelSlotInstance<JDBCConnection, JDBCModelSlot> getModelSlotInstance(RunTimeEvaluationContext evaluationContext) {
 			return (FreeModelSlotInstance<JDBCConnection, JDBCModelSlot>) super.getModelSlotInstance(evaluationContext);
-		}
+		}*/
 
 		@Override
 		public DataBinding<String> getTableName() {

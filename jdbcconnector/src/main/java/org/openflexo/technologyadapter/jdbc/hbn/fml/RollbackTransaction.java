@@ -45,7 +45,7 @@ import org.hibernate.Transaction;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
-import org.openflexo.foundation.fml.editionaction.TechnologySpecificAction;
+import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext.ReturnException;
 import org.openflexo.model.annotations.ImplementationClass;
@@ -65,65 +65,18 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(RollbackTransaction.RollbackTransactionImpl.class)
 @XMLElement
 @FML("RollbackTransaction")
-public interface RollbackTransaction extends TechnologySpecificAction<HbnModelSlot, HbnVirtualModelInstance, Void> {
+public interface RollbackTransaction extends TechnologySpecificActionDefiningReceiver<HbnModelSlot, HbnVirtualModelInstance, Void> {
 
-	/*@PropertyIdentifier(type = DataBinding.class)
-	public static final String TRANSACTION_KEY = "transaction";
-	
-	@Getter(value = TRANSACTION_KEY)
-	@XMLAttribute
-	public DataBinding<Transaction> getTransaction();
-	
-	@Setter(TRANSACTION_KEY)
-	public void setTransaction(DataBinding<Transaction> transaction);*/
-
-	public static abstract class RollbackTransactionImpl<T>
-			extends TechnologySpecificActionImpl<HbnModelSlot, HbnVirtualModelInstance, Void> implements RollbackTransaction {
+	public static abstract class RollbackTransactionImpl<T> extends
+			TechnologySpecificActionDefiningReceiverImpl<HbnModelSlot, HbnVirtualModelInstance, Void> implements RollbackTransaction {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());
-
-		/*private DataBinding<Transaction> transaction;
-		
-		@Override
-		public DataBinding<Transaction> getTransaction() {
-			if (transaction == null) {
-				transaction = new DataBinding<Transaction>(this, Transaction.class, BindingDefinitionType.GET);
-				transaction.setBindingName(TRANSACTION_KEY);
-			}
-			return transaction;
-		}
-		
-		@Override
-		public void setTransaction(DataBinding<Transaction> aTransaction) {
-			if (aTransaction != null) {
-				aTransaction.setOwner(this);
-				aTransaction.setBindingName(TRANSACTION_KEY);
-				aTransaction.setDeclaredType(Transaction.class);
-				aTransaction.setBindingDefinitionType(BindingDefinitionType.GET);
-			}
-			this.transaction = aTransaction;
-		}*/
 
 		@Override
 		public Type getAssignableType() {
 			return Void.class;
 		}
-
-		/*public Transaction getTransaction(BindingEvaluationContext evaluationContext) {
-			if (getTransaction().isValid()) {
-				try {
-					return getTransaction().getBindingValue(evaluationContext);
-				} catch (TypeMismatchException e) {
-					e.printStackTrace();
-				} catch (NullReferenceException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
-			return null;
-		}*/
 
 		@Override
 		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FlexoException {

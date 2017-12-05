@@ -271,7 +271,6 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		AssignationAction assignation = fmlFactory.newAssignationAction();
 		assignation.setAssignation(new DataBinding("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
 		CreateJDBCConnection action = fmlFactory.newInstance(CreateJDBCConnection.class);
-		action.setReceiver(new DataBinding("db", creationScheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
 		action.setResourceName(new DataBinding("'db_' + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setResourceCenter(new DataBinding("this.resource.resourceCenter", creationScheme, FlexoResourceCenter.class,
 				DataBinding.BindingDefinitionType.GET));
