@@ -50,6 +50,7 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
+import org.openflexo.foundation.action.TechnologySpecificFlexoAction;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -83,7 +84,8 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel.TableMapping.ColumnMapping;
 
-public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualModel<CreateJDBCVirtualModel> {
+public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualModel<CreateJDBCVirtualModel>
+		implements TechnologySpecificFlexoAction<JDBCTechnologyAdapter> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CreateJDBCVirtualModel.class.getPackage().getName());
@@ -134,6 +136,11 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 	@Override
 	public JDBCTechnologyAdapter getTechnologyAdapter() {
 		return getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class);
+	}
+
+	@Override
+	public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
+		return JDBCTechnologyAdapter.class;
 	}
 
 	@Override
