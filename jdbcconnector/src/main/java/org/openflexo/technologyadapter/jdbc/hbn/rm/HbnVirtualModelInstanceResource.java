@@ -190,6 +190,10 @@ public interface HbnVirtualModelInstanceResource
 				if (getResourceCenter() instanceof FlexoProject) {
 					editor = getServiceManager().getProjectLoaderService().getEditorForProject((FlexoProject) getResourceCenter());
 				}
+				else if (getResourceCenter().getDelegatingProjectResource() != null) {
+					editor = getServiceManager().getProjectLoaderService()
+							.getEditorForProject(getResourceCenter().getDelegatingProjectResource().getFlexoProject());
+				}
 				HbnInitializerAction action = new HbnInitializerAction(initializer, returned, null, editor);
 				action.doAction();
 			}
