@@ -35,6 +35,7 @@
 
 package org.openflexo.technologyadapter.jdbc.rm;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.resource.SaveResourceException;
@@ -44,7 +45,6 @@ import org.openflexo.model.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
-import org.openflexo.toolbox.StringUtils;
 
 /**
  *
@@ -52,7 +52,7 @@ import org.openflexo.toolbox.StringUtils;
 public class JDBCResourceFactory
 		extends TechnologySpecificPamelaResourceFactory<JDBCResource, JDBCConnection, JDBCTechnologyAdapter, JDBCFactory> {
 
-	public static final String JDBC_EXTENSION = ".jdbc";
+	public static final String JDBC_EXTENSION = "jdbc";
 
 	public JDBCResourceFactory() throws ModelDefinitionException {
 		super(JDBCResource.class);
@@ -72,7 +72,7 @@ public class JDBCResourceFactory
 	@Override
 	public <I> boolean isValidArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
 		String name = resourceCenter.retrieveName(serializationArtefact);
-		return StringUtils.hasExtension(name, JDBC_EXTENSION);
+		return FilenameUtils.isExtension(name, JDBC_EXTENSION);
 	}
 
 	@Override
