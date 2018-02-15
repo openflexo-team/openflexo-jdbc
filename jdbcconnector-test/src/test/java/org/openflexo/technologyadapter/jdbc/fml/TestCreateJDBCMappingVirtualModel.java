@@ -109,7 +109,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		return viewPointResource.getLoadedResourceData();
 	}
 
-	private JDBCConnection prepareDatabase(String name) throws ModelDefinitionException {
+	private static JDBCConnection prepareDatabase(String name) throws ModelDefinitionException {
 		JDBCConnection connection = createHSQLMemoryConnection(name);
 		JDBCTable table1 = ModelUtils.createTable1("table1", connection.getSchema());
 		ModelUtils.addLinesForTable1(table1);
@@ -131,7 +131,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		return action.getVirtualModel();
 	}
 
-	private void checkVirtualModel(VirtualModel virtualModel) {
+	private static void checkVirtualModel(VirtualModel virtualModel) {
 		Assert.assertNotNull(virtualModel);
 		List<FlexoConcept> flexoConcepts = virtualModel.getFlexoConcepts();
 		Assert.assertEquals(3, flexoConcepts.size());
@@ -162,8 +162,8 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		return viewResource.getLoadedResourceData();
 	}
 
-	private FMLRTVirtualModelInstance createVirtualModelInstance(FlexoEditor project, FMLRTVirtualModelInstance containerVMI,
-			VirtualModel virtualModel, String address) throws SaveResourceException, ModelDefinitionException {
+	private static FMLRTVirtualModelInstance createVirtualModelInstance(FlexoEditor project, FMLRTVirtualModelInstance containerVMI,
+			VirtualModel virtualModel, String address) {
 		CreateBasicVirtualModelInstance action = CreateBasicVirtualModelInstance.actionType.makeNewAction(containerVMI, null, project);
 		action.setNewVirtualModelInstanceName("data");
 		action.setNewVirtualModelInstanceTitle("data");

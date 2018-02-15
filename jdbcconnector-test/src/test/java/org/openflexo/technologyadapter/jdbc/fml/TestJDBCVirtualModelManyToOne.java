@@ -289,7 +289,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		CreateEditionAction createSelectClients1 = CreateEditionAction.actionType.makeNewAction(mappingCreationScheme.getControlGraph(),
 				null, _editor);
 		createSelectClients1.setEditionActionClass(PerformSQLQuery.class);
-		createSelectClients1.setAssignation(new DataBinding<Object>("clients"));
+		createSelectClients1.setAssignation(new DataBinding<>("clients"));
 		createSelectClients1.doAction();
 		AssignationAction<?> assignation1 = (AssignationAction<?>) createSelectClients1.getNewEditionAction();
 		PerformSQLQuery sqlQuery1 = (PerformSQLQuery) assignation1.getAssignableAction();
@@ -305,7 +305,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		CreateEditionAction createSelectClients2 = CreateEditionAction.actionType.makeNewAction(mappingInitializer.getControlGraph(), null,
 				_editor);
 		createSelectClients2.setEditionActionClass(PerformSQLQuery.class);
-		createSelectClients2.setAssignation(new DataBinding<Object>("clients"));
+		createSelectClients2.setAssignation(new DataBinding<>("clients"));
 		createSelectClients2.doAction();
 		AssignationAction<?> assignation2 = (AssignationAction<?>) createSelectClients2.getNewEditionAction();
 		PerformSQLQuery sqlQuery2 = (PerformSQLQuery) assignation2.getAssignableAction();
@@ -403,7 +403,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		CreateEditionAction createEditionAction1 = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
 				_editor);
 		createEditionAction1.setEditionActionClass(CreateHbnResource.class);
-		createEditionAction1.setAssignation(new DataBinding<Object>("db"));
+		createEditionAction1.setAssignation(new DataBinding<>("db"));
 		createEditionAction1.doAction();
 		AssignationAction<?> action1 = (AssignationAction<?>) createEditionAction1.getNewEditionAction();
 
