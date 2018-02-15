@@ -56,6 +56,7 @@ public class DynamicMappingTest extends HbnTest {
 
 	// private DynamicModelBuilder modelBuilder;
 	private Session hbnSession;
+	private SessionFactory hbnSessionFactory;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -67,7 +68,7 @@ public class DynamicMappingTest extends HbnTest {
 
 		// Creation de la session
 
-		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
+		hbnSessionFactory = metadata.buildSessionFactory();
 		hbnSession = hbnSessionFactory.withOptions().openSession();
 
 		// bindingFactory = new JpaBindingFactory(hbnSession.getMetamodel());
@@ -76,10 +77,9 @@ public class DynamicMappingTest extends HbnTest {
 
 	@Override
 	protected void tearDown() throws Exception {
-
 		// Close session
 		hbnSession.close();
-
+		hbnSessionFactory.close();
 		super.tearDown();
 	}
 

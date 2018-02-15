@@ -65,6 +65,7 @@ public abstract class HbnTest extends TestCase {
 	protected final static String hbnDialect = "org.hibernate.dialect.HSQLDialect";
 
 	protected HbnConfig config = null;
+	private Connection conn;
 
 	// Connie configuration
 
@@ -74,7 +75,6 @@ public abstract class HbnTest extends TestCase {
 
 		// Loads JdbcDriver
 		Class.forName(jdbcDriverClassname);
-		Connection conn = null;
 
 		try {
 			conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
@@ -107,6 +107,7 @@ public abstract class HbnTest extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
+		conn.close();
 		super.tearDown();
 	}
 

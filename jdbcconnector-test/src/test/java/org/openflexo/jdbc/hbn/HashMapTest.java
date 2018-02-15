@@ -49,6 +49,7 @@ import org.hibernate.query.NativeQuery;
 public class HashMapTest extends HbnTest {
 
 	private Session hbnSession;
+	private SessionFactory hbnSessionFactory;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -57,7 +58,7 @@ public class HashMapTest extends HbnTest {
 		// adds a class with annotations
 		config.addResource("/org/openflexo/hbn/test/vehicle.xml");
 
-		SessionFactory hbnSessionFactory = config.getSessionFactory();
+		hbnSessionFactory = config.getSessionFactory();
 		hbnSession = hbnSessionFactory.withOptions().openSession();
 
 		// bindingFactory = new JpaBindingFactory(hbnSession.getMetamodel());
@@ -67,9 +68,9 @@ public class HashMapTest extends HbnTest {
 
 	@Override
 	protected void tearDown() throws Exception {
-
 		// Close session
 		hbnSession.close();
+		hbnSessionFactory.close();
 
 		super.tearDown();
 	}
