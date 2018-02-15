@@ -10,6 +10,12 @@ dependencies {
 
 	  // Test resource center
 	  testRuntime project(':jdbc-test-rc')
-  
 }
-
+if (JavaVersion.current().isJava9Compatible()) {
+	tasks.withType(Test) {
+		jvmArgs += ['--add-modules', 'java.xml.bind']
+    }
+}  
+tasks.withType(Test) {
+	jvmArgs += ["-Djava.awt.headless=true"]
+}
