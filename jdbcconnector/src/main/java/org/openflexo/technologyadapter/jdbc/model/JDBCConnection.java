@@ -256,6 +256,7 @@ public interface JDBCConnection extends TechnologyObject<JDBCTechnologyAdapter>,
 								URL u;
 								u = new URL("file:" + getDriverJarName());
 
+								// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 								URLClassLoader ucl = new URLClassLoader(new URL[] { u });
 								cl = Class.forName(classname, true, ucl);
 								if (cl != null) {

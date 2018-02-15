@@ -254,13 +254,14 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet foundKeys = metadata.getPrimaryKeys(connection.getCatalog(), "PUBLIC", sqlName(table.getName()));
+		try (ResultSet foundKeys = metadata.getPrimaryKeys(connection.getCatalog(), "PUBLIC", sqlName(table.getName()))) {
 
-		Set<String> keys = new HashSet<>();
-		while (foundKeys.next()) {
-			keys.add(foundKeys.getString("COLUMN_NAME"));
+			Set<String> keys = new HashSet<>();
+			while (foundKeys.next()) {
+				keys.add(foundKeys.getString("COLUMN_NAME"));
+			}
+			return keys;
 		}
-		return keys;
 	}
 
 	public static JDBCTable createTable(final JDBCSchema schema, final JDBCFactory factory, final String tableName, String[]... attributes)

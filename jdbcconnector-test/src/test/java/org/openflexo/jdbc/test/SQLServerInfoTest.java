@@ -93,24 +93,24 @@ public class SQLServerInfoTest extends SQLServerTestCase {
 		assertNotNull(conn);
 
 		try {
-
 			DatabaseMetaData meta = conn.getMetaData();
 
-			ResultSet schemas = meta.getSchemas();
-			while (schemas.next()) {
-				String tableSchema = schemas.getString(1); // "TABLE_SCHEM"
-				String tableCatalog = schemas.getString(2); // "TABLE_CATALOG"
-				System.out.println("tableSchema " + tableSchema);
+			try (ResultSet schemas = meta.getSchemas()) {
+				while (schemas.next()) {
+					String tableSchema = schemas.getString(1); // "TABLE_SCHEM"
+					String tableCatalog = schemas.getString(2); // "TABLE_CATALOG"
+					System.out.println("tableSchema " + tableSchema);
 
-				ResultSet tables = meta.getTables(tableCatalog, tableSchema, "%", null);
-				while (tables.next()) {
-					String val1 = tables.getString(1);
-					String val2 = tables.getString(2);
-					String val3 = tables.getString(3);
-					System.out.println("tableSchema " + val1 + "-- " + val2 + "--" + val3);
+					try (ResultSet tables = meta.getTables(tableCatalog, tableSchema, "%", null)) {
+						while (tables.next()) {
+							String val1 = tables.getString(1);
+							String val2 = tables.getString(2);
+							String val3 = tables.getString(3);
+							System.out.println("tableSchema " + val1 + "-- " + val2 + "--" + val3);
+						}
+					}
 				}
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -152,8 +152,8 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		try (Connection conn = model.getConnection()) {
 			assertNotNull(conn);
+			resource.save(null);
 		}
-		resource.save(null);
 	}
 
 	@Test
@@ -168,10 +168,10 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		model.setAddress(jdbcWrongURL);
 
-		Connection conn = model.getConnection();
-
-		assertNull(conn);
-		model.setAddress(jdbcURL);
+		try (Connection conn = model.getConnection()) {
+			assertNull(conn);
+			model.setAddress(jdbcURL);
+		}
 	}
 
 	@Test
@@ -188,11 +188,11 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		model.setDbType(null);
 
-		Connection conn = model.getConnection();
-
-		assertNull(conn);
-		model.setDriverClassName(jdbcDriverClassname);
-		model.setDbType(JDBCDbType.HSQLDB);
+		try (Connection conn = model.getConnection()) {
+			assertNull(conn);
+			model.setDriverClassName(jdbcDriverClassname);
+			model.setDbType(JDBCDbType.HSQLDB);
+		}
 	}
 
 	@Test
@@ -214,23 +214,22 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		model.setAddress(jdbcJarURL);
 		model.setDbType(JDBCDbType.GENERIC);
 
-		Connection conn = model.getConnection();
-
-		if (conn == null) {
-			Exception exc = model.getException();
-			if (exc != null) {
-				if (exc.getCause() instanceof SQLException | exc instanceof SQLNonTransientConnectionException) {
-					log("Pas de connection, mais test OK:  " + exc.getMessage());
+		try (Connection conn = model.getConnection()) {
+			if (conn == null) {
+				Exception exc = model.getException();
+				if (exc != null) {
+					if (exc.getCause() instanceof SQLException | exc instanceof SQLNonTransientConnectionException) {
+						log("Pas de connection, mais test OK:  " + exc.getMessage());
+					}
+					else {
+						fail(exc.getMessage());
+					}
 				}
 				else {
-					fail(exc.getMessage());
+					fail("Pas de connection MAIS pas d'exception ");
 				}
 			}
-			else {
-				fail("Pas de connection MAIS pas d'exception ");
-			}
+			resource.save(null);
 		}
-		resource.save(null);
 	}
-
 }
