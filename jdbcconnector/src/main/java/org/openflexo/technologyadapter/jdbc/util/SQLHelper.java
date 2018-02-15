@@ -99,6 +99,7 @@ public class SQLHelper {
 	 */
 	public static void updateTables(final JDBCSchema schema, List<JDBCTable> tables, final JDBCFactory factory) throws SQLException {
 		JDBCConnection jdbcConn = schema.getResourceData();
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = jdbcConn.getConnection();
 
 		// prepare case ignoring map to match tables
@@ -113,22 +114,22 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(), "%", null);
-		while (jdbcTables.next()) {
-			String tableName = jdbcTables.getString("TABLE_NAME");
+		try (ResultSet jdbcTables = metadata.getTables(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(), "%", null)) {
+			while (jdbcTables.next()) {
+				String tableName = jdbcTables.getString("TABLE_NAME");
 
-			JDBCTable aTable = sortedTables.get(tableName.toLowerCase());
-			if (aTable == null) {
-				// new table, add it to the list
-				aTable = factory.newInstance(JDBCTable.class);
-				aTable.init(schema, tableName);
-				added.add(aTable);
-			}
-			else {
-				matched.add(aTable);
+				JDBCTable aTable = sortedTables.get(tableName.toLowerCase());
+				if (aTable == null) {
+					// new table, add it to the list
+					aTable = factory.newInstance(JDBCTable.class);
+					aTable.init(schema, tableName);
+					added.add(aTable);
+				}
+				else {
+					matched.add(aTable);
+				}
 			}
 		}
-
 		// gets tables to remove
 		Set<JDBCTable> removed = new HashSet<>();
 		for (JDBCTable table : tables) {
@@ -159,6 +160,7 @@ public class SQLHelper {
 	 */
 	public static void updateColumns(final JDBCTable table, List<JDBCColumn> columns, final JDBCFactory factory) throws SQLException {
 		JDBCConnection jdbcConn = table.getResourceData();
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = jdbcConn.getConnection();
 
 		// retrieves keys
@@ -176,56 +178,56 @@ public class SQLHelper {
 
 		DatabaseMetaData metadata = connection.getMetaData();
 
-		ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(), sqlName(table.getName()),
-				"%");
-		while (jdbcCols.next()) {
-			/*
-						System.out.println(" --------------------> " + jdbcCols.getString("COLUMN_NAME"));
-						System.out.println("TABLE_CAT: " + jdbcCols.getObject("TABLE_CAT"));
-						System.out.println("TABLE_SCHEM: " + jdbcCols.getObject("TABLE_SCHEM"));
-						System.out.println("TABLE_NAME: " + jdbcCols.getObject("TABLE_NAME"));
-						System.out.println("COLUMN_NAME: " + jdbcCols.getObject("COLUMN_NAME"));
-						System.out.println("DATA_TYPE: " + jdbcCols.getObject("DATA_TYPE"));
-						System.out.println("TYPE_NAME: " + jdbcCols.getObject("TYPE_NAME"));
-						System.out.println("COLUMN_SIZE: " + jdbcCols.getObject("COLUMN_SIZE"));
-						System.out.println("BUFFER_LENGTH: " + jdbcCols.getObject("BUFFER_LENGTH"));
-						System.out.println("DECIMAL_DIGITS: " + jdbcCols.getObject("DECIMAL_DIGITS"));
-						System.out.println("NUM_PREC_RADIX: " + jdbcCols.getObject("NUM_PREC_RADIX"));
-						System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
-						System.out.println("REMARKS: " + jdbcCols.getObject("REMARKS"));
-						System.out.println("COLUMN_DEF: " + jdbcCols.getObject("COLUMN_DEF"));
-						System.out.println("SQL_DATA_TYPE: " + jdbcCols.getObject("SQL_DATA_TYPE"));
-						System.out.println("SQL_DATETIME_SUB: " + jdbcCols.getObject("SQL_DATETIME_SUB"));
-						System.out.println("CHAR_OCTET_LENGTH: " + jdbcCols.getObject("CHAR_OCTET_LENGTH"));
-						System.out.println("ORDINAL_POSITION: " + jdbcCols.getObject("ORDINAL_POSITION"));
-						System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
-						System.out.println("SCOPE_CATALOG: " + jdbcCols.getObject("SCOPE_CATALOG"));
-						System.out.println("SCOPE_SCHEMA: " + jdbcCols.getObject("SCOPE_SCHEMA"));
-						System.out.println("SCOPE_TABLE: " + jdbcCols.getObject("SCOPE_TABLE"));
-						System.out.println("SOURCE_DATA_TYPE: " + jdbcCols.getObject("SOURCE_DATA_TYPE"));
-						System.out.println("IS_AUTOINCREMENT: " + jdbcCols.getObject("IS_AUTOINCREMENT"));
-						System.out.println("IS_GENERATEDCOLUMN: " + jdbcCols.getObject("IS_GENERATEDCOLUMN"));
-			*/
-			// [TABLE_CAT, TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, COLUMN_SIZE, BUFFER_LENGTH, DECIMAL_DIGITS,
-			// NUM_PREC_RADIX, IS_NULLABLE, REMARKS, COLUMN_DEF, SQL_DATA_TYPE, SQL_DATETIME_SUB, CHAR_OCTET_LENGTH, ORDINAL_POSITION,
-			// IS_NULLABLE, SCOPE_CATALOG, SCOPE_SCHEMA, SCOPE_TABLE, SOURCE_DATA_TYPE, IS_AUTOINCREMENT, IS_GENERATEDCOLUMN]
+		try (ResultSet jdbcCols = metadata.getColumns(connection.getCatalog(), jdbcConn.getDbType().getSchemaPattern(),
+				sqlName(table.getName()), "%")) {
+			while (jdbcCols.next()) {
+				/*
+							System.out.println(" --------------------> " + jdbcCols.getString("COLUMN_NAME"));
+							System.out.println("TABLE_CAT: " + jdbcCols.getObject("TABLE_CAT"));
+							System.out.println("TABLE_SCHEM: " + jdbcCols.getObject("TABLE_SCHEM"));
+							System.out.println("TABLE_NAME: " + jdbcCols.getObject("TABLE_NAME"));
+							System.out.println("COLUMN_NAME: " + jdbcCols.getObject("COLUMN_NAME"));
+							System.out.println("DATA_TYPE: " + jdbcCols.getObject("DATA_TYPE"));
+							System.out.println("TYPE_NAME: " + jdbcCols.getObject("TYPE_NAME"));
+							System.out.println("COLUMN_SIZE: " + jdbcCols.getObject("COLUMN_SIZE"));
+							System.out.println("BUFFER_LENGTH: " + jdbcCols.getObject("BUFFER_LENGTH"));
+							System.out.println("DECIMAL_DIGITS: " + jdbcCols.getObject("DECIMAL_DIGITS"));
+							System.out.println("NUM_PREC_RADIX: " + jdbcCols.getObject("NUM_PREC_RADIX"));
+							System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
+							System.out.println("REMARKS: " + jdbcCols.getObject("REMARKS"));
+							System.out.println("COLUMN_DEF: " + jdbcCols.getObject("COLUMN_DEF"));
+							System.out.println("SQL_DATA_TYPE: " + jdbcCols.getObject("SQL_DATA_TYPE"));
+							System.out.println("SQL_DATETIME_SUB: " + jdbcCols.getObject("SQL_DATETIME_SUB"));
+							System.out.println("CHAR_OCTET_LENGTH: " + jdbcCols.getObject("CHAR_OCTET_LENGTH"));
+							System.out.println("ORDINAL_POSITION: " + jdbcCols.getObject("ORDINAL_POSITION"));
+							System.out.println("IS_NULLABLE: " + jdbcCols.getObject("IS_NULLABLE"));
+							System.out.println("SCOPE_CATALOG: " + jdbcCols.getObject("SCOPE_CATALOG"));
+							System.out.println("SCOPE_SCHEMA: " + jdbcCols.getObject("SCOPE_SCHEMA"));
+							System.out.println("SCOPE_TABLE: " + jdbcCols.getObject("SCOPE_TABLE"));
+							System.out.println("SOURCE_DATA_TYPE: " + jdbcCols.getObject("SOURCE_DATA_TYPE"));
+							System.out.println("IS_AUTOINCREMENT: " + jdbcCols.getObject("IS_AUTOINCREMENT"));
+							System.out.println("IS_GENERATEDCOLUMN: " + jdbcCols.getObject("IS_GENERATEDCOLUMN"));
+				*/
+				// [TABLE_CAT, TABLE_SCHEM, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, COLUMN_SIZE, BUFFER_LENGTH, DECIMAL_DIGITS,
+				// NUM_PREC_RADIX, IS_NULLABLE, REMARKS, COLUMN_DEF, SQL_DATA_TYPE, SQL_DATETIME_SUB, CHAR_OCTET_LENGTH, ORDINAL_POSITION,
+				// IS_NULLABLE, SCOPE_CATALOG, SCOPE_SCHEMA, SCOPE_TABLE, SOURCE_DATA_TYPE, IS_AUTOINCREMENT, IS_GENERATEDCOLUMN]
 
-			String columnName = jdbcCols.getString("COLUMN_NAME");
-			String typeName = jdbcCols.getString("TYPE_NAME");
-			int columnLength = jdbcCols.getInt("COLUMN_SIZE");
-			boolean isNullable = jdbcCols.getString("IS_NULLABLE").equalsIgnoreCase("YES");
+				String columnName = jdbcCols.getString("COLUMN_NAME");
+				String typeName = jdbcCols.getString("TYPE_NAME");
+				int columnLength = jdbcCols.getInt("COLUMN_SIZE");
+				boolean isNullable = jdbcCols.getString("IS_NULLABLE").equalsIgnoreCase("YES");
 
-			JDBCColumn column = sortedColumns.get(columnName.toLowerCase());
-			if (column == null) {
-				// new column, add it to the list
-				column = factory.newInstance(JDBCColumn.class);
-				column.init(table, keys.contains(columnName), columnName, typeName, columnLength, isNullable);
-				added.add(column);
+				JDBCColumn column = sortedColumns.get(columnName.toLowerCase());
+				if (column == null) {
+					// new column, add it to the list
+					column = factory.newInstance(JDBCColumn.class);
+					column.init(table, keys.contains(columnName), columnName, typeName, columnLength, isNullable);
+					added.add(column);
+				}
+				else {
+					matched.add(column);
+				}
 			}
-			else {
-				matched.add(column);
-			}
-
 		}
 
 		// gets columns to remove
@@ -247,6 +249,7 @@ public class SQLHelper {
 	}
 
 	private static Set<String> getKeys(final JDBCTable table) throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = table.getResourceData().getConnection();
 
 		DatabaseMetaData metadata = connection.getMetaData();
@@ -258,11 +261,11 @@ public class SQLHelper {
 			keys.add(foundKeys.getString("COLUMN_NAME"));
 		}
 		return keys;
-
 	}
 
 	public static JDBCTable createTable(final JDBCSchema schema, final JDBCFactory factory, final String tableName, String[]... attributes)
 			throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = schema.getResourceData().getConnection();
 		String request = createTableRequest(tableName, attributes);
 		System.out.println("request: " + request);
@@ -273,7 +276,7 @@ public class SQLHelper {
 		});
 	}
 
-	private static String createTableRequest(String name, String[]... attributes) throws SQLException {
+	private static String createTableRequest(String name, String[]... attributes) {
 		StringBuilder request = new StringBuilder("CREATE TABLE ");
 		request.append(sqlName(name));
 		request.append(" (");
@@ -298,12 +301,14 @@ public class SQLHelper {
 	}
 
 	public static void dropTable(final JDBCSchema schema, final String tableName) throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = schema.getResourceData().getConnection();
 		new QueryRunner().update(connection, "DROP TABLE " + sqlName(tableName));
 	}
 
 	public static JDBCColumn createColumn(final JDBCTable table, final JDBCFactory factory, final String columnName, final String type,
 			boolean isPrimaryKey, int length, boolean isNullable) throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = table.getResourceData().getConnection();
 		String addColumn = createAddColumnRequest(table, columnName, type, isPrimaryKey);
 		new QueryRunner().update(connection, addColumn);
@@ -328,6 +333,7 @@ public class SQLHelper {
 	}
 
 	public static void dropColumn(final JDBCTable table, final String columnName) throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = table.getResourceData().getConnection();
 		String dropColumn = "ALTER TABLE " + sqlName(table.getName()) + " DROP COLUMN " + sqlName(columnName);
 		new QueryRunner().update(connection, dropColumn);
@@ -372,6 +378,7 @@ public class SQLHelper {
 
 	public static JDBCResultSet select(final JDBCFactory factory, final JDBCTable from, String where, String orderBy, int limit, int offset)
 			throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = from.getResourceData().getConnection();
 		final JDBCResultSetDescription description = factory.makeResultSetDescription(from.getResourceData(), from.getName(), null, null,
 				null, where, orderBy, limit, offset);
@@ -386,6 +393,7 @@ public class SQLHelper {
 
 	public static JDBCResultSet select(final JDBCFactory factory, final JDBCTable from, String joinType, JDBCTable join, String on,
 			String where, String orderBy, int limit, int offset) throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = from.getResourceData().getConnection();
 		final JDBCResultSetDescription description = factory.makeResultSetDescription(from.getResourceData(), from.getName(), joinType,
 				join.getName(), on, where, orderBy, limit, offset);
@@ -475,6 +483,7 @@ public class SQLHelper {
 	}
 
 	public static void update(JDBCValue value, String newValue) throws SQLException {
+		// TODO : maybe resource leak, cannot use lexical scope for auto-closing
 		Connection connection = value.getResourceData().getConnection();
 		String request = createUpdateRequest(value, newValue);
 		new QueryRunner().update(connection, request);
