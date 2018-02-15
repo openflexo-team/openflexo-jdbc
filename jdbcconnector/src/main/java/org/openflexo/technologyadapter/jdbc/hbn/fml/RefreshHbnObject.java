@@ -108,7 +108,7 @@ public interface RefreshHbnObject extends TechnologySpecificActionDefiningReceiv
 		@Override
 		public DataBinding<FlexoConceptInstance> getObject() {
 			if (object == null) {
-				object = new DataBinding<FlexoConceptInstance>(this, FlexoConceptInstance.class, BindingDefinitionType.GET);
+				object = new DataBinding<>(this, FlexoConceptInstance.class, BindingDefinitionType.GET);
 				object.setBindingName(TRANSACTION_KEY);
 			}
 			return object;
@@ -150,7 +150,8 @@ public interface RefreshHbnObject extends TechnologySpecificActionDefiningReceiv
 
 			System.out.println("Refresh object " + getObject(evaluationContext));
 
-			HbnVirtualModelInstance vmi = getReceiver(evaluationContext);
+			// Unused HbnVirtualModelInstance vmi =
+			getReceiver(evaluationContext);
 			HbnFlexoConceptInstance object = getObject(evaluationContext);
 
 			// vmi.getDefaultSession().refresh(object.getFlexoConcept().getName(), (Object) object.getHbnSupportObject());

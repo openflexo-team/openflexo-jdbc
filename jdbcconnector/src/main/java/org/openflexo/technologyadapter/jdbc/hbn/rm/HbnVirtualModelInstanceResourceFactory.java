@@ -226,7 +226,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 
 		// Register the resource in the VirtualModelInstanceRepository of supplied resource center
 		registerResourceInResourceRepository(resource,
-				(HbnVirtualModelInstanceRepository) getTechnologyAdapter(resourceCenter.getServiceManager())
+				(HbnVirtualModelInstanceRepository<?>) getTechnologyAdapter(resourceCenter.getServiceManager())
 						.getVirtualModelInstanceRepository(resourceCenter));
 
 		// Now look for virtual model instances and sub-views
@@ -318,8 +318,8 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		for (I child : resourceCenter.getContents(resourceCenter.getContainer(serializationArtefact))) {
 			if (isValidArtefact(child, resourceCenter)) {
 				try {
-					HbnVirtualModelInstanceResource virtualModelInstanceResource = retrieveHbnVirtualModelInstanceResource(child,
-							resourceCenter, containerResource);
+					// Unused HbnVirtualModelInstanceResource virtualModelInstanceResource =
+					retrieveHbnVirtualModelInstanceResource(child, resourceCenter, containerResource);
 				} catch (ModelDefinitionException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -339,7 +339,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		public String modelVersion;
 	}
 
-	private <I> HbnVirtualModelInstanceInfo findHbnVirtualModelInstanceInfo(HbnVirtualModelInstanceResource resource,
+	private static <I> HbnVirtualModelInstanceInfo findHbnVirtualModelInstanceInfo(HbnVirtualModelInstanceResource resource,
 			FlexoResourceCenter<I> resourceCenter) {
 
 		HbnVirtualModelInstanceInfo returned = new HbnVirtualModelInstanceInfo();

@@ -209,9 +209,7 @@ public class HbnConfig {
 		if (serviceRegistry != null) {
 			return serviceRegistry.getService(JdbcEnvironment.class);
 		}
-		else {
-			return null;
-		}
+		return null;
 	}
 
 }

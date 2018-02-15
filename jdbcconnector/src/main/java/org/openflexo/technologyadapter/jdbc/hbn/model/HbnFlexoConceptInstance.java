@@ -240,9 +240,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 								logger.warning("ADDING not implemented yet");
 								return false;
 							}
-							else {
-								return super.add(e);
-							}
+							return super.add(e);
 						}
 					};
 
@@ -250,8 +248,8 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 						isRefreshing = true;
 						for (Object o : pBag) {
 							if (o instanceof Map) {
-								HbnFlexoConceptInstance fci = getVirtualModelInstance().getFlexoConceptInstance((Map) o, null,
-										referenceRole.getFlexoConceptType());
+								HbnFlexoConceptInstance fci = getVirtualModelInstance().getFlexoConceptInstance((Map<String, Object>) o,
+										null, referenceRole.getFlexoConceptType());
 								instances.add(fci);
 							}
 						}
@@ -422,7 +420,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		public HbnObjectActorReference makeActorReference(FlexoConceptInstanceRole role, FlexoConceptInstance fci) {
 			AbstractVirtualModelInstanceModelFactory<?> factory = getFactory();
 			HbnObjectActorReference returned = factory.newInstance(HbnObjectActorReference.class);
-			returned.setFlexoRole((FlexoRole) role);
+			returned.setFlexoRole(role);
 			returned.setFlexoConceptInstance(fci);
 			returned.setModellingElement(this);
 			return returned;

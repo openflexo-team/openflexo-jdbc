@@ -82,10 +82,8 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 			}
 			return returned;
 		}
-		else {
-			// logger.warning("Trying to get a VirtualModelInstanceType for a null VirtualModel");
-			return UNDEFINED_VIRTUAL_MODEL_INSTANCE_TYPE;
-		}
+		// logger.warning("Trying to get a VirtualModelInstanceType for a null VirtualModel");
+		return UNDEFINED_VIRTUAL_MODEL_INSTANCE_TYPE;
 	}
 
 	/**

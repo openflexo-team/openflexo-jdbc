@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.junit.Ignore;
@@ -26,7 +25,7 @@ public class MyTest {
 	protected HbnConfig config = null;
 
 	@Test
-	public void connectToDB() throws ClassNotFoundException, SQLException {
+	public void connectToDB() throws ClassNotFoundException {
 
 		// Loads JdbcDriver
 		Class.forName(jdbcDriverClassname);

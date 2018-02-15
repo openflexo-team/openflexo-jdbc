@@ -43,15 +43,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.hibernate.boot.Metadata;
-import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.openflexo.technologyadapter.jdbc.model.DynamicModelBuilder;
 import org.openflexo.technologyadapter.jdbc.model.Vehicle;
 
 public class DbInfoTest extends HbnTest {
 
-	private JdbcEnvironment jdbcEnv = null;
-	private Metadata metadata;
+	// Unused private JdbcEnvironment jdbcEnv = null;
+	// Unused private Metadata metadata;
 	private Connection conn;
 
 	@Override
@@ -73,7 +71,8 @@ public class DbInfoTest extends HbnTest {
 		// Creation du model
 		DynamicModelBuilder modelBuilder = new DynamicModelBuilder(config);
 
-		metadata = modelBuilder.buildDynamicModel();
+		// Unused metadata =
+		modelBuilder.buildDynamicModel();
 
 	}
 

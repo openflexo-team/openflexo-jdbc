@@ -261,8 +261,8 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 			if (this.virtualModel != aVirtualModel) {
 				VirtualModel oldValue = this.virtualModel;
 				this.virtualModel = aVirtualModel;
-				this.virtualModelResource = aVirtualModel.getVirtualModelResource();
 				if (aVirtualModel != null) {
+					this.virtualModelResource = aVirtualModel.getVirtualModelResource();
 					getPropertyChangeSupport().firePropertyChange("availableCreationSchemes", null, aVirtualModel.getCreationSchemes());
 				}
 				if (creationScheme == null || creationScheme.getFlexoConcept() != aVirtualModel) {
@@ -301,8 +301,8 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				creationScheme = (CreationScheme) getVirtualModelLibrary().getFlexoBehaviour(_creationSchemeURI, true);
 				updateParameters();
 			}
-			if (creationScheme == null && ((FlexoProperty) getAssignedFlexoProperty()) instanceof FlexoConceptInstanceRole) {
-				creationScheme = ((FlexoConceptInstanceRole) (FlexoProperty) getAssignedFlexoProperty()).getCreationScheme();
+			if (creationScheme == null && ((FlexoProperty<?>) getAssignedFlexoProperty()) instanceof FlexoConceptInstanceRole) {
+				creationScheme = ((FlexoConceptInstanceRole) (FlexoProperty<?>) getAssignedFlexoProperty()).getCreationScheme();
 				updateParameters();
 			}
 			return creationScheme;
@@ -424,7 +424,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 
 				FlexoProperty<HbnVirtualModelInstance> flexoProperty = getAssignedFlexoProperty();
 				if (flexoProperty instanceof HbnModelSlot) {
-					HbnModelSlot hbnModelSlot = (HbnModelSlot) flexoProperty;
+					// Unused HbnModelSlot hbnModelSlot = (HbnModelSlot) flexoProperty;
 					/*String url = null;
 					try {
 						if (getAddress().isValid()) {
@@ -499,7 +499,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 						Object value = p.evaluateParameterValue((FlexoBehaviourAction<?, ?, ?>) evaluationContext);
 						// System.out.println("For parameter " + param + " value is " + value);
 						if (value != null) {
-							creationSchemeAction.setParameterValue(p.getParam(),
+							creationSchemeAction.setParameterValue(param,
 									p.evaluateParameterValue((FlexoBehaviourAction<?, ?, ?>) evaluationContext));
 						}
 					}

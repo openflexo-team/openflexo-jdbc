@@ -48,7 +48,6 @@ import org.junit.runner.RunWith;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
-import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -82,10 +81,10 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 	private static FlexoProject project;
 	private static FlexoEditor editor;
 	private static JDBCTechnologyAdapter jdbcTA;
-	private static RepositoryFolder<FMLRTVirtualModelInstanceResource, ?> viewFolder;
+	// Unused private static RepositoryFolder<FMLRTVirtualModelInstanceResource, ?> viewFolder;
 
 	private static String resourceName = "testing.jdbc";
-	private static String resourceURI = "http://www.openflexo.org/testing.jdbc";
+	// Unused private static String resourceURI = "http://www.openflexo.org/testing.jdbc";
 
 	private static JDBCResource resource;
 
@@ -122,8 +121,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		assertNotNull(project);
 
-		Object sa = null;
-		RepositoryFolder folder = project.getRootFolder();
+		RepositoryFolder<JDBCResource, Object> folder = project.getRootFolder();
 		resource = factory.makeJDBCResource(resourceName, folder);
 
 		JDBCConnection model = resource.getResourceData(null);

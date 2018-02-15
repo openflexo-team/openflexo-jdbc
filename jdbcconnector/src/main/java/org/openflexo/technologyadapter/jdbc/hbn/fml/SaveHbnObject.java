@@ -99,7 +99,7 @@ public interface SaveHbnObject extends TechnologySpecificActionDefiningReceiver<
 		@Override
 		public DataBinding<FlexoConceptInstance> getObject() {
 			if (object == null) {
-				object = new DataBinding<FlexoConceptInstance>(this, FlexoConceptInstance.class, BindingDefinitionType.GET);
+				object = new DataBinding<>(this, FlexoConceptInstance.class, BindingDefinitionType.GET);
 				object.setBindingName(TRANSACTION_KEY);
 			}
 			return object;

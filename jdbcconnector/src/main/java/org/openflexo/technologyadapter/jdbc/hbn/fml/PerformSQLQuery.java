@@ -134,7 +134,7 @@ public interface PerformSQLQuery extends FetchRequest<HbnModelSlot, HbnVirtualMo
 		@Override
 		public DataBinding<FlexoConceptInstance> getContainer() {
 			if (container == null) {
-				container = new DataBinding<FlexoConceptInstance>(this, FlexoConceptInstance.class, BindingDefinitionType.GET);
+				container = new DataBinding<>(this, FlexoConceptInstance.class, BindingDefinitionType.GET);
 				container.setBindingName("container");
 			}
 			return container;
@@ -212,14 +212,12 @@ public interface PerformSQLQuery extends FetchRequest<HbnModelSlot, HbnVirtualMo
 				if (isAnalyzingContainer) {
 					return null;
 				}
-				else {
-					if (getReceiver().isValid()) {
-						isAnalyzingContainer = true;
-						Type vmiType = getReceiver().getAnalyzedType();
-						isAnalyzingContainer = false;
-						if (vmiType instanceof VirtualModelInstanceType) {
-							return ((VirtualModelInstanceType) vmiType).getVirtualModel();
-						}
+				if (getReceiver().isValid()) {
+					isAnalyzingContainer = true;
+					Type vmiType = getReceiver().getAnalyzedType();
+					isAnalyzingContainer = false;
+					if (vmiType instanceof VirtualModelInstanceType) {
+						return ((VirtualModelInstanceType) vmiType).getVirtualModel();
 					}
 				}
 			}
@@ -301,27 +299,25 @@ public interface PerformSQLQuery extends FetchRequest<HbnModelSlot, HbnVirtualMo
 				return null;
 
 			}
-			else {
-				logger.warning(
-						getStringRepresentation() + " : Cannot find virtual model instance on which to apply SelectFlexoConceptInstance");
-				logger.warning("getReceiver()=" + getReceiver());
-				/*logger.warning("evaluationContext=" + evaluationContext);
-				logger.warning("isSet=" + getVirtualModelInstance().isSet());
-				logger.warning("isValid=" + getVirtualModelInstance().isValid());
-				logger.warning("fci=" + evaluationContext.getFlexoConceptInstance());
-				logger.warning("vmi=" + evaluationContext.getVirtualModelInstance());
-				try {
-					logger.warning("value=" + getVirtualModelInstance().getBindingValue(evaluationContext));
-				} catch (TypeMismatchException e) {
-					e.printStackTrace();
-				} catch (NullReferenceException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}*/
-				logger.warning(getOwner().getFMLRepresentation());
-				return null;
-			}
+			logger.warning(
+					getStringRepresentation() + " : Cannot find virtual model instance on which to apply SelectFlexoConceptInstance");
+			logger.warning("getReceiver()=" + getReceiver());
+			/*logger.warning("evaluationContext=" + evaluationContext);
+			logger.warning("isSet=" + getVirtualModelInstance().isSet());
+			logger.warning("isValid=" + getVirtualModelInstance().isValid());
+			logger.warning("fci=" + evaluationContext.getFlexoConceptInstance());
+			logger.warning("vmi=" + evaluationContext.getVirtualModelInstance());
+			try {
+				logger.warning("value=" + getVirtualModelInstance().getBindingValue(evaluationContext));
+			} catch (TypeMismatchException e) {
+				e.printStackTrace();
+			} catch (NullReferenceException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}*/
+			logger.warning(getOwner().getFMLRepresentation());
+			return null;
 		}
 
 		@Override

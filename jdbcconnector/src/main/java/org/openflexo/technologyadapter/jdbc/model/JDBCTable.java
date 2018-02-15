@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.model.annotations.Adder;
@@ -60,7 +59,7 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
  */
 @ModelEntity
 @ImplementationClass(JDBCTable.JDBCTableImpl.class)
-public interface JDBCTable extends FlexoObject, InnerResourceData<JDBCConnection>, TechnologyObject<JDBCTechnologyAdapter> {
+public interface JDBCTable extends InnerResourceData<JDBCConnection>, TechnologyObject<JDBCTechnologyAdapter> {
 
 	String NAME = "name";
 	String SCHEMA = "schema";

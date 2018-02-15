@@ -119,7 +119,7 @@ public class JDBCFactory extends ModelFactory implements PamelaResourceModelFact
 		return result;
 	}
 
-	private JDBCColumn findColumn(int index, ResultSetMetaData metaData, JDBCSchema schema) throws SQLException {
+	private static JDBCColumn findColumn(int index, ResultSetMetaData metaData, JDBCSchema schema) throws SQLException {
 		String tableName = metaData.getTableName(index);
 		String columnName = metaData.getColumnName(index);
 		return schema.getTable(tableName).getColumn(columnName);

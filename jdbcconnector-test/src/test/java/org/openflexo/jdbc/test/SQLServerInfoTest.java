@@ -45,8 +45,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.hibernate.boot.Metadata;
-import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,8 +58,6 @@ public class SQLServerInfoTest extends SQLServerTestCase {
 	protected final static String jdbcUser = "sa";
 	protected final static String jdbcPwd = "bonjour";
 
-	private JdbcEnvironment jdbcEnv = null;
-	private Metadata metadata;
 	private Connection conn;
 
 	@Before

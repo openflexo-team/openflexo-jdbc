@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.model.annotations.Embedded;
@@ -64,7 +65,7 @@ public interface JDBCResultSet extends FlexoObject, InnerResourceData<JDBCConnec
 
 	List<JDBCLine> getLines();
 
-	JDBCLine find(String ... keys);
+	JDBCLine find(String... keys);
 
 	JDBCLine find(List<String> keys);
 
@@ -83,11 +84,12 @@ public interface JDBCResultSet extends FlexoObject, InnerResourceData<JDBCConnec
 			}
 		}
 
-		private String constructHash(JDBCLine line) {
+		private static String constructHash(JDBCLine line) {
 			StringBuilder hash = new StringBuilder();
 			for (JDBCValue value : line.getValues()) {
 				if (value.getColumn().isPrimaryKey()) {
-					if (hash.length() > 0) hash.append("-");
+					if (hash.length() > 0)
+						hash.append("-");
 					hash.append(value.getValue());
 				}
 			}
@@ -118,7 +120,8 @@ public interface JDBCResultSet extends FlexoObject, InnerResourceData<JDBCConnec
 		public JDBCLine find(List<String> keys) {
 			StringBuilder hash = new StringBuilder();
 			for (String key : keys) {
-				if (hash.length() > 0) hash.append("-");
+				if (hash.length() > 0)
+					hash.append("-");
 				hash.append(key);
 			}
 			return lines.get(hash.toString());

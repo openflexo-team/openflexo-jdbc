@@ -153,13 +153,12 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 		createHbnInitializer.setFlexoBehaviourName("initialize");
 		createHbnInitializer.setFlexoBehaviourClass(HbnInitializer.class);
 		createHbnInitializer.doAction();
-		HbnInitializer initializer = (HbnInitializer) createHbnInitializer.getNewFlexoBehaviour();
-
+		// Unused HbnInitializer initializer = (HbnInitializer)
+		createHbnInitializer.getNewFlexoBehaviour();
 	}
 
 	@Override
 	protected void doAction(Object context) throws FlexoException {
-
 		Progress.progress(getLocales().localizedForKey("create_virtual_model"));
 
 		try {
@@ -229,7 +228,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 				columnMapping.property = tableMapping.concept.getDeclaredProperty(columnMapping.getPropertyName());
 				switch (columnMapping.getMappingType()) {
 					case Primitive:
-						HbnColumnRole columnRole = (HbnColumnRole) columnMapping.property;
+						HbnColumnRole<?> columnRole = (HbnColumnRole<?>) columnMapping.property;
 						columnRole.setColumnName(columnMapping.getColumnName());
 						columnRole.setDataType(columnMapping.getColumn().getDataType());
 						break;

@@ -38,7 +38,6 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.rm;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +63,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 public interface HbnVirtualModelInstanceRepository<I> extends ResourceRepository<HbnVirtualModelInstanceResource, I> {
 
 	public static <I> HbnVirtualModelInstanceRepository<I> instanciateNewRepository(JDBCTechnologyAdapter adapter,
-			FlexoResourceCenter<I> resourceCenter) throws IOException {
+			FlexoResourceCenter<I> resourceCenter) {
 		ModelFactory factory;
 		try {
 			factory = new ModelFactory(HbnVirtualModelInstanceRepository.class);

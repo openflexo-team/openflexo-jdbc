@@ -98,9 +98,7 @@ public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<J
 						// Create or retrieve this sheet
 						return retrieveOrCreateTable(connection, name);
 					}
-					else {
-						logger.warning("Create a JDBC table requires a name");
-					}
+					logger.warning("Create a JDBC table requires a name");
 				}
 				else {
 					logger.warning("Create a JDBC table requires a JDBC connection");
@@ -114,7 +112,7 @@ public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<J
 		}
 
 		// Create an Excel Sheet or get the existing one.
-		private JDBCTable retrieveOrCreateTable(JDBCConnection connection, String name) {
+		private static JDBCTable retrieveOrCreateTable(JDBCConnection connection, String name) {
 			JDBCSchema schema = connection.getSchema();
 			JDBCTable table = schema.getTable(name);
 			if (table == null)
@@ -130,7 +128,7 @@ public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<J
 		@Override
 		public DataBinding<String> getTableName() {
 			if (tableName == null) {
-				tableName = new DataBinding<String>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				tableName = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
 				tableName.setBindingName(TABLE_NAME);
 			}
 			return tableName;

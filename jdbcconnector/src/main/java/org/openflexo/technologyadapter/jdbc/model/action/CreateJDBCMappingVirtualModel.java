@@ -268,15 +268,15 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		addParameter(fmlFactory, creationScheme, "user", String.class, getUser());
 		addParameter(fmlFactory, creationScheme, "password", String.class, null);
 
-		AssignationAction assignation = fmlFactory.newAssignationAction();
-		assignation.setAssignation(new DataBinding("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
+		AssignationAction<JDBCConnection> assignation = fmlFactory.newAssignationAction();
+		assignation.setAssignation(new DataBinding<>("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
 		CreateJDBCConnection action = fmlFactory.newInstance(CreateJDBCConnection.class);
-		action.setResourceName(new DataBinding("'db_' + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setResourceCenter(new DataBinding("this.resource.resourceCenter", creationScheme, FlexoResourceCenter.class,
+		action.setResourceName(new DataBinding<>("'db_' + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setResourceCenter(new DataBinding<>("this.resource.resourceCenter", creationScheme, FlexoResourceCenter.class,
 				DataBinding.BindingDefinitionType.GET));
-		action.setAddress(new DataBinding("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setUser(new DataBinding("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setPassword(new DataBinding("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setAddress(new DataBinding<>("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setUser(new DataBinding<>("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setPassword(new DataBinding<>("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		// action.setDbType(new DataBinding("parameters.dbtype", creationScheme, JDBCDbType.class, DataBinding.BindingDefinitionType.GET));
 		assignation.setAssignableAction(action);
 
@@ -303,14 +303,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 			SelectJDBCLine select = factory.newInstance(SelectJDBCLine.class);
 			action.setIterationAction(select);
-			select.setReceiver(new DataBinding("db", scheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
-			select.setTable(new DataBinding("db.schema.getTable('" + table.getName() + "')", scheme, JDBCTable.class,
+			select.setReceiver(new DataBinding<>("db", scheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
+			select.setTable(new DataBinding<>("db.schema.getTable('" + table.getName() + "')", scheme, JDBCTable.class,
 					DataBinding.BindingDefinitionType.GET));
 
 			MatchFlexoConceptInstance match = factory.newMatchFlexoConceptInstance();
 			action.setControlGraph(match);
 
-			match.setReceiver(new DataBinding("this", scheme, FMLRTVirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
+			match.setReceiver(new DataBinding<>("this", scheme, FMLRTVirtualModelInstance.class, DataBinding.BindingDefinitionType.GET));
 
 			FlexoConcept flexoConcept = tableToConcepts.get(table);
 			CreationScheme creationScheme = flexoConcept.getCreationSchemes().get(0);
@@ -318,14 +318,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 				if (column.isPrimaryKey()) {
 					String name = column.getName();
 					MatchingCriteria criteria = factory.newMatchingCriteria(flexoConcept.getDeclaredProperty(name.toLowerCase()));
-					criteria.setValue(new DataBinding("item.getValue('" + name + "').value"));
+					criteria.setValue(new DataBinding<>("item.getValue('" + name + "').value"));
 					match.addToMatchingCriterias(criteria);
 				}
 			}
 
 			CreateFlexoConceptInstanceParameter parameter = factory
 					.newCreateFlexoConceptInstanceParameter(creationScheme.getParameter("line"));
-			parameter.setValue(new DataBinding("item", scheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
+			parameter.setValue(new DataBinding<>("item", scheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
 			parameter.setAction(match);
 			match.addToParameters(parameter);
 
@@ -335,13 +335,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		}
 	}
 
-	private void addParameter(FMLModelFactory fmlFactory, CreationScheme creationScheme, String address, Type type, Object defaultValue) {
+	private static void addParameter(FMLModelFactory fmlFactory, CreationScheme creationScheme, String address, Type type,
+			Object defaultValue) {
 		FlexoBehaviourParameter parameter = fmlFactory.newParameter(creationScheme);
 		parameter.setName(address);
 		parameter.setType(type);
 		if (defaultValue != null) {
 			parameter.setDefaultValue(
-					new DataBinding<Object>("'" + defaultValue + "'", creationScheme, null, DataBinding.BindingDefinitionType.GET));
+					new DataBinding<>("'" + defaultValue + "'", creationScheme, null, DataBinding.BindingDefinitionType.GET));
 		}
 		creationScheme.addToParameters(parameter);
 	}
@@ -363,7 +364,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 		// Adds expression properties
 		for (JDBCColumn column : table.getColumns()) {
-			ExpressionProperty property = createExpressionPropertyForColumn(factory, column);
+			ExpressionProperty<?> property = createExpressionPropertyForColumn(factory, column);
 			concept.addToFlexoProperties(property);
 
 			InspectorEntry entry = factory.newInspectorEntry(concept.getInspector());
@@ -379,16 +380,16 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		concept.addToFlexoBehaviours(creationScheme);
 	}
 
-	private ExpressionProperty createExpressionPropertyForColumn(FMLModelFactory factory, JDBCColumn column) {
-		ExpressionProperty property = factory.newExpressionProperty();
+	private static ExpressionProperty<?> createExpressionPropertyForColumn(FMLModelFactory factory, JDBCColumn column) {
+		ExpressionProperty<?> property = factory.newExpressionProperty();
 		property.setName(column.getName().toLowerCase());
 		String suffix = typeForColumn(column) == Integer.class ? "intValue" : "value";
-		property.setExpression(new DataBinding("line.getValue('" + column.getName() + "')." + suffix, property, JDBCValue.class,
+		property.setExpression(new DataBinding<>("line.getValue('" + column.getName() + "')." + suffix, property, JDBCValue.class,
 				DataBinding.BindingDefinitionType.GET_SET));
 		return property;
 	}
 
-	private FlexoBehaviourParameter.WidgetType widgetTypeForColumn(JDBCColumn column) {
+	private static FlexoBehaviourParameter.WidgetType widgetTypeForColumn(JDBCColumn column) {
 		String type = column.getTypeAsString().toLowerCase();
 		if (type.contains("char")) {
 			return FlexoBehaviourParameter.WidgetType.TEXT_FIELD;
@@ -410,7 +411,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		}
 	}
 
-	private Type typeForColumn(JDBCColumn column) {
+	private static Type typeForColumn(JDBCColumn column) {
 		String type = column.getTypeAsString().toLowerCase();
 		if (type.contains("char")) {
 			return String.class;
@@ -432,15 +433,15 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		}
 	}
 
-	private CreationScheme createConceptCreationScheme(FMLModelFactory factory) {
+	private static CreationScheme createConceptCreationScheme(FMLModelFactory factory) {
 		CreationScheme creationScheme = factory.newCreationScheme();
 		creationScheme.setName("create");
 		addParameter(factory, creationScheme, "line", JDBCLine.class, null);
 
-		AssignationAction assignation = factory.newAssignationAction();
-		assignation.setAssignation(new DataBinding("line", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
-		ExpressionAction action = factory.newExpressionAction();
-		action.setExpression(new DataBinding("parameters.line", creationScheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
+		AssignationAction<JDBCLine> assignation = factory.newAssignationAction();
+		assignation.setAssignation(new DataBinding<>("line", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
+		ExpressionAction<JDBCLine> action = factory.newExpressionAction();
+		action.setExpression(new DataBinding<>("parameters.line", creationScheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
 		assignation.setAssignableAction(action);
 
 		creationScheme.setControlGraph(assignation);

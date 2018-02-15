@@ -111,7 +111,7 @@ public class MyDBTest extends OpenflexoTestCase {
 
 	@Test
 	@TestOrder(1)
-	public void testCreateConnection() throws SaveResourceException, ModelDefinitionException, IOException, SQLException {
+	public void testCreateConnection() throws SaveResourceException, ModelDefinitionException, IOException {
 		instanciateTestServiceManager(JDBCTechnologyAdapter.class);
 
 		resourceCenter = makeNewDirectoryResourceCenter();
@@ -516,10 +516,14 @@ public class MyDBTest extends OpenflexoTestCase {
 			Transaction t = hbnSession.beginTransaction();
 
 			Map<String, Object> o1 = (Map<String, Object>) result.get(0);
-			Map<String, Object> o2 = (Map<String, Object>) result.get(1);
-			Map<String, Object> o3 = (Map<String, Object>) result.get(2);
-			Map<String, Object> o4 = (Map<String, Object>) result.get(3);
-			Map<String, Object> o5 = (Map<String, Object>) result.get(4);
+			// Unused Map<String, Object> o2 = (Map<String, Object>)
+			result.get(1);
+			// Unused Map<String, Object> o3 = (Map<String, Object>)
+			result.get(2);
+			// Unused Map<String, Object> o4 = (Map<String, Object>)
+			result.get(3);
+			// Unused Map<String, Object> o5 = (Map<String, Object>)
+			result.get(4);
 
 			o1.put("Prenom", "toto");
 

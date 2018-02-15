@@ -78,12 +78,10 @@ public class SQLHelper {
 		if (model.getResource() instanceof JDBCResource) {
 			return ((JDBCResource) model.getResource()).getFactory();
 		}
-		else {
-			try {
-				return new JDBCFactory();
-			} catch (ModelDefinitionException e) {
-				return null;
-			}
+		try {
+			return new JDBCFactory();
+		} catch (ModelDefinitionException e) {
+			return null;
 		}
 	}
 

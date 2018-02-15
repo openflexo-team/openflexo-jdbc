@@ -55,8 +55,6 @@
 
 package org.openflexo.technologyadapter.jdbc.rm;
 
-import java.io.IOException;
-
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterResourceRepository;
 import org.openflexo.model.annotations.ModelEntity;
@@ -70,7 +68,7 @@ public interface JDBCResourceRepository<I>
 		extends TechnologyAdapterResourceRepository<JDBCResource, JDBCTechnologyAdapter, JDBCConnection, I> {
 
 	public static <I> JDBCResourceRepository<I> instanciateNewRepository(JDBCTechnologyAdapter technologyAdapter,
-			FlexoResourceCenter<I> resourceCenter) throws IOException {
+			FlexoResourceCenter<I> resourceCenter) {
 		ModelFactory factory;
 		try {
 			factory = new ModelFactory(JDBCResourceRepository.class);

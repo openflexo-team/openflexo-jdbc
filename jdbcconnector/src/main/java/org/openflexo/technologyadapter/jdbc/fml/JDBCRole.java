@@ -45,7 +45,7 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 /**
  * Abstract class for all JDBC Roles
  */
-public abstract class JDBCRole<T> extends FlexoRole.FlexoRoleImpl<T> implements FlexoRole<T> {
+public abstract class JDBCRole<T> extends FlexoRole.FlexoRoleImpl<T> {
 
 	@Override
 	public FlexoRole.RoleCloningStrategy defaultCloningStrategy() {

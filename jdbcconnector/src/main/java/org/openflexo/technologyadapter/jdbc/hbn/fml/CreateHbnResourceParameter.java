@@ -90,8 +90,7 @@ public interface CreateHbnResourceParameter extends BehaviourParameter<CreateHbn
 			if (object.getParam().getIsRequired()) {
 				return super.applyValidation(object);
 			}
-			else
-				return null;
+			return null;
 		}
 
 	}

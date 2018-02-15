@@ -90,7 +90,7 @@ public interface SelectJDBCColumn extends FetchRequest<JDBCModelSlot, JDBCConnec
 		@Override
 		public List<JDBCColumn> execute(RunTimeEvaluationContext evaluationContext) {
 
-			List<JDBCColumn> columns = new ArrayList<JDBCColumn>();
+			List<JDBCColumn> columns = new ArrayList<>();
 			JDBCTable table;
 			try {
 				table = getTable().getBindingValue(evaluationContext);
