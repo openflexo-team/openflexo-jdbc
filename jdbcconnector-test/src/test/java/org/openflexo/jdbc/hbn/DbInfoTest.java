@@ -61,13 +61,10 @@ public class DbInfoTest extends HbnTest {
 		// ******
 		// Create temp schema
 		conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
-		Statement stmt = conn.createStatement();
-
-		stmt.executeQuery("drop table test if exists");
-		stmt.executeQuery("create table test (id integer, nom char(16));");
-
-		stmt.close();
-
+		try (Statement stmt = conn.createStatement()) {
+			stmt.executeQuery("drop table test if exists");
+			stmt.executeQuery("create table test (id integer, nom char(16));");
+		}
 		// ******
 		// Set up Hibernate configuration
 		// adds a class with annotations

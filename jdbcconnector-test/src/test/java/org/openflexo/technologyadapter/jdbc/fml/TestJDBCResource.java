@@ -150,12 +150,9 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		model.setAddress(jdbcURL);
 		model.setDriverClassName(jdbcDriverClassname);
 
-		Connection conn = model.getConnection();
-
-		assertNotNull(conn);
-		conn.close();
-		conn = null;
-
+		try (Connection conn = model.getConnection()) {
+			assertNotNull(conn);
+		}
 		resource.save(null);
 	}
 

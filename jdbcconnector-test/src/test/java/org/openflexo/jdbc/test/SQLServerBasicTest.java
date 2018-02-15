@@ -72,7 +72,6 @@ public class SQLServerBasicTest extends SQLServerTestCase {
 	private EntityManager hbnEM;
 	private HbnConfig config;
 
-
 	@Before
 	public void setUp() throws Exception {
 		config = createHbnConfig(jdbcDriverClassname, jdbcURL, jdbcUser, jdbcPwd, hbnDialect);
@@ -99,39 +98,40 @@ public class SQLServerBasicTest extends SQLServerTestCase {
 
 		// adds a class with annotations
 
-		SessionFactory hbnSessionFactory = config.getSessionFactory();
-		EntityManager hbnEM = hbnSessionFactory.createEntityManager();
-		Session hbnSession = hbnSessionFactory.withOptions().openSession();
+		try (SessionFactory hbnSessionFactory = config.getSessionFactory()) {
+			EntityManager hbnEM = hbnSessionFactory.createEntityManager();
+			try (Session hbnSession = hbnSessionFactory.withOptions().openSession()) {
 
-		// Hibernate native
-		Transaction trans = hbnSession.beginTransaction();
-		hbnSession.save(new Vehicle(1, "A", "EEB75"));
-		hbnSession.save(new Vehicle(2, "B", "A54B85"));
-		trans.commit();
+				// Hibernate native
+				Transaction trans = hbnSession.beginTransaction();
+				hbnSession.save(new Vehicle(1, "A", "EEB75"));
+				hbnSession.save(new Vehicle(2, "B", "A54B85"));
+				trans.commit();
 
-		// JPA Entity Manager
-		hbnEM.getTransaction().begin();
-		hbnEM.persist(new Vehicle(3, "C", "Prout"));
-		hbnEM.persist(new Vehicle(4, "D", "Pouet"));
-		hbnEM.getTransaction().commit();
+				// JPA Entity Manager
+				hbnEM.getTransaction().begin();
+				hbnEM.persist(new Vehicle(3, "C", "Prout"));
+				hbnEM.persist(new Vehicle(4, "D", "Pouet"));
+				hbnEM.getTransaction().commit();
 
-		// Standard SQL
-		NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Vehicles;");
-		List<?> result = sqlQ.getResultList();
-		for (Object o : result) {
-			System.out.println("o=" + o + " of " + o.getClass());
-			if (o.getClass().isArray()) {
-				Object[] array = (Object[]) o;
-				for (Object o2 : array) {
-					System.out.println("> " + o2);
+				// Standard SQL
+				NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Vehicles;");
+				List<?> result = sqlQ.getResultList();
+				for (Object o : result) {
+					System.out.println("o=" + o + " of " + o.getClass());
+					if (o.getClass().isArray()) {
+						Object[] array = (Object[]) o;
+						for (Object o2 : array) {
+							System.out.println("> " + o2);
+						}
+					}
 				}
+				assertEquals(result.size(), 4);
+
+				// Close session
+				hbnEM.close();
 			}
 		}
-		assertEquals(result.size(), 4);
-
-		// Close session
-		hbnSession.close();
-		hbnEM.close();
 	}
 
 }

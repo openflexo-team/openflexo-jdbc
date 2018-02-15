@@ -70,21 +70,12 @@ public class SQLServerInfoTest extends SQLServerTestCase {
 		// ******
 		// Create temp schema
 		conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
-		Statement stmt = conn.createStatement();
-
-		try {
+		try (Statement stmt = conn.createStatement()) {
 			stmt.execute("drop table test");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		try {
 			stmt.execute("create table test (id integer, nom char(16));");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-
-		stmt.close();
-
 	}
 
 	@Override

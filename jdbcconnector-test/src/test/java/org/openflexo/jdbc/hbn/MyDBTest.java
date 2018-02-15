@@ -456,83 +456,82 @@ public class MyDBTest extends OpenflexoTestCase {
 				new ClassLoaderAccessImpl(null, config.getServiceRegistry()), metadataCollector);
 		metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
 
-		SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
-		Session hbnSession = hbnSessionFactory.withOptions().openSession();
+		try (SessionFactory hbnSessionFactory = metadata.buildSessionFactory();
+				Session hbnSession = hbnSessionFactory.withOptions().openSession()) {
 
-		Iterable<Namespace> namespaces = metadataCollector.getDatabase().getNamespaces();
+			Iterable<Namespace> namespaces = metadataCollector.getDatabase().getNamespaces();
 
-		System.out.println("Prout debut");
-		for (Namespace ns : namespaces) {
-			System.out.println("> hop: " + ns);
+			System.out.println("Prout debut");
+			for (Namespace ns : namespaces) {
+				System.out.println("> hop: " + ns);
+			}
+			System.out.println("Prout fin");
+
+			Namespace namespace = metadataCollector.getDatabase().getDefaultNamespace();
+
+			for (JDBCTable table : connection.getSchema().getTables()) {
+				System.out.println("Found table:  " + table + " hop: " + table.getName());
+				Identifier logicalName = metadataCollector.getDatabase().toIdentifier(table.getName());
+				System.out.println("logicalName=" + logicalName);
+				Table laTable = namespace.locateTable(logicalName);
+				System.out.println("latable=" + laTable);
+			}
+
+			System.out.println(namespace.getTables());
+
+			/*Map<String, String> syl = new HashMap<>();
+			syl.put("Nom", "Sylvain2");
+			Map<String, String> chris = new HashMap<>();
+			chris.put("Nom", "Guychard2");
+			chris.put("Prenom", "Christophe2");
+			
+			// Sérialisation de l'instance
+			// Hibernate native
+			Transaction trans = hbnSession.beginTransaction();
+			
+			hbnSession.save("Dynamic_Class", syl);
+			hbnSession.save("Dynamic_Class", chris);
+			
+			trans.commit();*/
+
+			// NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Dynamic_Table_2;");
+
+			Query<?> sqlQ = hbnSession.createQuery("select o from Dynamic_Class o");
+
+			List<?> result = sqlQ.getResultList();
+			assertEquals(5, result.size());
+
+			for (Object o : result) {
+				System.out.println(" > " + o + " of " + o.getClass());
+				/*if (o.getClass().isArray()) {
+					Object[] array = (Object[]) o;
+					for (Object o2 : array) {
+						System.out.println("  >> " + o2);
+					}
+				}*/
+			}
+
+			Transaction t = hbnSession.beginTransaction();
+
+			Map<String, Object> o1 = (Map<String, Object>) result.get(0);
+			Map<String, Object> o2 = (Map<String, Object>) result.get(1);
+			Map<String, Object> o3 = (Map<String, Object>) result.get(2);
+			Map<String, Object> o4 = (Map<String, Object>) result.get(3);
+			Map<String, Object> o5 = (Map<String, Object>) result.get(4);
+
+			o1.put("Prenom", "toto");
+
+			t.commit();
+
+			/*System.out.println("DEBUT");
+			Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
+			for (EntityType<?> ent : entities) {
+				System.out.println("Entité dynamique: " + ent.getName());
+			}
+			System.out.println("FIN");
+			
+			System.err.println(hbnSession.load("Dynamic_Class", "Sylvain"));*/
 		}
-		System.out.println("Prout fin");
-
-		Namespace namespace = metadataCollector.getDatabase().getDefaultNamespace();
-
-		for (JDBCTable table : connection.getSchema().getTables()) {
-			System.out.println("Found table:  " + table + " hop: " + table.getName());
-			Identifier logicalName = metadataCollector.getDatabase().toIdentifier(table.getName());
-			System.out.println("logicalName=" + logicalName);
-			Table laTable = namespace.locateTable(logicalName);
-			System.out.println("latable=" + laTable);
-		}
-
-		System.out.println(namespace.getTables());
-
-		/*Map<String, String> syl = new HashMap<>();
-		syl.put("Nom", "Sylvain2");
-		Map<String, String> chris = new HashMap<>();
-		chris.put("Nom", "Guychard2");
-		chris.put("Prenom", "Christophe2");
-		
-		// Sérialisation de l'instance
-		// Hibernate native
-		Transaction trans = hbnSession.beginTransaction();
-		
-		hbnSession.save("Dynamic_Class", syl);
-		hbnSession.save("Dynamic_Class", chris);
-		
-		trans.commit();*/
-
-		// NativeQuery<?> sqlQ = hbnSession.createNativeQuery("select * from T_Dynamic_Table_2;");
-
-		Query<?> sqlQ = hbnSession.createQuery("select o from Dynamic_Class o");
-
-		List<?> result = sqlQ.getResultList();
-		assertEquals(5, result.size());
-
-		for (Object o : result) {
-			System.out.println(" > " + o + " of " + o.getClass());
-			/*if (o.getClass().isArray()) {
-				Object[] array = (Object[]) o;
-				for (Object o2 : array) {
-					System.out.println("  >> " + o2);
-				}
-			}*/
-		}
-
-		Transaction t = hbnSession.beginTransaction();
-
-		Map<String, Object> o1 = (Map<String, Object>) result.get(0);
-		Map<String, Object> o2 = (Map<String, Object>) result.get(1);
-		Map<String, Object> o3 = (Map<String, Object>) result.get(2);
-		Map<String, Object> o4 = (Map<String, Object>) result.get(3);
-		Map<String, Object> o5 = (Map<String, Object>) result.get(4);
-
-		o1.put("Prenom", "toto");
-
-		t.commit();
-
-		/*System.out.println("DEBUT");
-		Set<EntityType<?>> entities = hbnSession.getMetamodel().getEntities();
-		for (EntityType<?> ent : entities) {
-			System.out.println("Entité dynamique: " + ent.getName());
-		}
-		System.out.println("FIN");
-		
-		System.err.println(hbnSession.load("Dynamic_Class", "Sylvain"));*/
-
-		hbnSession.close();
 	}
 
 }
