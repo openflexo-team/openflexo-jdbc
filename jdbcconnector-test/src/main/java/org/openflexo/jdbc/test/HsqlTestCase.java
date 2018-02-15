@@ -48,7 +48,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 public abstract class HsqlTestCase extends JDBCTestCase {
 
 	@BeforeClass
-	public static void setupClass() throws ModelDefinitionException {
+	public static void setupClass() {
 		serviceManager = instanciateTestServiceManager(JDBCTechnologyAdapter.class);
 	}
 

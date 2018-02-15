@@ -64,9 +64,8 @@ public abstract class SQLServerTestCase extends JDBCTestCase {
 
 	protected final static String hbnDialect = "org.hibernate.dialect.SQLServerDialect";
 
-
 	@BeforeClass
-	public static void setupBeforeClass() throws ModelDefinitionException {
+	public static void setupBeforeClass() {
 
 		serviceManager = instanciateTestServiceManager(JDBCTechnologyAdapter.class);
 
@@ -86,6 +85,5 @@ public abstract class SQLServerTestCase extends JDBCTestCase {
 		connection.getConnection();
 		return connection;
 	}
-
 
 }
