@@ -57,10 +57,11 @@ import org.openflexo.icon.FMLIconLibrary;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.technologyadapter.jdbc.library.JDBCIconLibrary;
 import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCConnection;
+import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
-public class CreateJDBCConnectionInitializer extends ActionInitializer<CreateJDBCConnection, RepositoryFolder, FlexoObject> {
+public class CreateJDBCConnectionInitializer extends ActionInitializer<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> {
 
 	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
 
