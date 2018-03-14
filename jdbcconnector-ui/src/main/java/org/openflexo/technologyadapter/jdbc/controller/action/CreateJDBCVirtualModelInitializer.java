@@ -65,7 +65,7 @@ public class CreateJDBCVirtualModelInitializer extends ActionInitializer<CreateJ
 	}
 
 	@Override
-	protected FlexoActionInitializer<CreateJDBCVirtualModel> getDefaultInitializer() {
+	protected FlexoActionInitializer<CreateJDBCVirtualModel, FlexoObject, FMLObject> getDefaultInitializer() {
 		return (e, action) -> {
 			Wizard wizard = new CreateJDBCVirtualModelWizard(action, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
@@ -79,7 +79,7 @@ public class CreateJDBCVirtualModelInitializer extends ActionInitializer<CreateJ
 	}
 
 	@Override
-	protected FlexoActionFinalizer<CreateJDBCVirtualModel> getDefaultFinalizer() {
+	protected FlexoActionFinalizer<CreateJDBCVirtualModel, FlexoObject, FMLObject> getDefaultFinalizer() {
 		return (e, action) -> true;
 	}
 
@@ -101,7 +101,7 @@ public class CreateJDBCVirtualModelInitializer extends ActionInitializer<CreateJ
 	}
 
 	@Override
-	protected Icon getEnabledIcon(FlexoActionFactory<?, ?, ?> actionType) {
+	protected Icon getEnabledIcon(FlexoActionFactory<CreateJDBCVirtualModel, FlexoObject, FMLObject> actionType) {
 		return IconFactory.getImageIcon(FMLIconLibrary.VIRTUAL_MODEL_ICON, FMLIconLibrary.NEW_MARKER);
 	}
 

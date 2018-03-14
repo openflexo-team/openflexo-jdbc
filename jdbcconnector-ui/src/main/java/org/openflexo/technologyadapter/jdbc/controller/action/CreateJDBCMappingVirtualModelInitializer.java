@@ -40,9 +40,9 @@ import javax.swing.Icon;
 
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoActionFinalizer;
 import org.openflexo.foundation.action.FlexoActionInitializer;
-import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -64,7 +64,7 @@ public class CreateJDBCMappingVirtualModelInitializer extends ActionInitializer<
 	}
 
 	@Override
-	protected FlexoActionInitializer<CreateJDBCMappingVirtualModel> getDefaultInitializer() {
+	protected FlexoActionInitializer<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> getDefaultInitializer() {
 		return (e, action) -> {
 			Wizard wizard = new CreateJDBCMappingVirtualModelWizard(action, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
@@ -78,7 +78,7 @@ public class CreateJDBCMappingVirtualModelInitializer extends ActionInitializer<
 	}
 
 	@Override
-	protected FlexoActionFinalizer<CreateJDBCMappingVirtualModel> getDefaultFinalizer() {
+	protected FlexoActionFinalizer<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> getDefaultFinalizer() {
 		return (e, action) -> true;
 	}
 
@@ -100,7 +100,7 @@ public class CreateJDBCMappingVirtualModelInitializer extends ActionInitializer<
 	}
 
 	@Override
-	protected Icon getEnabledIcon(FlexoActionFactory actionType) {
+	protected Icon getEnabledIcon(FlexoActionFactory<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> actionType) {
 		return IconFactory.getImageIcon(FMLIconLibrary.VIRTUAL_MODEL_ICON, FMLIconLibrary.NEW_MARKER);
 	}
 
