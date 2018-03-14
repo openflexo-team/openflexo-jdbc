@@ -78,7 +78,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 	static private JDBCResourceFactory factory;
 
-	private static FlexoProject project;
+	private static FlexoProject<?> project;
 	private static FlexoEditor editor;
 	private static JDBCTechnologyAdapter jdbcTA;
 	// Unused private static RepositoryFolder<FMLRTVirtualModelInstanceResource, ?> viewFolder;
@@ -121,7 +121,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		assertNotNull(project);
 
-		RepositoryFolder<JDBCResource, Object> folder = project.getRootFolder();
+		RepositoryFolder<JDBCResource, Object> folder = (RepositoryFolder) project.getRootFolder();
 		resource = factory.makeJDBCResource(resourceName, folder);
 
 		JDBCConnection model = resource.getResourceData(null);
