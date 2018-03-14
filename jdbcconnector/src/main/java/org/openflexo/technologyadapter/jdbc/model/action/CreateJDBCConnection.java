@@ -56,29 +56,30 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceRepository;
 
-public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, RepositoryFolder, FlexoObject> {
+public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> {
 
 	private static final Logger logger = Logger.getLogger(CreateJDBCConnection.class.getPackage().getName());
 
-	public static FlexoActionFactory<CreateJDBCConnection, RepositoryFolder, FlexoObject> actionType = new FlexoActionFactory<CreateJDBCConnection, RepositoryFolder, FlexoObject>(
+	public static FlexoActionFactory<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> actionType = new FlexoActionFactory<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject>(
 			"create_jdbc_connection", FlexoActionFactory.newMenu, FlexoActionFactory.defaultGroup, FlexoActionFactory.ADD_ACTION_TYPE) {
 
 		/**
 		 * Factory method
 		 */
 		@Override
-		public CreateJDBCConnection makeNewAction(RepositoryFolder focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
+		public CreateJDBCConnection makeNewAction(RepositoryFolder<JDBCResource, ?> focusedObject, Vector<FlexoObject> globalSelection,
+				FlexoEditor editor) {
 			return new CreateJDBCConnection(focusedObject, globalSelection, editor);
 		}
 
 		@Override
-		public boolean isVisibleForSelection(RepositoryFolder object, Vector<FlexoObject> globalSelection) {
+		public boolean isVisibleForSelection(RepositoryFolder<JDBCResource, ?> object, Vector<FlexoObject> globalSelection) {
 			// TODO check what should be done
 			return object != null && object.getResourceRepository() instanceof JDBCResourceRepository;
 		}
 
 		@Override
-		public boolean isEnabledForSelection(RepositoryFolder object, Vector<FlexoObject> globalSelection) {
+		public boolean isEnabledForSelection(RepositoryFolder<JDBCResource, ?> object, Vector<FlexoObject> globalSelection) {
 			return object != null;
 		}
 
@@ -125,7 +126,7 @@ public class CreateJDBCConnection extends FlexoAction<CreateJDBCConnection, Repo
 		this.password = password;
 	}
 
-	CreateJDBCConnection(RepositoryFolder focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
+	private CreateJDBCConnection(RepositoryFolder<JDBCResource, ?> focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 
