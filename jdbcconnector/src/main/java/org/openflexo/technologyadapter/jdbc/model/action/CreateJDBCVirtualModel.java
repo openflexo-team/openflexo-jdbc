@@ -129,7 +129,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 	private JDBCConnection jdbcConnection = null;
 	private List<JDBCTable> tablesToBeReflected;
 
-	CreateJDBCVirtualModel(FlexoObject focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
+	private CreateJDBCVirtualModel(FlexoObject focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 

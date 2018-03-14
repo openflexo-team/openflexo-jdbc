@@ -179,7 +179,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		this.generateSynchronizationScheme = generateSynchronizationScheme;
 	}
 
-	CreateJDBCMappingVirtualModel(VirtualModel focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
+	private CreateJDBCMappingVirtualModel(VirtualModel focusedObject, Vector<FMLObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 
