@@ -34,16 +34,13 @@
  */
 package org.openflexo.technologyadapter.jdbc.controller.action;
 
-import java.util.logging.Logger;
-
 import javax.swing.Icon;
 
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.action.FlexoActionFactory;
-import org.openflexo.foundation.action.FlexoActionFinalizer;
-import org.openflexo.foundation.action.FlexoActionInitializer;
+import org.openflexo.foundation.action.FlexoActionRunnable;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.gina.controller.FIBController;
@@ -57,15 +54,12 @@ import org.openflexo.view.controller.FlexoController;
 
 public class CreateJDBCVirtualModelInitializer extends ActionInitializer<CreateJDBCVirtualModel, FlexoObject, FMLObject> {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
-
 	public CreateJDBCVirtualModelInitializer(ControllerActionInitializer actionInitializer) {
 		super(CreateJDBCVirtualModel.actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionInitializer<CreateJDBCVirtualModel, FlexoObject, FMLObject> getDefaultInitializer() {
+	protected FlexoActionRunnable<CreateJDBCVirtualModel, FlexoObject, FMLObject> getDefaultInitializer() {
 		return (e, action) -> {
 			Wizard wizard = new CreateJDBCVirtualModelWizard(action, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
@@ -79,12 +73,7 @@ public class CreateJDBCVirtualModelInitializer extends ActionInitializer<CreateJ
 	}
 
 	@Override
-	protected FlexoActionFinalizer<CreateJDBCVirtualModel, FlexoObject, FMLObject> getDefaultFinalizer() {
-		return (e, action) -> true;
-	}
-
-	@Override
-	protected FlexoExceptionHandler<CreateJDBCVirtualModel> getDefaultExceptionHandler() {
+	protected FlexoExceptionHandler<CreateJDBCVirtualModel, FlexoObject, FMLObject> getDefaultExceptionHandler() {
 		return (exception, action) -> {
 			Throwable cause = exception.getCause();
 			if (cause instanceof ModelExecutionException) {

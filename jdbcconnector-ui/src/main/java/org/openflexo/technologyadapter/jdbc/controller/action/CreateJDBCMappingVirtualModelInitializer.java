@@ -34,15 +34,12 @@
  */
 package org.openflexo.technologyadapter.jdbc.controller.action;
 
-import java.util.logging.Logger;
-
 import javax.swing.Icon;
 
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
 import org.openflexo.foundation.action.FlexoActionFactory;
-import org.openflexo.foundation.action.FlexoActionFinalizer;
-import org.openflexo.foundation.action.FlexoActionInitializer;
+import org.openflexo.foundation.action.FlexoActionRunnable;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -57,14 +54,12 @@ import org.openflexo.view.controller.FlexoController;
 
 public class CreateJDBCMappingVirtualModelInitializer extends ActionInitializer<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> {
 
-	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
-
 	public CreateJDBCMappingVirtualModelInitializer(ControllerActionInitializer actionInitializer) {
 		super(CreateJDBCMappingVirtualModel.actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionInitializer<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> getDefaultInitializer() {
+	protected FlexoActionRunnable<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> getDefaultInitializer() {
 		return (e, action) -> {
 			Wizard wizard = new CreateJDBCMappingVirtualModelWizard(action, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
@@ -78,12 +73,7 @@ public class CreateJDBCMappingVirtualModelInitializer extends ActionInitializer<
 	}
 
 	@Override
-	protected FlexoActionFinalizer<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> getDefaultFinalizer() {
-		return (e, action) -> true;
-	}
-
-	@Override
-	protected FlexoExceptionHandler<CreateJDBCMappingVirtualModel> getDefaultExceptionHandler() {
+	protected FlexoExceptionHandler<CreateJDBCMappingVirtualModel, VirtualModel, FMLObject> getDefaultExceptionHandler() {
 		return (exception, action) -> {
 			Throwable cause = exception.getCause();
 			if (cause instanceof ModelExecutionException) {
