@@ -38,9 +38,9 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections15.map.HashedMap;
 import org.openflexo.connie.type.CustomTypeFactory;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
@@ -71,7 +71,7 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 		return HbnVirtualModelInstance.class;
 	}
 
-	private static Map<VirtualModel, HbnVirtualModelInstanceType> types = new HashedMap<>();
+	private static Map<VirtualModel, HbnVirtualModelInstanceType> types = new HashMap<>();
 
 	public static HbnVirtualModelInstanceType getVirtualModelInstanceType(VirtualModel aVirtualModel) {
 		if (aVirtualModel != null) {
