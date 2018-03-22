@@ -41,7 +41,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
-import org.openflexo.connie.hbn.HbnConfig;
+import org.openflexo.technologyadapter.jdbc.HbnConfig;
 
 import junit.framework.TestCase;
 
