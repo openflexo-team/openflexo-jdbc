@@ -80,7 +80,7 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
  */
 @DeclareModelSlots({ JDBCModelSlot.class, HbnModelSlot.class })
 @DeclareResourceTypes({ JDBCResourceFactory.class, HbnVirtualModelInstanceResourceFactory.class })
-public class JDBCTechnologyAdapter extends TechnologyAdapter {
+public class JDBCTechnologyAdapter extends TechnologyAdapter<JDBCTechnologyAdapter> {
 
 	public JDBCTechnologyAdapter() throws TechnologyAdapterInitializationException {
 	}

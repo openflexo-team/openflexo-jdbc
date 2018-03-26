@@ -65,7 +65,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(HbnInitializer.HbnInitializerImpl.class)
 @XMLElement
 @FML("HbnInitializer")
-public interface HbnInitializer extends AbstractActionScheme, TechnologySpecificFlexoBehaviour {
+public interface HbnInitializer extends AbstractActionScheme, TechnologySpecificFlexoBehaviour<JDBCTechnologyAdapter> {
 
 	public static abstract class HbnInitializerImpl extends AbstractActionSchemeImpl implements HbnInitializer {
 

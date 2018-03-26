@@ -92,7 +92,8 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 	 * @author sylvain
 	 * 
 	 */
-	public static class HbnVirtualModelInstanceTypeFactory extends AbstractVirtualModelInstanceTypeFactory<HbnVirtualModelInstanceType> {
+	public static class HbnVirtualModelInstanceTypeFactory
+			extends AbstractVirtualModelInstanceTypeFactory<HbnVirtualModelInstanceType, JDBCTechnologyAdapter> {
 
 		public HbnVirtualModelInstanceTypeFactory(JDBCTechnologyAdapter technologyAdapter) {
 			super(technologyAdapter);
