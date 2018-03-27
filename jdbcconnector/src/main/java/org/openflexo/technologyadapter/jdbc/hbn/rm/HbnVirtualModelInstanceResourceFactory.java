@@ -98,7 +98,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
 			resourceData.setVirtualModel(virtualModelResource.getVirtualModel());
-			returned.save(null);
+			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext
 				// TODO: design issue, we should separate FlexoConceptInstance from RunTimeEvaluationContext
@@ -143,7 +143,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
 			resourceData.setVirtualModel(virtualModelResource.getVirtualModel());
-			returned.save(null);
+			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext
 				// TODO: design issue, we should separate FlexoConceptInstance from RunTimeEvaluationContext

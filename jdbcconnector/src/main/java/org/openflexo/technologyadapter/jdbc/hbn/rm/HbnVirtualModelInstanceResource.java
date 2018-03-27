@@ -66,7 +66,6 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializerAction;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
-import org.openflexo.toolbox.IProgress;
 
 /**
  * This is the {@link FlexoResource} encoding a {@link FMLRTVirtualModelInstance}
@@ -173,9 +172,9 @@ public interface HbnVirtualModelInstanceResource
 		}
 
 		@Override
-		public HbnVirtualModelInstance loadResourceData(IProgress progress) throws FlexoFileNotFoundException, IOFlexoException,
-				InvalidXMLException, InconsistentDataException, InvalidModelDefinitionException {
-			HbnVirtualModelInstance returned = super.loadResourceData(progress);
+		public HbnVirtualModelInstance loadResourceData() throws FlexoFileNotFoundException, IOFlexoException, InvalidXMLException,
+				InconsistentDataException, InvalidModelDefinitionException {
+			HbnVirtualModelInstance returned = super.loadResourceData();
 			// returned.setSupportFactory(new JsonSupportFactory("url"));
 			try {
 				returned.connectToDB();

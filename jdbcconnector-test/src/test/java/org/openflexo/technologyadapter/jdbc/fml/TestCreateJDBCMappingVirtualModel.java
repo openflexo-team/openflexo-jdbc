@@ -105,7 +105,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		VirtualModelResource viewPointResource = factory.makeTopLevelVirtualModelResource(ROOT_VIRTUAL_MODEL_NAME, ROOT_VIRTUAL_MODEL_URI,
 				viewPointRepository.getRootFolder(), true);
 
-		viewPointResource.save(null);
+		viewPointResource.save();
 		return viewPointResource.getLoadedResourceData();
 	}
 

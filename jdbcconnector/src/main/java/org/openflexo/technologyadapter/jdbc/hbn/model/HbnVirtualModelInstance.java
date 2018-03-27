@@ -474,7 +474,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		public JDBCConnection getJDBCConnection() {
 			if (getJDBCConnectionResource() != null) {
 				try {
-					return getJDBCConnectionResource().getResourceData(null);
+					return getJDBCConnectionResource().getResourceData();
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -419,7 +419,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				HbnVirtualModelInstanceResource newResource = createResource(
 						getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(JDBCTechnologyAdapter.class),
 						getResourceFactoryClass(), rc, resourceName, resourceURI, getRelativePath(), getSuffix(), true);
-				HbnVirtualModelInstance data = newResource.getResourceData(null);
+				HbnVirtualModelInstance data = newResource.getResourceData();
 				data.setVirtualModel(getVirtualModel());
 
 				FlexoProperty<HbnVirtualModelInstance> flexoProperty = getAssignedFlexoProperty();
