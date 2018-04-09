@@ -75,11 +75,6 @@ public class JDBCResourceFactory
 		return FilenameUtils.isExtension(name, JDBC_EXTENSION);
 	}
 
-	@Override
-	public <I> I getConvertableArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
-		return null;
-	}
-
 	public <I> JDBCResource makeJDBCResource(String baseName, RepositoryFolder<JDBCResource, I> folder)
 			throws SaveResourceException, ModelDefinitionException {
 

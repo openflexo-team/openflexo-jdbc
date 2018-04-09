@@ -362,12 +362,6 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	@Override
-	public <I> I getConvertableArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public HbnVirtualModelInstance makeEmptyResourceData(HbnVirtualModelInstanceResource resource) {
 		return resource.getFactory().newInstance(HbnVirtualModelInstance.class/*, resource.getServiceManager()*/);
 	}
