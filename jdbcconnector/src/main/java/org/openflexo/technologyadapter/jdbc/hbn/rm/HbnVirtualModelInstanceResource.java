@@ -179,7 +179,6 @@ public interface HbnVirtualModelInstanceResource
 			try {
 				returned.connectToDB();
 			} catch (FlexoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

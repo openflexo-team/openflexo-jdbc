@@ -292,7 +292,6 @@ public interface PerformSQLQuery extends FetchRequest<HbnModelSlot, HbnVirtualMo
 					return vmi.getFlexoConceptInstances(sqlQ, container, getFlexoConceptType());
 
 				} catch (HbnException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

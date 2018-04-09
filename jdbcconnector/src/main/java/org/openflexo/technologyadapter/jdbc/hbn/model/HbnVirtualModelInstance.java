@@ -476,13 +476,10 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 				try {
 					return getJDBCConnectionResource().getResourceData();
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ResourceLoadingCancelledException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (FlexoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
