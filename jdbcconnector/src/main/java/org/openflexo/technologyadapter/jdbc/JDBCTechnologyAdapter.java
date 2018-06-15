@@ -96,7 +96,7 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter<JDBCTechnologyAdapt
 	}
 
 	@Override
-	public String getLocalizationDirectory() {
+	protected String getLocalizationDirectory() {
 		return "FlexoLocalization/JDBCTechnologyAdapter";
 	}
 
