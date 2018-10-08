@@ -48,7 +48,6 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.foundation.fml.FMLRepresentationContext;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceType;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -151,19 +150,19 @@ public interface PerformSQLQuery extends FetchRequest<HbnModelSlot, HbnVirtualMo
 			this.container = container;
 		}
 
-		@Override
+		/*@Override
 		public String getParametersStringRepresentation() {
 			String whereClauses = getWhereClausesFMLRepresentation(null);
 			return "(type=" + (getFlexoConceptType() != null ? getFlexoConceptType().getName() : "null")
 					+ (whereClauses != null ? "," + whereClauses : "") + ")";
 		}
-
+		
 		@Override
 		public String getFMLRepresentation(FMLRepresentationContext context) {
 			return getReceiver().toString() + "." + getImplementedInterface().getSimpleName() + "("
 					+ (getFlexoConceptType() != null ? "type=" + getFlexoConceptType().getName() : "type=?")
 					+ (getConditions().size() > 0 ? ",where=" + getWhereClausesFMLRepresentation(context) : "") + ")";
-		}
+		}*/
 
 		@Override
 		public FlexoConceptInstanceType getFetchedType() {
