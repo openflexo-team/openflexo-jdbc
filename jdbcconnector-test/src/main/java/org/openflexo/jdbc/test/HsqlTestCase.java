@@ -36,7 +36,7 @@
 package org.openflexo.jdbc.test;
 
 import org.junit.BeforeClass;
-import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.HSQLUtils;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;

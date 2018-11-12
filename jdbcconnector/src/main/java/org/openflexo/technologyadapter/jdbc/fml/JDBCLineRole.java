@@ -58,9 +58,9 @@ package org.openflexo.technologyadapter.jdbc.fml;
 import java.lang.reflect.Type;
 
 import org.openflexo.foundation.fml.FlexoRole;
-import org.openflexo.model.annotations.ImplementationClass;
-import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.pamela.annotations.ImplementationClass;
+import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole.JDBCLineRoleImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 
