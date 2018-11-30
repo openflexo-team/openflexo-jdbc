@@ -35,95 +35,26 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.FetchRequest;
-import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
-import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.PropertyIdentifier;
-import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
+/**
+ * A {@link FetchRequest} allowing to retrieve a selection of some {@link JDBCColumn} matching some conditions and a given type.<br>
+ * 
+ * @author sylvain
+ */
 @ModelEntity
-@ImplementationClass(SelectJDBCColumn.SelectJDBCColumnImpl.class)
+@ImplementationClass(SelectJDBCColumn.AbstractSelectJDBCColumnImpl.class)
 @XMLElement
 @FML("SelectJDBCColumn")
-public interface SelectJDBCColumn extends FetchRequest<JDBCModelSlot, JDBCConnection, JDBCColumn> {
-
-	@PropertyIdentifier(type = DataBinding.class)
-	String TABLE_KEY = "table";
-
-	@Getter(TABLE_KEY)
-	@XMLAttribute
-	DataBinding<JDBCTable> getTable();
-
-	@Setter(TABLE_KEY)
-	void setTable(DataBinding<JDBCTable> table);
-
-	abstract class SelectJDBCColumnImpl extends FetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCColumn> implements SelectJDBCColumn {
-
-		private static final Logger logger = Logger.getLogger(SelectJDBCColumn.class.getPackage().getName());
-
-		private DataBinding<JDBCTable> table;
-
-		@Override
-		public Type getFetchedType() {
-			return JDBCColumn.class;
-		}
-
-		@Override
-		public List<JDBCColumn> execute(RunTimeEvaluationContext evaluationContext) {
-
-			List<JDBCColumn> columns = new ArrayList<>();
-			JDBCTable table;
-			try {
-				table = getTable().getBindingValue(evaluationContext);
-
-				if (table != null) {
-					columns.addAll(table.getColumns());
-				}
-			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
-				logger.log(Level.WARNING, "Can't evaluate table", e);
-			}
-
-			return filterWithConditions(columns, evaluationContext);
-
-		}
-
-		@Override
-		public DataBinding<JDBCTable> getTable() {
-			if (table == null) {
-				table = new DataBinding<>(this, JDBCTable.class, DataBinding.BindingDefinitionType.GET);
-				table.setBindingName("table");
-			}
-			return table;
-		}
-
-		@Override
-		public void setTable(DataBinding<JDBCTable> table) {
-			if (table != null) {
-				table.setOwner(this);
-				table.setDeclaredType(JDBCTable.class);
-				table.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
-				table.setBindingName("table");
-			}
-			this.table = table;
-		}
-	}
+public interface SelectJDBCColumn
+		extends AbstractSelectJDBCColumn<List<JDBCColumn>>, FetchRequest<JDBCModelSlot, JDBCConnection, JDBCColumn> {
 }

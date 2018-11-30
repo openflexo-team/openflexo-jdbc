@@ -35,26 +35,25 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
-import java.util.List;
-
 import org.openflexo.foundation.fml.annotations.FML;
-import org.openflexo.foundation.fml.editionaction.FetchRequest;
+import org.openflexo.foundation.fml.editionaction.UniqueFetchRequest;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
+import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 /**
- * A {@link FetchRequest} allowing to retrieve a selection of some {@link JDBCLine} matching some conditions and a given type.<br>
+ * A {@link UniqueFetchRequest} allowing to retrieve a unique {@link JDBCTable} matching some conditions and a given type.<br>
  * 
  * @author sylvain
  */
 @ModelEntity
-@ImplementationClass(SelectJDBCLine.AbstractSelectJDBCLineImpl.class)
+@ImplementationClass(SelectUniqueJDBCTable.AbstractSelectJDBCTableImpl.class)
 @XMLElement
-@FML("SelectJDBCLine")
-public interface SelectJDBCLine extends AbstractSelectJDBCLine<List<JDBCLine>>, FetchRequest<JDBCModelSlot, JDBCConnection, JDBCLine> {
+@FML("SelectUniqueJDBCTable")
+public interface SelectUniqueJDBCTable
+		extends AbstractSelectJDBCTable<JDBCTable>, UniqueFetchRequest<JDBCModelSlot, JDBCConnection, JDBCTable> {
 
 }

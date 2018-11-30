@@ -35,26 +35,46 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
-import org.openflexo.foundation.fml.annotations.FML;
-import org.openflexo.foundation.fml.editionaction.FetchRequest;
+import org.openflexo.foundation.fml.editionaction.AbstractFetchRequest;
+import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
+import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 /**
- * A {@link FetchRequest} allowing to retrieve a selection of some {@link JDBCLine} matching some conditions and a given type.<br>
+ * A generic {@link AbstractFetchRequest} allowing to retrieve a selection of some {@link JDBCTable} matching some conditions and a given
+ * type.<br>
  * 
  * @author sylvain
  */
 @ModelEntity
-@ImplementationClass(SelectJDBCLine.AbstractSelectJDBCLineImpl.class)
-@XMLElement
-@FML("SelectJDBCLine")
-public interface SelectJDBCLine extends AbstractSelectJDBCLine<List<JDBCLine>>, FetchRequest<JDBCModelSlot, JDBCConnection, JDBCLine> {
+@ImplementationClass(AbstractSelectJDBCTable.AbstractSelectJDBCTableImpl.class)
+public interface AbstractSelectJDBCTable<AT> extends AbstractFetchRequest<JDBCModelSlot, JDBCConnection, JDBCTable, AT> {
 
+	abstract class AbstractSelectJDBCTableImpl<AT> extends AbstractFetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCTable, AT>
+			implements AbstractSelectJDBCTable<AT> {
+
+		@SuppressWarnings("unused")
+		private static final Logger logger = Logger.getLogger(AbstractSelectJDBCTable.class.getPackage().getName());
+
+		@Override
+		public Type getFetchedType() {
+			return JDBCTable.class;
+		}
+
+		@Override
+		public List<JDBCTable> performExecute(RunTimeEvaluationContext evaluationContext) {
+
+			JDBCConnection connection = getReceiver(evaluationContext);
+			List<JDBCTable> result = new ArrayList<>(connection.getSchema().getTables());
+			return filterWithConditions(result, evaluationContext);
+		}
+	}
 }

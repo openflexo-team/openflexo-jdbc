@@ -78,6 +78,9 @@ import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnecti
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCColumn;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCLine;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectJDBCTable;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectUniqueJDBCColumn;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectUniqueJDBCLine;
+import org.openflexo.technologyadapter.jdbc.fml.editionaction.SelectUniqueJDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
@@ -100,7 +103,8 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @DeclareActorReferences({ JDBCTableActorReference.class, JDBCColumnActorReference.class, JDBCLineActorReference.class })
 @DeclareFlexoRoles({ JDBCTableRole.class, JDBCColumnRole.class, JDBCLineRole.class })
 @DeclareEditionActions({ CreateJDBCConnection.class, AddJDBCTable.class })
-@DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class })
+@DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class, SelectUniqueJDBCTable.class,
+		SelectUniqueJDBCColumn.class, SelectUniqueJDBCLine.class })
 public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
 
 	@Override
