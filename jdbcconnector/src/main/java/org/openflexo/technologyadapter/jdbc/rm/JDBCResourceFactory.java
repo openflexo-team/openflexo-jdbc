@@ -59,8 +59,8 @@ public class JDBCResourceFactory
 	}
 
 	@Override
-	public JDBCFactory makeResourceDataFactory(JDBCResource resource,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
+	public JDBCFactory makeModelFactory(JDBCResource resource, TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager)
+			throws ModelDefinitionException {
 		return new JDBCFactory(resource, technologyContextManager.getServiceManager().getEditingContext());
 	}
 

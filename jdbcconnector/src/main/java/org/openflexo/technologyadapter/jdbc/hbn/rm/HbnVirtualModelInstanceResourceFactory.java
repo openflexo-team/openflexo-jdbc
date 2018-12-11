@@ -370,7 +370,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * Build and return model factory to use for resource data managing
 	 */
 	@Override
-	public AbstractVirtualModelInstanceModelFactory<?> makeResourceDataFactory(HbnVirtualModelInstanceResource resource,
+	public AbstractVirtualModelInstanceModelFactory<?> makeModelFactory(HbnVirtualModelInstanceResource resource,
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
 		return new HbnVirtualModelInstanceModelFactory(resource,
 				technologyContextManager.getTechnologyAdapter().getServiceManager().getEditingContext(),
