@@ -444,7 +444,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 				throw new HbnException("VirtualModel not defined");
 			}
 
-			// open connexion
+			// open connection
 			if (getJDBCConnection().getConnection() == null) {
 				throw new HbnException("Could not connect to database " + getJDBCConnection().getAddress());
 			}
