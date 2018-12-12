@@ -58,7 +58,7 @@ package org.openflexo.technologyadapter.jdbc;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.foundation.fml.annotations.DeclareModelSlots;
-import org.openflexo.foundation.fml.annotations.DeclareResourceTypes;
+import org.openflexo.foundation.fml.annotations.DeclareResourceFactory;
 import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.FlexoResourceCenterService;
@@ -79,7 +79,7 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
  * 
  */
 @DeclareModelSlots({ JDBCModelSlot.class, HbnModelSlot.class })
-@DeclareResourceTypes({ JDBCResourceFactory.class, HbnVirtualModelInstanceResourceFactory.class })
+@DeclareResourceFactory({ JDBCResourceFactory.class, HbnVirtualModelInstanceResourceFactory.class })
 public class JDBCTechnologyAdapter extends TechnologyAdapter<JDBCTechnologyAdapter> {
 
 	public JDBCTechnologyAdapter() throws TechnologyAdapterInitializationException {
