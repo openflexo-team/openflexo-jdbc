@@ -39,7 +39,7 @@ import java.awt.Image;
 import java.util.logging.Logger;
 
 import org.openflexo.ApplicationContext;
-import org.openflexo.components.wizard.FlexoWizard;
+import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
@@ -51,24 +51,21 @@ import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCMappingVirtua
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateJDBCMappingVirtualModelWizard extends FlexoWizard {
+public class CreateJDBCMappingVirtualModelWizard extends FlexoActionWizard<CreateJDBCMappingVirtualModel> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CreateJDBCMappingVirtualModelWizard.class.getPackage().getName());
 
-	private final CreateJDBCMappingVirtualModel action;
-
 	private final ConfigureJDBCMappingVirtualModel configureJdbcConnection;
 
 	public CreateJDBCMappingVirtualModelWizard(CreateJDBCMappingVirtualModel action, FlexoController controller) {
-		super(controller);
-		this.action = action;
+		super(action, controller);
 		addStep(configureJdbcConnection = new ConfigureJDBCMappingVirtualModel());
 	}
 
 	@Override
 	public String getWizardTitle() {
-		return action.getLocales().localizedForKey("create_virtual_model_federating_a_jdbc_schema");
+		return getAction().getLocales().localizedForKey("create_virtual_model_federating_a_jdbc_schema");
 	}
 
 	@Override
@@ -95,19 +92,19 @@ public class CreateJDBCMappingVirtualModelWizard extends FlexoWizard {
 		}
 
 		public CreateJDBCMappingVirtualModel getAction() {
-			return action;
+			return CreateJDBCMappingVirtualModelWizard.this.getAction();
 		}
 
 		@Override
 		public String getTitle() {
-			return action.getLocales().localizedForKey("configure_jdbc_virtualmodel");
+			return getAction().getLocales().localizedForKey("configure_jdbc_virtualmodel");
 		}
 
 		@Override
 		public boolean isValid() {
 
 			if (StringUtils.isEmpty(getAddress())) {
-				setIssueMessage(action.getLocales().localizedForKey("no_connection_address_defined"), IssueMessageType.ERROR);
+				setIssueMessage(getAction().getLocales().localizedForKey("no_connection_address_defined"), IssueMessageType.ERROR);
 				return false;
 			}
 
@@ -116,68 +113,69 @@ public class CreateJDBCMappingVirtualModelWizard extends FlexoWizard {
 		}
 
 		public String getVirtualModelName() {
-			return action.getVirtualModelName();
+			return getAction().getVirtualModelName();
 		}
 
 		public void setVirtualModelName(String newVirtualModelName) {
 			if (!newVirtualModelName.equals(getVirtualModelName())) {
 				String oldValue = getVirtualModelName();
-				action.setVirtualModelName(newVirtualModelName);
+				getAction().setVirtualModelName(newVirtualModelName);
 				getPropertyChangeSupport().firePropertyChange("virtualModelName", oldValue, newVirtualModelName);
 				checkValidity();
 			}
 		}
 
 		public String getAddress() {
-			return action.getAddress();
+			return getAction().getAddress();
 		}
 
 		public void setAddress(String newAddress) {
 			if (!newAddress.equals(getAddress())) {
 				String oldValue = getAddress();
-				action.setAddress(newAddress);
+				getAction().setAddress(newAddress);
 				getPropertyChangeSupport().firePropertyChange("address", oldValue, newAddress);
 				checkValidity();
 			}
 		}
 
 		public String getUser() {
-			return action.getUser();
+			return getAction().getUser();
 		}
 
 		public void setUser(String newUser) {
 			if (!newUser.equals(getUser())) {
 				String oldValue = getUser();
-				action.setUser(newUser);
+				getAction().setUser(newUser);
 				getPropertyChangeSupport().firePropertyChange("user", oldValue, newUser);
 				checkValidity();
 			}
 		}
 
 		public String getPassword() {
-			return action.getPassword();
+			return getAction().getPassword();
 		}
 
 		public void setPassword(String newPassword) {
 			if (!newPassword.equals(getPassword())) {
 				String oldValue = getPassword();
-				action.setPassword(newPassword);
+				getAction().setPassword(newPassword);
 				getPropertyChangeSupport().firePropertyChange("password", oldValue, newPassword);
 				checkValidity();
 			}
 		}
 
 		public boolean isGenerateSynchronizationScheme() {
-			return action.isGenerateSynchronizationScheme();
+			return getAction().isGenerateSynchronizationScheme();
 		}
 
 		public void setGenerateSynchronizationScheme(boolean newGenerateSynchronizationScheme) {
 			if (!newGenerateSynchronizationScheme == isGenerateSynchronizationScheme()) {
 				String oldValue = getUser();
-				action.setGenerateSynchronizationScheme(newGenerateSynchronizationScheme);
+				getAction().setGenerateSynchronizationScheme(newGenerateSynchronizationScheme);
 				getPropertyChangeSupport().firePropertyChange("user", oldValue, newGenerateSynchronizationScheme);
 				checkValidity();
 			}
 		}
 	}
+
 }

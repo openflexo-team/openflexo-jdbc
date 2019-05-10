@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 import org.openflexo.ApplicationContext;
-import org.openflexo.components.wizard.FlexoWizard;
+import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
@@ -60,12 +60,10 @@ import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCVirtualModel.
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateJDBCVirtualModelWizard extends FlexoWizard {
+public class CreateJDBCVirtualModelWizard extends FlexoActionWizard<CreateJDBCVirtualModel> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CreateJDBCVirtualModelWizard.class.getPackage().getName());
-
-	private final CreateJDBCVirtualModel action;
 
 	private final ConfigureJDBCVirtualModel configureJdbcConnection;
 	private ChooseEntitiesToBeReflected chooseEntitiesToBeReflected;
@@ -73,14 +71,13 @@ public class CreateJDBCVirtualModelWizard extends FlexoWizard {
 	private static final Dimension DIMENSIONS = new Dimension(600, 500);
 
 	public CreateJDBCVirtualModelWizard(CreateJDBCVirtualModel action, FlexoController controller) {
-		super(controller);
-		this.action = action;
+		super(action, controller);
 		addStep(configureJdbcConnection = new ConfigureJDBCVirtualModel());
 	}
 
 	@Override
 	public String getWizardTitle() {
-		return action.getLocales().localizedForKey("create_virtual_model_reflecting_a_jdbc_schema");
+		return getAction().getLocales().localizedForKey("create_virtual_model_reflecting_a_jdbc_schema");
 	}
 
 	@Override
@@ -112,24 +109,25 @@ public class CreateJDBCVirtualModelWizard extends FlexoWizard {
 		}
 
 		public CreateJDBCVirtualModel getAction() {
-			return action;
+			return CreateJDBCVirtualModelWizard.this.getAction();
 		}
 
 		@Override
 		public String getTitle() {
-			return action.getLocales().localizedForKey("configure_jdbc_connection");
+			return getAction().getLocales().localizedForKey("configure_jdbc_connection");
 		}
 
 		@Override
 		public boolean isValid() {
 
 			if (StringUtils.isEmpty(getNewVirtualModelName())) {
-				setIssueMessage(action.getLocales().localizedForKey("please_enter_name_for_new_virtual_model"), IssueMessageType.ERROR);
+				setIssueMessage(getAction().getLocales().localizedForKey("please_enter_name_for_new_virtual_model"),
+						IssueMessageType.ERROR);
 				return false;
 			}
 
 			if (StringUtils.isEmpty(getAddress())) {
-				setIssueMessage(action.getLocales().localizedForKey("no_connection_address_defined"), IssueMessageType.ERROR);
+				setIssueMessage(getAction().getLocales().localizedForKey("no_connection_address_defined"), IssueMessageType.ERROR);
 				return false;
 			}
 
@@ -138,65 +136,65 @@ public class CreateJDBCVirtualModelWizard extends FlexoWizard {
 		}
 
 		public String getNewVirtualModelName() {
-			return action.getNewVirtualModelName();
+			return getAction().getNewVirtualModelName();
 		}
 
 		public void setNewVirtualModelName(String newVirtualModelName) {
 			if (!newVirtualModelName.equals(getNewVirtualModelName())) {
 				String oldValue = getNewVirtualModelName();
-				action.setNewVirtualModelName(newVirtualModelName);
+				getAction().setNewVirtualModelName(newVirtualModelName);
 				getPropertyChangeSupport().firePropertyChange("newVirtualModelName", oldValue, newVirtualModelName);
 				checkValidity();
 			}
 		}
 
 		public JDBCDbType getDbType() {
-			return action.getDbType();
+			return getAction().getDbType();
 		}
 
 		public void setDbType(JDBCDbType aDbType) {
 			if (!aDbType.equals(getDbType())) {
 				JDBCDbType oldValue = getDbType();
-				action.setDbType(aDbType);
+				getAction().setDbType(aDbType);
 				getPropertyChangeSupport().firePropertyChange("dbType", oldValue, aDbType);
 				checkValidity();
 			}
 		}
 
 		public String getAddress() {
-			return action.getAddress();
+			return getAction().getAddress();
 		}
 
 		public void setAddress(String newAddress) {
 			if (!newAddress.equals(getAddress())) {
 				String oldValue = getAddress();
-				action.setAddress(newAddress);
+				getAction().setAddress(newAddress);
 				getPropertyChangeSupport().firePropertyChange("address", oldValue, newAddress);
 				checkValidity();
 			}
 		}
 
 		public String getUser() {
-			return action.getUser();
+			return getAction().getUser();
 		}
 
 		public void setUser(String newUser) {
 			if (!newUser.equals(getUser())) {
 				String oldValue = getUser();
-				action.setUser(newUser);
+				getAction().setUser(newUser);
 				getPropertyChangeSupport().firePropertyChange("user", oldValue, newUser);
 				checkValidity();
 			}
 		}
 
 		public String getPassword() {
-			return action.getPassword();
+			return getAction().getPassword();
 		}
 
 		public void setPassword(String newPassword) {
 			if (!newPassword.equals(getPassword())) {
 				String oldValue = getPassword();
-				action.setPassword(newPassword);
+				getAction().setPassword(newPassword);
 				getPropertyChangeSupport().firePropertyChange("password", oldValue, newPassword);
 				checkValidity();
 			}
@@ -233,12 +231,12 @@ public class CreateJDBCVirtualModelWizard extends FlexoWizard {
 		}
 
 		public CreateJDBCVirtualModel getAction() {
-			return action;
+			return CreateJDBCVirtualModelWizard.this.getAction();
 		}
 
 		@Override
 		public String getTitle() {
-			return action.getLocales().localizedForKey("choose_entities_to_be_reflected");
+			return getAction().getLocales().localizedForKey("choose_entities_to_be_reflected");
 		}
 
 		@Override
@@ -250,7 +248,7 @@ public class CreateJDBCVirtualModelWizard extends FlexoWizard {
 			}
 
 			if (getAction().getTablesToBeReflected() == null || getAction().getTablesToBeReflected().size() == 0) {
-				setIssueMessage(action.getLocales().localizedForKey("please_choose_some_entities"), IssueMessageType.ERROR);
+				setIssueMessage(getAction().getLocales().localizedForKey("please_choose_some_entities"), IssueMessageType.ERROR);
 				return false;
 			}
 
@@ -312,12 +310,12 @@ public class CreateJDBCVirtualModelWizard extends FlexoWizard {
 		}
 
 		public CreateJDBCVirtualModel getAction() {
-			return action;
+			return CreateJDBCVirtualModelWizard.this.getAction();
 		}
 
 		@Override
 		public String getTitle() {
-			return action.getLocales().localizedForKey("configure_table_mapping_for") + " " + tableMapping.getTable().getName();
+			return getAction().getLocales().localizedForKey("configure_table_mapping_for") + " " + tableMapping.getTable().getName();
 		}
 
 		@Override
