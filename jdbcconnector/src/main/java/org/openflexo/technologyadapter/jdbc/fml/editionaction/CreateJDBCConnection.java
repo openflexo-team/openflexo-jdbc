@@ -193,8 +193,7 @@ public interface CreateJDBCConnection extends AbstractCreateResource<JDBCModelSl
 				JDBCTechnologyAdapter technologyAdapter = getServiceManager().getTechnologyAdapterService()
 						.getTechnologyAdapter(JDBCTechnologyAdapter.class);
 
-				JDBCResource newResource = createResource(technologyAdapter, JDBCResourceFactory.class, rc, resourceName, resourceURI,
-						getRelativePath(), ".jdbc", true);
+				JDBCResource newResource = createResource(technologyAdapter, JDBCResourceFactory.class, evaluationContext, ".jdbc", true);
 				JDBCConnection connection = newResource.getResourceData();
 
 				connection.setAddress(evaluateDataBinding(getAddress(), evaluationContext));
