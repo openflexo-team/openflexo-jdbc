@@ -41,6 +41,7 @@ package org.openflexo.technologyadapter.jdbc.hbn.fml;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.editionaction.AbstractAddFlexoConceptInstance;
@@ -70,8 +71,9 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		@Override
 		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) throws FlexoException {
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
+			FlexoConcept instantiatedFlexoConcept = retrieveFlexoConcept(evaluationContext);
 
-			System.out.println("CreateHbnObject for receiver " + getReceiver() + " = " + vmi + " concept=" + getFlexoConceptType());
+			System.out.println("CreateHbnObject for receiver " + getReceiver() + " = " + vmi + " concept=" + instantiatedFlexoConcept);
 
 			HbnFlexoConceptInstance returned = super.execute(evaluationContext);
 
@@ -80,19 +82,26 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		}
 
 		@Override
+		protected Class<? extends FlexoConcept> getDynamicFlexoConceptTypeType() {
+			return FlexoConcept.class;
+		}
+
+		@Override
 		protected HbnFlexoConceptInstance makeNewFlexoConceptInstance(RunTimeEvaluationContext evaluationContext) throws FlexoException {
 			FlexoConceptInstance container = null;
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
 
-			if (getFlexoConceptType().getContainerFlexoConcept() != null) {
+			FlexoConcept instantiatedFlexoConcept = retrieveFlexoConcept(evaluationContext);
+
+			if (instantiatedFlexoConcept.getContainerFlexoConcept() != null) {
 				container = getContainer(evaluationContext);
 				if (container == null) {
-					logger.warning("null container while creating new concept " + getFlexoConceptType());
+					logger.warning("null container while creating new concept " + instantiatedFlexoConcept);
 					return null;
 				}
 			}
 
-			HbnFlexoConceptInstance returned = vmi.makeNewFlexoConceptInstance(getFlexoConceptType(), container);
+			HbnFlexoConceptInstance returned = vmi.makeNewFlexoConceptInstance(instantiatedFlexoConcept, container);
 
 			/*try {
 				// Note that we immediately save the created object in Hibernate session
