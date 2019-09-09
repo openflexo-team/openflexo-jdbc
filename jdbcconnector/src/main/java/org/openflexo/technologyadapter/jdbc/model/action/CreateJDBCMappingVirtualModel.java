@@ -61,8 +61,8 @@ import org.openflexo.foundation.fml.controlgraph.IterationAction;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.inspector.InspectorEntry;
-import org.openflexo.foundation.fml.rm.VirtualModelResource;
-import org.openflexo.foundation.fml.rm.VirtualModelResourceFactory;
+import org.openflexo.foundation.fml.rm.CompilationUnitResource;
+import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.editionaction.CreateFlexoConceptInstanceParameter;
 import org.openflexo.foundation.fml.rt.editionaction.MatchFlexoConceptInstance;
@@ -202,14 +202,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			List<JDBCTable> tables = connection.getSchema().getTables();
 
 			VirtualModel viewPoint = getFocusedObject();
-			VirtualModelResource viewPointResource = (VirtualModelResource) viewPoint.getResource();
+			CompilationUnitResource viewPointResource = (CompilationUnitResource) viewPoint.getResource();
 
 			FMLTechnologyAdapter fmlTechnologyAdapter = getServiceManager().getTechnologyAdapterService()
 					.getTechnologyAdapter(FMLTechnologyAdapter.class);
-			VirtualModelResourceFactory resourceFactory = fmlTechnologyAdapter.getVirtualModelResourceFactory();
+			CompilationUnitResourceFactory resourceFactory = fmlTechnologyAdapter.getCompilationUnitResourceFactory();
 
 			// creates the virtual model
-			VirtualModelResource vmResource = resourceFactory.makeContainedVirtualModelResource(getVirtualModelName(), viewPointResource,
+			CompilationUnitResource vmResource = resourceFactory.makeContainedCompilationUnitResource(getVirtualModelName(), viewPointResource,
 					true);
 
 			virtualModel = vmResource.getLoadedResourceData();

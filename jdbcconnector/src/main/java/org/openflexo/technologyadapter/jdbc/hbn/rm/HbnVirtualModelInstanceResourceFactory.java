@@ -23,7 +23,7 @@ package org.openflexo.technologyadapter.jdbc.hbn.rm;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.fml.rm.VirtualModelResource;
+import org.openflexo.foundation.fml.rm.CompilationUnitResource;
 import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.rm.AbstractVirtualModelInstanceResource;
@@ -69,7 +69,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	/**
-	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied {@link VirtualModelResource}
+	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied {@link CompilationUnitResource}
 	 * and located in supplied folder
 	 * 
 	 * @param baseName
@@ -83,7 +83,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws ModelDefinitionException
 	 */
 	public <I> HbnVirtualModelInstanceResource makeTopLevelHbnVirtualModelInstanceResource(String baseName, String uri,
-			VirtualModelResource virtualModelResource, RepositoryFolder<HbnVirtualModelInstanceResource, I> folder,
+			CompilationUnitResource virtualModelResource, RepositoryFolder<HbnVirtualModelInstanceResource, I> folder,
 			boolean createEmptyContents) throws SaveResourceException, ModelDefinitionException {
 
 		FlexoResourceCenter<I> resourceCenter = folder.getResourceRepository().getResourceCenter();
@@ -97,7 +97,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
-			resourceData.setVirtualModel(virtualModelResource.getVirtualModel());
+			resourceData.setVirtualModel(virtualModelResource.getCompilationUnit());
 			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext
@@ -111,7 +111,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	/**
-	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied {@link VirtualModelResource}
+	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied {@link CompilationUnitResource}
 	 * and located in supplied container {@link AbstractVirtualModelInstanceResource}
 	 * 
 	 * @param baseName
@@ -124,7 +124,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * @throws ModelDefinitionException
 	 */
 	public <I> HbnVirtualModelInstanceResource makeContainedHbnVirtualModelInstanceResource(String baseName,
-			VirtualModelResource virtualModelResource, AbstractVirtualModelInstanceResource<?, ?> containerResource,
+			CompilationUnitResource virtualModelResource, AbstractVirtualModelInstanceResource<?, ?> containerResource,
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager, boolean createEmptyContents)
 			throws SaveResourceException, ModelDefinitionException {
 
@@ -142,7 +142,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
-			resourceData.setVirtualModel(virtualModelResource.getVirtualModel());
+			resourceData.setVirtualModel(virtualModelResource.getCompilationUnit());
 			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext
@@ -276,8 +276,8 @@ public class HbnVirtualModelInstanceResourceFactory extends
 				returned.setModelVersion(CURRENT_HBN_RT_VERSION);
 			}
 			if (StringUtils.isNotEmpty(vmiInfo.virtualModelURI)) {
-				VirtualModelResource vmResource = resourceCenter.getServiceManager().getVirtualModelLibrary()
-						.getVirtualModelResource(vmiInfo.virtualModelURI);
+				CompilationUnitResource vmResource = resourceCenter.getServiceManager().getVirtualModelLibrary()
+						.getCompilationUnitResource(vmiInfo.virtualModelURI);
 				returned.setVirtualModelResource(vmResource);
 				if (vmResource == null) {
 					// In this case, serialize URI of virtual model, to give a chance to find it later

@@ -48,9 +48,9 @@ import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
-import org.openflexo.foundation.fml.VirtualModelRepository;
-import org.openflexo.foundation.fml.rm.VirtualModelResource;
-import org.openflexo.foundation.fml.rm.VirtualModelResourceFactory;
+import org.openflexo.foundation.fml.CompilationUnitRepository;
+import org.openflexo.foundation.fml.rm.CompilationUnitResource;
+import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstanceRepository;
@@ -100,9 +100,9 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 	private VirtualModel createViewPoint(FlexoEditor editor)
 			throws org.openflexo.foundation.resource.SaveResourceException, ModelDefinitionException {
 		FMLTechnologyAdapter fmlTechnologyAdapter = getTA(FMLTechnologyAdapter.class);
-		VirtualModelResourceFactory factory = fmlTechnologyAdapter.getVirtualModelResourceFactory();
-		VirtualModelRepository<File> viewPointRepository = (VirtualModelRepository<File>) editor.getProject().getVirtualModelRepository();
-		VirtualModelResource viewPointResource = factory.makeTopLevelVirtualModelResource(ROOT_VIRTUAL_MODEL_NAME, ROOT_VIRTUAL_MODEL_URI,
+		CompilationUnitResourceFactory factory = fmlTechnologyAdapter.getCompilationUnitResourceFactory();
+		CompilationUnitRepository<File> viewPointRepository = (CompilationUnitRepository<File>) editor.getProject().getVirtualModelRepository();
+		CompilationUnitResource viewPointResource = factory.makeTopLevelCompilationUnitResource(ROOT_VIRTUAL_MODEL_NAME, ROOT_VIRTUAL_MODEL_URI,
 				viewPointRepository.getRootFolder(), true);
 
 		viewPointResource.save();
@@ -156,7 +156,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		FMLRTVirtualModelInstanceRepository<?> viewLibrary = project.getProject().getVirtualModelInstanceRepository();
 
 		FMLRTVirtualModelInstanceResource viewResource = factory.makeTopLevelFMLRTVirtualModelInstanceResource(
-				ROOT_VIRTUAL_MODEL_INSTANCE_NAME, ROOT_VIRTUAL_MODEL_INSTANCE_URI, virtualModel.getVirtualModelResource(),
+				ROOT_VIRTUAL_MODEL_INSTANCE_NAME, ROOT_VIRTUAL_MODEL_INSTANCE_URI, virtualModel.getCompilationUnitResource(),
 				viewLibrary.getRootFolder(), true);
 
 		return viewResource.getLoadedResourceData();

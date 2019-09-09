@@ -55,7 +55,7 @@
 
 package org.openflexo.technologyadapter.jdbc.rm;
 
-import org.openflexo.foundation.resource.PamelaResourceImpl;
+import org.openflexo.foundation.resource.PamelaXMLSerializableResourceImpl;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
@@ -63,10 +63,8 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 // extends PamelaResourceImpl<Diagram, DiagramFactory>
 // extends FlexoResourceImpl<JDBCConnection>
 
-public abstract class JDBCResourceImpl
-	extends PamelaResourceImpl<JDBCConnection, JDBCFactory>
-		implements JDBCResource {
-    
+public abstract class JDBCResourceImpl extends PamelaXMLSerializableResourceImpl<JDBCConnection, JDBCFactory> implements JDBCResource {
+
 	@Override
 	public JDBCTechnologyAdapter getTechnologyAdapter() {
 		if (getServiceManager() != null) {
@@ -75,8 +73,8 @@ public abstract class JDBCResourceImpl
 		return null;
 	}
 
-    @Override
-    public Class<JDBCConnection> getResourceDataClass() {
-        return JDBCConnection.class;
-    }
+	@Override
+	public Class<JDBCConnection> getResourceDataClass() {
+		return JDBCConnection.class;
+	}
 }

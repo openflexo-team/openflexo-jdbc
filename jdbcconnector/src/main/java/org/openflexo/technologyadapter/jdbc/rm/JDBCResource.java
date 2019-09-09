@@ -55,7 +55,7 @@
 
 package org.openflexo.technologyadapter.jdbc.rm;
 
-import org.openflexo.foundation.resource.PamelaResource;
+import org.openflexo.foundation.resource.PamelaXMLSerializableResource;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
@@ -70,18 +70,16 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
 @ModelEntity
 @ImplementationClass(JDBCResourceImpl.class)
 @XMLElement
-public interface JDBCResource
-extends
-        PamelaResource<JDBCConnection, JDBCFactory>,
-        TechnologyAdapterResource<JDBCConnection, JDBCTechnologyAdapter>
-{
-    
-    String TECHNOLOGY_CONTEXT_MANAGER = "technologyContextManager";
+public interface JDBCResource extends PamelaXMLSerializableResource<JDBCConnection, JDBCFactory>,
+		TechnologyAdapterResource<JDBCConnection, JDBCTechnologyAdapter> {
 
-    @Getter(value=TECHNOLOGY_CONTEXT_MANAGER, ignoreType=true)
-    JDBCTechnologyContextManager getTechnologyContextManager();
+	String TECHNOLOGY_CONTEXT_MANAGER = "technologyContextManager";
 
-    @Setter(TECHNOLOGY_CONTEXT_MANAGER)
-    void setTechnologyContextManager(JDBCTechnologyContextManager paramJDBCTechnologyContextManager);
+	@Override
+	@Getter(value = TECHNOLOGY_CONTEXT_MANAGER, ignoreType = true)
+	JDBCTechnologyContextManager getTechnologyContextManager();
+
+	@Setter(TECHNOLOGY_CONTEXT_MANAGER)
+	void setTechnologyContextManager(JDBCTechnologyContextManager paramJDBCTechnologyContextManager);
 
 }
