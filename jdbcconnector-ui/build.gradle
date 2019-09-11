@@ -8,6 +8,3 @@ dependencies {
     testCompile fmlTechnologyAdapterUi()
     
 }
-tasks.withType(Test) {
-	jvmArgs += ["-Djava.awt.headless=true"]
-}
