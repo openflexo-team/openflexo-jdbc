@@ -69,8 +69,8 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	/**
-	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied {@link CompilationUnitResource}
-	 * and located in supplied folder
+	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied
+	 * {@link CompilationUnitResource} and located in supplied folder
 	 * 
 	 * @param baseName
 	 * @param uri
@@ -97,7 +97,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
-			resourceData.setVirtualModel(virtualModelResource.getCompilationUnit());
+			resourceData.setVirtualModel(virtualModelResource.getCompilationUnit().getVirtualModel());
 			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext
@@ -111,8 +111,8 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	/**
-	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied {@link CompilationUnitResource}
-	 * and located in supplied container {@link AbstractVirtualModelInstanceResource}
+	 * Build a new {@link HbnVirtualModelInstanceResource} with supplied baseName and URI, conform to supplied
+	 * {@link CompilationUnitResource} and located in supplied container {@link AbstractVirtualModelInstanceResource}
 	 * 
 	 * @param baseName
 	 * @param virtualModelResource
@@ -142,7 +142,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
-			resourceData.setVirtualModel(virtualModelResource.getCompilationUnit());
+			resourceData.setVirtualModel(virtualModelResource.getCompilationUnit().getVirtualModel());
 			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext

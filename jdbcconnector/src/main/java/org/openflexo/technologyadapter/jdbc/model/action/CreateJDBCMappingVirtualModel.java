@@ -202,17 +202,17 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			List<JDBCTable> tables = connection.getSchema().getTables();
 
 			VirtualModel viewPoint = getFocusedObject();
-			CompilationUnitResource viewPointResource = (CompilationUnitResource) viewPoint.getResource();
+			CompilationUnitResource viewPointResource = viewPoint.getResource();
 
 			FMLTechnologyAdapter fmlTechnologyAdapter = getServiceManager().getTechnologyAdapterService()
 					.getTechnologyAdapter(FMLTechnologyAdapter.class);
 			CompilationUnitResourceFactory resourceFactory = fmlTechnologyAdapter.getCompilationUnitResourceFactory();
 
 			// creates the virtual model
-			CompilationUnitResource vmResource = resourceFactory.makeContainedCompilationUnitResource(getVirtualModelName(), viewPointResource,
-					true);
+			CompilationUnitResource vmResource = resourceFactory.makeContainedCompilationUnitResource(getVirtualModelName(),
+					viewPointResource, true);
 
-			virtualModel = vmResource.getLoadedResourceData();
+			virtualModel = vmResource.getLoadedResourceData().getVirtualModel();
 			virtualModel.setDescription("This virtual model was generated to represent the database '" + getAddress() + "'");
 
 			// Creates the db slot

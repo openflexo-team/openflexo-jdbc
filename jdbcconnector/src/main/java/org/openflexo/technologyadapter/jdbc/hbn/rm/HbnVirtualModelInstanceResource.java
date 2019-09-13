@@ -47,15 +47,12 @@ import org.openflexo.foundation.IOFlexoException;
 import org.openflexo.foundation.InconsistentDataException;
 import org.openflexo.foundation.InvalidModelDefinitionException;
 import org.openflexo.foundation.InvalidXMLException;
-import org.openflexo.foundation.fml.FMLTechnologyAdapter;
-import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.rm.AbstractVirtualModelInstanceResource;
 import org.openflexo.foundation.fml.rt.rm.AbstractVirtualModelInstanceResourceImpl;
 import org.openflexo.foundation.resource.FileIODelegate;
 import org.openflexo.foundation.resource.FlexoFileNotFoundException;
 import org.openflexo.foundation.resource.FlexoResource;
-import org.openflexo.foundation.technologyadapter.FlexoModelResource;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
@@ -77,8 +74,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(HbnVirtualModelInstanceResource.HbnVirtualModelInstanceResourceImpl.class)
 @XMLElement
 public interface HbnVirtualModelInstanceResource
-		extends AbstractVirtualModelInstanceResource<HbnVirtualModelInstance, JDBCTechnologyAdapter>,
-		FlexoModelResource<HbnVirtualModelInstance, VirtualModel, JDBCTechnologyAdapter, FMLTechnologyAdapter> {
+		extends AbstractVirtualModelInstanceResource<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
 	/**
 	 * Default implementation for {@link HbnVirtualModelInstanceResource}
@@ -118,16 +114,6 @@ public interface HbnVirtualModelInstanceResource
 				return ioDelegate.getFile().getParentFile().getAbsolutePath();
 			}
 			return "";
-		}
-
-		@Override
-		public HbnVirtualModelInstance getModelData() {
-			return getVirtualModelInstance();
-		}
-
-		@Override
-		public HbnVirtualModelInstance getModel() {
-			return getVirtualModelInstance();
 		}
 
 		@Override

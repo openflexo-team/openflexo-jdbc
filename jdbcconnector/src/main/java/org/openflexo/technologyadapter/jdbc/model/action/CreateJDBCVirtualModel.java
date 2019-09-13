@@ -163,7 +163,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 
 		try {
 			CompilationUnitResource vmResource = makeVirtualModelResource();
-			newVirtualModel = vmResource.getLoadedResourceData();
+			newVirtualModel = vmResource.getLoadedResourceData().getVirtualModel();
 			newVirtualModel.setDescription(getNewVirtualModelDescription());
 			newVirtualModel.setAbstract(true);
 			newVirtualModel.setModelSlotNatureClass(HbnModelSlot.class);
@@ -193,7 +193,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 				switch (columnMapping.getMappingType()) {
 					case Primitive:
 						propertyEntry.setPropertyType(PropertyType.TECHNOLOGY_ROLE);
-						propertyEntry.setFlexoRoleClass((Class) HbnColumnRole.class);
+						propertyEntry.setFlexoRoleClass(HbnColumnRole.class);
 						propertyEntry.setType(columnMapping.getColumn().getDataType().getJavaType());
 						System.out.println("Property " + propertyEntry + " type=" + propertyEntry.getType());
 						break;

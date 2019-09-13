@@ -404,8 +404,8 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 
 		@Override
 		public JDBCTechnologyAdapter getTechnologyAdapter() {
-			if (getResource() != null) {
-				return getResource().getTechnologyAdapter();
+			if (getVirtualModelInstanceResource() != null) {
+				return getVirtualModelInstanceResource().getTechnologyAdapter();
 			}
 			return null;
 		}
@@ -1051,8 +1051,8 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		@Override
 		public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, FlexoConceptInstance container) {
 
-			HbnFlexoConceptInstance returned = getResource().getFactory().newInstance(HbnFlexoConceptInstance.class, new HashMap<>(),
-					concept);
+			HbnFlexoConceptInstance returned = getVirtualModelInstanceResource().getFactory().newInstance(HbnFlexoConceptInstance.class,
+					new HashMap<>(), concept);
 
 			if (container != null) {
 				container.addToEmbeddedFlexoConceptInstances(returned);

@@ -237,7 +237,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					|| (virtualModelResource != null && !virtualModelResource.equals(getVirtualModelResource()))) {
 				CompilationUnitResource oldValue = getVirtualModelResource();
 				this.virtualModelResource = virtualModelResource;
-				setVirtualModel(virtualModelResource != null ? virtualModelResource.getCompilationUnit() : null);
+				setVirtualModel(virtualModelResource != null ? virtualModelResource.getCompilationUnit().getVirtualModel() : null);
 				getPropertyChangeSupport().firePropertyChange("virtualModelResource", oldValue, virtualModelResource);
 			}
 		}
@@ -251,7 +251,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 				return ((HbnModelSlot) getAssignedFlexoProperty()).getAccessedVirtualModel();
 			}
 			if (virtualModelResource != null) {
-				return virtualModelResource.getCompilationUnit();
+				return virtualModelResource.getCompilationUnit().getVirtualModel();
 			}
 			return virtualModel;
 		}

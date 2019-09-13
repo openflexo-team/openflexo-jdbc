@@ -43,12 +43,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openflexo.foundation.FlexoEditor;
+import org.openflexo.foundation.fml.CompilationUnitRepository;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
-import org.openflexo.foundation.fml.CompilationUnitRepository;
 import org.openflexo.foundation.fml.rm.CompilationUnitResource;
 import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
@@ -101,12 +101,13 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 			throws org.openflexo.foundation.resource.SaveResourceException, ModelDefinitionException {
 		FMLTechnologyAdapter fmlTechnologyAdapter = getTA(FMLTechnologyAdapter.class);
 		CompilationUnitResourceFactory factory = fmlTechnologyAdapter.getCompilationUnitResourceFactory();
-		CompilationUnitRepository<File> viewPointRepository = (CompilationUnitRepository<File>) editor.getProject().getVirtualModelRepository();
-		CompilationUnitResource viewPointResource = factory.makeTopLevelCompilationUnitResource(ROOT_VIRTUAL_MODEL_NAME, ROOT_VIRTUAL_MODEL_URI,
-				viewPointRepository.getRootFolder(), true);
+		CompilationUnitRepository<File> viewPointRepository = (CompilationUnitRepository<File>) editor.getProject()
+				.getVirtualModelRepository();
+		CompilationUnitResource viewPointResource = factory.makeTopLevelCompilationUnitResource(ROOT_VIRTUAL_MODEL_NAME,
+				ROOT_VIRTUAL_MODEL_URI, viewPointRepository.getRootFolder(), true);
 
 		viewPointResource.save();
-		return viewPointResource.getLoadedResourceData();
+		return viewPointResource.getLoadedResourceData().getVirtualModel();
 	}
 
 	private static JDBCConnection prepareDatabase(String name) throws ModelDefinitionException {
