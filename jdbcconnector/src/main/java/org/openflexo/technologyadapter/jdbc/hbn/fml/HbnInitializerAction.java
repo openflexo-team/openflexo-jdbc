@@ -88,7 +88,7 @@ public class HbnInitializerAction extends AbstractActionSchemeAction<HbnInitiali
 
 	@Override
 	protected void doAction(Object context) throws FlexoException {
-		HbnInitializer applicableActionScheme = getApplicableActionScheme();
+		HbnInitializer applicableActionScheme = getApplicableFlexoBehaviour();
 		if (applicableActionScheme != null && applicableActionScheme.evaluateCondition(getFlexoConceptInstance())) {
 			executeControlGraph();
 		}
