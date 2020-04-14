@@ -83,7 +83,7 @@ public class CreateJDBCVirtualModelWizard extends FlexoActionWizard<CreateJDBCVi
 	@Override
 	public Image getDefaultPageImage() {
 		// TODO change icon
-		return IconFactory.getImageIcon(FMLIconLibrary.VIRTUAL_MODEL_BIG_ICON, IconLibrary.NEW_32_32).getImage();
+		return IconFactory.getImageIcon(FMLIconLibrary.VIRTUAL_MODEL_BIG_ICON, IconLibrary.BIG_NEW_MARKER).getImage();
 	}
 
 	public ConfigureJDBCVirtualModel getConfigureJdbcConnection() {
