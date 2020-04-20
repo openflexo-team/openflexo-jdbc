@@ -243,7 +243,8 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 				addVirtualModelSynchronizationScheme(fmlFactory, virtualModel, tables);
 			}
 
-			viewPoint.addToVirtualModels(virtualModel);
+			logger.warning("TODO: il fallait faire un addToVirtualModels() avant, et maintenant ?");
+			// viewPoint.addToVirtualModels(virtualModel);
 
 		} catch (Exception e) {
 			throw new FlexoException(e);
