@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.fml.FlexoBehaviour;
-import org.openflexo.foundation.fml.rt.editionaction.BehaviourParameter;
+import org.openflexo.foundation.fml.rt.editionaction.BehaviourCallArgument;
 import org.openflexo.pamela.annotations.DefineValidationRule;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
@@ -59,9 +59,9 @@ import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResour
 @ModelEntity
 @ImplementationClass(CreateHbnResourceParameter.CreateHbnResourceParameterImpl.class)
 @XMLElement
-public interface CreateHbnResourceParameter extends BehaviourParameter<CreateHbnResource> {
+public interface CreateHbnResourceParameter extends BehaviourCallArgument<CreateHbnResource> {
 
-	public static abstract class CreateHbnResourceParameterImpl extends BehaviourParameterImpl<CreateHbnResource>
+	public static abstract class CreateHbnResourceParameterImpl extends BehaviourCallArgumentImpl<CreateHbnResource>
 			implements CreateHbnResourceParameter {
 
 		static final Logger logger = Logger.getLogger(CreateHbnResourceParameter.class.getPackage().getName());
