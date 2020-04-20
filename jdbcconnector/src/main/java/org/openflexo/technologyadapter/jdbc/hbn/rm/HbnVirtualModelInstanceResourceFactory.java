@@ -220,7 +220,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	@Override
-	protected <I> HbnVirtualModelInstanceResource registerResource(HbnVirtualModelInstanceResource resource,
+	public <I> HbnVirtualModelInstanceResource registerResource(HbnVirtualModelInstanceResource resource,
 			FlexoResourceCenter<I> resourceCenter) {
 		super.registerResource(resource, resourceCenter);
 
