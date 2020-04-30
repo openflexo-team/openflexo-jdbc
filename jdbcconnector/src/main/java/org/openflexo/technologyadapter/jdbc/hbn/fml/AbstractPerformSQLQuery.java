@@ -312,7 +312,7 @@ public interface AbstractPerformSQLQuery<AT>
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}*/
-			logger.warning(getOwner().getFMLRepresentation());
+			// logger.warning(getOwner().getFMLRepresentation());
 			return null;
 		}
 

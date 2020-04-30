@@ -279,7 +279,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		log("Create virtual model instance " + VIRTUAL_MODEL_INSTANCE_NAME);
 		FMLRTVirtualModelInstance instance = createVirtualModelInstance(project, view, virtualModel, connection.getAddress());
 
-		System.out.println("FML=" + virtualModel.getFMLRepresentation());
+		System.out.println("FML=" + virtualModel.getFMLPrettyPrint());
 
 		Assert.assertEquals(14, instance.getFlexoConceptInstances().size());
 	}

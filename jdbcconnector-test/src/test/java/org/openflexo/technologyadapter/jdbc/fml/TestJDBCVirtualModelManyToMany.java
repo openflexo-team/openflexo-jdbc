@@ -335,7 +335,7 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 
 		mappingVirtualModel.getResource().save();
 
-		System.out.println(mappingVirtualModel.getFMLRepresentation());
+		System.out.println(mappingVirtualModel.getFMLPrettyPrint());
 
 		assertVirtualModelIsValid(mappingVirtualModel);
 
@@ -429,7 +429,7 @@ public class TestJDBCVirtualModelManyToMany extends HsqlTestCase {
 
 		rootVirtualModel.getResource().save();
 
-		System.out.println(rootVirtualModel.getFMLRepresentation());
+		System.out.println(rootVirtualModel.getFMLPrettyPrint());
 
 		assertVirtualModelIsValid(rootVirtualModel);
 	}

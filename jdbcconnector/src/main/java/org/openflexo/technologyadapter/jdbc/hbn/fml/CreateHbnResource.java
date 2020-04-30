@@ -490,7 +490,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					data.setDbType(dbType);*/
 
 					// Now we should execute CreationScheme
-					System.out.println("Executing FML: " + getCreationScheme().getFMLRepresentation());
+					System.out.println("Executing FML: " + getCreationScheme().getFMLPrettyPrint());
 					CreationSchemeAction creationSchemeAction = new CreationSchemeAction(getCreationScheme(), null, null,
 							(FlexoBehaviourAction<?, ?, ?>) evaluationContext);
 					creationSchemeAction.initWithFlexoConceptInstance(data);
