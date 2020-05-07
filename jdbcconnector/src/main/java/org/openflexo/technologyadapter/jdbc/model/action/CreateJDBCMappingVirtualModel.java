@@ -45,6 +45,7 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
+import org.openflexo.foundation.InvalidNameException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.CreationScheme;
@@ -262,7 +263,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	private CreationScheme createVirtualModelCreationScheme(FMLModelFactory fmlFactory) {
 		CreationScheme creationScheme = fmlFactory.newCreationScheme();
-		creationScheme.setName("create");
+		creationScheme.setAnonymous(true);
 
 		// addParameter(fmlFactory, creationScheme, "dbtype", JDBCDbType.class, getDbType());
 		addParameter(fmlFactory, creationScheme, "address", String.class, getAddress());
@@ -287,7 +288,12 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	private void addVirtualModelSynchronizationScheme(FMLModelFactory factory, VirtualModel virtualModel, List<JDBCTable> tables) {
 		SynchronizationScheme scheme = factory.newSynchronizationScheme();
-		scheme.setName("synchronizationScheme");
+		try {
+			scheme.setName("synchronizationScheme");
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		virtualModel.addToFlexoBehaviours(scheme);
 
 		for (JDBCTable table : tables) {
@@ -339,7 +345,12 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 	private static void addParameter(FMLModelFactory fmlFactory, CreationScheme creationScheme, String address, Type type,
 			Object defaultValue) {
 		FlexoBehaviourParameter parameter = fmlFactory.newParameter(creationScheme);
-		parameter.setName(address);
+		try {
+			parameter.setName(address);
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		parameter.setType(type);
 		if (defaultValue != null) {
 			parameter.setDefaultValue(
@@ -354,12 +365,22 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 		tableToConcepts.put(table, concept);
 
-		concept.setName(table.getName());
+		try {
+			concept.setName(table.getName());
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		concept.setDescription("Generated flexo concept for table " + table.getName());
 
 		// Adds line role
 		JDBCLineRole dbRole = factory.newInstance(JDBCLineRole.class);
-		dbRole.setName("line");
+		try {
+			dbRole.setName("line");
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		dbRole.setDescription("Role linked to the corresponding " + table.getName() + " to the database.");
 		concept.addToFlexoProperties(dbRole);
 
@@ -369,7 +390,12 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			concept.addToFlexoProperties(property);
 
 			InspectorEntry entry = factory.newInspectorEntry(concept.getInspector());
-			entry.setName(column.getName());
+			try {
+				entry.setName(column.getName());
+			} catch (InvalidNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			entry.setType(typeForColumn(column));
 			entry.setData(new DataBinding<>(property.getName(), concept, null, DataBinding.BindingDefinitionType.GET));
 			entry.setIsReadOnly(column.isPrimaryKey());
@@ -383,7 +409,12 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	private static ExpressionProperty<?> createExpressionPropertyForColumn(FMLModelFactory factory, JDBCColumn column) {
 		ExpressionProperty<?> property = factory.newExpressionProperty();
-		property.setName(column.getName().toLowerCase());
+		try {
+			property.setName(column.getName().toLowerCase());
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String suffix = typeForColumn(column) == Integer.class ? "intValue" : "value";
 		property.setExpression(new DataBinding<>("line.getValue('" + column.getName() + "')." + suffix, property, JDBCValue.class,
 				DataBinding.BindingDefinitionType.GET_SET));
@@ -436,7 +467,12 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	private static CreationScheme createConceptCreationScheme(FMLModelFactory factory) {
 		CreationScheme creationScheme = factory.newCreationScheme();
-		creationScheme.setName("create");
+		try {
+			creationScheme.setName("create");
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		addParameter(factory, creationScheme, "line", JDBCLine.class, null);
 
 		AssignationAction<JDBCLine> assignation = factory.newAssignationAction();
