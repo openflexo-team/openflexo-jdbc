@@ -35,7 +35,7 @@
  * 
  */
 
-package org.openflexo.connie.hbn;
+package org.openflexo.technologyadapter.jdbc;
 
 import java.util.Properties;
 import java.util.logging.Logger;

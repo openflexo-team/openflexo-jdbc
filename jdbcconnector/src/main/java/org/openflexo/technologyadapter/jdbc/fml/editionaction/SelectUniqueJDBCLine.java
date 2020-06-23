@@ -33,31 +33,27 @@
  *
  */
 
-package org.openflexo.jdbc.test;
+package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
-import org.junit.BeforeClass;
-import org.openflexo.pamela.exceptions.ModelDefinitionException;
-import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
-import org.openflexo.technologyadapter.jdbc.dbtype.HSQLUtils;
+import org.openflexo.foundation.fml.annotations.FML;
+import org.openflexo.foundation.fml.editionaction.UniqueFetchRequest;
+import org.openflexo.pamela.annotations.ImplementationClass;
+import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.annotations.XMLElement;
+import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 
 /**
- * Provides testing environment in JDBC context
- *
+ * A {@link UniqueFetchRequest} allowing to retrieve a unique {@link JDBCLine} matching some conditions and a given type.<br>
+ * 
+ * @author sylvain
  */
-public abstract class HsqlTestCase extends JDBCTestCase {
-
-	@BeforeClass
-	public static void setupClass() {
-		serviceManager = instanciateTestServiceManager(JDBCTechnologyAdapter.class);
-	}
-
-	public static JDBCConnection createHSQLMemoryConnection(String name) throws ModelDefinitionException {
-		return HSQLUtils.createHSQLMemoryConnection(name);
-	}
-
-	public static JDBCConnection createJDBCHSQLConnection(String protocolAndName) throws ModelDefinitionException {
-		return HSQLUtils.createJDBCHSQLConnection(protocolAndName);
-	}
+@ModelEntity
+@ImplementationClass(SelectUniqueJDBCLine.AbstractSelectJDBCLineImpl.class)
+@XMLElement
+@FML("SelectUniqueJDBCLine")
+public interface SelectUniqueJDBCLine
+		extends AbstractSelectJDBCLine<JDBCLine>, UniqueFetchRequest<JDBCModelSlot, JDBCConnection, JDBCLine> {
 
 }

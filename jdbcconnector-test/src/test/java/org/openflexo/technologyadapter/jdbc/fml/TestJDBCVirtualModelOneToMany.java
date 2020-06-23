@@ -411,7 +411,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		assertNotNull(salesmenProperty = createSalesmenProperty.getNewFlexoRole());
 		assertNotNull(salesmenProperty);
 
-		mappingVirtualModel.getResource().save(null);
+		mappingVirtualModel.getResource().save();
 
 		System.out.println(mappingVirtualModel.getFMLRepresentation());
 
@@ -506,7 +506,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 		createHbnResourceAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
 
-		rootVirtualModel.getResource().save(null);
+		rootVirtualModel.getResource().save();
 
 		System.out.println(rootVirtualModel.getFMLRepresentation());
 

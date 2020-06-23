@@ -54,7 +54,7 @@ import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 import org.hibernate.type.TypeResolver;
-import org.openflexo.connie.hbn.HbnConfig;
+import org.openflexo.technologyadapter.jdbc.HbnConfig;
 
 public class DynamicModelBuilder {
 

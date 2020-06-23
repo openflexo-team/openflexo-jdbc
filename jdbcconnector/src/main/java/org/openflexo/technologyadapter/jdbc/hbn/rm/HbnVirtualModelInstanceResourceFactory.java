@@ -33,7 +33,7 @@ import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
-import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstanceModelFactory;
@@ -98,7 +98,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
 			resourceData.setVirtualModel(virtualModelResource.getVirtualModel());
-			returned.save(null);
+			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext
 				// TODO: design issue, we should separate FlexoConceptInstance from RunTimeEvaluationContext
@@ -143,7 +143,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 		if (createEmptyContents) {
 			HbnVirtualModelInstance resourceData = createEmptyContents(returned);
 			resourceData.setVirtualModel(virtualModelResource.getVirtualModel());
-			returned.save(null);
+			returned.save();
 			if (resourceData.getFMLRunTimeEngine() != null) {
 				// TODO: today FMLRTVirtualModelInstance is a RunTimeEvaluationContext
 				// TODO: design issue, we should separate FlexoConceptInstance from RunTimeEvaluationContext
@@ -220,7 +220,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	@Override
-	protected <I> HbnVirtualModelInstanceResource registerResource(HbnVirtualModelInstanceResource resource,
+	public <I> HbnVirtualModelInstanceResource registerResource(HbnVirtualModelInstanceResource resource,
 			FlexoResourceCenter<I> resourceCenter) {
 		super.registerResource(resource, resourceCenter);
 
@@ -362,12 +362,6 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	}
 
 	@Override
-	public <I> I getConvertableArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public HbnVirtualModelInstance makeEmptyResourceData(HbnVirtualModelInstanceResource resource) {
 		return resource.getFactory().newInstance(HbnVirtualModelInstance.class/*, resource.getServiceManager()*/);
 	}
@@ -376,7 +370,7 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	 * Build and return model factory to use for resource data managing
 	 */
 	@Override
-	public AbstractVirtualModelInstanceModelFactory<?> makeResourceDataFactory(HbnVirtualModelInstanceResource resource,
+	public AbstractVirtualModelInstanceModelFactory<?> makeModelFactory(HbnVirtualModelInstanceResource resource,
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
 		return new HbnVirtualModelInstanceModelFactory(resource,
 				technologyContextManager.getTechnologyAdapter().getServiceManager().getEditingContext(),

@@ -39,8 +39,8 @@ import org.hibernate.Session;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.query.NativeQuery;
 import org.junit.AfterClass;
-import org.openflexo.connie.hbn.HbnConfig;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
+import org.openflexo.technologyadapter.jdbc.HbnConfig;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 

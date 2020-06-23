@@ -37,14 +37,15 @@ package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.foundation.fml.annotations.FML;
-import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
+import org.openflexo.foundation.fml.editionaction.AbstractFetchRequest;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
@@ -52,97 +53,80 @@ import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
+import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
-import org.openflexo.technologyadapter.jdbc.model.JDBCSchema;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
-@ModelEntity
-@ImplementationClass(AddJDBCTable.AddJDBCTableImpl.class)
-@XMLElement
-@FML("AddJDBCTable")
-public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<JDBCModelSlot, JDBCConnection, JDBCTable> {
+/**
+ * A generic {@link AbstractFetchRequest} allowing to retrieve a selection of some {@link JDBCColumn} matching some conditions and a given
+ * type.<br>
+ * 
+ * @author sylvain
+ */
+@ModelEntity(isAbstract = true)
+@ImplementationClass(AbstractSelectJDBCColumn.AbstractSelectJDBCColumnImpl.class)
+public interface AbstractSelectJDBCColumn<AT> extends AbstractFetchRequest<JDBCModelSlot, JDBCConnection, JDBCColumn, AT> {
 
 	@PropertyIdentifier(type = DataBinding.class)
-	String TABLE_NAME = "tableName";
+	String TABLE_KEY = "table";
 
-	@Getter(TABLE_NAME)
+	@Getter(TABLE_KEY)
 	@XMLAttribute
-	DataBinding<String> getTableName();
+	DataBinding<JDBCTable> getTable();
 
-	@Setter(TABLE_NAME)
-	void setTableName(DataBinding<String> name);
+	@Setter(TABLE_KEY)
+	void setTable(DataBinding<JDBCTable> table);
 
-	abstract class AddJDBCTableImpl extends TechnologySpecificActionDefiningReceiverImpl<JDBCModelSlot, JDBCConnection, JDBCTable>
-			implements AddJDBCTable {
+	abstract class AbstractSelectJDBCColumnImpl<AT> extends AbstractFetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCColumn, AT>
+			implements AbstractSelectJDBCColumn<AT> {
 
-		private static final Logger logger = Logger.getLogger(AddJDBCTable.class.getPackage().getName());
+		private static final Logger logger = Logger.getLogger(AbstractSelectJDBCColumn.class.getPackage().getName());
 
-		private DataBinding<String> tableName;
+		private DataBinding<JDBCTable> table;
 
 		@Override
-		public Type getAssignableType() {
-			return JDBCTable.class;
+		public Type getFetchedType() {
+			return JDBCColumn.class;
 		}
 
 		@Override
-		public JDBCTable execute(RunTimeEvaluationContext evaluationContext) {
+		public List<JDBCColumn> performExecute(RunTimeEvaluationContext evaluationContext) {
 
-			JDBCConnection connection = getReceiver(evaluationContext);
-
+			List<JDBCColumn> columns = new ArrayList<>();
+			JDBCTable table;
 			try {
-				if (connection != null) {
-					String name = getTableName().getBindingValue(evaluationContext);
-					if (name != null) {
-						// Create or retrieve this sheet
-						return retrieveOrCreateTable(connection, name);
-					}
-					logger.warning("Create a JDBC table requires a name");
-				}
-				else {
-					logger.warning("Create a JDBC table requires a JDBC connection");
+				table = getTable().getBindingValue(evaluationContext);
+
+				if (table != null) {
+					columns.addAll(table.getColumns());
 				}
 			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
-				logger.log(Level.WARNING, "Can't create JDBC table", e);
+				logger.log(Level.WARNING, "Can't evaluate table", e);
 			}
 
-			return null;
+			return filterWithConditions(columns, evaluationContext);
 
 		}
 
-		// Create an Excel Sheet or get the existing one.
-		private static JDBCTable retrieveOrCreateTable(JDBCConnection connection, String name) {
-			JDBCSchema schema = connection.getSchema();
-			JDBCTable table = schema.getTable(name);
-			if (table == null)
-				table = schema.createTable(name);
+		@Override
+		public DataBinding<JDBCTable> getTable() {
+			if (table == null) {
+				table = new DataBinding<>(this, JDBCTable.class, DataBinding.BindingDefinitionType.GET);
+				table.setBindingName("table");
+			}
 			return table;
 		}
 
-		/*@Override
-		public FreeModelSlotInstance<JDBCConnection, JDBCModelSlot> getModelSlotInstance(RunTimeEvaluationContext evaluationContext) {
-			return (FreeModelSlotInstance<JDBCConnection, JDBCModelSlot>) super.getModelSlotInstance(evaluationContext);
-		}*/
-
 		@Override
-		public DataBinding<String> getTableName() {
-			if (tableName == null) {
-				tableName = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
-				tableName.setBindingName(TABLE_NAME);
+		public void setTable(DataBinding<JDBCTable> table) {
+			if (table != null) {
+				table.setOwner(this);
+				table.setDeclaredType(JDBCTable.class);
+				table.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				table.setBindingName("table");
 			}
-			return tableName;
-		}
-
-		@Override
-		public void setTableName(DataBinding<String> tableName) {
-			if (tableName != null) {
-				tableName.setOwner(this);
-				tableName.setDeclaredType(String.class);
-				tableName.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
-				tableName.setBindingName(TABLE_NAME);
-			}
-			this.tableName = tableName;
+			this.table = table;
 		}
 	}
 }

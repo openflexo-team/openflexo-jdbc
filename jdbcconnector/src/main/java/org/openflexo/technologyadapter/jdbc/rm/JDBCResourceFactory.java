@@ -41,7 +41,7 @@ import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.resource.TechnologySpecificPamelaResourceFactory;
 import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
-import org.openflexo.model.exceptions.ModelDefinitionException;
+import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
@@ -59,8 +59,8 @@ public class JDBCResourceFactory
 	}
 
 	@Override
-	public JDBCFactory makeResourceDataFactory(JDBCResource resource,
-			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
+	public JDBCFactory makeModelFactory(JDBCResource resource, TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager)
+			throws ModelDefinitionException {
 		return new JDBCFactory(resource, technologyContextManager.getServiceManager().getEditingContext());
 	}
 
@@ -73,11 +73,6 @@ public class JDBCResourceFactory
 	public <I> boolean isValidArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
 		String name = resourceCenter.retrieveName(serializationArtefact);
 		return FilenameUtils.isExtension(name, JDBC_EXTENSION);
-	}
-
-	@Override
-	public <I> I getConvertableArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
-		return null;
 	}
 
 	public <I> JDBCResource makeJDBCResource(String baseName, RepositoryFolder<JDBCResource, I> folder)

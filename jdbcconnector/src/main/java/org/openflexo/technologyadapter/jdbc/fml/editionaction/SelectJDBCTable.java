@@ -35,43 +35,26 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.FetchRequest;
-import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
-import org.openflexo.model.annotations.ImplementationClass;
-import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.pamela.annotations.ImplementationClass;
+import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
+/**
+ * A {@link FetchRequest} allowing to retrieve a selection of some {@link JDBCTable} matching some conditions and a given type.<br>
+ * 
+ * @author sylvain
+ */
 @ModelEntity
-@ImplementationClass(SelectJDBCTable.SelectJDBCTableImpl.class)
+@ImplementationClass(SelectJDBCTable.AbstractSelectJDBCTableImpl.class)
 @XMLElement
 @FML("SelectJDBCTable")
-public interface SelectJDBCTable extends FetchRequest<JDBCModelSlot, JDBCConnection, JDBCTable> {
+public interface SelectJDBCTable extends AbstractSelectJDBCTable<List<JDBCTable>>, FetchRequest<JDBCModelSlot, JDBCConnection, JDBCTable> {
 
-	abstract class SelectJDBCTableImpl extends FetchRequestImpl<JDBCModelSlot, JDBCConnection, JDBCTable> implements SelectJDBCTable {
-
-		@SuppressWarnings("unused")
-		private static final Logger logger = Logger.getLogger(SelectJDBCTable.class.getPackage().getName());
-
-		@Override
-		public Type getFetchedType() {
-			return JDBCTable.class;
-		}
-
-		@Override
-		public List<JDBCTable> execute(RunTimeEvaluationContext evaluationContext) {
-
-			JDBCConnection connection = getReceiver(evaluationContext);
-			List<JDBCTable> result = new ArrayList<>(connection.getSchema().getTables());
-			return filterWithConditions(result, evaluationContext);
-		}
-	}
 }

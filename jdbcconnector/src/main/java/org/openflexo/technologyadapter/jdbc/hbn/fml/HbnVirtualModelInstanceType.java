@@ -38,12 +38,15 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
+import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections15.map.HashedMap;
 import org.openflexo.connie.type.CustomTypeFactory;
+import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
+import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -71,7 +74,7 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 		return HbnVirtualModelInstance.class;
 	}
 
-	private static Map<VirtualModel, HbnVirtualModelInstanceType> types = new HashedMap<>();
+	private static Map<VirtualModel, HbnVirtualModelInstanceType> types = new HashMap<>();
 
 	public static HbnVirtualModelInstanceType getVirtualModelInstanceType(VirtualModel aVirtualModel) {
 		if (aVirtualModel != null) {
@@ -92,7 +95,8 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 	 * @author sylvain
 	 * 
 	 */
-	public static class HbnVirtualModelInstanceTypeFactory extends AbstractVirtualModelInstanceTypeFactory<HbnVirtualModelInstanceType> {
+	public static class HbnVirtualModelInstanceTypeFactory
+			extends AbstractVirtualModelInstanceTypeFactory<HbnVirtualModelInstanceType, JDBCTechnologyAdapter> {
 
 		public HbnVirtualModelInstanceTypeFactory(JDBCTechnologyAdapter technologyAdapter) {
 			super(technologyAdapter);
@@ -111,6 +115,24 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 		@Override
 		public HbnVirtualModelInstanceType getType(VirtualModel virtualModel) {
 			return getVirtualModelInstanceType(virtualModel);
+		}
+
+		@Override
+		public VirtualModel resolveVirtualModel(HbnVirtualModelInstanceType typeToResolve) {
+			try {
+				return getTechnologyAdapter().getTechnologyAdapterService().getServiceManager().getVirtualModelLibrary()
+						.getVirtualModel(typeToResolve.getConceptURI());
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ResourceLoadingCancelledException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FlexoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
 		}
 
 	}

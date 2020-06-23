@@ -71,7 +71,6 @@ import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
 import org.hibernate.query.Query;
 import org.hibernate.type.TypeResolver;
-import org.openflexo.connie.hbn.HbnConfig;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.AbstractProperty;
@@ -82,15 +81,16 @@ import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.logging.FlexoLogger;
-import org.openflexo.model.annotations.Getter;
-import org.openflexo.model.annotations.ImplementationClass;
-import org.openflexo.model.annotations.Import;
-import org.openflexo.model.annotations.Imports;
-import org.openflexo.model.annotations.ModelEntity;
-import org.openflexo.model.annotations.PropertyIdentifier;
-import org.openflexo.model.annotations.Setter;
-import org.openflexo.model.annotations.XMLAttribute;
-import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.pamela.annotations.Getter;
+import org.openflexo.pamela.annotations.ImplementationClass;
+import org.openflexo.pamela.annotations.Import;
+import org.openflexo.pamela.annotations.Imports;
+import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.annotations.PropertyIdentifier;
+import org.openflexo.pamela.annotations.Setter;
+import org.openflexo.pamela.annotations.XMLAttribute;
+import org.openflexo.pamela.annotations.XMLElement;
+import org.openflexo.technologyadapter.jdbc.HbnConfig;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
@@ -444,7 +444,7 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 				throw new HbnException("VirtualModel not defined");
 			}
 
-			// open connexion
+			// open connection
 			if (getJDBCConnection().getConnection() == null) {
 				throw new HbnException("Could not connect to database " + getJDBCConnection().getAddress());
 			}
@@ -474,15 +474,12 @@ public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtual
 		public JDBCConnection getJDBCConnection() {
 			if (getJDBCConnectionResource() != null) {
 				try {
-					return getJDBCConnectionResource().getResourceData(null);
+					return getJDBCConnectionResource().getResourceData();
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ResourceLoadingCancelledException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (FlexoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

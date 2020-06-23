@@ -124,7 +124,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		RepositoryFolder<JDBCResource, Object> folder = (RepositoryFolder) project.getRootFolder();
 		resource = factory.makeJDBCResource(resourceName, folder);
 
-		JDBCConnection model = resource.getResourceData(null);
+		JDBCConnection model = resource.getResourceData();
 
 		assertNotNull(model);
 
@@ -132,7 +132,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		model.setAddress(jdbcURL);
 		model.setDriverClassName(jdbcDriverClassname);
 
-		resource.save(null);
+		resource.save();
 	}
 
 	@Test
@@ -140,9 +140,9 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 	public void tryConnection() throws Exception {
 		log("tryConnection()");
 		assertNotNull(resource);
-		assertNotNull(resource.getResourceData(null));
+		assertNotNull(resource.getResourceData());
 
-		JDBCConnection model = resource.getResourceData(null);
+		JDBCConnection model = resource.getResourceData();
 
 		model.setDbType(JDBCDbType.HSQLDB);
 		model.setAddress(jdbcURL);
@@ -150,7 +150,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		try (Connection conn = model.getConnection()) {
 			assertNotNull(conn);
-			resource.save(null);
+			resource.save();
 		}
 	}
 
@@ -160,7 +160,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		log("tryWrongURL()");
 		assertNotNull(resource);
 
-		JDBCConnection model = resource.getResourceData(null);
+		JDBCConnection model = resource.getResourceData();
 
 		assertNotNull(model);
 
@@ -178,7 +178,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 		log("tryWrongDriverClassName()");
 		assertNotNull(resource);
 
-		JDBCConnection model = resource.getResourceData(null);
+		JDBCConnection model = resource.getResourceData();
 
 		assertNotNull(model);
 
@@ -201,7 +201,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 
 		assertNotNull(resource);
 
-		JDBCConnection model = resource.getResourceData(null);
+		JDBCConnection model = resource.getResourceData();
 
 		assertNotNull(model);
 
@@ -227,7 +227,7 @@ public class TestJDBCResource extends OpenflexoProjectAtRunTimeTestCase {
 					fail("Pas de connection MAIS pas d'exception ");
 				}
 			}
-			resource.save(null);
+			resource.save();
 		}
 	}
 }

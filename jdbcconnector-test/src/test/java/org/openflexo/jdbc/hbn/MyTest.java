@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openflexo.connie.hbn.HbnConfig;
+import org.openflexo.technologyadapter.jdbc.HbnConfig;
 
 //TODO: to be removed: used for experimentations
 @Ignore

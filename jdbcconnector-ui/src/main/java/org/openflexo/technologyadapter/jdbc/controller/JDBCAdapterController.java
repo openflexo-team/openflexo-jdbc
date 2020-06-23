@@ -39,6 +39,7 @@ import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.AbstractPerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
@@ -47,7 +48,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.RefreshHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.RollbackTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.SaveHbnObject;
@@ -191,7 +191,7 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 		if (CreateHbnResource.class.isAssignableFrom(editionActionClass)) {
 			return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, IconLibrary.NEW_MARKER);
 		}
-		if (PerformSQLQuery.class.isAssignableFrom(editionActionClass)) {
+		if (AbstractPerformSQLQuery.class.isAssignableFrom(editionActionClass)) {
 			return JDBCIconLibrary.PERFORM_SQL_QUERY_ICON;
 		}
 		if (OpenTransaction.class.isAssignableFrom(editionActionClass)) {

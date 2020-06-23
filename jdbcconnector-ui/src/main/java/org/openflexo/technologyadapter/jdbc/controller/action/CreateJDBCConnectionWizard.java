@@ -42,7 +42,7 @@ import java.awt.Image;
 import java.util.logging.Logger;
 
 import org.openflexo.ApplicationContext;
-import org.openflexo.components.wizard.FlexoWizard;
+import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
 import org.openflexo.gina.annotation.FIBPanel;
 import org.openflexo.icon.IconFactory;
@@ -52,30 +52,27 @@ import org.openflexo.technologyadapter.jdbc.model.action.CreateJDBCConnection;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateJDBCConnectionWizard extends FlexoWizard {
+public class CreateJDBCConnectionWizard extends FlexoActionWizard<CreateJDBCConnection> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CreateJDBCConnectionWizard.class.getPackage().getName());
 
-	private final CreateJDBCConnection action;
-
 	private final ConfigureJDBCConnection configureJdbcConnection;
 
 	public CreateJDBCConnectionWizard(CreateJDBCConnection action, FlexoController controller) {
-		super(controller);
-		this.action = action;
+		super(action, controller);
 		addStep(configureJdbcConnection = new ConfigureJDBCConnection());
 	}
 
 	@Override
 	public String getWizardTitle() {
-		return action.getLocales().localizedForKey("create_jdbc_model");
+		return getAction().getLocales().localizedForKey("create_jdbc_model");
 	}
 
 	@Override
 	public Image getDefaultPageImage() {
 		// TODO change icon
-		return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_BIG_ICON, IconLibrary.NEW_32_32).getImage();
+		return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_BIG_ICON, IconLibrary.BIG_NEW_MARKER).getImage();
 	}
 
 	public ConfigureJDBCConnection getConfigureJdbcConnection() {
@@ -90,19 +87,19 @@ public class CreateJDBCConnectionWizard extends FlexoWizard {
 		}
 
 		public CreateJDBCConnection getAction() {
-			return action;
+			return CreateJDBCConnectionWizard.this.getAction();
 		}
 
 		@Override
 		public String getTitle() {
-			return action.getLocales().localizedForKey("configure_jdbc_connection");
+			return getAction().getLocales().localizedForKey("configure_jdbc_connection");
 		}
 
 		@Override
 		public boolean isValid() {
 
 			if (StringUtils.isEmpty(getAddress())) {
-				setIssueMessage(action.getLocales().localizedForKey("no_connection_address_defined"), IssueMessageType.ERROR);
+				setIssueMessage(getAction().getLocales().localizedForKey("no_connection_address_defined"), IssueMessageType.ERROR);
 				return false;
 			}
 
@@ -111,52 +108,52 @@ public class CreateJDBCConnectionWizard extends FlexoWizard {
 		}
 
 		public String getResourceName() {
-			return action.getResourceName();
+			return getAction().getResourceName();
 		}
 
 		public void setResourceName(String newResourceName) {
 			if (!newResourceName.equals(getResourceName())) {
 				String oldValue = getResourceName();
-				action.setResourceName(newResourceName);
+				getAction().setResourceName(newResourceName);
 				getPropertyChangeSupport().firePropertyChange("resourceName", oldValue, newResourceName);
 				checkValidity();
 			}
 		}
 
 		public String getAddress() {
-			return action.getAddress();
+			return getAction().getAddress();
 		}
 
 		public void setAddress(String newAddress) {
 			if (!newAddress.equals(getAddress())) {
 				String oldValue = getAddress();
-				action.setAddress(newAddress);
+				getAction().setAddress(newAddress);
 				getPropertyChangeSupport().firePropertyChange("address", oldValue, newAddress);
 				checkValidity();
 			}
 		}
 
 		public String getUser() {
-			return action.getUser();
+			return getAction().getUser();
 		}
 
 		public void setUser(String newUser) {
 			if (!newUser.equals(getUser())) {
 				String oldValue = getUser();
-				action.setUser(newUser);
+				getAction().setUser(newUser);
 				getPropertyChangeSupport().firePropertyChange("user", oldValue, newUser);
 				checkValidity();
 			}
 		}
 
 		public String getPassword() {
-			return action.getPassword();
+			return getAction().getPassword();
 		}
 
 		public void setPassword(String newPassword) {
 			if (!newPassword.equals(getPassword())) {
 				String oldValue = getPassword();
-				action.setPassword(newPassword);
+				getAction().setPassword(newPassword);
 				getPropertyChangeSupport().firePropertyChange("password", oldValue, newPassword);
 				checkValidity();
 			}

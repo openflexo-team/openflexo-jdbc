@@ -38,18 +38,13 @@
 
 package org.openflexo.technologyadapter.jdbc.controller.action;
 
-import java.util.EventObject;
-import java.util.logging.Logger;
-
 import javax.swing.Icon;
 
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
-import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
-import org.openflexo.foundation.action.FlexoActionFinalizer;
-import org.openflexo.foundation.action.FlexoActionInitializer;
 import org.openflexo.foundation.action.FlexoActionFactory;
+import org.openflexo.foundation.action.FlexoActionRunnable;
 import org.openflexo.foundation.action.FlexoExceptionHandler;
 import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.gina.controller.FIBController;
@@ -61,53 +56,33 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
-public class CreateJDBCConnectionInitializer extends ActionInitializer<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> {
-
-	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
-
+public class CreateJDBCConnectionInitializer
+		extends ActionInitializer<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> {
 	public CreateJDBCConnectionInitializer(ControllerActionInitializer actionInitializer) {
 		super(CreateJDBCConnection.actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionInitializer<CreateJDBCConnection> getDefaultInitializer() {
-		return new FlexoActionInitializer<CreateJDBCConnection>() {
-			@Override
-			public boolean run(EventObject e, CreateJDBCConnection action) {
-				Wizard wizard = new CreateJDBCConnectionWizard(action, getController());
-				WizardDialog dialog = new WizardDialog(wizard, getController());
-				dialog.showDialog();
-				if (dialog.getStatus() != FIBController.Status.VALIDATED) {
-					// Operation cancelled
-					return false;
-				}
-				return true;
-			}
-		};
-	}
-
-	@Override
-	protected FlexoActionFinalizer<CreateJDBCConnection> getDefaultFinalizer() {
-		return new FlexoActionFinalizer<CreateJDBCConnection>() {
-			@Override
-			public boolean run(EventObject e, CreateJDBCConnection action) {
-				return true;
-			}
-		};
-	}
-
-	@Override
-	protected FlexoExceptionHandler<CreateJDBCConnection> getDefaultExceptionHandler() {
-		return new FlexoExceptionHandler<CreateJDBCConnection>() {
-			@Override
-			public boolean handleException(FlexoException exception, CreateJDBCConnection action) {
+	protected FlexoActionRunnable<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> getDefaultInitializer() {
+		return (e, action) -> {
+			Wizard wizard = new CreateJDBCConnectionWizard(action, getController());
+			WizardDialog dialog = new WizardDialog(wizard, getController());
+			dialog.showDialog();
+			if (dialog.getStatus() != FIBController.Status.VALIDATED) {
+				// Operation cancelled
 				return false;
 			}
+			return true;
 		};
 	}
 
 	@Override
-	protected Icon getEnabledIcon(FlexoActionFactory actionType) {
+	protected FlexoExceptionHandler<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> getDefaultExceptionHandler() {
+		return (exception, action) -> false;
+	}
+
+	@Override
+	protected Icon getEnabledIcon(FlexoActionFactory<CreateJDBCConnection, RepositoryFolder<JDBCResource, ?>, FlexoObject> actionType) {
 		return IconFactory.getImageIcon(JDBCIconLibrary.JDBC_TECHNOLOGY_ICON, FMLIconLibrary.VIRTUAL_MODEL_MARKER);
 	}
 

@@ -51,7 +51,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openflexo.connie.hbn.HbnConfig;
+import org.openflexo.technologyadapter.jdbc.HbnConfig;
 import org.openflexo.technologyadapter.jdbc.model.Vehicle;
 import org.openflexo.test.OnlyOnWindowsRunner;
 
