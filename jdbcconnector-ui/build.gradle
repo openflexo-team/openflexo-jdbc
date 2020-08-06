@@ -1,10 +1,10 @@
 dependencies {
-    compile project(':jdbcconnector')
-    compile flexoUi()
-    compile fmlRtTechnologyAdapterUi()
-    compile fmlTechnologyAdapterUi()
-   
-    testCompile flexoUiTest()
-    testCompile fmlTechnologyAdapterUi()
-    
+    implementation project(':jdbcconnector')
+    implementation flexoUi()
+    implementation fmlRtTechnologyAdapterUi()
+    implementation fmlTechnologyAdapterUi()
+
+    testImplementation flexoUiTest()
+    testImplementation fmlTechnologyAdapterUi()
+
 }

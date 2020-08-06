@@ -1,18 +1,17 @@
 dependencies {
+    implementation project(':jdbcconnector')
+    implementation flexoFoundation()
 
-    compile project(':jdbcconnector')
-    compile flexoFoundation()
-    
-    compile group: "org.hsqldb", name: "hsqldb", version: "2.4.0"
+    implementation group: "org.hsqldb", name: "hsqldb", version: "2.4.0"
 
-    compile testUtils()
-    compile flexoFoundationTest()
+    implementation testUtils()
+    implementation flexoFoundationTest()
 
-	  // Test resource center
-	  testRuntime project(':jdbc-test-rc')
+    // Test resource center
+    testRuntimeOnly project(':jdbc-test-rc')
 }
 if (JavaVersion.current().isJava9Compatible()) {
 	tasks.withType(Test) {
 		jvmArgs += ['--add-modules', 'java.xml.bind']
     }
-}  
+}
