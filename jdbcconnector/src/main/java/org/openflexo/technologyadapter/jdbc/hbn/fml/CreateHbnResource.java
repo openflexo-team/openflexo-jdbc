@@ -36,7 +36,6 @@
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
 import java.io.FileNotFoundException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -480,7 +479,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 							throw new InvalidArgumentException("No valid connection while creating new HbnResource");
 						}
 
-					} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
+					} catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
 						e.printStackTrace();
 					}
 

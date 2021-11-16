@@ -38,7 +38,6 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Logger;
@@ -245,7 +244,7 @@ public interface AbstractPerformSQLQuery<AT>
 					e.printStackTrace();
 				} catch (NullReferenceException e) {
 					e.printStackTrace();
-				} catch (InvocationTargetException e) {
+				} catch (ReflectiveOperationException e) {
 					e.printStackTrace();
 				}
 			}
@@ -261,7 +260,7 @@ public interface AbstractPerformSQLQuery<AT>
 					e.printStackTrace();
 				} catch (NullReferenceException e) {
 					e.printStackTrace();
-				} catch (InvocationTargetException e) {
+				} catch (ReflectiveOperationException e) {
 					e.printStackTrace();
 				}
 			}

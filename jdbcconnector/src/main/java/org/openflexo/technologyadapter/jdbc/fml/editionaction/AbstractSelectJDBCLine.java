@@ -35,7 +35,6 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +101,7 @@ public interface AbstractSelectJDBCLine<AT> extends AbstractFetchRequest<JDBCMod
 					// TODO selectAll isn't a good idea, must have a selection first
 					lines.addAll(table.selectAll().getLines());
 				}
-			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
+			} catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
 				logger.log(Level.WARNING, "Can't evaluate table", e);
 			}
 

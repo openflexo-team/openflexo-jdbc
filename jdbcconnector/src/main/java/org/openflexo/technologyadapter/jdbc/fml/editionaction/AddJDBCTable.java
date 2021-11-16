@@ -35,7 +35,6 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,7 +102,7 @@ public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<J
 				else {
 					logger.warning("Create a JDBC table requires a JDBC connection");
 				}
-			} catch (TypeMismatchException | NullReferenceException | InvocationTargetException e) {
+			} catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
 				logger.log(Level.WARNING, "Can't create JDBC table", e);
 			}
 
