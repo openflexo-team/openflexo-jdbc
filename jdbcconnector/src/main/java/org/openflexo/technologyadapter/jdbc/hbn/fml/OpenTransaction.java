@@ -42,12 +42,12 @@ import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import org.hibernate.Transaction;
-import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
+import org.openflexo.foundation.fml.rt.ReturnException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
-import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext.ReturnException;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
@@ -132,7 +132,7 @@ public interface OpenTransaction extends TechnologySpecificActionDefiningReceive
 		}
 
 		@Override
-		public Transaction execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FlexoException {
+		public Transaction execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FMLExecutionException {
 
 			System.out.println("OpenTransaction for " + getReceiver(evaluationContext));
 

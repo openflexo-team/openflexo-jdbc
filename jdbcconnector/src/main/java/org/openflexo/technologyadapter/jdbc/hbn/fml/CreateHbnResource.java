@@ -55,11 +55,13 @@ import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.AbstractCreateResource;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.rm.CompilationUnitResource;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.action.CreationSchemeAction;
 import org.openflexo.foundation.fml.rt.action.FlexoBehaviourAction;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
+import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.pamela.annotations.Adder;
 import org.openflexo.pamela.annotations.CloningStrategy;
 import org.openflexo.pamela.annotations.CloningStrategy.StrategyType;
@@ -402,10 +404,10 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 		}
 
 		@Override
-		public HbnVirtualModelInstance execute(RunTimeEvaluationContext evaluationContext) throws FlexoException {
+		public HbnVirtualModelInstance execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
 			if (getCreationScheme() == null) {
-				throw new InvalidArgumentException("No creation scheme defined");
+				throw new FMLExecutionException("No creation scheme defined");
 			}
 
 			try {
@@ -514,12 +516,16 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 
 				}
 				else {
-					throw new InvalidArgumentException("HbnResource creation must be affected to a HbnModelSlot");
+					throw new FMLExecutionException("HbnResource creation must be affected to a HbnModelSlot");
 				}
 
 				return data;
 			} catch (ModelDefinitionException | FileNotFoundException | ResourceLoadingCancelledException e) {
-				throw new FlexoException(e);
+				throw new FMLExecutionException(e);
+			} catch (SaveResourceException e) {
+				throw new FMLExecutionException(e);
+			} catch (FlexoException e) {
+				throw new FMLExecutionException(e);
 			}
 
 		}

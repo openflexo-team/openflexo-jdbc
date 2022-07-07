@@ -40,8 +40,8 @@ package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.editionaction.AbstractAddFlexoConceptInstance;
@@ -69,7 +69,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		private static final Logger logger = Logger.getLogger(CreateHbnObject.class.getPackage().getName());
 
 		@Override
-		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) throws FlexoException {
+		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
 			FlexoConcept instantiatedFlexoConcept = retrieveFlexoConcept(evaluationContext);
 
@@ -87,7 +87,8 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 		}
 
 		@Override
-		protected HbnFlexoConceptInstance makeNewFlexoConceptInstance(RunTimeEvaluationContext evaluationContext) throws FlexoException {
+		protected HbnFlexoConceptInstance makeNewFlexoConceptInstance(RunTimeEvaluationContext evaluationContext)
+				throws FMLExecutionException {
 			FlexoConceptInstance container = null;
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
 

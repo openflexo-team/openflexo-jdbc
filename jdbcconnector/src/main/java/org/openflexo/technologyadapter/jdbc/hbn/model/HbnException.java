@@ -39,7 +39,7 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
 
 /**
  * Exception thrown while configuring or executing Hibernate framework
@@ -48,7 +48,7 @@ import org.openflexo.foundation.FlexoException;
  *
  */
 @SuppressWarnings("serial")
-public class HbnException extends FlexoException {
+public class HbnException extends FMLExecutionException {
 
 	/**
 	 * Build new exception with supplied message
@@ -56,7 +56,7 @@ public class HbnException extends FlexoException {
 	 * @param message
 	 */
 	public HbnException(String message) {
-		super(message, message);
+		super(message);
 	}
 
 	/**

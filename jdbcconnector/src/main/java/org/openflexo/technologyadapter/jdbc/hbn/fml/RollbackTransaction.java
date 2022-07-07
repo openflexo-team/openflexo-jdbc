@@ -42,12 +42,12 @@ import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import org.hibernate.Transaction;
-import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
+import org.openflexo.foundation.fml.rt.ReturnException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
-import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext.ReturnException;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
@@ -79,7 +79,7 @@ public interface RollbackTransaction extends TechnologySpecificActionDefiningRec
 		}
 
 		@Override
-		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FlexoException {
+		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FMLExecutionException {
 
 			System.out.println("Rollback transaction for " + getReceiver(evaluationContext));
 
