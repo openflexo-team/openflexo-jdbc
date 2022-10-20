@@ -23,6 +23,7 @@ package org.openflexo.technologyadapter.jdbc.controller;
 import javax.swing.ImageIcon;
 
 import org.openflexo.fml.rt.controller.view.VirtualModelInstanceView;
+import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.fml.FlexoBehaviour;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
@@ -122,7 +123,23 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 	}
 
 	@Override
-	public ModuleView<?> createModuleViewForObject(final TechnologyObject<JDBCTechnologyAdapter> object, final FlexoController controller,
+	public boolean isRepresentableInModuleView(TechnologyObject<JDBCTechnologyAdapter> object) {
+		return (object instanceof HbnVirtualModelInstance) || (object instanceof JDBCConnection);
+	}
+	
+	@Override
+	public FlexoObject getRepresentableMasterObject(TechnologyObject<JDBCTechnologyAdapter> object) {
+		if (object instanceof HbnVirtualModelInstance) {
+			return object;
+		}
+		if (object instanceof JDBCConnection) {
+			return object;
+		}
+		return null;
+	}
+	
+	@Override
+	public ModuleView<?> createModuleViewForMasterObject(final TechnologyObject<JDBCTechnologyAdapter> object, final FlexoController controller,
 			final FlexoPerspective perspective) {
 		if (object instanceof JDBCConnection) {
 			return new JDBCModuleView((JDBCConnection) object, controller, perspective);
@@ -170,17 +187,6 @@ public class JDBCAdapterController extends TechnologyAdapterController<JDBCTechn
 			return "Connection to " + ((JDBCConnection) obj).getAddress();
 		}
 		return "Connection";
-	}
-
-	@Override
-	public boolean hasModuleViewForObject(TechnologyObject<JDBCTechnologyAdapter> obj, FlexoController controller) {
-		if (obj instanceof HbnVirtualModelInstance) {
-			return true;
-		}
-		if (obj instanceof JDBCConnection) {
-			return true;
-		}
-		return false;
 	}
 
 	@Override
