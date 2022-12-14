@@ -48,7 +48,7 @@ import org.openflexo.foundation.resource.ResourceRepositoryImpl;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
-import org.openflexo.pamela.factory.ModelFactory;
+import org.openflexo.pamela.factory.PamelaModelFactory;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -64,9 +64,9 @@ public interface HbnVirtualModelInstanceRepository<I> extends ResourceRepository
 
 	public static <I> HbnVirtualModelInstanceRepository<I> instanciateNewRepository(JDBCTechnologyAdapter adapter,
 			FlexoResourceCenter<I> resourceCenter) {
-		ModelFactory factory;
+		PamelaModelFactory factory;
 		try {
-			factory = new ModelFactory(HbnVirtualModelInstanceRepository.class);
+			factory = new PamelaModelFactory(HbnVirtualModelInstanceRepository.class);
 			HbnVirtualModelInstanceRepository<I> newRepository = factory.newInstance(HbnVirtualModelInstanceRepository.class);
 			newRepository.setResourceCenter(resourceCenter);
 			newRepository.setBaseArtefact(resourceCenter.getBaseArtefact());
