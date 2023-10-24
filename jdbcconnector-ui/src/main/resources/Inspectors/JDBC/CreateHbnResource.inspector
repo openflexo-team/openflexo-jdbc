@@ -21,7 +21,7 @@
 				name="VirtualModelLabel" />
 			<Custom index="15"
 				componentClassName="org.openflexo.fml.controller.widget.FIBVirtualModelSelector"
-				dataClassForComponent="org.openflexo.foundation.fml.rm.VirtualModelResource"
+				dataClassForComponent="org.openflexo.foundation.fml.rm.CompilationUnitResource"
 				localize="true" manageDynamicModel="true"
 				data="data.virtualModelResource"
 				constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)"
