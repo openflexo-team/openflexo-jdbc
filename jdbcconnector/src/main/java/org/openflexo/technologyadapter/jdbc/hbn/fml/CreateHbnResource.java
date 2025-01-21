@@ -59,6 +59,7 @@ import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.action.CreationSchemeAction;
 import org.openflexo.foundation.fml.rt.action.FlexoBehaviourAction;
+import org.openflexo.foundation.fml.validation.BindingIsRequiredAndMustBeValid;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.foundation.resource.SaveResourceException;
