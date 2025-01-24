@@ -173,7 +173,8 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 			throw new FlexoException(e);
 		}
 
-		AddUseDeclaration useDeclarationAction = AddUseDeclaration.actionType.makeNewEmbeddedAction(newVirtualModel, null, this);
+		AddUseDeclaration useDeclarationAction = AddUseDeclaration.actionType.makeNewEmbeddedAction(newVirtualModel.getCompilationUnit(),
+				null, this);
 		useDeclarationAction.setModelSlotClass(HbnModelSlot.class);
 		useDeclarationAction.doAction();
 
