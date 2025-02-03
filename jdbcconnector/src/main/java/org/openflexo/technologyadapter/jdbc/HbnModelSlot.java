@@ -64,7 +64,7 @@ import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoBehaviours;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoRoles;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
+import org.openflexo.foundation.fml.rt.ReflectedFMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.pamela.annotations.ImplementationClass;
@@ -106,7 +106,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 		CommitTransaction.class, RollbackTransaction.class, CreateHbnObject.class, SaveHbnObject.class, RefreshHbnObject.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
-public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
+public interface HbnModelSlot extends ReflectedFMLRTModelSlot<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 
 	/*@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
@@ -145,7 +145,7 @@ public interface HbnModelSlot extends InferedFMLRTModelSlot<HbnVirtualModelInsta
 	@Setter(PASSWORD_KEY)
 	void setPassword(DataBinding<String> password);*/
 
-	abstract class HbnModelSlotImpl extends InferedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
+	abstract class HbnModelSlotImpl extends ReflectedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCTechnologyAdapter>
 			implements HbnModelSlot {
 
 		/*private DataBinding<String> address;

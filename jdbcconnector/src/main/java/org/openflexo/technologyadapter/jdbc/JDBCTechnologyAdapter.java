@@ -59,7 +59,7 @@ import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.foundation.fml.annotations.DeclareModelSlots;
 import org.openflexo.foundation.fml.annotations.DeclareResourceFactories;
-import org.openflexo.foundation.fml.rt.InferedFMLRTModelSlot;
+import org.openflexo.foundation.fml.rt.ReflectedFMLRTModelSlot;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.FlexoResourceCenterService;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
@@ -128,7 +128,7 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter<JDBCTechnologyAdapt
 
 	@Override
 	public VirtualModelInstanceType getInferedVirtualModelInstanceType(VirtualModel vm,
-			Class<? extends InferedFMLRTModelSlot<?, ?>> modelSlotNatureClass) {
+			Class<? extends ReflectedFMLRTModelSlot<?, ?>> modelSlotNatureClass) {
 		if (HbnModelSlot.class.equals(modelSlotNatureClass)) {
 			return HbnVirtualModelInstanceType.getVirtualModelInstanceType(vm);
 		}
