@@ -78,7 +78,9 @@ import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.foundation.fml.rt.ReflectedVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.foundation.fml.rt.VirtualModelInstance.VirtualModelInstanceImpl;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.Getter;
@@ -120,7 +122,8 @@ import org.openflexo.toolbox.StringUtils;
 @ImplementationClass(HbnVirtualModelInstanceImpl.class)
 @Imports(@Import(HbnFlexoConceptInstance.class))
 @XMLElement
-public interface HbnVirtualModelInstance extends VirtualModelInstance<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
+public interface HbnVirtualModelInstance
+		extends ReflectedVirtualModelInstance<HbnVirtualModelInstance, JDBCResource, JDBCTechnologyAdapter> {
 
 	/*@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
