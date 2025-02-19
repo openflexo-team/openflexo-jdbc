@@ -86,6 +86,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.RollbackTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.SaveHbnObject;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnObjectActorReference;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 /**
@@ -107,7 +108,8 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 		CommitTransaction.class, RollbackTransaction.class, CreateHbnObject.class, SaveHbnObject.class, RefreshHbnObject.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class })
-public interface HbnModelSlot extends ReflectedFMLRTModelSlot<HbnVirtualModelInstance, JDBCResource, JDBCTechnologyAdapter> {
+public interface HbnModelSlot
+		extends ReflectedFMLRTModelSlot<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter> {
 
 	/*@PropertyIdentifier(type = JDBCDbType.class)
 	String DB_TYPE = "dbtype";
@@ -146,7 +148,8 @@ public interface HbnModelSlot extends ReflectedFMLRTModelSlot<HbnVirtualModelIns
 	@Setter(PASSWORD_KEY)
 	void setPassword(DataBinding<String> password);*/
 
-	abstract class HbnModelSlotImpl extends ReflectedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCResource, JDBCTechnologyAdapter>
+	abstract class HbnModelSlotImpl
+			extends ReflectedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter>
 			implements HbnModelSlot {
 
 		/*private DataBinding<String> address;

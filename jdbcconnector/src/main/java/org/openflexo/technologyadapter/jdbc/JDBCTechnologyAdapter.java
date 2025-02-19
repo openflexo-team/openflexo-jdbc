@@ -128,7 +128,7 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter<JDBCTechnologyAdapt
 
 	@Override
 	public VirtualModelInstanceType getInferedVirtualModelInstanceType(VirtualModel vm,
-			Class<? extends ReflectedFMLRTModelSlot<?, ?, ?>> modelSlotNatureClass) {
+			Class<? extends ReflectedFMLRTModelSlot<?, ?, ?, ?>> modelSlotNatureClass) {
 		if (HbnModelSlot.class.equals(modelSlotNatureClass)) {
 			return HbnVirtualModelInstanceType.getVirtualModelInstanceType(vm);
 		}
