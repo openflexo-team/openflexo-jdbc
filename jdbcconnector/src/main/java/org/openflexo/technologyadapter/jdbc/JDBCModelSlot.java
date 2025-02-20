@@ -85,6 +85,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 /**
  * An implementation of a {@link ModelSlot} providing basic access to JDBC modelling element<br>
@@ -105,12 +106,12 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @DeclareEditionActions({ CreateJDBCConnection.class, AddJDBCTable.class })
 @DeclareFetchRequests({ SelectJDBCTable.class, SelectJDBCColumn.class, SelectJDBCLine.class, SelectUniqueJDBCTable.class,
 		SelectUniqueJDBCColumn.class, SelectUniqueJDBCLine.class })
-public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection> {
+public interface JDBCModelSlot extends FreeModelSlot<JDBCConnection, JDBCResource> {
 
 	@Override
 	JDBCTechnologyAdapter getModelSlotTechnologyAdapter();
 
-	abstract class JDBCModelSlotImpl extends FreeModelSlotImpl<JDBCConnection> implements JDBCModelSlot {
+	abstract class JDBCModelSlotImpl extends FreeModelSlotImpl<JDBCConnection, JDBCResource> implements JDBCModelSlot {
 
 		@Override
 		public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
