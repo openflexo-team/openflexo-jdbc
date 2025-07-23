@@ -50,6 +50,7 @@ import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.foundation.fml.rt.reflect.ReflectedFlexoConceptInstance;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.Initializer;
@@ -70,7 +71,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 @ModelEntity
 @ImplementationClass(HbnFlexoConceptInstance.HbnFlexoConceptInstanceImpl.class)
 @XMLElement
-public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
+public interface HbnFlexoConceptInstance extends ReflectedFlexoConceptInstance<Map<String, Object>> {
 
 	/**
 	 * Return a {@link Serializable} object which acts as key identifier for this {@link HbnFlexoConceptInstance}
@@ -108,14 +109,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 	 * @param concept
 	 */
 	@Initializer
-	void initialize(Map<String, Object> hbnMap, FlexoConcept concept);
-
-	/**
-	 * Return Hibernate support object (a map)
-	 * 
-	 * @return
-	 */
-	public Map<String, Object> getHbnSupportObject();
+	void initialize(Map<String, Object> supportObject, FlexoConcept concept);
 
 	/**
 	 * Re-read the state of the given instance from the underlying database. It is inadvisable to use this to implement long-running
@@ -169,7 +163,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		}
 
 		@Override
-		public Map<String, Object> getHbnSupportObject() {
+		public Map<String, Object> getSupportObject() {
 			return hbnMap;
 		}
 
@@ -192,7 +186,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		private void setReferencedObject(HbnFlexoConceptInstance newValue, HbnToOneReferenceRole referenceRole) {
 			HbnFlexoConceptInstance oldValue = getReferencedObject(referenceRole);
 			if (oldValue != newValue) {
-				hbnMap.put(referenceRole.getName(), newValue.getHbnSupportObject());
+				hbnMap.put(referenceRole.getName(), newValue.getSupportObject());
 				identifier = null;
 				identifierAsString = null;
 				referencedMap.remove(referenceRole);
@@ -274,7 +268,7 @@ public interface HbnFlexoConceptInstance extends FlexoConceptInstance {
 		public void refresh() throws HbnException {
 
 			// Hibernate refresh
-			getVirtualModelInstance().getDefaultSession().refresh(getFlexoConcept().getName(), (Object) getHbnSupportObject());
+			getVirtualModelInstance().getDefaultSession().refresh(getFlexoConcept().getName(), (Object) getSupportObject());
 
 			// We need now to refresh all HbnReferenceCollection
 			for (HbnReferenceCollection refCol : referencedCollectionsMap.values()) {

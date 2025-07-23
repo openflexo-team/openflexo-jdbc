@@ -60,6 +60,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  */
 @ModelEntity
 @ImplementationClass(HbnVirtualModelInstanceRepository.HbnVirtualModelInstanceRepositoryImpl.class)
+@Deprecated
 public interface HbnVirtualModelInstanceRepository<I> extends ResourceRepository<HbnVirtualModelInstanceResource, I> {
 
 	public static <I> HbnVirtualModelInstanceRepository<I> instanciateNewRepository(JDBCTechnologyAdapter adapter,

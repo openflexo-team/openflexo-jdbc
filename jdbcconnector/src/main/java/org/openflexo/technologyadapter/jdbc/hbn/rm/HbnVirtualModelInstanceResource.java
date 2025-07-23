@@ -73,6 +73,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ModelEntity
 @ImplementationClass(HbnVirtualModelInstanceResource.HbnVirtualModelInstanceResourceImpl.class)
 @XMLElement
+@Deprecated
 public interface HbnVirtualModelInstanceResource
 		extends AbstractVirtualModelInstanceResource<HbnVirtualModelInstance, JDBCTechnologyAdapter> {
 

@@ -77,9 +77,10 @@ import org.openflexo.foundation.fml.AbstractProperty;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.ReflectedVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.foundation.fml.rt.reflect.ReflectedVirtualModelInstance;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.Getter;
@@ -339,8 +340,8 @@ public interface HbnVirtualModelInstance
 	 * @param pattern
 	 * @return
 	 */
-	@Override
-	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept);
+	// @Override
+	// public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept);
 
 	/**
 	 * Instantiate and register a new {@link HbnFlexoConceptInstance} in a container FlexoConceptInstance
@@ -348,8 +349,8 @@ public interface HbnVirtualModelInstance
 	 * @param pattern
 	 * @return
 	 */
-	@Override
-	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, FlexoConceptInstance container);
+	// @Override
+	// public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, FlexoConceptInstance container);
 
 	public Map<FlexoConcept, PersistentClass> getMappings();
 
@@ -967,7 +968,12 @@ public interface HbnVirtualModelInstance
 			});
 
 			return mapForConcept.computeIfAbsent(identifier, (newId) -> {
-				return getFactory().newFlexoConceptInstance(this, container, hbnMap, concept);
+				try {
+					return getFactory().makeNewFlexoConceptInstance(concept, hbnMap, container, this, null);
+				} catch (FMLExecutionException e) {
+					e.printStackTrace();
+					return null;
+				}
 			});
 		}
 
@@ -998,8 +1004,11 @@ public interface HbnVirtualModelInstance
 				Map<String, Object> hbnMap;
 				try {
 					hbnMap = (Map<String, Object>) getDefaultSession().get(concept.getName(), identifier);
-					return getFactory().newFlexoConceptInstance(this, container, hbnMap, concept);
+					return getFactory().makeNewFlexoConceptInstance(concept, hbnMap, container, this, null);
 				} catch (HbnException e) {
+					e.printStackTrace();
+					return null;
+				} catch (FMLExecutionException e) {
 					e.printStackTrace();
 					return null;
 				}
@@ -1038,11 +1047,11 @@ public interface HbnVirtualModelInstance
 		 * @param pattern
 		 * @return
 		 */
-		@Override
+		/*@Override
 		public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept) {
-
+		
 			return makeNewFlexoConceptInstance(concept, null);
-		}
+		}*/
 
 		/**
 		 * Instantiate and register a new {@link FlexoConceptInstance} in a container FlexoConceptInstance
@@ -1050,18 +1059,18 @@ public interface HbnVirtualModelInstance
 		 * @param pattern
 		 * @return
 		 */
-		@Override
+		/*@Override
 		public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, FlexoConceptInstance container) {
-
+		
 			HbnFlexoConceptInstance returned = getVirtualModelInstanceResource().getFactory().newInstance(HbnFlexoConceptInstance.class,
 					new HashMap<>(), concept);
-
+		
 			if (container != null) {
 				container.addToEmbeddedFlexoConceptInstances(returned);
 			}
 			addToFlexoConceptInstances(returned);
 			return returned;
-		}
+		}*/
 
 		@Override
 		public Transaction beginTransaction() throws HbnException {

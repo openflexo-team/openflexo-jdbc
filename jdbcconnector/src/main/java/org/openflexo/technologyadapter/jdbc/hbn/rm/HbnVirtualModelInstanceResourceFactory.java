@@ -36,7 +36,6 @@ import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
-import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstanceModelFactory;
 import org.openflexo.toolbox.FlexoVersion;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.xml.XMLRootElementInfo;
@@ -47,6 +46,7 @@ import org.openflexo.xml.XMLRootElementInfo;
  * @author sylvain
  *
  */
+@Deprecated
 public class HbnVirtualModelInstanceResourceFactory extends
 		AbstractVirtualModelInstanceResourceFactory<HbnVirtualModelInstance, JDBCTechnologyAdapter, HbnVirtualModelInstanceResource> {
 
@@ -372,9 +372,10 @@ public class HbnVirtualModelInstanceResourceFactory extends
 	@Override
 	public AbstractVirtualModelInstanceModelFactory<?> makeModelFactory(HbnVirtualModelInstanceResource resource,
 			TechnologyContextManager<JDBCTechnologyAdapter> technologyContextManager) throws ModelDefinitionException {
-		return new HbnVirtualModelInstanceModelFactory(resource,
+		/*return new HbnVirtualModelInstanceModelFactory(resource,
 				technologyContextManager.getTechnologyAdapter().getServiceManager().getEditingContext(),
-				technologyContextManager.getTechnologyAdapter().getServiceManager().getTechnologyAdapterService());
+				technologyContextManager.getTechnologyAdapter().getServiceManager().getTechnologyAdapterService());*/
+		return null;
 	}
 
 }

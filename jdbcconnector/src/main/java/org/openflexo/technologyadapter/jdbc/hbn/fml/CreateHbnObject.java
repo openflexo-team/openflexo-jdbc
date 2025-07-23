@@ -38,6 +38,7 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.fml;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -52,6 +53,7 @@ import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstanceModelFactory;
 
 /**
  * Create a new object as defined by an Hibernate mapping. This object will be an HbnFlexoConceptInstance
@@ -102,7 +104,10 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 				}
 			}
 
-			HbnFlexoConceptInstance returned = vmi.makeNewFlexoConceptInstance(instantiatedFlexoConcept, container);
+			HbnVirtualModelInstanceModelFactory modelFactory = (HbnVirtualModelInstanceModelFactory) vmi.getReflectedModelFactory();
+
+			HbnFlexoConceptInstance returned = modelFactory.makeNewFlexoConceptInstance(instantiatedFlexoConcept, new HashMap<>(),
+					container, vmi, null);
 
 			/*try {
 				// Note that we immediately save the created object in Hibernate session

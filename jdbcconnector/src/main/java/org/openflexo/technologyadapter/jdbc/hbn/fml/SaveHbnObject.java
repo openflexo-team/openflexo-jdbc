@@ -143,7 +143,7 @@ public interface SaveHbnObject extends TechnologySpecificActionDefiningReceiver<
 			HbnVirtualModelInstance vmi = getReceiver(evaluationContext);
 			HbnFlexoConceptInstance object = getObject(evaluationContext);
 
-			vmi.getDefaultSession().save(object.getFlexoConcept().getName(), object.getHbnSupportObject());
+			vmi.getDefaultSession().save(object.getFlexoConcept().getName(), object.getSupportObject());
 
 			return null;
 		}

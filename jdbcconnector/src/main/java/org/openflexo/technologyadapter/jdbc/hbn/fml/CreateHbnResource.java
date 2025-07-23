@@ -495,7 +495,7 @@ public interface CreateHbnResource extends AbstractCreateResource<HbnModelSlot, 
 					System.out.println("Executing FML: " + getCreationScheme().getFMLPrettyPrint());
 					CreationSchemeAction creationSchemeAction = new CreationSchemeAction(getCreationScheme(), null, null,
 							(FlexoBehaviourAction<?, ?, ?>) evaluationContext);
-					creationSchemeAction.initWithFlexoConceptInstance(data);
+					creationSchemeAction.assignNewFlexoConceptInstance(data);
 					for (CreateHbnResourceParameter p : getParameters()) {
 						FlexoBehaviourParameter param = p.getParam();
 						Object value = p.evaluateParameterValue((FlexoBehaviourAction<?, ?, ?>) evaluationContext);

@@ -40,14 +40,20 @@ package org.openflexo.technologyadapter.jdbc.hbn.model;
 
 import java.util.Map;
 
+import org.openflexo.foundation.fml.AbstractCreationScheme;
 import org.openflexo.foundation.fml.FlexoConcept;
-import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
+import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.foundation.fml.rt.reflect.ReflectedVirtualModelInstanceModelFactory;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.pamela.factory.EditingContext;
 import org.openflexo.pamela.factory.PamelaModelFactory;
-import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResource;
+import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 
 /**
  * {@link PamelaModelFactory} used to handle {@link HbnVirtualModelInstance} models<br>
@@ -55,22 +61,32 @@ import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResour
  * @author sylvain
  * 
  */
-public class HbnVirtualModelInstanceModelFactory extends AbstractVirtualModelInstanceModelFactory<HbnVirtualModelInstanceResource> {
+public class HbnVirtualModelInstanceModelFactory
+		extends ReflectedVirtualModelInstanceModelFactory<JDBCResource, JDBCConnection, JDBCTechnologyAdapter, Map<String, Object>> {
 
-	public HbnVirtualModelInstanceModelFactory(HbnVirtualModelInstanceResource virtualModelInstanceResource, EditingContext editingContext,
-			TechnologyAdapterService taService) throws ModelDefinitionException {
-		super(virtualModelInstanceResource, HbnVirtualModelInstance.class, editingContext, taService);
+	public HbnVirtualModelInstanceModelFactory(JDBCResource resource, EditingContext editingContext, TechnologyAdapterService taService)
+			throws ModelDefinitionException {
+		super(resource, HbnVirtualModelInstance.class, editingContext, taService);
 	}
 
-	public HbnFlexoConceptInstance newFlexoConceptInstance(HbnVirtualModelInstance owner, FlexoConceptInstance container,
-			Map<String, Object> hbnMap, FlexoConcept concept) {
-		HbnFlexoConceptInstance returned = newInstance(HbnFlexoConceptInstance.class, hbnMap, concept);
-		owner.addToFlexoConceptInstances(returned);
-		if (container != null && container != owner) {
+	@Override
+	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, Map<String, Object> supportObject,
+			FlexoConceptInstance container, VirtualModelInstance<?, ?> ownerVirtualModelInstance,
+			RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
+		return (HbnFlexoConceptInstance) super.makeNewFlexoConceptInstance(concept, supportObject, container, ownerVirtualModelInstance,
+				evaluationContext);
+	}
+
+	@Override
+	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, Map<String, Object> supportObject,
+			FlexoConceptInstance container, VirtualModelInstance<?, ?> ownerVirtualModelInstance, AbstractCreationScheme creationScheme,
+			RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
+		HbnFlexoConceptInstance returned = newInstance(HbnFlexoConceptInstance.class, supportObject, concept);
+		ownerVirtualModelInstance.addToFlexoConceptInstances(returned);
+		if (container != null && container != ownerVirtualModelInstance) {
 			container.addToEmbeddedFlexoConceptInstances(returned);
 		}
 		return returned;
-
 	}
 
 }

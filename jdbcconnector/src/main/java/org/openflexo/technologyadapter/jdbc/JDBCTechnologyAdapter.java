@@ -59,7 +59,7 @@ import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.foundation.fml.annotations.DeclareModelSlots;
 import org.openflexo.foundation.fml.annotations.DeclareResourceFactories;
-import org.openflexo.foundation.fml.rt.ReflectedFMLRTModelSlot;
+import org.openflexo.foundation.fml.rt.reflect.ReflectedFMLRTModelSlot;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.FlexoResourceCenterService;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
