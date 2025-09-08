@@ -10,8 +10,8 @@ dependencies {
     // Test resource center
     testRuntimeOnly project(':jdbc-test-rc')
 }
-if (JavaVersion.current().isJava9Compatible()) {
+/*if (JavaVersion.current().isJava9Compatible()) {
 	tasks.withType(Test) {
 		jvmArgs += ['--add-modules', 'java.xml.bind']
     }
-}
+}*/
