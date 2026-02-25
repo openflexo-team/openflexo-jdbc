@@ -65,7 +65,6 @@ import org.openflexo.foundation.fml.inspector.InspectorEntry;
 import org.openflexo.foundation.fml.rm.CompilationUnitResource;
 import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
-import org.openflexo.foundation.fml.rt.editionaction.CreateFlexoConceptInstanceParameter;
 import org.openflexo.foundation.fml.rt.editionaction.MatchFlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.editionaction.MatchingCriteria;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
@@ -330,11 +329,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 				}
 			}
 
-			CreateFlexoConceptInstanceParameter parameter = factory
+			/*CreateFlexoConceptInstanceParameter parameter = factory
 					.newCreateFlexoConceptInstanceParameter(creationScheme.getParameter("line"));
 			parameter.setValue(new DataBinding<>("item", scheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
 			parameter.setAction(match);
-			match.addToParameters(parameter);
+			match.addToParameters(parameter);*/
+
+			match.setNewInstanceArgumentValue(creationScheme.getParameter("line"),
+					new DataBinding<>("item", scheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
 
 			match.setFlexoConceptType(flexoConcept);
 			match.setCreationScheme(creationScheme);
