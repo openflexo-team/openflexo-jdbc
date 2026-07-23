@@ -39,8 +39,10 @@ import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.hibernate.MappingException;
@@ -75,6 +77,7 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.AbstractProperty;
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLExecutionException;
@@ -95,6 +98,7 @@ import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnConfig;
 import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
+import org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
@@ -373,6 +377,9 @@ public interface HbnVirtualModelInstance
 		// Stores all FCIs related to their identifier
 		private Map<FlexoConcept, Map<Object, HbnFlexoConceptInstance>> instances = new HashMap<>();
 
+		// Concepts for which an exhaustive query has already been performed (so that FML 'select' does not re-query each time)
+		private Set<FlexoConcept> queriedConcepts = new HashSet<>();
+
 		private JDBCResource jdbcConnectionResource;
 		private String jdbcConnectionURI;
 
@@ -407,8 +414,10 @@ public interface HbnVirtualModelInstance
 
 		@Override
 		public JDBCTechnologyAdapter getTechnologyAdapter() {
-			if (getVirtualModelInstanceResource() != null) {
-				return getVirtualModelInstanceResource().getTechnologyAdapter();
+			// This reflected instance has no persistent VirtualModelInstance resource: derive the technology adapter from the reflected
+			// (JDBC) resource it is connected to.
+			if (getReflectedResource() != null) {
+				return getReflectedResource().getTechnologyAdapter();
 			}
 			return null;
 		}
@@ -535,10 +544,6 @@ public interface HbnVirtualModelInstance
 
 			config = new HbnConfig(new BootstrapServiceRegistryBuilder().build());
 
-			System.out.println("Bon on est la avec " + jdbcConnectionResource);
-			System.out.println("Bon on est la avec " + getJDBCConnection());
-			System.out.println("Bon on est la avec " + getJDBCConnection().getDbType());
-
 			config.setProperty("hibernate.connection.driver_class", getJDBCConnection().getDbType().getDriverClassName());
 			config.setProperty("hibernate.connection.url", getJDBCConnection().getAddress());
 			config.setProperty("hibernate.connection.username", getJDBCConnection().getUser());
@@ -599,8 +604,6 @@ public interface HbnVirtualModelInstance
 		 */
 		private void declareHbnMapping() throws HbnException {
 
-			System.out.println("declareHbnMapping()");
-
 			if (getVirtualModel() == null) {
 				throw new HbnException("VirtualModel not defined");
 			}
@@ -617,10 +620,11 @@ public interface HbnVirtualModelInstance
 			// Mapping is created in 3 passes, in order to facilitate cross references handling
 
 			for (FlexoConcept concept : getVirtualModel().getFlexoConcepts()) {
-				Identifier logicalName = metadataCollector.getDatabase().toIdentifier(concept.getName());
+				// Table name comes from the @Table annotation when declared, otherwise defaults to the concept name
+				Identifier logicalName = metadataCollector.getDatabase().toIdentifier(JDBCMetaData.getTableName(concept));
 				Table table = namespace.locateTable(logicalName);
 				if (table == null) {
-					throw new HbnException("Could not locate table " + concept.getName());
+					throw new HbnException("Could not locate table " + JDBCMetaData.getTableName(concept));
 				}
 				RootClass newMapping = declareHbnMapping(concept, table, metadataBuildingContext);
 				hbnMappings.put(concept, newMapping);
@@ -695,6 +699,62 @@ public interface HbnVirtualModelInstance
 			// System.out.println("2nd pass : Configure mapping for concept " + concept.getName() + " table=" + table);
 
 			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
+
+				// Annotation-driven mapping (@Property) takes precedence over the legacy Hbn*Role mechanism
+
+				// Scalar column: @Property(column=...)
+				if (JDBCMetaData.isColumn(flexoProperty)) {
+					Identifier colIdentifier = metadataCollector.getDatabase()
+							.toIdentifier(JDBCMetaData.getColumnName(flexoProperty));
+					Column col = table.getColumn(colIdentifier);
+
+					Property prop = new Property();
+					prop.setName(flexoProperty.getName());
+					SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
+					value.setTypeName(TypeUtils.getBaseClass(flexoProperty.getType()).getCanonicalName());
+					value.addColumn(col);
+					value.setTable(table);
+					prop.setValue(value);
+					if (JDBCMetaData.isIdentifier(flexoProperty)) {
+						// This is a key !
+						if (TypeUtils.getBaseClass(flexoProperty.getType()).equals(Integer.class)) {
+							value.setIdentifierGeneratorStrategy("native");
+						}
+						else {
+							value.setIdentifierGeneratorStrategy("assigned");
+						}
+						pClass.setDeclaredIdentifierProperty(prop);
+						pClass.setIdentifierProperty(prop);
+						pClass.setIdentifier(value);
+					}
+					else {
+						pClass.addProperty(prop);
+					}
+					continue;
+				}
+
+				// To-one reference: @Property(column=..., fk=...)
+				if (JDBCMetaData.isToOneReference(flexoProperty)) {
+					Identifier colIdentifier = metadataCollector.getDatabase()
+							.toIdentifier(JDBCMetaData.getColumnName(flexoProperty));
+					Column col = table.getColumn(colIdentifier);
+
+					Property prop = new Property();
+					prop.setName(flexoProperty.getName());
+					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);
+					manyToOne.setReferencedPropertyName(JDBCMetaData.getForeignKeyAttribute(flexoProperty));
+					FlexoConcept referencedConcept = (flexoProperty instanceof FlexoConceptInstanceRole
+							? ((FlexoConceptInstanceRole) flexoProperty).getFlexoConceptType() : null);
+					if (referencedConcept != null) {
+						manyToOne.setReferencedEntityName(referencedConcept.getName());
+					}
+					manyToOne.addColumn(col);
+					manyToOne.setTable(table);
+					prop.setValue(manyToOne);
+					pClass.addProperty(prop);
+					continue;
+				}
+
 				Property prop;
 
 				if (flexoProperty instanceof HbnColumnRole) {
@@ -813,6 +873,45 @@ public interface HbnVirtualModelInstance
 
 			for (FlexoProperty<?> flexoProperty : concept.getDeclaredProperties()) {
 
+				// Annotation-driven one-to-many mapping: @Property(mappedBy=...)
+				if (JDBCMetaData.isToManyReference(flexoProperty)) {
+					FlexoConcept oppositeConcept = (flexoProperty instanceof FlexoConceptInstanceRole
+							? ((FlexoConceptInstanceRole) flexoProperty).getFlexoConceptType() : null);
+					if (oppositeConcept == null) {
+						logger.warning("Undefined reference concept for " + flexoProperty);
+						continue;
+					}
+
+					PersistentClass oppositeClass = mappings.get(oppositeConcept);
+					Table oppositeTable = oppositeClass.getTable();
+					Identifier colIdentifier = metadataCollector.getDatabase()
+							.toIdentifier(JDBCMetaData.getMappedBy(flexoProperty));
+					Column col = oppositeTable.getColumn(colIdentifier);
+
+					Bag coll = new Bag((MetadataImplementor) metadata, pClass);
+					coll.setRole(pClass.getEntityName() + "." + flexoProperty.getPropertyName());
+					coll.setCollectionTable(oppositeTable);
+
+					OneToMany oneToMany = new OneToMany((MetadataImplementor) metadata, pClass);
+					coll.setElement(oneToMany);
+					oneToMany.setReferencedEntityName(oppositeConcept.getName());
+					oneToMany.setAssociatedClass(oppositeClass);
+
+					DependantValue dv = new DependantValue((MetadataImplementor) metadata, oppositeTable, oppositeClass.getKey());
+					dv.addColumn(col);
+					dv.setNullable(false);
+					coll.setKey(dv);
+
+					metadataCollector.addCollectionBinding(coll);
+
+					Property prop = new Property();
+					prop.setName(flexoProperty.getName());
+					prop.setValue(coll);
+					pClass.addProperty(prop);
+
+					continue;
+				}
+
 				if (flexoProperty instanceof HbnOneToManyReferenceRole) {
 					HbnOneToManyReferenceRole referenceRole = (HbnOneToManyReferenceRole) flexoProperty;
 
@@ -884,18 +983,36 @@ public interface HbnVirtualModelInstance
 		 * @param concept
 		 * @return
 		 */
+		/**
+		 * Return the list of key properties for supplied concept: properties flagged with <code>@Property(id="true")</code> when the concept
+		 * is mapped through annotations, or the native FML key properties otherwise (legacy role-based mapping).
+		 */
+		private List<FlexoProperty<?>> getKeyProperties(FlexoConcept concept) {
+			List<FlexoProperty<?>> annotated = new ArrayList<>();
+			for (FlexoProperty<?> p : concept.getDeclaredProperties()) {
+				if (JDBCMetaData.isIdentifier(p)) {
+					annotated.add(p);
+				}
+			}
+			if (!annotated.isEmpty()) {
+				return annotated;
+			}
+			return concept.getKeyProperties();
+		}
+
 		@Override
 		public Serializable getIdentifier(Map<String, Object> hbnMap, FlexoConcept concept) {
-			if (concept.getKeyProperties().size() == 0) {
+			List<FlexoProperty<?>> keyProperties = getKeyProperties(concept);
+			if (keyProperties.size() == 0) {
 				return null;
 			}
-			if (concept.getKeyProperties().size() == 1) {
-				return (Serializable) hbnMap.get(concept.getKeyProperties().get(0).getName());
+			if (keyProperties.size() == 1) {
+				return (Serializable) hbnMap.get(keyProperties.get(0).getName());
 			}
 			// composite key
-			Object[] returned = new Object[concept.getKeyProperties().size()];
-			for (int i = 0; i < concept.getKeyProperties().size(); i++) {
-				returned[i] = hbnMap.get(concept.getKeyProperties().get(i).getName());
+			Object[] returned = new Object[keyProperties.size()];
+			for (int i = 0; i < keyProperties.size(); i++) {
+				returned[i] = hbnMap.get(keyProperties.get(i).getName());
 			}
 			return returned;
 		}
@@ -916,16 +1033,17 @@ public interface HbnVirtualModelInstance
 		 */
 		@Override
 		public String getIdentifierAsString(Map<String, Object> hbnMap, FlexoConcept concept) {
-			if (concept.getKeyProperties().size() == 0) {
+			List<FlexoProperty<?>> keyProperties = getKeyProperties(concept);
+			if (keyProperties.size() == 0) {
 				return null;
 			}
-			if (concept.getKeyProperties().size() == 1) {
-				return hbnMap.get(concept.getKeyProperties().get(0).getName()).toString();
+			if (keyProperties.size() == 1) {
+				return hbnMap.get(keyProperties.get(0).getName()).toString();
 			}
 			// composite key
 			StringBuffer sb = new StringBuffer();
 			boolean isFirst = true;
-			for (FlexoProperty<?> keyP : concept.getKeyProperties()) {
+			for (FlexoProperty<?> keyP : keyProperties) {
 				sb.append((isFirst ? "" : ",") + keyP.getName() + "=" + hbnMap.get(keyP.getName()));
 				isFirst = false;
 			}
@@ -934,6 +1052,11 @@ public interface HbnVirtualModelInstance
 
 		@Override
 		public HbnVirtualModelInstanceModelFactory getFactory() {
+			// This reflected instance has no persistent resource: its factory is the reflected model factory set at connect time
+			// (HbnModelSlot.connectTo), not the resource factory returned by the default VirtualModelInstanceImpl.getFactory().
+			if (getReflectedModelFactory() != null) {
+				return (HbnVirtualModelInstanceModelFactory) getReflectedModelFactory();
+			}
 			return (HbnVirtualModelInstanceModelFactory) super.getFactory();
 		}
 
@@ -1039,6 +1162,35 @@ public interface HbnVirtualModelInstance
 				}
 			}
 			return returned;
+		}
+
+		/**
+		 * Overridden to make the reflection <i>query-driven</i> transparent to FML: when the instances of a mapped {@link FlexoConcept} are
+		 * requested (in particular by an FML <code>select &lt;Concept&gt; from &lt;this&gt;</code>, which resolves to
+		 * {@link org.openflexo.foundation.fml.rt.editionaction.SelectFlexoConceptInstance}), an exhaustive SQL query is performed the first
+		 * time and its results are reflected as {@link HbnFlexoConceptInstance}s. Subsequent calls reuse the already-reflected instances (see
+		 * {@link #refreshFlexoConceptInstances(FlexoConcept)} to force a re-query).
+		 */
+		@Override
+		public List<FlexoConceptInstance> getFlexoConceptInstances(FlexoConcept flexoConcept) {
+			if (flexoConcept != null && isConnected() && getMappings().containsKey(flexoConcept) && !queriedConcepts.contains(flexoConcept)) {
+				try {
+					Query<?> query = getDefaultSession().createQuery("select o from " + flexoConcept.getName() + " o");
+					getFlexoConceptInstances(query, null, flexoConcept);
+					queriedConcepts.add(flexoConcept);
+				} catch (HbnException e) {
+					logger.warning("Could not query instances for concept " + flexoConcept.getName() + ": " + e.getMessage());
+				}
+			}
+			return super.getFlexoConceptInstances(flexoConcept);
+		}
+
+		/**
+		 * Forget that supplied {@link FlexoConcept} was already queried, so that the next call to {@link #getFlexoConceptInstances(FlexoConcept)}
+		 * performs a fresh SQL query.
+		 */
+		public void refreshFlexoConceptInstances(FlexoConcept flexoConcept) {
+			queriedConcepts.remove(flexoConcept);
 		}
 
 		/**

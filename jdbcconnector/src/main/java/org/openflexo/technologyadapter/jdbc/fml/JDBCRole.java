@@ -59,7 +59,7 @@ public abstract class JDBCRole<T> extends FlexoRole.FlexoRoleImpl<T> {
 
 	@Override
 	public ActorReference<T> makeActorReference(final T object, final FlexoConceptInstance epi) {
-		final AbstractVirtualModelInstanceModelFactory<?> factory = epi.getFactory();
+		final AbstractVirtualModelInstanceModelFactory factory = epi.getFactory();
 		final JDBCActorReference<T> returned = factory.newInstance(getActorReferenceClass());
 		returned.setFlexoRole(this);
 		returned.setFlexoConceptInstance(epi);

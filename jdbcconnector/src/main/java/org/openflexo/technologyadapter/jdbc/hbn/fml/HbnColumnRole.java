@@ -56,6 +56,12 @@ import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCMappingType;
 
+/**
+ * @deprecated the column mapping is now expressed declaratively through the <code>@Property(column=...)</code> FML annotation on the
+ *             contract {@link org.openflexo.foundation.fml.VirtualModel} (see
+ *             {@link org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData}). This role is kept for backward compatibility only.
+ */
+@Deprecated
 @ModelEntity
 @ImplementationClass(HbnColumnRole.HbnColumnRoleImpl.class)
 @XMLElement

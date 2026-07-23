@@ -58,7 +58,11 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
  * 
  * @author sylvain
  *
+ * @deprecated reference mappings are now expressed declaratively through <code>@Property(...)</code> FML annotations on the contract
+ *             {@link org.openflexo.foundation.fml.VirtualModel} (see {@link org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData}). This
+ *             role is kept for backward compatibility only.
  */
+@Deprecated
 @ModelEntity
 @ImplementationClass(HbnManyToManyReferenceRole.HbnToManyReferenceRoleImpl.class)
 @XMLElement

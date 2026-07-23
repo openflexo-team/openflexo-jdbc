@@ -1,0 +1,27 @@
+use org.openflexo.technologyadapter.jdbc.HbnModelSlot as JDBC;
+
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+
+import ["http://openflexo.org/jdbc-test/FML/JDBCMapping.fml"];
+
+/*
+ * A reflect VirtualModel: it accesses a relational database (through a HbnModelSlot typed with the JDBCMapping VirtualModel) and reflects
+ * its rows as FlexoConceptInstances. Reflection is query-driven: an FML 'select <Concept> from db' performs the underlying SQL query.
+ */
+@URI("http://openflexo.org/jdbc-test/FML/JDBCReflect.fml")
+public model JDBCReflect {
+
+   JDBCMapping db with HbnModelSlot();
+
+   create(required Resource<JDBCConnection> aConnection) {
+      connect db using parameters.aConnection;
+   }
+
+   List<Client> getAllClients() {
+      return select Client from db;
+   }
+
+   List<Salesman> getAllSalesmen() {
+      return select Salesman from db;
+   }
+}

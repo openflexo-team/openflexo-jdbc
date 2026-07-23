@@ -47,10 +47,14 @@ import org.openflexo.connie.type.TypeUtils;
 
 /**
  * Hibernate mappings types: each driver should handle it
- * 
+ *
  * @author sylvain
  *
+ * @deprecated column types are now derived from the Java type of the annotated FML property (see
+ *             {@link org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData}); this enum was only used by the deprecated
+ *             {@link org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole}.
  */
+@Deprecated
 @SuppressWarnings("serial")
 public enum JDBCMappingType {
 

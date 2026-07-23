@@ -68,8 +68,6 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterInitializatio
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnVirtualModelInstanceType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnVirtualModelInstanceType.HbnVirtualModelInstanceTypeFactory;
-import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceRepository;
-import org.openflexo.technologyadapter.jdbc.hbn.rm.HbnVirtualModelInstanceResourceFactory;
 import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
 
 /**
@@ -79,7 +77,7 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
  * 
  */
 @DeclareModelSlots({ JDBCModelSlot.class, HbnModelSlot.class })
-@DeclareResourceFactories({ JDBCResourceFactory.class, HbnVirtualModelInstanceResourceFactory.class })
+@DeclareResourceFactories({ JDBCResourceFactory.class })
 public class JDBCTechnologyAdapter extends TechnologyAdapter<JDBCTechnologyAdapter> {
 
 	public JDBCTechnologyAdapter() throws TechnologyAdapterInitializationException {
@@ -115,15 +113,6 @@ public class JDBCTechnologyAdapter extends TechnologyAdapter<JDBCTechnologyAdapt
 	public <I> boolean isIgnorable(FlexoResourceCenter<I> resourceCenter, I contents) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	public <I> HbnVirtualModelInstanceRepository<I> getVirtualModelInstanceRepository(FlexoResourceCenter<I> resourceCenter) {
-		HbnVirtualModelInstanceRepository<I> returned = resourceCenter.retrieveRepository(HbnVirtualModelInstanceRepository.class, this);
-		if (returned == null) {
-			returned = HbnVirtualModelInstanceRepository.instanciateNewRepository(this, resourceCenter);
-			resourceCenter.registerRepository(returned, HbnVirtualModelInstanceRepository.class, this);
-		}
-		return returned;
 	}
 
 	@Override

@@ -56,24 +56,29 @@
 package org.openflexo.technologyadapter.jdbc;
 
 import java.lang.reflect.Type;
+import java.util.logging.Logger;
 
+import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
 import org.openflexo.foundation.fml.annotations.DeclareEditionActions;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoBehaviours;
 import org.openflexo.foundation.fml.annotations.DeclareFlexoRoles;
+import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.reflect.ReflectedFMLRTModelSlot;
+import org.openflexo.foundation.fml.rt.reflect.ReflectedFMLRTModelSlotInstance;
 import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
+import org.openflexo.pamela.exceptions.ModelDefinitionException;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstanceModelFactory;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CommitTransaction;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
@@ -102,12 +107,13 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
  */
 @ModelEntity
 @XMLElement
+@FML("HbnModelSlot")
 @ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
 @DeclareFlexoRoles({ HbnColumnRole.class, HbnToOneReferenceRole.class, HbnOneToManyReferenceRole.class })
-@DeclareEditionActions({ CreateJDBCConnection.class, CreateHbnResource.class, PerformSQLQuery.class, OpenTransaction.class,
-		CommitTransaction.class, RollbackTransaction.class, CreateHbnObject.class, SaveHbnObject.class, RefreshHbnObject.class })
+@DeclareEditionActions({ CreateJDBCConnection.class, PerformSQLQuery.class, OpenTransaction.class, CommitTransaction.class,
+		RollbackTransaction.class, CreateHbnObject.class, SaveHbnObject.class, RefreshHbnObject.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
-@DeclareActorReferences({ HbnObjectActorReference.class })
+@DeclareActorReferences({ HbnObjectActorReference.class, ReflectedFMLRTModelSlotInstance.class })
 public interface HbnModelSlot
 		extends ReflectedFMLRTModelSlot<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter> {
 
@@ -152,6 +158,8 @@ public interface HbnModelSlot
 			extends ReflectedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter>
 			implements HbnModelSlot {
 
+		private static final Logger logger = Logger.getLogger(HbnModelSlotImpl.class.getPackage().getName());
+
 		/*private DataBinding<String> address;
 		private DataBinding<String> user;
 		private DataBinding<String> password;*/
@@ -160,6 +168,51 @@ public interface HbnModelSlot
 		@Override
 		public Class<JDBCTechnologyAdapter> getTechnologyAdapterClass() {
 			return JDBCTechnologyAdapter.class;
+		}
+
+		/**
+		 * Connect this reflected model slot to supplied {@link JDBCResource}: build a {@link HbnVirtualModelInstance} configured with the
+		 * annotated contract {@link VirtualModel} (the accessed virtual model), then open the Hibernate session and build the mapping from the
+		 * <code>@Table</code>/<code>@Property</code> annotations declared on the contract concepts.
+		 *
+		 * <p>
+		 * Contrary to the exhaustive reflection performed by the XML and Excel model slots at connect time, no {@link FlexoConceptInstance} is
+		 * created here: instances are produced lazily, driven by queries (see
+		 * {@link org.openflexo.technologyadapter.jdbc.hbn.fml.PerformSQLQuery} and
+		 * {@link HbnVirtualModelInstance#getFlexoConceptInstances(org.hibernate.query.Query, FlexoConceptInstance, org.openflexo.foundation.fml.FlexoConcept)}).
+		 * </p>
+		 */
+		@Override
+		public ReflectedFMLRTModelSlotInstance<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter> connectTo(
+				JDBCResource resource, FlexoConceptInstance context) {
+
+			try {
+				HbnVirtualModelInstanceModelFactory factory = new HbnVirtualModelInstanceModelFactory(resource,
+						getServiceManager().getEditingContext(), getServiceManager().getTechnologyAdapterService());
+				HbnVirtualModelInstance vmi = factory.newInstance(HbnVirtualModelInstance.class);
+				vmi.setReflectedModelFactory(factory);
+				vmi.setVirtualModel(getAccessedVirtualModel());
+				vmi.setReflectedResource(resource);
+				vmi.setJDBCConnectionResource(resource);
+
+				// Open the connection and build the Hibernate mapping from the annotated contract VirtualModel.
+				// No FlexoConceptInstance is created at this stage (query-driven reflection).
+				vmi.connectToDB();
+
+				ReflectedFMLRTModelSlotInstance<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter> modelSlotInstance;
+				modelSlotInstance = makeActorReference(vmi, context);
+				context.addToActors(modelSlotInstance);
+				return modelSlotInstance;
+
+			} catch (ModelDefinitionException e) {
+				logger.warning("Unexpected ModelDefinitionException: " + e);
+				e.printStackTrace();
+				return null;
+			} catch (FlexoException e) {
+				logger.warning("Could not connect to database: " + e);
+				e.printStackTrace();
+				return null;
+			}
 		}
 
 		@Override

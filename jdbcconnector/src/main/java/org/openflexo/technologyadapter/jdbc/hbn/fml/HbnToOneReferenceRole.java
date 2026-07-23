@@ -56,7 +56,11 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
  * 
  * @author sylvain
  *
+ * @deprecated the to-one reference mapping is now expressed declaratively through the <code>@Property(column=..., fk=...)</code> FML
+ *             annotation on the contract {@link org.openflexo.foundation.fml.VirtualModel} (see
+ *             {@link org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData}). This role is kept for backward compatibility only.
  */
+@Deprecated
 @ModelEntity
 @ImplementationClass(HbnToOneReferenceRole.HbnToOneReferenceRoleImpl.class)
 @XMLElement

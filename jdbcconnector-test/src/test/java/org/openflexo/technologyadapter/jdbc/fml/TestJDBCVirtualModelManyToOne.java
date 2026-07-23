@@ -47,6 +47,7 @@ import java.util.List;
 import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
@@ -72,7 +73,6 @@ import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
-import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnResource;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnInitializer;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
@@ -98,6 +98,9 @@ import org.openflexo.test.TestOrder;
  * </ul>
  *
  */
+@Ignore("Legacy role/resource-based test: the CreateHbnResource flow it drives was removed with the deprecated Hbn resource layer. "
+		+ "To be ported to the annotation-driven mechanism (annotated companion VirtualModel + HbnModelSlot.connectTo). "
+		+ "See TestHbnAnnotatedMapping for a working example of the new mechanism.")
 @RunWith(OrderedRunner.class)
 public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 
@@ -400,23 +403,9 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		createJDBCConnectionAction.setResourceName(new DataBinding<String>("(this.name + \"_connection\")"));
 		createJDBCConnectionAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 
-		CreateEditionAction createEditionAction1 = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
-				_editor);
-		createEditionAction1.setEditionActionClass(CreateHbnResource.class);
-		createEditionAction1.setAssignation(new DataBinding<>("db"));
-		createEditionAction1.doAction();
-		AssignationAction<?> action1 = (AssignationAction<?>) createEditionAction1.getNewEditionAction();
-
-		CreateHbnResource createHbnResourceAction = (CreateHbnResource) action1.getAssignableAction();
-		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
-		createHbnResourceAction.setConnection(new DataBinding<JDBCConnection>("connection"));
-		/*createHbnResourceAction.setAddress(new DataBinding<String>("parameters.address"));
-		createHbnResourceAction.setUser(new DataBinding<String>("parameters.user"));
-		createHbnResourceAction.setPassword(new DataBinding<String>("parameters.password"));
-		createHbnResourceAction.setDbType(new DataBinding<JDBCDbType>("parameters.dbtype"));*/
-		createHbnResourceAction.setResourceName(new DataBinding<String>("(this.name + \"_db\")"));
-		createHbnResourceAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
-		createHbnResourceAction.setCreationScheme(mappingCreationScheme);
+		// Legacy CreateHbnResource-based connection removed together with the deprecated Hbn resource layer. This test is @Ignore'd
+		// pending port to the annotation-driven mechanism (HbnModelSlot.connectTo via a ConnectAction and an annotated companion
+		// VirtualModel). See TestHbnAnnotatedMapping for the new mechanism.
 
 		rootVirtualModel.getResource().save();
 

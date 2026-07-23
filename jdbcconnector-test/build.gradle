@@ -7,6 +7,10 @@ dependencies {
     implementation testUtils()
     implementation flexoFoundationTest()
 
+    // FML-script (fml-cli) support for .fmlscript automated tests
+    testImplementation fmlCli()
+    testImplementation fmlCliTest()
+
     // Test resource center
     testRuntimeOnly project(':jdbc-test-rc')
 }
