@@ -66,6 +66,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 @ModelEntity
 @ImplementationClass(value = JDBCTableRoleImpl.class)
 @XMLElement
+@org.openflexo.foundation.fml.annotations.FML("JDBCTableRole")
 public interface JDBCTableRole extends FlexoRole<JDBCTable> {
 
     abstract class JDBCTableRoleImpl extends JDBCRole<JDBCTable> implements JDBCTableRole {

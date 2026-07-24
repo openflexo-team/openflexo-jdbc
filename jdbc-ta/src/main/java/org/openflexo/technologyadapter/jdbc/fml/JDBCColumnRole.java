@@ -65,6 +65,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 @ModelEntity
 @ImplementationClass(value = JDBCColumnRole.JDBCColumnRoleImpl.class)
 @XMLElement
+@org.openflexo.foundation.fml.annotations.FML("JDBCColumnRole")
 public interface JDBCColumnRole extends FlexoRole<JDBCColumn> {
 
     abstract class JDBCColumnRoleImpl extends JDBCRole<JDBCColumn> implements JDBCColumnRole {

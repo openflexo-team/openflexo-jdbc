@@ -33,3 +33,15 @@ assert clientRows.size() == 3;
 salesmanRows = myVMI.getSalesmanRows();
 log "salesmanRows=" + salesmanRows;
 assert salesmanRows.size() == 2;
+
+// --- Technology-specific fetch-request: select JDBCTable from db ---
+
+selectedTables = myVMI.selectTables();
+log "selectedTables=" + selectedTables;
+assert selectedTables.size() == 2;
+
+// --- JDBCTableRole: WrappedTable holds a JDBCTable, read its name back through the role ---
+
+wrappedName = myVMI.wrapClientTableName();
+log "wrappedName=" + wrappedName;
+assert wrappedName == "CLIENT";

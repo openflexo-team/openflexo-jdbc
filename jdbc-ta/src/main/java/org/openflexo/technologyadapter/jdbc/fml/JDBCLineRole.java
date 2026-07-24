@@ -67,6 +67,7 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 @ModelEntity
 @ImplementationClass(value = JDBCLineRoleImpl.class)
 @XMLElement
+@org.openflexo.foundation.fml.annotations.FML("JDBCLineRole")
 public interface JDBCLineRole extends FlexoRole<JDBCLine> {
 
 	abstract class JDBCLineRoleImpl extends JDBCRole<JDBCLine> implements JDBCLineRole {
