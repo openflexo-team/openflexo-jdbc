@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':jdbcconnector')
+    implementation project(':jdbc-ta')
     implementation flexoFoundation()
 
     implementation group: "org.hsqldb", name: "hsqldb", version: "2.4.0"
@@ -12,7 +12,7 @@ dependencies {
     testImplementation fmlCliTest()
 
     // Test resource center
-    testRuntimeOnly project(':jdbc-test-rc')
+    testRuntimeOnly project(':jdbc-ta-test-rc')
 }
 if (JavaVersion.current().isJava9Compatible()) {
 	tasks.withType(Test) {

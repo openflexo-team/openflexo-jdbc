@@ -1,7 +1,7 @@
-include 'jdbcconnector',
-	 'jdbcconnector-test',
-        'jdbcconnector-ui',
-        'jdbc-test-rc'
+include 'jdbc-ta',
+        'jdbc-ta-test',
+        'jdbc-ta-ui',
+        'jdbc-ta-test-rc'
 
 // file('../').listFiles().each { File otherProject ->
 //    if (!otherProject.equals(file('.')) && new File(otherProject, "build.gradle").exists()) {

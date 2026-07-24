@@ -12,6 +12,6 @@ dependencies {
     testImplementation flexoFoundationTest()
 
     // Test resource center
-    testRuntimeOnly project(':jdbc-test-rc')
+    testRuntimeOnly project(':jdbc-ta-test-rc')
 
 }
