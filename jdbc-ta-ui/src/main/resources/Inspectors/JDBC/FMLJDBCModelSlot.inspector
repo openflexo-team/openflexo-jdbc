@@ -54,6 +54,6 @@
 			font="SansSerif,0,11" name="AdvancedTab" />
 	</TabPanel>
 	<FIBVariable id="13"
-		type="org.openflexo.technologyadapter.jdbc.HbnModelSlot" name="data" />
+		type="org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot" name="data" />
 	<LocalizedDictionary id="14" />
 </Inspector>

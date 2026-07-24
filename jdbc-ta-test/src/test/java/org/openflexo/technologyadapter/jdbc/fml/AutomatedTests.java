@@ -126,7 +126,7 @@ public class AutomatedTests extends FMLScriptParserTestCase {
 	//
 	// A single in-memory HSQLDB is seeded once (its seed connection is kept open so the memory database survives for the whole JVM), and
 	// a JDBCConnection resource pointing at it is registered under a stable URI so that the .fmlscript files can 'load' it and connect the
-	// HbnModelSlot to it.
+	// FMLJDBCModelSlot to it.
 	// ----------------------------------------------------------------------------------------------------------------------------------
 
 	private static final String DB_NAME = "jdbcFmlScriptDb";

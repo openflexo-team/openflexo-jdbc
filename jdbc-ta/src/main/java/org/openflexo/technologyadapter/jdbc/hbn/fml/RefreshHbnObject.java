@@ -60,7 +60,7 @@ import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction.OpenTransactionImpl;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -84,7 +84,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(RefreshHbnObject.RefreshHbnObjectImpl.class)
 @XMLElement
 @FML("SaveHbnObject")
-public interface RefreshHbnObject extends TechnologySpecificActionDefiningReceiver<HbnModelSlot, HbnVirtualModelInstance, Void> {
+public interface RefreshHbnObject extends TechnologySpecificActionDefiningReceiver<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	public static final String TRANSACTION_KEY = "object";
@@ -97,7 +97,7 @@ public interface RefreshHbnObject extends TechnologySpecificActionDefiningReceiv
 	public void setObject(DataBinding<FlexoConceptInstance> object);
 
 	public static abstract class RefreshHbnObjectImpl<T>
-			extends TechnologySpecificActionDefiningReceiverImpl<HbnModelSlot, HbnVirtualModelInstance, Void> implements RefreshHbnObject {
+			extends TechnologySpecificActionDefiningReceiverImpl<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> implements RefreshHbnObject {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());

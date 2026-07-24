@@ -107,14 +107,14 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
  */
 @ModelEntity
 @XMLElement
-@FML("HbnModelSlot")
-@ImplementationClass(HbnModelSlot.HbnModelSlotImpl.class)
+@FML("FMLJDBCModelSlot")
+@ImplementationClass(FMLJDBCModelSlot.FMLJDBCModelSlotImpl.class)
 @DeclareFlexoRoles({ HbnColumnRole.class, HbnToOneReferenceRole.class, HbnOneToManyReferenceRole.class })
 @DeclareEditionActions({ CreateJDBCConnection.class, PerformSQLQuery.class, OpenTransaction.class, CommitTransaction.class,
 		RollbackTransaction.class, CreateHbnObject.class, SaveHbnObject.class, RefreshHbnObject.class })
 @DeclareFlexoBehaviours({ HbnInitializer.class })
 @DeclareActorReferences({ HbnObjectActorReference.class, ReflectedFMLRTModelSlotInstance.class })
-public interface HbnModelSlot
+public interface FMLJDBCModelSlot
 		extends ReflectedFMLRTModelSlot<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter> {
 
 	/*@PropertyIdentifier(type = JDBCDbType.class)
@@ -154,11 +154,11 @@ public interface HbnModelSlot
 	@Setter(PASSWORD_KEY)
 	void setPassword(DataBinding<String> password);*/
 
-	abstract class HbnModelSlotImpl
+	abstract class FMLJDBCModelSlotImpl
 			extends ReflectedFMLRTModelSlotImpl<HbnVirtualModelInstance, JDBCResource, JDBCConnection, JDBCTechnologyAdapter>
-			implements HbnModelSlot {
+			implements FMLJDBCModelSlot {
 
-		private static final Logger logger = Logger.getLogger(HbnModelSlotImpl.class.getPackage().getName());
+		private static final Logger logger = Logger.getLogger(FMLJDBCModelSlotImpl.class.getPackage().getName());
 
 		/*private DataBinding<String> address;
 		private DataBinding<String> user;

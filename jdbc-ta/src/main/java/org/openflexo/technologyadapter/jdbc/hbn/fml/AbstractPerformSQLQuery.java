@@ -60,7 +60,7 @@ import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnException;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
@@ -75,7 +75,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ModelEntity(isAbstract = true)
 @ImplementationClass(AbstractPerformSQLQuery.AbstractPerformSQLQueryImpl.class)
 public interface AbstractPerformSQLQuery<AT>
-		extends AbstractFetchRequest<HbnModelSlot, HbnVirtualModelInstance, HbnFlexoConceptInstance, AT> {
+		extends AbstractFetchRequest<FMLJDBCModelSlot, HbnVirtualModelInstance, HbnFlexoConceptInstance, AT> {
 
 	@PropertyIdentifier(type = String.class)
 	public static final String FLEXO_CONCEPT_TYPE_URI_KEY = "flexoConceptTypeURI";
@@ -108,7 +108,7 @@ public interface AbstractPerformSQLQuery<AT>
 	public VirtualModel getAddressedVirtualModel();
 
 	public static abstract class AbstractPerformSQLQueryImpl<AT>
-			extends AbstractFetchRequestImpl<HbnModelSlot, HbnVirtualModelInstance, HbnFlexoConceptInstance, AT>
+			extends AbstractFetchRequestImpl<FMLJDBCModelSlot, HbnVirtualModelInstance, HbnFlexoConceptInstance, AT>
 			implements AbstractPerformSQLQuery<AT> {
 
 		@SuppressWarnings("unused")

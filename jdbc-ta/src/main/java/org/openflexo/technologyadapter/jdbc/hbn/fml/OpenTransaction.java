@@ -55,7 +55,7 @@ import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
@@ -70,7 +70,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(OpenTransaction.OpenTransactionImpl.class)
 @XMLElement
 @FML("OpenTransaction")
-public interface OpenTransaction extends TechnologySpecificActionDefiningReceiver<HbnModelSlot, HbnVirtualModelInstance, Transaction> {
+public interface OpenTransaction extends TechnologySpecificActionDefiningReceiver<FMLJDBCModelSlot, HbnVirtualModelInstance, Transaction> {
 
 	@PropertyIdentifier(type = Integer.class)
 	public static final String TIME_OUT_KEY = "timeOut";
@@ -101,7 +101,7 @@ public interface OpenTransaction extends TechnologySpecificActionDefiningReceive
 	public void setHasTimeOut(boolean hasTimeOut);
 
 	public static abstract class OpenTransactionImpl<T> extends
-			TechnologySpecificActionDefiningReceiverImpl<HbnModelSlot, HbnVirtualModelInstance, Transaction> implements OpenTransaction {
+			TechnologySpecificActionDefiningReceiverImpl<FMLJDBCModelSlot, HbnVirtualModelInstance, Transaction> implements OpenTransaction {
 
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());
 

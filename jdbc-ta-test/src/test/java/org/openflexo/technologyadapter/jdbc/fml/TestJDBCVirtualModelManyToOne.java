@@ -69,7 +69,7 @@ import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.jdbc.test.HsqlTestCase;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
@@ -87,19 +87,19 @@ import org.openflexo.test.OrderedRunner;
 import org.openflexo.test.TestOrder;
 
 /**
- * Testing {@link HbnModelSlot} in the context of manyToOne relationship
+ * Testing {@link FMLJDBCModelSlot} in the context of manyToOne relationship
  * 
  * <ul>
  * <li>Create a database and populate it</li>
  * <li>Create a {@link VirtualModel} mapping this database</li>
- * <li>Create a {@link VirtualModel} whose purpose is to declare and use a {@link HbnModelSlot} configured with mapping
+ * <li>Create a {@link VirtualModel} whose purpose is to declare and use a {@link FMLJDBCModelSlot} configured with mapping
  * {@link VirtualModel}</li>
  * <li>Instantiate this {@link VirtualModel} and perform some tests</li>
  * </ul>
  *
  */
 @Ignore("Legacy role/resource-based test: the CreateHbnResource flow it drives was removed with the deprecated Hbn resource layer. "
-		+ "To be ported to the annotation-driven mechanism (annotated companion VirtualModel + HbnModelSlot.connectTo). "
+		+ "To be ported to the annotation-driven mechanism (annotated companion VirtualModel + FMLJDBCModelSlot.connectTo). "
 		+ "See TestHbnAnnotatedMapping for a working example of the new mechanism.")
 @RunWith(OrderedRunner.class)
 public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
@@ -118,7 +118,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 	private static VirtualModel rootVirtualModel;
 	private static VirtualModel mappingVirtualModel;
 
-	private static HbnModelSlot modelSlot;
+	private static FMLJDBCModelSlot modelSlot;
 	private static CreationScheme mappingCreationScheme;
 	private static HbnInitializer mappingInitializer;
 	private static FlexoConceptInstanceRole clientsProperty;
@@ -248,7 +248,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 
 		AddUseDeclaration useDeclarationAction = AddUseDeclaration.actionType.makeNewAction(mappingVirtualModel.getCompilationUnit(), null,
 				_editor);
-		useDeclarationAction.setModelSlotClass(HbnModelSlot.class);
+		useDeclarationAction.setModelSlotClass(FMLJDBCModelSlot.class);
 		useDeclarationAction.doAction();
 
 		assertNotNull(mappingVirtualModel);
@@ -343,13 +343,13 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		// Now we create the vm1 model slot
 		CreateModelSlot createMS1 = CreateModelSlot.actionType.makeNewAction(rootVirtualModel, null, _editor);
 		createMS1.setTechnologyAdapter(getTA(JDBCTechnologyAdapter.class));
-		createMS1.setModelSlotClass(HbnModelSlot.class);
+		createMS1.setModelSlotClass(FMLJDBCModelSlot.class);
 		createMS1.setModelSlotName("db");
 		createMS1.setVmRes(mappingVirtualModel.getResource());
 		createMS1.doAction();
 		assertTrue(createMS1.hasActionExecutionSucceeded());
 
-		assertNotNull(modelSlot = (HbnModelSlot) createMS1.getNewModelSlot());
+		assertNotNull(modelSlot = (FMLJDBCModelSlot) createMS1.getNewModelSlot());
 		System.out.println("Created " + modelSlot);
 
 		CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(rootVirtualModel, null, _editor);
@@ -404,7 +404,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		createJDBCConnectionAction.setResourceCenter(new DataBinding<FlexoResourceCenter<?>>("this.resourceCenter"));
 
 		// Legacy CreateHbnResource-based connection removed together with the deprecated Hbn resource layer. This test is @Ignore'd
-		// pending port to the annotation-driven mechanism (HbnModelSlot.connectTo via a ConnectAction and an annotated companion
+		// pending port to the annotation-driven mechanism (FMLJDBCModelSlot.connectTo via a ConnectAction and an annotated companion
 		// VirtualModel). See TestHbnAnnotatedMapping for the new mechanism.
 
 		rootVirtualModel.getResource().save();

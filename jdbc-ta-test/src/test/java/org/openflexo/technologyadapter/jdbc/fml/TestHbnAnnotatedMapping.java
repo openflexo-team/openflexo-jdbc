@@ -68,7 +68,7 @@ import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.jdbc.test.HsqlTestCase;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
@@ -81,7 +81,7 @@ import org.openflexo.test.OrderedRunner;
 import org.openflexo.test.TestOrder;
 
 /**
- * Greenfield test proving the annotation-driven mapping mechanism of {@link HbnModelSlot}.
+ * Greenfield test proving the annotation-driven mapping mechanism of {@link FMLJDBCModelSlot}.
  *
  * <p>
  * Unlike the (legacy, now @Ignore'd) {@code TestJDBCVirtualModel*} tests, this test:
@@ -91,7 +91,7 @@ import org.openflexo.test.TestOrder;
  * properties carrying {@code @Table} / {@code @Property} FML meta-data), instead of generating role-based mappings through
  * {@code CreateJDBCVirtualModel};</li>
  * <li>connects the model slot through {@link ConnectAction} ({@code connect db using connection}) which calls
- * {@link HbnModelSlot#connectTo}, instead of the removed {@code CreateHbnResource} flow;</li>
+ * {@link FMLJDBCModelSlot#connectTo}, instead of the removed {@code CreateHbnResource} flow;</li>
  * <li>produces {@link HbnFlexoConceptInstance}s through a query (the reflection is query-driven, not exhaustive).</li>
  * </ul>
  *
@@ -118,7 +118,7 @@ public class TestHbnAnnotatedMapping extends HsqlTestCase {
 	private static FlexoConcept clientConcept;
 	private static FlexoConcept salesmanConcept;
 
-	private static HbnModelSlot modelSlot;
+	private static FMLJDBCModelSlot modelSlot;
 	private static CreationScheme creationScheme;
 
 	private static FMLRTVirtualModelInstance vmi;
@@ -225,7 +225,7 @@ public class TestHbnAnnotatedMapping extends HsqlTestCase {
 	}
 
 	/**
-	 * Build the root VirtualModel: a {@link HbnModelSlot} typed with the annotated mapping VM, and a creation scheme that opens a JDBC
+	 * Build the root VirtualModel: a {@link FMLJDBCModelSlot} typed with the annotated mapping VM, and a creation scheme that opens a JDBC
 	 * connection and connects the model slot to it (query-driven reflection, no exhaustive population).
 	 */
 	@Test
@@ -236,17 +236,17 @@ public class TestHbnAnnotatedMapping extends HsqlTestCase {
 		rootVirtualModel = createTopLevelVirtualModel(_project, ROOT_VIRTUAL_MODEL_NAME, ROOT_VIRTUAL_MODEL_URI);
 
 		AddUseDeclaration useDeclaration = AddUseDeclaration.actionType.makeNewAction(rootVirtualModel.getCompilationUnit(), null, _editor);
-		useDeclaration.setModelSlotClass(HbnModelSlot.class);
+		useDeclaration.setModelSlotClass(FMLJDBCModelSlot.class);
 		useDeclaration.doAction();
 
 		CreateModelSlot createMS = CreateModelSlot.actionType.makeNewAction(rootVirtualModel, null, _editor);
 		createMS.setTechnologyAdapter(getTA(JDBCTechnologyAdapter.class));
-		createMS.setModelSlotClass(HbnModelSlot.class);
+		createMS.setModelSlotClass(FMLJDBCModelSlot.class);
 		createMS.setModelSlotName("db");
 		createMS.setVmRes(mappingVirtualModel.getResource());
 		createMS.doAction();
 		assertTrue(createMS.hasActionExecutionSucceeded());
-		modelSlot = (HbnModelSlot) createMS.getNewModelSlot();
+		modelSlot = (FMLJDBCModelSlot) createMS.getNewModelSlot();
 		assertNotNull(modelSlot);
 		assertSame(mappingVirtualModel, modelSlot.getAccessedVirtualModel());
 

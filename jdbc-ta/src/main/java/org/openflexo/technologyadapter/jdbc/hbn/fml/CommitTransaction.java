@@ -51,7 +51,7 @@ import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction.OpenTransactionImpl;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -65,10 +65,10 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(CommitTransaction.CommitTransactionImpl.class)
 @XMLElement
 @FML("CommitTransaction")
-public interface CommitTransaction extends TechnologySpecificActionDefiningReceiver<HbnModelSlot, HbnVirtualModelInstance, Void> {
+public interface CommitTransaction extends TechnologySpecificActionDefiningReceiver<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> {
 
 	public static abstract class CommitTransactionImpl<T>
-			extends TechnologySpecificActionDefiningReceiverImpl<HbnModelSlot, HbnVirtualModelInstance, Void> implements CommitTransaction {
+			extends TechnologySpecificActionDefiningReceiverImpl<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> implements CommitTransaction {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());

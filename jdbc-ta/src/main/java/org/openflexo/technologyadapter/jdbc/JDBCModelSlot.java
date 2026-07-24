@@ -93,9 +93,9 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
  * 
  * This is really low-level, as managed modelling elements are {@link JDBCTable}, {@link JDBCColumn} and {@link JDBCLine}
  * 
- * In production context, you should use {@link HbnModelSlot}
+ * In production context, you should use {@link FMLJDBCModelSlot}
  * 
- * @see HbnModelSlot
+ * @see FMLJDBCModelSlot
  * @author charlie
  * 
  */

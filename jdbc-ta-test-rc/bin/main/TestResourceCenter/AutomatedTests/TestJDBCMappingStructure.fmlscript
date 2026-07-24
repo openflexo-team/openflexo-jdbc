@@ -12,7 +12,7 @@ log "Mapping VM pretty-print:";
 log mappingVM.fMLPrettyPrint;
 assert mappingVM.flexoConcepts.size() == 2;
 
-// Load the reflect VirtualModel (declares a HbnModelSlot typed with the mapping VirtualModel)
+// Load the reflect VirtualModel (declares a FMLJDBCModelSlot typed with the mapping VirtualModel)
 reflectVM = load -r ["http://openflexo.org/jdbc-test/FML/JDBCReflect.fml"];
 assert reflectVM != null;
 log "Reflect VM pretty-print:";

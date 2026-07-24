@@ -53,7 +53,7 @@ import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 
 /**
- * A role specific to Hibernate technology (HbnModelSlot) allowing to access a collection of referenced objects in an external table through
+ * A role specific to Hibernate technology (FMLJDBCModelSlot) allowing to access a collection of referenced objects in an external table through
  * another table and two foreign keys
  * 
  * @author sylvain

@@ -56,7 +56,7 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.Initializer;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnOneToManyReferenceRole;
@@ -64,7 +64,7 @@ import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnToOneReferenceRole;
 
 /**
  * A JDBC/Hibernate-specific {@link FlexoConceptInstance} reflecting a distant object accessible in an {@link HbnVirtualModelInstance}
- * through a {@link HbnModelSlot}<br>
+ * through a {@link FMLJDBCModelSlot}<br>
  * 
  * This {@link HbnFlexoConceptInstance} internally manages Hibernate support object (a {@link Map}) which encodes mapped dynamic object
  * 

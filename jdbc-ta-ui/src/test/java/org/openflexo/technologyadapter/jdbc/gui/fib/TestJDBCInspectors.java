@@ -125,8 +125,8 @@ public class TestJDBCInspectors extends GenericFIBInspectorTestCase {
 	}
 
 	@Test
-	public void testHbnModelSlotInspector() {
-		validateFIB("Inspectors/JDBC/HbnModelSlot.inspector");
+	public void testFMLJDBCModelSlotInspector() {
+		validateFIB("Inspectors/JDBC/FMLJDBCModelSlot.inspector");
 	}
 
 	@Test

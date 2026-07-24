@@ -51,7 +51,7 @@ import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction.OpenTransactionImpl;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -65,10 +65,10 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 @ImplementationClass(RollbackTransaction.RollbackTransactionImpl.class)
 @XMLElement
 @FML("RollbackTransaction")
-public interface RollbackTransaction extends TechnologySpecificActionDefiningReceiver<HbnModelSlot, HbnVirtualModelInstance, Void> {
+public interface RollbackTransaction extends TechnologySpecificActionDefiningReceiver<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> {
 
 	public static abstract class RollbackTransactionImpl<T> extends
-			TechnologySpecificActionDefiningReceiverImpl<HbnModelSlot, HbnVirtualModelInstance, Void> implements RollbackTransaction {
+			TechnologySpecificActionDefiningReceiverImpl<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> implements RollbackTransaction {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(OpenTransactionImpl.class.getPackage().getName());

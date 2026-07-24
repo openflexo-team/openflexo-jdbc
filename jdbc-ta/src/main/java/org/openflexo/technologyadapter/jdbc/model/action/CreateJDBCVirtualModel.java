@@ -70,7 +70,7 @@ import org.openflexo.foundation.resource.RepositoryFolder;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.task.Progress;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
@@ -166,7 +166,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 			newVirtualModel = vmResource.getLoadedResourceData().getVirtualModel();
 			newVirtualModel.setDescription(getNewVirtualModelDescription());
 			newVirtualModel.setAbstract(true);
-			newVirtualModel.setModelSlotNatureClass(HbnModelSlot.class);
+			newVirtualModel.setModelSlotNatureClass(FMLJDBCModelSlot.class);
 		} catch (SaveResourceException e) {
 			throw new SaveResourceException(null);
 		} catch (ModelDefinitionException e) {
@@ -175,7 +175,7 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 
 		AddUseDeclaration useDeclarationAction = AddUseDeclaration.actionType.makeNewEmbeddedAction(newVirtualModel.getCompilationUnit(),
 				null, this);
-		useDeclarationAction.setModelSlotClass(HbnModelSlot.class);
+		useDeclarationAction.setModelSlotClass(FMLJDBCModelSlot.class);
 		useDeclarationAction.doAction();
 
 		performSetParentConcepts();

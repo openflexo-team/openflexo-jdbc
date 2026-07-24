@@ -47,12 +47,12 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
 /**
- * Represent the type of an instance of a {@link VirtualModel} in the context of {@link HbnModelSlot}
+ * Represent the type of an instance of a {@link VirtualModel} in the context of {@link FMLJDBCModelSlot}
  * 
  * @author sylvain
  * 

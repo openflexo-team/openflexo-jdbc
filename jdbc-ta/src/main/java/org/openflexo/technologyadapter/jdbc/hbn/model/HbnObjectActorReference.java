@@ -124,7 +124,7 @@ public interface HbnObjectActorReference extends ActorReference<HbnFlexoConceptI
 
 		protected HbnFlexoConceptInstance retrieveModellingElement() {
 			// The former retrieval path relied on a persistent HbnVirtualModelInstanceResource, which has been removed: a
-			// HbnVirtualModelInstance is now a reflected (non-persisted) instance built on the fly by HbnModelSlot.connectTo, and its
+			// HbnVirtualModelInstance is now a reflected (non-persisted) instance built on the fly by FMLJDBCModelSlot.connectTo, and its
 			// HbnFlexoConceptInstances are produced by queries. There is therefore no resource to reload an actor reference from.
 			// The modelling element is set directly at creation time (see setModellingElement); this fallback is only reached for a
 			// reference deserialized from persistence, which does not apply to reflected instances.

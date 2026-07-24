@@ -96,7 +96,7 @@ import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.HbnConfig;
-import org.openflexo.technologyadapter.jdbc.HbnModelSlot;
+import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.HbnColumnRole;
@@ -110,7 +110,7 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
 import org.openflexo.toolbox.StringUtils;
 
 /**
- * A JDBC/Hibernate-specific {@link VirtualModelInstance} reflecting distants objects accessible through a {@link HbnModelSlot} configured
+ * A JDBC/Hibernate-specific {@link VirtualModelInstance} reflecting distants objects accessible through a {@link FMLJDBCModelSlot} configured
  * with a {@link VirtualModel}<br>
  * 
  * This {@link VirtualModelInstance} implementation implements Hibernate framework on a given database to provide a database connection.<br>
@@ -1053,7 +1053,7 @@ public interface HbnVirtualModelInstance
 		@Override
 		public HbnVirtualModelInstanceModelFactory getFactory() {
 			// This reflected instance has no persistent resource: its factory is the reflected model factory set at connect time
-			// (HbnModelSlot.connectTo), not the resource factory returned by the default VirtualModelInstanceImpl.getFactory().
+			// (FMLJDBCModelSlot.connectTo), not the resource factory returned by the default VirtualModelInstanceImpl.getFactory().
 			if (getReflectedModelFactory() != null) {
 				return (HbnVirtualModelInstanceModelFactory) getReflectedModelFactory();
 			}

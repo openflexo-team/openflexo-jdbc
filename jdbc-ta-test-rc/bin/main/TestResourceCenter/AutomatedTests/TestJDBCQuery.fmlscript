@@ -1,10 +1,10 @@
-// DB-connected use case: connect a HbnModelSlot to a relational database and query it.
+// DB-connected use case: connect a FMLJDBCModelSlot to a relational database and query it.
 // The database and the JDBCConnection resource (URI below) are provisioned by the AutomatedTests runner.
 
 service ResourceCenterService status;
 context;
 
-// Load the reflect VirtualModel (declares a HbnModelSlot typed with the annotated JDBCMapping VirtualModel)
+// Load the reflect VirtualModel (declares a FMLJDBCModelSlot typed with the annotated JDBCMapping VirtualModel)
 reflectVM = load -r ["http://openflexo.org/jdbc-test/FML/JDBCReflect.fml"];
 assert reflectVM != null;
 
