@@ -1,0 +1,36 @@
+use org.openflexo.technologyadapter.jdbc.JDBCModelSlot as JDBC;
+
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
+
+/*
+ * Demonstrates the low-level JDBCModelSlot (a FreeModelSlot): direct/structural access to a relational database
+ * (schema -> tables -> columns, and rows through selectAll()), without any mapping VirtualModel.
+ */
+@URI("http://openflexo.org/jdbc-test/FML/JDBCFreeAccess.fml")
+public model JDBCFreeAccess {
+
+   JDBCConnection db with JDBCModelSlot();
+
+   create(required Resource<JDBCConnection> aConnection) {
+      connect db using parameters.aConnection;
+   }
+
+   List<JDBCTable> getAllTables() {
+      return db.getSchema().getTables();
+   }
+
+   List<JDBCColumn> getClientColumns() {
+      return db.getSchema().getTable("CLIENT").getColumns();
+   }
+
+   List<JDBCLine> getClientRows() {
+      return db.getSchema().getTable("CLIENT").selectAll().getLines();
+   }
+
+   List<JDBCLine> getSalesmanRows() {
+      return db.getSchema().getTable("SALESMAN").selectAll().getLines();
+   }
+}
