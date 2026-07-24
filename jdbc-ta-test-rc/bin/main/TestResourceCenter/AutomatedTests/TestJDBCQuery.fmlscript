@@ -1,0 +1,27 @@
+// DB-connected use case: connect a HbnModelSlot to a relational database and query it.
+// The database and the JDBCConnection resource (URI below) are provisioned by the AutomatedTests runner.
+
+service ResourceCenterService status;
+context;
+
+// Load the reflect VirtualModel (declares a HbnModelSlot typed with the annotated JDBCMapping VirtualModel)
+reflectVM = load -r ["http://openflexo.org/jdbc-test/FML/JDBCReflect.fml"];
+assert reflectVM != null;
+
+// Load the JDBCConnection resource pointing at the (in-memory) test database
+connection = load -r ["http://openflexo.org/jdbc-test/TestDB.jdbc"];
+assert connection != null;
+
+// Instantiate the reflect VirtualModel: its creation scheme connects the model slot 'db' to the database
+service ResourceCenterService add_temp_rc;
+myVMI = new JDBCReflect(connection.resource) with (name="testJDBC");
+assert myVMI != null;
+
+// Query-driven reflection: 'select Client from db' (inside getAllClients) performs the underlying SQL query
+clients = myVMI.getAllClients();
+log "clients=" + clients;
+assert clients.size() == 3;
+
+salesmen = myVMI.getAllSalesmen();
+log "salesmen=" + salesmen;
+assert salesmen.size() == 2;
