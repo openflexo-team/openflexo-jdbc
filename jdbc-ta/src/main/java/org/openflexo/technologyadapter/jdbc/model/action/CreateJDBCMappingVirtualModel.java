@@ -272,7 +272,8 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		AssignationAction<JDBCConnection> assignation = fmlFactory.newAssignationAction();
 		assignation.setAssignation(new DataBinding<>("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
 		CreateJDBCConnection action = fmlFactory.newInstance(CreateJDBCConnection.class);
-		action.setResourceName(new DataBinding<>("'db_' + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setResourceName(
+				new DataBinding<>("\"db_\" + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setResourceCenter(new DataBinding<>("this.resource.resourceCenter", creationScheme, FlexoResourceCenter.class,
 				DataBinding.BindingDefinitionType.GET));
 		action.setAddress(new DataBinding<>("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
@@ -310,7 +311,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			SelectJDBCLine select = factory.newInstance(SelectJDBCLine.class);
 			action.setIterationAction(select);
 			select.setReceiver(new DataBinding<>("db", scheme, JDBCModelSlot.class, DataBinding.BindingDefinitionType.GET));
-			select.setTable(new DataBinding<>("db.schema.getTable('" + table.getName() + "')", scheme, JDBCTable.class,
+			select.setTable(new DataBinding<>("db.schema.getTable(\"" + table.getName() + "\")", scheme, JDBCTable.class,
 					DataBinding.BindingDefinitionType.GET));
 
 			MatchFlexoConceptInstance match = factory.newMatchFlexoConceptInstance();
@@ -323,8 +324,11 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			for (JDBCColumn column : table.getColumns()) {
 				if (column.isPrimaryKey()) {
 					String name = column.getName();
+					// Use the same accessor suffix as the concept property (intValue for integer columns),
+					// otherwise the criteria value type (String) does not match the property type.
+					String suffix = typeForColumn(column) == Integer.class ? "intValue" : "value";
 					MatchingCriteria criteria = factory.newMatchingCriteria(flexoConcept.getDeclaredProperty(name.toLowerCase()));
-					criteria.setValue(new DataBinding<>("item.getValue('" + name + "').value"));
+					criteria.setValue(new DataBinding<>("item.getValue(\"" + name + "\")." + suffix));
 					match.addToMatchingCriterias(criteria);
 				}
 			}
@@ -335,11 +339,14 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			parameter.setAction(match);
 			match.addToParameters(parameter);*/
 
-			match.setNewInstanceArgumentValue(creationScheme.getParameter("line"),
-					new DataBinding<>("item", scheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
-
+			// setCreationScheme() builds the underlying CreationSchemePathElement that actually stores the
+			// argument values; it must therefore be called before setNewInstanceArgumentValue(), otherwise
+			// the "line" argument is silently dropped and the creation scheme fails with a NPE at execution.
 			match.setFlexoConceptType(flexoConcept);
 			match.setCreationScheme(creationScheme);
+
+			match.setNewInstanceArgumentValue(creationScheme.getParameter("line"),
+					new DataBinding<>("item", scheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
 
 		}
 	}
@@ -356,7 +363,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		parameter.setType(type);
 		if (defaultValue != null) {
 			parameter.setDefaultValue(
-					new DataBinding<>("'" + defaultValue + "'", creationScheme, null, DataBinding.BindingDefinitionType.GET));
+					new DataBinding<>("\"" + defaultValue + "\"", creationScheme, null, DataBinding.BindingDefinitionType.GET));
 		}
 		creationScheme.addToParameters(parameter);
 	}
@@ -383,8 +390,10 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		dbRole.setDescription("Role linked to the corresponding " + table.getName() + " to the database.");
+		// Attach the role to the concept before setting its description: the description is stored as
+		// FML meta-data, which requires the FMLModelFactory resolved through the declaring compilation unit.
 		concept.addToFlexoProperties(dbRole);
+		dbRole.setDescription("Role linked to the corresponding " + table.getName() + " to the database.");
 
 		// Adds expression properties
 		for (JDBCColumn column : table.getColumns()) {
@@ -418,7 +427,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			e.printStackTrace();
 		}
 		String suffix = typeForColumn(column) == Integer.class ? "intValue" : "value";
-		property.setExpression(new DataBinding<>("line.getValue('" + column.getName() + "')." + suffix, property, JDBCValue.class,
+		property.setExpression(new DataBinding<>("line.getValue(\"" + column.getName() + "\")." + suffix, property, JDBCValue.class,
 				DataBinding.BindingDefinitionType.GET_SET));
 		return property;
 	}
