@@ -55,7 +55,13 @@ public abstract class HbnTest extends TestCase {
 
 	// JDBC configuration to use HSQLdb
 
-	protected final static String jdbcURL = "jdbc:hsqldb:data/hbnTests";
+	// Use an in-memory database rather than a file-based one: the 'test' task runs with
+	// maxParallelForks=4, and a file-based HSQLDB takes an exclusive lock (data/hbnTests.lck) that
+	// can only be held by a single JVM. Parallel forks all opening the same file therefore fail with
+	// "Database lock acquisition failure". An in-memory DB is scoped to each fork's JVM, so every
+	// fork gets its own isolated database (consistent with the other JDBC tests, e.g.
+	// TestCreateJDBCMappingVirtualModel).
+	protected final static String jdbcURL = "jdbc:hsqldb:mem:hbnTests";
 	protected final static String jdbcDriverClassname = "org.hsqldb.jdbcDriver";
 	protected final static String jdbcUser = "sa";
 	protected final static String jdbcPwd = "";
@@ -79,8 +85,8 @@ public abstract class HbnTest extends TestCase {
 		try {
 			conn = DriverManager.getConnection(jdbcURL, jdbcUser, jdbcPwd);
 		} catch (Exception e) {
-			fail("Cannot connect to DB: " + jdbcURL);
 			e.printStackTrace();
+			fail("Cannot connect to DB: " + jdbcURL + " -> " + e.getMessage());
 			conn = null;
 		}
 		if (conn != null) {
