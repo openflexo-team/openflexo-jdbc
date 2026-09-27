@@ -400,7 +400,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			ExpressionProperty<?> property = createExpressionPropertyForColumn(factory, column);
 			concept.addToFlexoProperties(property);
 
-			InspectorEntry entry = factory.newInspectorEntry(concept.getInspector());
+			InspectorEntry entry = factory.newInspectorEntry(concept.getOrCreateInspector());
 			try {
 				entry.setName(column.getName());
 			} catch (InvalidNameException e) {
