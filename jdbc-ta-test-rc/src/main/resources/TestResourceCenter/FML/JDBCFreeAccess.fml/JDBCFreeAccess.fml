@@ -1,0 +1,68 @@
+use org.openflexo.technologyadapter.jdbc.JDBCModelSlot as JDBC;
+
+import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
+import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
+import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
+import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
+
+/*
+ * Demonstrates the low-level JDBCModelSlot (a FreeModelSlot): direct/structural access to a relational database,
+ * both by direct method navigation (getSchema()...) and through the technology-specific fetch-requests
+ * (select JDBCTable / JDBCColumn / JDBCLine from db) and a JDBCTableRole.
+ */
+@URI("http://openflexo.org/jdbc-test/FML/JDBCFreeAccess.fml")
+public model JDBCFreeAccess {
+
+   JDBCConnection db with JDBCModelSlot();
+
+   create(required Resource<JDBCConnection> aConnection) {
+      connect db using parameters.aConnection;
+   }
+
+   // --- Direct method navigation ---
+
+   List<JDBCTable> getAllTables() {
+      return db.getSchema().getTables();
+   }
+
+   List<JDBCColumn> getClientColumns() {
+      return db.getSchema().getTable("CLIENT").getColumns();
+   }
+
+   List<JDBCLine> getClientRows() {
+      return db.getSchema().getTable("CLIENT").selectAll().getLines();
+   }
+
+   List<JDBCLine> getSalesmanRows() {
+      return db.getSchema().getTable("SALESMAN").selectAll().getLines();
+   }
+
+   // --- Technology-specific fetch-request (select ... from db) ---
+   // SelectJDBCTable selects over the whole connection; SelectJDBCColumn / SelectJDBCLine are per-table (they carry a 'table'
+   // binding) and are therefore exercised through direct navigation above rather than a bare 'select ... from db'.
+
+   List<JDBCTable> selectTables() {
+      return select JDBCTable from db;
+   }
+
+   // Create a WrappedTable instance around the CLIENT table (exercises the JDBCTableRole assignment) and read its name back
+   String wrapClientTableName() {
+      JDBCTable clientTable = db.getSchema().getTable("CLIENT");
+      WrappedTable w = new WrappedTable(clientTable);
+      return w.tableName();
+   }
+
+   // --- JDBCTableRole: a concept whose role holds a JDBCTable ---
+
+   concept WrappedTable {
+      JDBCTable table with JDBCTableRole();
+
+      create(required JDBCTable aTable) {
+         table = parameters.aTable;
+      }
+
+      String tableName() {
+         return table.getName();
+      }
+   }
+}
