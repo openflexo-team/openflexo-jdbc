@@ -8,6 +8,10 @@ dependencies {
     implementation group: "org.hsqldb", name: "sqltool", version: "2.4.0"
 
     api "org.hibernate:hibernate-core:${hbn_version}"
+    // Hibernate 5.2 generates its proxies with javassist, and the 3.20 it declares fails on Java 17
+    // (reflective ClassLoader.defineClass): require a version that defines classes through a Lookup.
+    // pamela used to bring this version, until it dropped javassist (PAMELA-F-1).
+    api group: 'org.javassist', name: 'javassist', version: '3.30.2-GA'
 
     testImplementation flexoFoundationTest()
 
