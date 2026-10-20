@@ -13,6 +13,11 @@ dependencies {
     // pamela used to bring this version, until it dropped javassist (PAMELA-F-1).
     api group: 'org.javassist', name: 'javassist', version: '3.30.2-GA'
 
+    // Hibernate 5.2 reads its configuration through JAXB (javax.xml.bind), which is no longer part of the JDK
+    // since Java 11. Goes away with Hibernate 6 (jakarta.xml.bind).
+    runtimeOnly 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
+    runtimeOnly 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
+
     testImplementation flexoFoundationTest()
 
     // Test resource center
