@@ -15,8 +15,15 @@ dependencies {
 
     // Hibernate 5.2 reads its configuration through JAXB (javax.xml.bind), which is no longer part of the JDK
     // since Java 11. Goes away with Hibernate 6 (jakarta.xml.bind).
-    runtimeOnly 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
-    runtimeOnly 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
+    // Artifacts that only hold the javax packages: the jakarta.xml.bind-api and jaxb-runtime coordinates are shared
+    // by the javax (2.x) and jakarta (3+) generations, so an application that also uses docx4j (jakarta) would
+    // resolve them to the jakarta one and lose javax.xml.bind.
+    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'
+    runtimeOnly 'javax.activation:javax.activation-api:1.2.0'
+    runtimeOnly('com.sun.xml.bind:jaxb-impl:2.3.9') {
+        exclude group: 'jakarta.xml.bind'
+        exclude group: 'jakarta.activation'
+    }
 
     testImplementation flexoFoundationTest()
 
