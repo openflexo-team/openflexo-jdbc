@@ -2,7 +2,7 @@ dependencies {
     implementation project(':jdbc-ta')
     implementation flexoFoundation()
 
-    implementation group: "org.hsqldb", name: "hsqldb", version: "2.4.0"
+    implementation hsqldb()
 
     implementation testUtils()
     implementation flexoFoundationTest()
