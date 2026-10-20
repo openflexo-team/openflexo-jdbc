@@ -448,9 +448,14 @@ public class SQLHelper {
 		final JDBCConnection connection = table.getResourceData();
 		String request = createInsertRequest(line, table);
 		String resultKey = new QueryRunner().insert(connection.getConnection(), request, resultSet -> {
-			if (resultSet.getMetaData().getColumnCount() > 0) {
-				resultSet.next();
-				return resultSet.getString(1);
+			// No generated key (the key is given in the request): some drivers return a result set that cannot be read
+			// (HSQLDB 2.7: "invalid cursor state"), the primary key of the line is used then
+			try {
+				if (resultSet.getMetaData().getColumnCount() > 0 && resultSet.next()) {
+					return resultSet.getString(1);
+				}
+			} catch (SQLException e) {
+				// ignored: see above
 			}
 			return null;
 		});
