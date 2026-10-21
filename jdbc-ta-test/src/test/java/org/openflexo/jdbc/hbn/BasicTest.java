@@ -39,7 +39,7 @@ package org.openflexo.jdbc.hbn;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.EntityType;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

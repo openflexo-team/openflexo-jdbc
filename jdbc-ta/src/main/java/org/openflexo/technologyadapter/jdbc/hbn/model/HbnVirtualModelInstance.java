@@ -50,7 +50,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
-import org.hibernate.boot.internal.ClassLoaderAccessImpl;
+import org.hibernate.boot.internal.BootstrapContextImpl;
 import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl.MetadataBuildingOptionsImpl;
@@ -61,6 +61,7 @@ import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.spi.MetadataBuildingContext;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.mapping.Bag;
+import org.hibernate.mapping.BasicValue;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.DependantValue;
 import org.hibernate.mapping.ManyToOne;
@@ -68,11 +69,12 @@ import org.hibernate.mapping.OneToMany;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.PrimaryKey;
 import org.hibernate.mapping.Property;
+import org.hibernate.engine.OptimisticLockStyle;
 import org.hibernate.mapping.RootClass;
 import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
 import org.hibernate.query.Query;
-import org.hibernate.type.TypeResolver;
+import org.openflexo.technologyadapter.jdbc.hbn.HbnMetadataUtils;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.AbstractProperty;
@@ -367,7 +369,9 @@ public interface HbnVirtualModelInstance
 
 		protected HbnConfig config;
 		protected MetadataBuildingOptionsImpl buildingOptions;
+		protected BootstrapContextImpl bootstrapContext;
 		protected InFlightMetadataCollectorImpl metadataCollector;
+		protected MetadataBuildingContextRootImpl metadataBuildingContext;
 		protected Metadata metadata;
 		protected SessionFactory sessionFactory;
 		protected Session defaultSession;
@@ -555,7 +559,12 @@ public interface HbnVirtualModelInstance
 			// config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
 
 			buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(config.getServiceRegistry());
-			metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
+			bootstrapContext = new BootstrapContextImpl(config.getServiceRegistry(), buildingOptions);
+			buildingOptions.setBootstrapContext(bootstrapContext);
+			metadataCollector = new InFlightMetadataCollectorImpl(bootstrapContext, buildingOptions);
+			metadataBuildingContext = new MetadataBuildingContextRootImpl("openflexo", bootstrapContext, buildingOptions,
+					metadataCollector);
+			bootstrapContext.getTypeConfiguration().scope(metadataBuildingContext);
 		}
 
 		/**
@@ -578,7 +587,7 @@ public interface HbnVirtualModelInstance
 		 */
 		private void initTableDefinition(JDBCTable jdbcTable) {
 
-			Table table = metadataCollector.addTable("", "", jdbcTable.getName(), null, false);
+			Table table = metadataCollector.addTable("", "", jdbcTable.getName(), null, false, metadataBuildingContext);
 			table.setName(jdbcTable.getName());
 
 			for (JDBCColumn jdbcColumn : jdbcTable.getColumns()) {
@@ -608,8 +617,6 @@ public interface HbnVirtualModelInstance
 				throw new HbnException("VirtualModel not defined");
 			}
 
-			MetadataBuildingContextRootImpl metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions,
-					new ClassLoaderAccessImpl(null, config.getServiceRegistry()), metadataCollector);
 			metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
 
 			Namespace namespace = metadataCollector.getDatabase().getDefaultNamespace();
@@ -642,6 +649,7 @@ public interface HbnVirtualModelInstance
 			}
 
 			try {
+				HbnMetadataUtils.complete(metadata, metadataBuildingContext);
 				((MetadataImplementor) metadata).validate();
 			} catch (MappingException e) {
 				logger.warning("Validation Error: " + e.getMessage());
@@ -674,6 +682,7 @@ public interface HbnVirtualModelInstance
 			// System.out.println("1st pass : Declare mapping for concept " + concept.getName() + " table=" + table);
 
 			RootClass pClass = new RootClass(metadataBuildingContext);
+			pClass.setOptimisticLockStyle(OptimisticLockStyle.VERSION);
 			mappings.put(concept, pClass);
 			pClass.setEntityName(concept.getName());
 			pClass.setJpaEntityName(concept.getName());
@@ -710,7 +719,7 @@ public interface HbnVirtualModelInstance
 
 					Property prop = new Property();
 					prop.setName(flexoProperty.getName());
-					SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
+					SimpleValue value = new BasicValue(metadataBuildingContext, table);
 					value.setTypeName(TypeUtils.getBaseClass(flexoProperty.getType()).getCanonicalName());
 					value.addColumn(col);
 					value.setTable(table);
@@ -741,7 +750,7 @@ public interface HbnVirtualModelInstance
 
 					Property prop = new Property();
 					prop.setName(flexoProperty.getName());
-					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);
+					ManyToOne manyToOne = new ManyToOne(metadataBuildingContext, table);
 					manyToOne.setReferencedPropertyName(JDBCMetaData.getForeignKeyAttribute(flexoProperty));
 					FlexoConcept referencedConcept = (flexoProperty instanceof FlexoConceptInstanceRole
 							? ((FlexoConceptInstanceRole) flexoProperty).getFlexoConceptType() : null);
@@ -768,7 +777,7 @@ public interface HbnVirtualModelInstance
 
 					prop = new Property();
 					prop.setName(hbnColumnRole.getName());
-					SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
+					SimpleValue value = new BasicValue(metadataBuildingContext, table);
 					value.setTypeName(TypeUtils.getBaseClass(hbnColumnRole.getType()).getCanonicalName());
 					value.addColumn(col);
 					value.setTable(table);
@@ -805,7 +814,7 @@ public interface HbnVirtualModelInstance
 
 					prop = new Property();
 					prop.setName(abstractProperty.getName());
-					SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
+					SimpleValue value = new BasicValue(metadataBuildingContext, table);
 					value.setTypeName(TypeUtils.getBaseClass(abstractProperty.getType()).getCanonicalName());
 					value.addColumn(col);
 					value.setTable(table);
@@ -839,7 +848,7 @@ public interface HbnVirtualModelInstance
 
 					prop = new Property();
 					prop.setName(referenceRole.getName());
-					ManyToOne manyToOne = new ManyToOne((MetadataImplementor) metadata, table);
+					ManyToOne manyToOne = new ManyToOne(metadataBuildingContext, table);
 					manyToOne.setReferencedPropertyName(referenceRole.getForeignKeyAttributeName());
 					// When the Concept is not part of the mapping, cannot reference FlexoConceptType as it does not exist in VM
 					if (referenceRole.getFlexoConceptType() != null) {
@@ -888,16 +897,16 @@ public interface HbnVirtualModelInstance
 							.toIdentifier(JDBCMetaData.getMappedBy(flexoProperty));
 					Column col = oppositeTable.getColumn(colIdentifier);
 
-					Bag coll = new Bag((MetadataImplementor) metadata, pClass);
+					Bag coll = new Bag(metadataBuildingContext, pClass);
 					coll.setRole(pClass.getEntityName() + "." + flexoProperty.getPropertyName());
 					coll.setCollectionTable(oppositeTable);
 
-					OneToMany oneToMany = new OneToMany((MetadataImplementor) metadata, pClass);
+					OneToMany oneToMany = new OneToMany(metadataBuildingContext, pClass);
 					coll.setElement(oneToMany);
 					oneToMany.setReferencedEntityName(oppositeConcept.getName());
 					oneToMany.setAssociatedClass(oppositeClass);
 
-					DependantValue dv = new DependantValue((MetadataImplementor) metadata, oppositeTable, oppositeClass.getKey());
+					DependantValue dv = new DependantValue(metadataBuildingContext, oppositeTable, oppositeClass.getKey());
 					dv.addColumn(col);
 					dv.setNullable(false);
 					coll.setKey(dv);
@@ -925,17 +934,17 @@ public interface HbnVirtualModelInstance
 					Identifier colIdentifier = metadataCollector.getDatabase().toIdentifier(referenceRole.getDestinationKeyColumnName());
 					Column col = oppositeTable.getColumn(colIdentifier);
 
-					Bag coll = new Bag((MetadataImplementor) metadata, pClass);
+					Bag coll = new Bag(metadataBuildingContext, pClass);
 					coll.setRole(pClass.getEntityName() + "." + referenceRole.getPropertyName());
 					coll.setCollectionTable(oppositeTable);
 
-					OneToMany oneToMany = new OneToMany((MetadataImplementor) metadata, pClass);
+					OneToMany oneToMany = new OneToMany(metadataBuildingContext, pClass);
 					coll.setElement(oneToMany);
 					oneToMany.setReferencedEntityName(referenceRole.getFlexoConceptType().getName());
 					oneToMany.setAssociatedClass(oppositeClass);
 					// coll.setReferencedPropertyName("ID");
 
-					DependantValue dv = new DependantValue((MetadataImplementor) metadata, oppositeTable, oppositeClass.getKey());
+					DependantValue dv = new DependantValue(metadataBuildingContext, oppositeTable, oppositeClass.getKey());
 					dv.addColumn(col);
 
 					List<Column> manyColumns = new ArrayList<>(); // Relationship columns in tableMany

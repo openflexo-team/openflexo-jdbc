@@ -39,7 +39,7 @@ package org.openflexo.technologyadapter.jdbc.model;
 
 import org.hibernate.boot.MappingException;
 import org.hibernate.boot.Metadata;
-import org.hibernate.boot.internal.ClassLoaderAccessImpl;
+import org.hibernate.boot.internal.BootstrapContextImpl;
 import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl.MetadataBuildingOptionsImpl;
@@ -49,11 +49,13 @@ import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PrimaryKey;
 import org.hibernate.mapping.Property;
+import org.hibernate.engine.OptimisticLockStyle;
 import org.hibernate.mapping.RootClass;
+import org.hibernate.mapping.BasicValue;
 import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
-import org.hibernate.type.TypeResolver;
+import org.openflexo.technologyadapter.jdbc.hbn.HbnMetadataUtils;
 import org.openflexo.technologyadapter.jdbc.HbnConfig;
 
 public class DynamicModelBuilder {
@@ -69,10 +71,12 @@ public class DynamicModelBuilder {
 		config = aConfig;
 		buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(config.getServiceRegistry());
 
-		metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
+		BootstrapContextImpl bootstrapContext = new BootstrapContextImpl(config.getServiceRegistry(), buildingOptions);
+		buildingOptions.setBootstrapContext(bootstrapContext);
+		metadataCollector = new InFlightMetadataCollectorImpl(bootstrapContext, buildingOptions);
 
-		metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions,
-				new ClassLoaderAccessImpl(null, config.getServiceRegistry()), metadataCollector);
+		metadataBuildingContext = new MetadataBuildingContextRootImpl("test", bootstrapContext, buildingOptions, metadataCollector);
+		bootstrapContext.getTypeConfiguration().scope(metadataBuildingContext);
 
 	}
 
@@ -84,7 +88,7 @@ public class DynamicModelBuilder {
 		// **********
 		// Creation / Définition de la table T_Dynamic_Table
 
-		Table table = metadataCollector.addTable("", "", "T_Dynamic_Table", null, false);
+		Table table = metadataCollector.addTable("", "", "T_Dynamic_Table", null, false, metadataBuildingContext);
 		table.setName("T_Dynamic_Table");
 		Column col = new Column();
 		col.setName("pouet");
@@ -126,7 +130,7 @@ public class DynamicModelBuilder {
 
 		// **********
 		// Creation / Définition de la table T_Adresse
-		Table table2 = metadataCollector.addTable("", "", "T_Adresse", null, false);
+		Table table2 = metadataCollector.addTable("", "", "T_Adresse", null, false, metadataBuildingContext);
 		table2.setName("T_Adresse");
 		Column col4 = new Column();
 		col4.setName("Id");
@@ -142,7 +146,7 @@ public class DynamicModelBuilder {
 		uk1.setName("Id_Unique");
 		uk1.setTable(table2);
 		uk1.addColumn(col4);
-		table.addUniqueKey(uk1);
+		table2.addUniqueKey(uk1);
 
 		Column col5 = new Column();
 		col5.setName("Adresse");
@@ -155,6 +159,7 @@ public class DynamicModelBuilder {
 		// Creation de l'entité persistée "Dynamic_Class"
 
 		RootClass pClass = new RootClass(metadataBuildingContext);
+		pClass.setOptimisticLockStyle(OptimisticLockStyle.VERSION);
 		pClass.setEntityName("Dynamic_Class");
 		pClass.setJpaEntityName("Dynamic_Class");
 		pClass.setTable(table);
@@ -164,7 +169,7 @@ public class DynamicModelBuilder {
 
 		Property prop = new Property();
 		prop.setName("Nom");
-		SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
+		SimpleValue value = new BasicValue(metadataBuildingContext, table);
 		value.setTypeName("java.lang.String");
 		value.setIdentifierGeneratorStrategy("assigned");
 		value.addColumn(col);
@@ -178,7 +183,7 @@ public class DynamicModelBuilder {
 
 		prop = new Property();
 		prop.setName("Prenom");
-		value = new SimpleValue((MetadataImplementor) metadata, table);
+		value = new BasicValue(metadataBuildingContext, table);
 		value.setTypeName(String.class.getCanonicalName());
 		value.addColumn(col2);
 		value.setTable(table);
@@ -189,6 +194,7 @@ public class DynamicModelBuilder {
 		// Creation de l'entité persistée "Adresse"
 
 		RootClass pClass2 = new RootClass(metadataBuildingContext);
+		pClass2.setOptimisticLockStyle(OptimisticLockStyle.VERSION);
 		pClass2.setEntityName("Adresse");
 		pClass2.setJpaEntityName("Adresse");
 		pClass2.setTable(table2);
@@ -198,7 +204,7 @@ public class DynamicModelBuilder {
 
 		prop = new Property();
 		prop.setName("Identifiant");
-		value = new SimpleValue((MetadataImplementor) metadata, table2);
+		value = new BasicValue(metadataBuildingContext, table2);
 		value.setTypeName("java.lang.Integer");
 		value.setIdentifierGeneratorStrategy("native");
 		value.addColumn(col4);
@@ -212,7 +218,7 @@ public class DynamicModelBuilder {
 
 		prop = new Property();
 		prop.setName("Prenom");
-		value = new SimpleValue((MetadataImplementor) metadata, table2);
+		value = new BasicValue(metadataBuildingContext, table2);
 		value.setTypeName(String.class.getCanonicalName());
 		value.addColumn(col5);
 		value.setTable(table2);
@@ -220,6 +226,7 @@ public class DynamicModelBuilder {
 		pClass2.addProperty(prop);
 
 		try {
+			HbnMetadataUtils.complete(metadata, metadataBuildingContext);
 			((MetadataImplementor) metadata).validate();
 		} catch (MappingException e) {
 			System.out.println("Validation Error: " + e.getMessage());

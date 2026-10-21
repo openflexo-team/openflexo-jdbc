@@ -54,7 +54,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
-import org.hibernate.boot.internal.ClassLoaderAccessImpl;
+import org.hibernate.boot.internal.BootstrapContextImpl;
 import org.hibernate.boot.internal.InFlightMetadataCollectorImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl;
 import org.hibernate.boot.internal.MetadataBuilderImpl.MetadataBuildingOptionsImpl;
@@ -66,15 +66,17 @@ import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PrimaryKey;
 import org.hibernate.mapping.Property;
+import org.hibernate.engine.OptimisticLockStyle;
 import org.hibernate.mapping.RootClass;
+import org.hibernate.mapping.BasicValue;
 import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 import org.hibernate.query.Query;
-import org.hibernate.type.TypeResolver;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openflexo.technologyadapter.jdbc.hbn.HbnMetadataUtils;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.resource.DirectoryResourceCenter;
 import org.openflexo.foundation.resource.SaveResourceException;
@@ -182,6 +184,7 @@ public class MyDBTest extends OpenflexoTestCase {
 	protected static HbnConfig config;
 	protected static MetadataBuildingOptionsImpl buildingOptions;
 	protected static InFlightMetadataCollectorImpl metadataCollector;
+	protected static MetadataBuildingContextRootImpl metadataBuildingContext;
 
 	protected static Table table, table2;
 	protected static Column col, col2, col3, col4, col5;
@@ -205,7 +208,11 @@ public class MyDBTest extends OpenflexoTestCase {
 		// config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
 
 		buildingOptions = new MetadataBuilderImpl.MetadataBuildingOptionsImpl(config.getServiceRegistry());
-		metadataCollector = new InFlightMetadataCollectorImpl(buildingOptions, new TypeResolver());
+		BootstrapContextImpl bootstrapContext = new BootstrapContextImpl(config.getServiceRegistry(), buildingOptions);
+		buildingOptions.setBootstrapContext(bootstrapContext);
+		metadataCollector = new InFlightMetadataCollectorImpl(bootstrapContext, buildingOptions);
+		metadataBuildingContext = new MetadataBuildingContextRootImpl("test", bootstrapContext, buildingOptions, metadataCollector);
+		bootstrapContext.getTypeConfiguration().scope(metadataBuildingContext);
 
 		/*final Namespace namespace = metadataCollector.getDatabase().locateNamespace(
 				getDatabase().toIdentifier( catalogName ),
@@ -238,7 +245,7 @@ public class MyDBTest extends OpenflexoTestCase {
 	@TestOrder(4)
 	public void testDeclareJDBCMetaData() {
 
-		table = metadataCollector.addTable("", "", "T_Dynamic_Table_2", null, false);
+		table = metadataCollector.addTable("", "", "T_Dynamic_Table_2", null, false, metadataBuildingContext);
 		table.setName("T_Dynamic_Table_2");
 		col = new Column();
 		col.setName("pouet");
@@ -280,7 +287,7 @@ public class MyDBTest extends OpenflexoTestCase {
 
 		// **********
 		// Creation / Définition de la table T_Adresse
-		table2 = metadataCollector.addTable("", "", "T_Adresse_2", null, false);
+		table2 = metadataCollector.addTable("", "", "T_Adresse_2", null, false, metadataBuildingContext);
 		table2.setName("T_Adresse_2");
 		col4 = new Column();
 		col4.setName("Id");
@@ -296,7 +303,7 @@ public class MyDBTest extends OpenflexoTestCase {
 		uk1.setName("Id_Unique");
 		uk1.setTable(table2);
 		uk1.addColumn(col4);
-		table.addUniqueKey(uk1);
+		table2.addUniqueKey(uk1);
 
 		col5 = new Column();
 		col5.setName("Adresse");
@@ -311,14 +318,13 @@ public class MyDBTest extends OpenflexoTestCase {
 	@TestOrder(5)
 	public void testDeclareJDBCMapping() {
 
-		MetadataBuildingContextRootImpl metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions,
-				new ClassLoaderAccessImpl(null, config.getServiceRegistry()), metadataCollector);
 		metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
 
 		// ************************
 		// Creation de l'entité persistée "Dynamic_Class"
 
 		RootClass pClass = new RootClass(metadataBuildingContext);
+		pClass.setOptimisticLockStyle(OptimisticLockStyle.VERSION);
 		pClass.setEntityName("Dynamic_Class");
 		pClass.setJpaEntityName("Dynamic_Class");
 		pClass.setTable(table);
@@ -328,7 +334,7 @@ public class MyDBTest extends OpenflexoTestCase {
 
 		Property prop = new Property();
 		prop.setName("Nom");
-		SimpleValue value = new SimpleValue((MetadataImplementor) metadata, table);
+		SimpleValue value = new BasicValue(metadataBuildingContext, table);
 		value.setTypeName("java.lang.String");
 		value.setIdentifierGeneratorStrategy("assigned");
 		value.addColumn(col);
@@ -342,7 +348,7 @@ public class MyDBTest extends OpenflexoTestCase {
 
 		prop = new Property();
 		prop.setName("Prenom");
-		value = new SimpleValue((MetadataImplementor) metadata, table);
+		value = new BasicValue(metadataBuildingContext, table);
 		value.setTypeName(String.class.getCanonicalName());
 		value.addColumn(col2);
 		value.setTable(table);
@@ -353,6 +359,7 @@ public class MyDBTest extends OpenflexoTestCase {
 		// Creation de l'entité persistée "Adresse"
 
 		RootClass pClass2 = new RootClass(metadataBuildingContext);
+		pClass2.setOptimisticLockStyle(OptimisticLockStyle.VERSION);
 		pClass2.setEntityName("Adresse");
 		pClass2.setJpaEntityName("Adresse");
 		pClass2.setTable(table2);
@@ -362,7 +369,7 @@ public class MyDBTest extends OpenflexoTestCase {
 
 		prop = new Property();
 		prop.setName("Identifiant");
-		value = new SimpleValue((MetadataImplementor) metadata, table2);
+		value = new BasicValue(metadataBuildingContext, table2);
 		value.setTypeName("java.lang.Integer");
 		value.setIdentifierGeneratorStrategy("native");
 		value.addColumn(col4);
@@ -376,7 +383,7 @@ public class MyDBTest extends OpenflexoTestCase {
 
 		prop = new Property();
 		prop.setName("Prenom");
-		value = new SimpleValue((MetadataImplementor) metadata, table2);
+		value = new BasicValue(metadataBuildingContext, table2);
 		value.setTypeName(String.class.getCanonicalName());
 		value.addColumn(col5);
 		value.setTable(table2);
@@ -384,6 +391,7 @@ public class MyDBTest extends OpenflexoTestCase {
 		pClass2.addProperty(prop);
 
 		try {
+			HbnMetadataUtils.complete(metadata, metadataBuildingContext);
 			((MetadataImplementor) metadata).validate();
 		} catch (MappingException e) {
 			System.out.println("Validation Error: " + e.getMessage());
@@ -454,8 +462,6 @@ public class MyDBTest extends OpenflexoTestCase {
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>  On essaie de faire un truc");
 
-		MetadataBuildingContextRootImpl metadataBuildingContext = new MetadataBuildingContextRootImpl(buildingOptions,
-				new ClassLoaderAccessImpl(null, config.getServiceRegistry()), metadataCollector);
 		metadata = metadataCollector.buildMetadataInstance(metadataBuildingContext);
 
 		try (SessionFactory hbnSessionFactory = metadata.buildSessionFactory();

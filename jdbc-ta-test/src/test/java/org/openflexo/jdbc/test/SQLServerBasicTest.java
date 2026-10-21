@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

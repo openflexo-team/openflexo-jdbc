@@ -40,7 +40,7 @@ package org.openflexo.technologyadapter.jdbc;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
@@ -82,6 +82,9 @@ public class HbnConfig {
 		hbnBsRegistry = serviceRegistry;
 		metadataSrc = new MetadataSources(serviceRegistry);
 		properties = new Properties();
+		// The mapping of this adapter is built programmatically and a table may hold columns that no property maps: keep
+		// the columns as they are declared, the default ordering of Hibernate 6 sorts them by the type of their value.
+		properties.setProperty("hibernate.column_ordering_strategy", "legacy");
 
 		hbnRegistryBuilder = new StandardServiceRegistryBuilder(hbnBsRegistry);
 	}

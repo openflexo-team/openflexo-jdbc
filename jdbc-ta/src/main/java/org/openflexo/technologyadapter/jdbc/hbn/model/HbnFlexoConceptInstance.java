@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.hibernate.collection.internal.PersistentBag;
+import org.hibernate.collection.spi.PersistentBag;
 import org.openflexo.foundation.fml.AbstractProperty;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
