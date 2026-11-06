@@ -18,8 +18,6 @@
   </TabPanel>
   <FIBVariable id="12" type="org.openflexo.technologyadapter.jdbc.fml.editionaction.AddJDBCLine" name="data" />
   <LocalizedDictionary id="13">
-    <Localized id="14" lang="French" value="Avancé" key="Advanced" />
-    <Localized id="15" lang="French" value="Basique" key="Basic" />
   </LocalizedDictionary>
   <Parameter id="16" name="title" value="SelectExcelRow action" />
 </Inspector>
