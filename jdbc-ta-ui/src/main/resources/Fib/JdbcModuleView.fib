@@ -24,13 +24,13 @@
   <FIBVariable id="15" type="org.openflexo.technologyadapter.jdbc.model.JDBCConnection" name="data" />
   <LocalizedDictionary id="16">
     <Localized id="17" lang="English" value="Address" key="address" />
-    <Localized id="18" lang="Dutch" value="Address" key="address" />
+    <Localized id="18" lang="Dutch" value="Adres" key="address" />
     <Localized id="19" lang="French" value="Adresse" key="address" />
     <Localized id="20" lang="English" value="Connection" key="Connection" />
-    <Localized id="21" lang="Dutch" value="Connection" key="Connection" />
+    <Localized id="21" lang="Dutch" value="Verbinding" key="Connection" />
     <Localized id="22" lang="French" value="Connexion" key="Connection" />
     <Localized id="23" lang="English" value="Tables" key="Tables" />
-    <Localized id="24" lang="Dutch" value="Tables" key="Tables" />
+    <Localized id="24" lang="Dutch" value="Tabellen" key="Tables" />
     <Localized id="25" lang="French" value="Tables" key="Tables" />
   </LocalizedDictionary>
 </Panel>
