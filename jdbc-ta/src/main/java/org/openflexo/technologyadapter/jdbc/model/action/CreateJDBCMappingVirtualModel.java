@@ -53,7 +53,7 @@ import org.openflexo.foundation.fml.ExpressionProperty;
 import org.openflexo.foundation.fml.FMLModelFactory;
 import org.openflexo.foundation.fml.FMLObject;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
-import org.openflexo.foundation.fml.FlexoBehaviourParameter;
+import org.openflexo.foundation.fml.FlexoBehaviourArgument;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.SynchronizationScheme;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -352,7 +352,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	private static void addParameter(FMLModelFactory fmlFactory, CreationScheme creationScheme, String address, Type type,
 			Object defaultValue) {
-		FlexoBehaviourParameter parameter = fmlFactory.newParameter(creationScheme);
+		FlexoBehaviourArgument parameter = fmlFactory.newParameter(creationScheme);
 		try {
 			parameter.setName(address);
 		} catch (InvalidNameException e) {

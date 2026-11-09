@@ -52,7 +52,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.foundation.fml.CreationScheme;
-import org.openflexo.foundation.fml.FlexoBehaviourParameter;
+import org.openflexo.foundation.fml.FlexoBehaviourArgument;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
@@ -362,7 +362,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		createParameter1.setParameterName("address");
 		createParameter1.setParameterType(String.class);
 		createParameter1.doAction();
-		FlexoBehaviourParameter adressParam = createParameter1.getNewParameter();
+		FlexoBehaviourArgument adressParam = createParameter1.getNewParameter();
 		assertNotNull(adressParam);
 
 		CreateGenericBehaviourParameter createParameter2 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
@@ -370,7 +370,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		createParameter2.setParameterName("user");
 		createParameter2.setParameterType(String.class);
 		createParameter2.doAction();
-		FlexoBehaviourParameter userParam = createParameter2.getNewParameter();
+		FlexoBehaviourArgument userParam = createParameter2.getNewParameter();
 		assertNotNull(userParam);
 
 		CreateGenericBehaviourParameter createParameter3 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
@@ -378,7 +378,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		createParameter3.setParameterName("password");
 		createParameter3.setParameterType(String.class);
 		createParameter3.doAction();
-		FlexoBehaviourParameter passwordParam = createParameter3.getNewParameter();
+		FlexoBehaviourArgument passwordParam = createParameter3.getNewParameter();
 		assertNotNull(passwordParam);
 
 		/*CreateGenericBehaviourParameter createParameter4 = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
@@ -386,7 +386,7 @@ public class TestJDBCVirtualModelManyToOne extends HsqlTestCase {
 		createParameter4.setParameterName("dbtype");
 		createParameter4.setParameterType(JDBCDbType.class);
 		createParameter4.doAction();
-		FlexoBehaviourParameter dbTypeParam = createParameter4.getNewParameter();
+		FlexoBehaviourArgument dbTypeParam = createParameter4.getNewParameter();
 		assertNotNull(dbTypeParam);*/
 
 		CreateEditionAction createConnectionAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null,
