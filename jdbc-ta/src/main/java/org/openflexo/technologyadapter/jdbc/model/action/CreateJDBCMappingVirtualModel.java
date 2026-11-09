@@ -61,7 +61,6 @@ import org.openflexo.foundation.fml.action.CreateModelSlot;
 import org.openflexo.foundation.fml.controlgraph.IterationAction;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
-import org.openflexo.foundation.fml.inspector.InspectorEntry;
 import org.openflexo.foundation.fml.rm.CompilationUnitResource;
 import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
@@ -400,17 +399,6 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 			ExpressionProperty<?> property = createExpressionPropertyForColumn(factory, column);
 			concept.addToFlexoProperties(property);
 
-			InspectorEntry entry = factory.newInspectorEntry(concept.getOrCreateInspector());
-			try {
-				entry.setName(column.getName());
-			} catch (InvalidNameException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			entry.setType(typeForColumn(column));
-			entry.setData(new DataBinding<>(property.getName(), concept, null, DataBinding.BindingDefinitionType.GET));
-			entry.setIsReadOnly(column.isPrimaryKey());
-			entry.setWidget(widgetTypeForColumn(column));
 		}
 
 		// Adds creation scheme
@@ -430,28 +418,6 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		property.setExpression(new DataBinding<>("line.getValue(\"" + column.getName() + "\")." + suffix, property, JDBCValue.class,
 				DataBinding.BindingDefinitionType.GET_SET));
 		return property;
-	}
-
-	private static FlexoBehaviourParameter.WidgetType widgetTypeForColumn(JDBCColumn column) {
-		String type = column.getTypeAsString().toLowerCase();
-		if (type.contains("char")) {
-			return FlexoBehaviourParameter.WidgetType.TEXT_FIELD;
-		}
-		else if (type.equals("boolean") || type.equals("bool") || type.equals("bit")) {
-			return FlexoBehaviourParameter.WidgetType.CHECKBOX;
-		}
-		else if (type.contains("int")) {
-			return FlexoBehaviourParameter.WidgetType.INTEGER;
-		}
-		else if (type.startsWith("dec") || type.contains("numeric") || type.contains("real") || type.contains("float")
-				|| type.startsWith("double")) {
-			return FlexoBehaviourParameter.WidgetType.FLOAT;
-		}
-		else {
-			// TODO find adequate field
-			/* DATE TIME TIMESTAMP */
-			return FlexoBehaviourParameter.WidgetType.TEXT_FIELD;
-		}
 	}
 
 	private static Type typeForColumn(JDBCColumn column) {

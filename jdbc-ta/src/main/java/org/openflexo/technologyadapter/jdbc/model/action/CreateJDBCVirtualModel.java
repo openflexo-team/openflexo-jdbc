@@ -181,7 +181,6 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 		performSetParentConcepts();
 		performCreateProperties();
 		performCreateBehaviours();
-		performCreateInspectors();
 		performPostProcessings();
 
 		for (TableMapping tableMapping : getTableMappings()) {
@@ -219,7 +218,6 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 			// createConceptAction.setDefineSomeBehaviours(true);
 			// createConceptAction.setDefineDefaultCreationScheme(true);
 
-			createConceptAction.setDefineInspector(false);
 			createConceptAction.doAction();
 
 			tableMapping.concept = createConceptAction.getNewFlexoConcept();
@@ -244,9 +242,6 @@ public class CreateJDBCVirtualModel extends AbstractCreateNatureSpecificVirtualM
 					tableMapping.concept.addToKeyProperties(columnMapping.property);
 				}
 			}
-
-			createConceptAction.setDefineInspector(true);
-			createConceptAction.performCreateInspectors();
 
 			// Create a default creation scheme
 			CreateFlexoBehaviour createCreationScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(tableMapping.concept, null,
