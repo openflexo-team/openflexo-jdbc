@@ -89,7 +89,8 @@ public interface JDBCColumn extends FlexoObject, InnerResourceData<JDBCConnectio
 
 		@Override
 		public JDBCConnection getResourceData() {
-			return getTable().getSchema().getModel();
+			// A column is built before it is attached to its table
+			return getTable() != null && getTable().getSchema() != null ? getTable().getSchema().getModel() : null;
 		}
 
 		@Override

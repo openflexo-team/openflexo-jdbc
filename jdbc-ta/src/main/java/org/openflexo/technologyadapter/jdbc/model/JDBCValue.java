@@ -128,7 +128,8 @@ public interface JDBCValue extends FlexoObject, InnerResourceData<JDBCConnection
 
 		@Override
 		public JDBCConnection getResourceData() {
-			return getLine().getResourceData();
+			// A value is built before it is attached to its line
+			return getLine() != null ? getLine().getResourceData() : null;
 		}
 
 		@Override

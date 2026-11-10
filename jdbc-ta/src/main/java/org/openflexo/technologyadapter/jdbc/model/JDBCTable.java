@@ -484,7 +484,7 @@ public interface JDBCTable extends InnerResourceData<JDBCConnection>, Technology
 
 		@Override
 		public JDBCConnection getResourceData() {
-			return getSchema().getModel();
+			return getSchema() != null ? getSchema().getModel() : null;
 		}
 
 		@Override

@@ -126,7 +126,11 @@ public interface JDBCLine extends FlexoObject, InnerResourceData<JDBCConnection>
 
 		@Override
 		public JDBCConnection getResourceData() {
-			return getResultSet().getResourceData();
+			// A line is built before it is attached to its result set
+			if (getResultSet() != null) {
+				return getResultSet().getResourceData();
+			}
+			return null;
 		}
 
 		@Override
