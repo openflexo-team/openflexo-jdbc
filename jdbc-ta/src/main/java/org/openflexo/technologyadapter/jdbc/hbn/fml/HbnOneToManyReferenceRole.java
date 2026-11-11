@@ -48,8 +48,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 
 /**
@@ -64,14 +62,12 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 @Deprecated
 @ModelEntity
 @ImplementationClass(HbnOneToManyReferenceRole.HbnToManyReferenceRoleImpl.class)
-@XMLElement
 public interface HbnOneToManyReferenceRole extends FlexoConceptInstanceRole {
 
 	@PropertyIdentifier(type = String.class)
 	String DESTINATION_KEY_COLUMN_NAME_KEY = "destinationKeyColumnName";
 
 	@Getter(DESTINATION_KEY_COLUMN_NAME_KEY)
-	@XMLAttribute
 	String getDestinationKeyColumnName();
 
 	@Setter(DESTINATION_KEY_COLUMN_NAME_KEY)

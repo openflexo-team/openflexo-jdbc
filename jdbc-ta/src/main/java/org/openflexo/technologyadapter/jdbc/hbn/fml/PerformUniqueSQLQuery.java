@@ -42,7 +42,6 @@ import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.UniqueFetchRequest;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -55,7 +54,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  */
 @ModelEntity
 @ImplementationClass(PerformUniqueSQLQuery.AbstractPerformSQLQueryImpl.class)
-@XMLElement
 @FML("PerformUniqueSQLQuery")
 public interface PerformUniqueSQLQuery extends AbstractPerformSQLQuery<HbnFlexoConceptInstance>,
 		UniqueFetchRequest<FMLJDBCModelSlot, HbnVirtualModelInstance, HbnFlexoConceptInstance> {

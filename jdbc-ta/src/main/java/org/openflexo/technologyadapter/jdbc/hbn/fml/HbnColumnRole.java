@@ -51,8 +51,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.model.JDBCMappingType;
 
@@ -64,7 +62,6 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCMappingType;
 @Deprecated
 @ModelEntity
 @ImplementationClass(HbnColumnRole.HbnColumnRoleImpl.class)
-@XMLElement
 @FML("HbnColumnRole")
 public interface HbnColumnRole<T> extends FlexoRole<T> {
 
@@ -74,14 +71,12 @@ public interface HbnColumnRole<T> extends FlexoRole<T> {
 	String DATA_TYPE_KEY = "dataType";
 
 	@Getter(COLUMN_NAME_KEY)
-	@XMLAttribute
 	public String getColumnName();
 
 	@Setter(COLUMN_NAME_KEY)
 	public void setColumnName(String columnName);
 
 	@Getter(DATA_TYPE_KEY)
-	@XMLAttribute
 	public JDBCMappingType getDataType();
 
 	@Setter(DATA_TYPE_KEY)

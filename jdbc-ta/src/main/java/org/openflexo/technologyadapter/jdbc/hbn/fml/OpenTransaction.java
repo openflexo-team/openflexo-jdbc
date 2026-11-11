@@ -53,8 +53,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 
@@ -68,7 +66,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  */
 @ModelEntity
 @ImplementationClass(OpenTransaction.OpenTransactionImpl.class)
-@XMLElement
 @FML("OpenTransaction")
 public interface OpenTransaction extends TechnologySpecificActionDefiningReceiver<FMLJDBCModelSlot, HbnVirtualModelInstance, Transaction> {
 
@@ -83,14 +80,12 @@ public interface OpenTransaction extends TechnologySpecificActionDefiningReceive
 	 * @return
 	 */
 	@Getter(value = TIME_OUT_KEY)
-	@XMLAttribute
 	public Integer getTimeOut();
 
 	@Setter(TIME_OUT_KEY)
 	public void setTimeOut(Integer timeOut);
 
 	@Getter(value = ROLL_BACK_ONLY_KEY, defaultValue = "false")
-	@XMLAttribute
 	public boolean getRollbackOnly();
 
 	@Setter(ROLL_BACK_ONLY_KEY)

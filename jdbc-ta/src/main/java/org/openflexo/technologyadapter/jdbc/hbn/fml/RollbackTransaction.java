@@ -50,7 +50,6 @@ import org.openflexo.foundation.fml.rt.ReturnException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction.OpenTransactionImpl;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -63,7 +62,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  */
 @ModelEntity
 @ImplementationClass(RollbackTransaction.RollbackTransactionImpl.class)
-@XMLElement
 @FML("RollbackTransaction")
 public interface RollbackTransaction extends TechnologySpecificActionDefiningReceiver<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> {
 

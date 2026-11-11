@@ -44,7 +44,6 @@ import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.FetchRequest;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -57,7 +56,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  */
 @ModelEntity
 @ImplementationClass(PerformSQLQuery.AbstractPerformSQLQueryImpl.class)
-@XMLElement
 @FML("PerformSQLQuery")
 public interface PerformSQLQuery extends AbstractPerformSQLQuery<List<HbnFlexoConceptInstance>>,
 		FetchRequest<FMLJDBCModelSlot, HbnVirtualModelInstance, HbnFlexoConceptInstance> {

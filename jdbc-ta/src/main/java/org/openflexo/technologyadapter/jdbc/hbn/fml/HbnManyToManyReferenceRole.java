@@ -48,8 +48,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 
 /**
@@ -65,7 +63,6 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 @Deprecated
 @ModelEntity
 @ImplementationClass(HbnManyToManyReferenceRole.HbnToManyReferenceRoleImpl.class)
-@XMLElement
 public interface HbnManyToManyReferenceRole extends FlexoConceptInstanceRole {
 
 	@PropertyIdentifier(type = String.class)
@@ -76,21 +73,18 @@ public interface HbnManyToManyReferenceRole extends FlexoConceptInstanceRole {
 	String DESTINATION_KEY_ATTRIBUTE_NAME_KEY = "destinationKeyAttributeName";
 
 	@Getter(RELATION_TABLE_NAME_KEY)
-	@XMLAttribute
 	String getRelationTableName();
 
 	@Setter(RELATION_TABLE_NAME_KEY)
 	void setRelationTableName(String relationTableName);
 
 	@Getter(SOURCE_KEY_ATTRIBUTE_NAME_KEY)
-	@XMLAttribute
 	String getSourceKeyAttributeName();
 
 	@Setter(SOURCE_KEY_ATTRIBUTE_NAME_KEY)
 	void setSourceKeyAttributeName(String sourceKeyAttributeName);
 
 	@Getter(DESTINATION_KEY_ATTRIBUTE_NAME_KEY)
-	@XMLAttribute
 	String getDestinationKeyAttributeName();
 
 	@Setter(DESTINATION_KEY_ATTRIBUTE_NAME_KEY)

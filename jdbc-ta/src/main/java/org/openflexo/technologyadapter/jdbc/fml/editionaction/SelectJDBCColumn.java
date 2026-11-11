@@ -41,7 +41,6 @@ import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.FetchRequest;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -53,7 +52,6 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
  */
 @ModelEntity
 @ImplementationClass(SelectJDBCColumn.AbstractSelectJDBCColumnImpl.class)
-@XMLElement
 @FML("SelectJDBCColumn")
 public interface SelectJDBCColumn
 		extends AbstractSelectJDBCColumn<List<JDBCColumn>>, FetchRequest<JDBCModelSlot, JDBCConnection, JDBCColumn> {

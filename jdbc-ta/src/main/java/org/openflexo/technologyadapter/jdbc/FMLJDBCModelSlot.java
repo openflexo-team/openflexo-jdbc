@@ -73,7 +73,6 @@ import org.openflexo.foundation.fml.rt.reflect.ReflectedFMLRTModelSlotInstance;
 import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstanceModelFactory;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
@@ -106,7 +105,6 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
  * 
  */
 @ModelEntity
-@XMLElement
 @FML("FMLJDBCModelSlot")
 @ImplementationClass(FMLJDBCModelSlot.FMLJDBCModelSlotImpl.class)
 @DeclareFlexoRoles({ HbnColumnRole.class, HbnToOneReferenceRole.class, HbnOneToManyReferenceRole.class })
@@ -127,28 +125,24 @@ public interface FMLJDBCModelSlot
 	String PASSWORD_KEY = "password";
 	
 	@Getter(DB_TYPE)
-	@XMLAttribute
 	JDBCDbType getDbType();
 	
 	@Setter(DB_TYPE)
 	void setDbType(JDBCDbType aType);
 	
 	@Getter(ADDRESS_KEY)
-	@XMLAttribute
 	DataBinding<String> getAddress();
 	
 	@Setter(ADDRESS_KEY)
 	void setAddress(DataBinding<String> address);
 	
 	@Getter(USER_KEY)
-	@XMLAttribute
 	DataBinding<String> getUser();
 	
 	@Setter(USER_KEY)
 	void setUser(DataBinding<String> user);
 	
 	@Getter(PASSWORD_KEY)
-	@XMLAttribute
 	DataBinding<String> getPassword();
 	
 	@Setter(PASSWORD_KEY)

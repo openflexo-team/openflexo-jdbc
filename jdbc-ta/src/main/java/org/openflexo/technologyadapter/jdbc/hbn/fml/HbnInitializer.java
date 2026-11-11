@@ -45,7 +45,6 @@ import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.pamela.annotations.DefineValidationRule;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.pamela.validation.ValidationError;
 import org.openflexo.pamela.validation.ValidationIssue;
 import org.openflexo.pamela.validation.ValidationRule;
@@ -63,7 +62,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  */
 @ModelEntity
 @ImplementationClass(HbnInitializer.HbnInitializerImpl.class)
-@XMLElement
 @FML("HbnInitializer")
 public interface HbnInitializer extends AbstractActionScheme, TechnologySpecificFlexoBehaviour<JDBCTechnologyAdapter> {
 

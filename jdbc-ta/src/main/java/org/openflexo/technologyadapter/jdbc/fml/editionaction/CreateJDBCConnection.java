@@ -54,8 +54,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
@@ -72,7 +70,6 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResourceFactory;
  */
 @ModelEntity
 @ImplementationClass(CreateJDBCConnection.CreateJDBCResourceImpl.class)
-@XMLElement
 @FML("CreateJDBCConnection")
 public interface CreateJDBCConnection extends AbstractCreateResource<JDBCModelSlot, JDBCConnection, JDBCTechnologyAdapter> {
 
@@ -83,28 +80,24 @@ public interface CreateJDBCConnection extends AbstractCreateResource<JDBCModelSl
 	String ADDRESS = "address";
 
 	@Getter(DB_TYPE)
-	@XMLAttribute
 	JDBCDbType getDbType();
 
 	@Setter(DB_TYPE)
 	void setDbType(JDBCDbType aDBType);
 
 	@Getter(USER)
-	@XMLAttribute
 	DataBinding<String> getUser();
 
 	@Setter(USER)
 	void setUser(DataBinding<String> user);
 
 	@Getter(PASSWORD)
-	@XMLAttribute
 	DataBinding<String> getPassword();
 
 	@Setter(PASSWORD)
 	void setPassword(DataBinding<String> password);
 
 	@Getter(ADDRESS)
-	@XMLAttribute
 	DataBinding<String> getAddress();
 
 	@Setter(ADDRESS)

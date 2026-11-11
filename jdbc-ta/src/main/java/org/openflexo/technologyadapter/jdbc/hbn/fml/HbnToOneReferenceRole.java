@@ -47,8 +47,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 
 /**
@@ -63,7 +61,6 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 @Deprecated
 @ModelEntity
 @ImplementationClass(HbnToOneReferenceRole.HbnToOneReferenceRoleImpl.class)
-@XMLElement
 public interface HbnToOneReferenceRole extends FlexoConceptInstanceRole {
 
 	@PropertyIdentifier(type = String.class)
@@ -72,14 +69,12 @@ public interface HbnToOneReferenceRole extends FlexoConceptInstanceRole {
 	String FOREIGN_KEY_ATTRIBUTE_NAME_KEY = "foreignKeyAttributeName";
 
 	@Getter(COLUMN_NAME_KEY)
-	@XMLAttribute
 	public String getColumnName();
 
 	@Setter(COLUMN_NAME_KEY)
 	public void setColumnName(String columnName);
 
 	@Getter(FOREIGN_KEY_ATTRIBUTE_NAME_KEY)
-	@XMLAttribute
 	String getForeignKeyAttributeName();
 
 	@Setter(FOREIGN_KEY_ATTRIBUTE_NAME_KEY)

@@ -51,7 +51,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -71,7 +70,6 @@ public interface AbstractSelectJDBCColumn<AT> extends AbstractFetchRequest<JDBCM
 	String TABLE_KEY = "table";
 
 	@Getter(TABLE_KEY)
-	@XMLAttribute
 	DataBinding<JDBCTable> getTable();
 
 	@Setter(TABLE_KEY)

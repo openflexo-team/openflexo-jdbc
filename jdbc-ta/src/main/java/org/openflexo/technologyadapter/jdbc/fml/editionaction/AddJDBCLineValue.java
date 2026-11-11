@@ -41,13 +41,10 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.AddJDBCLineValue.AddJDBCLineValueImpl;
 
 @ModelEntity
 @ImplementationClass(AddJDBCLineValueImpl.class)
-@XMLElement
 public interface AddJDBCLineValue {
 
 	@PropertyIdentifier(type = AddJDBCLine.class)
@@ -59,20 +56,19 @@ public interface AddJDBCLineValue {
 	@PropertyIdentifier(type = DataBinding.class)
 	String VALUE_KEY = "value";
 
-	@Getter(OWNER_KEY) @XMLElement
+	@Getter(OWNER_KEY)
 	AddJDBCLine getOwner();
 
 	@Setter(OWNER_KEY)
 	void setOwner(AddJDBCLine owner);
 
 	@Getter(COLUMN_NAME_KEY)
-	@XMLAttribute
 	String getColumnName();
 
 	@Setter(COLUMN_NAME_KEY)
 	void setColumnName(String paramName);
 
-	@Getter(value = VALUE_KEY)  @XMLAttribute
+	@Getter(value = VALUE_KEY)
 	DataBinding<String> getValue();
 
 	@Setter(VALUE_KEY)

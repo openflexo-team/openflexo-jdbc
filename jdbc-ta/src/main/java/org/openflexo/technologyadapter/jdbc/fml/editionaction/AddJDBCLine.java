@@ -55,8 +55,6 @@ import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Remover;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.AddJDBCLine.AddJDBCLineImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -68,7 +66,6 @@ import org.openflexo.technologyadapter.jdbc.util.SQLHelper;
 
 @ModelEntity
 @ImplementationClass(AddJDBCLineImpl.class)
-@XMLElement
 @FML("AddJDBCLine")
 public interface AddJDBCLine extends TechnologySpecificActionDefiningReceiver<JDBCModelSlot, JDBCConnection, JDBCLine> {
 
@@ -77,14 +74,12 @@ public interface AddJDBCLine extends TechnologySpecificActionDefiningReceiver<JD
 	String VALUES_KEY = "values";
 
 	@Getter(TABLE_KEY)
-	@XMLAttribute
 	DataBinding<JDBCTable> getTable();
 
 	@Setter(TABLE_KEY)
 	void setTable(DataBinding<JDBCTable> table);
 
 	@Getter(value = VALUES_KEY, cardinality = Cardinality.LIST)
-	@XMLElement(xmlTag = "values")
 	List<AddJDBCLineValue> getValues();
 
 	@Adder(VALUES_KEY)

@@ -59,13 +59,11 @@ import java.lang.reflect.Type;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCTableRole.JDBCTableRoleImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 @ModelEntity
 @ImplementationClass(value = JDBCTableRoleImpl.class)
-@XMLElement
 @org.openflexo.foundation.fml.annotations.FML("JDBCTableRole")
 public interface JDBCTableRole extends FlexoRole<JDBCTable> {
 

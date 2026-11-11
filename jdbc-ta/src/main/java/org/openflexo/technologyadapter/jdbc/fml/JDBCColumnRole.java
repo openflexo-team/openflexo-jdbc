@@ -59,12 +59,10 @@ import java.lang.reflect.Type;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 
 @ModelEntity
 @ImplementationClass(value = JDBCColumnRole.JDBCColumnRoleImpl.class)
-@XMLElement
 @org.openflexo.foundation.fml.annotations.FML("JDBCColumnRole")
 public interface JDBCColumnRole extends FlexoRole<JDBCColumn> {
 

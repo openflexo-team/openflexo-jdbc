@@ -60,13 +60,11 @@ import java.lang.reflect.Type;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineRole.JDBCLineRoleImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 
 @ModelEntity
 @ImplementationClass(value = JDBCLineRoleImpl.class)
-@XMLElement
 @org.openflexo.foundation.fml.annotations.FML("JDBCLineRole")
 public interface JDBCLineRole extends FlexoRole<JDBCLine> {
 

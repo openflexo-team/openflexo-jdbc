@@ -67,7 +67,6 @@ import org.openflexo.foundation.technologyadapter.FreeModelSlot;
 import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnActorReference;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCColumnRole;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCLineActorReference;
@@ -100,7 +99,6 @@ import org.openflexo.technologyadapter.jdbc.rm.JDBCResource;
  * 
  */
 @ModelEntity
-@XMLElement
 @FML("JDBCModelSlot")
 @ImplementationClass(JDBCModelSlot.JDBCModelSlotImpl.class)
 @DeclareActorReferences({ JDBCTableActorReference.class, JDBCColumnActorReference.class, JDBCLineActorReference.class })

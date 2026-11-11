@@ -49,7 +49,6 @@ import org.openflexo.foundation.fml.rt.editionaction.AbstractAddFlexoConceptInst
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
@@ -62,7 +61,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstanceMod
  */
 @ModelEntity
 @ImplementationClass(CreateHbnObject.CreateHbnObjectImpl.class)
-@XMLElement
 public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlexoConceptInstance, HbnVirtualModelInstance> {
 
 	public static abstract class CreateHbnObjectImpl

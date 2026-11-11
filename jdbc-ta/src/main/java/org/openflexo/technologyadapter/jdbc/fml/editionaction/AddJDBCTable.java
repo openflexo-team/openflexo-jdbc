@@ -50,8 +50,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCSchema;
@@ -59,7 +57,6 @@ import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 
 @ModelEntity
 @ImplementationClass(AddJDBCTable.AddJDBCTableImpl.class)
-@XMLElement
 @FML("AddJDBCTable")
 public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<JDBCModelSlot, JDBCConnection, JDBCTable> {
 
@@ -67,7 +64,6 @@ public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<J
 	String TABLE_NAME = "tableName";
 
 	@Getter(TABLE_NAME)
-	@XMLAttribute
 	DataBinding<String> getTableName();
 
 	@Setter(TABLE_NAME)

@@ -59,14 +59,12 @@ import java.lang.reflect.Type;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.fml.JDBCResultSetRole.JDBCResultSetRoleImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCResultSet;
 
 @ModelEntity
 @ImplementationClass(value = JDBCResultSetRoleImpl.class)
-@XMLElement
 public interface JDBCResultSetRole extends FlexoRole<JDBCResultSet> {
 
     abstract class JDBCResultSetRoleImpl extends JDBCRole<JDBCResultSet> implements JDBCResultSetRole {

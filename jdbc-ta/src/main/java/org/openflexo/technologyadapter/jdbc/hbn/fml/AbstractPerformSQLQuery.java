@@ -59,7 +59,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnException;
@@ -83,14 +82,12 @@ public interface AbstractPerformSQLQuery<AT>
 	public static final String CONTAINER_KEY = "container";
 
 	@Getter(value = CONTAINER_KEY)
-	@XMLAttribute
 	public DataBinding<FlexoConceptInstance> getContainer();
 
 	@Setter(CONTAINER_KEY)
 	public void setContainer(DataBinding<FlexoConceptInstance> container);
 
 	@Getter(value = FLEXO_CONCEPT_TYPE_URI_KEY)
-	@XMLAttribute
 	public String _getFlexoConceptTypeURI();
 
 	@Setter(FLEXO_CONCEPT_TYPE_URI_KEY)

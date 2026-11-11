@@ -58,8 +58,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.hbn.fml.OpenTransaction.OpenTransactionImpl;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
@@ -73,7 +71,6 @@ import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
  */
 @ModelEntity
 @ImplementationClass(SaveHbnObject.SaveHbnObjectImpl.class)
-@XMLElement
 @FML("SaveHbnObject")
 public interface SaveHbnObject extends TechnologySpecificActionDefiningReceiver<FMLJDBCModelSlot, HbnVirtualModelInstance, Void> {
 
@@ -81,7 +78,6 @@ public interface SaveHbnObject extends TechnologySpecificActionDefiningReceiver<
 	public static final String TRANSACTION_KEY = "object";
 
 	@Getter(value = TRANSACTION_KEY)
-	@XMLAttribute
 	public DataBinding<FlexoConceptInstance> getObject();
 
 	@Setter(TRANSACTION_KEY)
