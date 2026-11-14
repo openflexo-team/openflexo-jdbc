@@ -39,7 +39,7 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
-import org.openflexo.foundation.fml.rt.FMLExecutionException;
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 
 /**
  * Exception thrown while configuring or executing Hibernate framework
