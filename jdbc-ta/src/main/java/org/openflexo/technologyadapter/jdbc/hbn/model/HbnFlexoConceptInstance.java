@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.hibernate.collection.spi.PersistentBag;
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.AbstractProperty;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
@@ -412,8 +413,10 @@ public interface HbnFlexoConceptInstance extends ReflectedFlexoConceptInstance<M
 			return super.getFlexoActorList(flexoRole);
 		}
 
+		// The strict entry point, which the lenient getFlexoPropertyValue() wraps: FML execution and the user interface both reach this
+		// mapping (CORE-F-11)
 		@Override
-		public <T> T getFlexoPropertyValue(FlexoProperty<T> flexoProperty) {
+		public <T> T getFlexoPropertyValueOrFail(FlexoProperty<T> flexoProperty) throws FMLExecutionException {
 			// Annotation-driven mapping (@Property)
 			if (JDBCMetaData.isColumn(flexoProperty)) {
 				return (T) hbnMap.get(flexoProperty.getName());
@@ -443,11 +446,12 @@ public interface HbnFlexoConceptInstance extends ReflectedFlexoConceptInstance<M
 				return (T) getReferencedObjectList((HbnOneToManyReferenceRole) flexoProperty);
 			}
 
-			return super.getFlexoPropertyValue(flexoProperty);
+			return super.getFlexoPropertyValueOrFail(flexoProperty);
 		}
 
+		// The strict entry point, which the lenient setFlexoPropertyValue() wraps (CORE-F-11)
 		@Override
-		public <T> void setFlexoPropertyValue(FlexoProperty<T> flexoProperty, T value) {
+		public <T> void setFlexoPropertyValueOrFail(FlexoProperty<T> flexoProperty, T value) throws FMLExecutionException {
 			// Annotation-driven mapping (@Property)
 			if (JDBCMetaData.isColumn(flexoProperty)) {
 				T oldValue = getFlexoPropertyValue(flexoProperty);
@@ -493,7 +497,7 @@ public interface HbnFlexoConceptInstance extends ReflectedFlexoConceptInstance<M
 				setReferencedObject((HbnFlexoConceptInstance) value, (HbnToOneReferenceRole) flexoProperty);
 			}
 			else {
-				super.setFlexoPropertyValue(flexoProperty, value);
+				super.setFlexoPropertyValueOrFail(flexoProperty, value);
 			}
 		}
 

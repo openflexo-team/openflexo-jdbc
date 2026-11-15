@@ -35,6 +35,7 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,7 +83,7 @@ public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<J
 		}
 
 		@Override
-		public JDBCTable execute(RunTimeEvaluationContext evaluationContext) {
+		public JDBCTable execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
 			JDBCConnection connection = getReceiver(evaluationContext);
 

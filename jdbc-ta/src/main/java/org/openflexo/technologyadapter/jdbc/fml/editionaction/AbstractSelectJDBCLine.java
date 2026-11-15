@@ -35,6 +35,7 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,7 @@ public interface AbstractSelectJDBCLine<AT> extends AbstractFetchRequest<JDBCMod
 		}
 
 		@Override
-		public List<JDBCLine> performExecute(RunTimeEvaluationContext evaluationContext) {
+		public List<JDBCLine> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
 			List<JDBCLine> lines = new ArrayList<>();
 			JDBCTable table;
