@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -70,15 +71,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 
 		@Override
 		public HbnFlexoConceptInstance execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
-			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
-			FlexoConcept instantiatedFlexoConcept = retrieveFlexoConcept(evaluationContext);
-
-			System.out.println("CreateHbnObject for receiver " + getReceiver() + " = " + vmi + " concept=" + instantiatedFlexoConcept);
-
-			HbnFlexoConceptInstance returned = super.execute(evaluationContext);
-
-			return returned;
-
+			return super.execute(evaluationContext);
 		}
 
 		@Override
@@ -97,8 +90,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 			if (instantiatedFlexoConcept.getContainerFlexoConcept() != null) {
 				container = getContainer(evaluationContext);
 				if (container == null) {
-					logger.warning("null container while creating new concept " + instantiatedFlexoConcept);
-					return null;
+					throw new FMLNullReferenceError("Null container while creating a new instance of " + instantiatedFlexoConcept.getName());
 				}
 			}
 

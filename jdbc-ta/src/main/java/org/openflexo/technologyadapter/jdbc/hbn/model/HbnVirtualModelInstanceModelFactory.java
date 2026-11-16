@@ -42,7 +42,6 @@ import java.util.Map;
 
 import org.openflexo.foundation.fml.AbstractCreationScheme;
 import org.openflexo.foundation.fml.FlexoConcept;
-import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
@@ -72,15 +71,15 @@ public class HbnVirtualModelInstanceModelFactory
 	@Override
 	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, Map<String, Object> supportObject,
 			FlexoConceptInstance container, VirtualModelInstance<?, ?> ownerVirtualModelInstance,
-			RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
-		return (HbnFlexoConceptInstance) super.makeNewFlexoConceptInstance(concept, supportObject, container, ownerVirtualModelInstance,
-				evaluationContext);
+			RunTimeEvaluationContext evaluationContext) {
+		return makeNewFlexoConceptInstance(concept, supportObject, container, ownerVirtualModelInstance, null, evaluationContext);
 	}
 
 	@Override
 	public HbnFlexoConceptInstance makeNewFlexoConceptInstance(FlexoConcept concept, Map<String, Object> supportObject,
 			FlexoConceptInstance container, VirtualModelInstance<?, ?> ownerVirtualModelInstance, AbstractCreationScheme creationScheme,
-			RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
+			RunTimeEvaluationContext evaluationContext) {
+		// Builds and registers the instance of a row: no creation scheme runs here, and nothing can fail (CORE-F-11)
 		HbnFlexoConceptInstance returned = newInstance(HbnFlexoConceptInstance.class, supportObject, concept);
 		ownerVirtualModelInstance.addToFlexoConceptInstances(returned);
 		if (container != null && container != ownerVirtualModelInstance) {

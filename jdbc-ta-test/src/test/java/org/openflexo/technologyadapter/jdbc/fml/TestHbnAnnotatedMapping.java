@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -47,6 +48,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.type.PrimitiveType;
+import org.openflexo.foundation.fml.ActionScheme;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
@@ -63,9 +65,17 @@ import org.openflexo.foundation.fml.action.CreateGenericBehaviourParameter;
 import org.openflexo.foundation.fml.action.CreateModelSlot;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
 import org.openflexo.foundation.fml.editionaction.ConnectAction;
+import org.openflexo.foundation.fml.editionaction.DeclarationAction;
+import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.md.MultiValuedMetaData;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.action.ActionSchemeAction;
+import org.openflexo.foundation.fml.rt.action.ActionSchemeActionFactory;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.error.FMLExecutionFailure;
+import org.openflexo.foundation.fml.rt.error.FMLFailureTunnel;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLTechnologyError;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.jdbc.test.HsqlTestCase;
 import org.openflexo.technologyadapter.jdbc.FMLJDBCModelSlot;
@@ -73,6 +83,8 @@ import org.openflexo.technologyadapter.jdbc.JDBCTechnologyAdapter;
 import org.openflexo.technologyadapter.jdbc.dbtype.JDBCDbType;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.CreateJDBCConnection;
 import org.openflexo.technologyadapter.jdbc.hbn.JDBCMetaData;
+import org.openflexo.technologyadapter.jdbc.hbn.fml.CreateHbnObject;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnException;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnFlexoConceptInstance;
 import org.openflexo.technologyadapter.jdbc.hbn.model.HbnVirtualModelInstance;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
@@ -353,6 +365,117 @@ public class TestHbnAnnotatedMapping extends HsqlTestCase {
 		assertEquals(2, dbVMI.getFlexoConceptInstances(salesmanConcept).size());
 		// Calling again reuses the already-reflected instances (no re-query)
 		assertEquals(2, dbVMI.getFlexoConceptInstances(salesmanConcept).size());
+	}
+
+	/**
+	 * A creation through {@link CreateHbnObject} whose creation scheme fails fails the behaviour with the typed error of the scheme and
+	 * leaves no instance (CORE-D-73, JDBC-F-1): the scheme of a technology creation used to never run
+	 */
+	@Test
+	@TestOrder(9)
+	public void createHbnObjectWithFailingSchemeLeavesNoInstance() throws Exception {
+		log("createHbnObjectWithFailingSchemeLeavesNoInstance");
+
+		// create() { lastname.substring(99); } : lastname is null in a new instance
+		CreationScheme failing = createCreationScheme(salesmanConcept, "createFailing");
+		CreateEditionAction failingStatement = CreateEditionAction.actionType.makeNewAction(failing.getControlGraph(), null, _editor);
+		failingStatement.setEditionActionClass(ExpressionAction.class);
+		failingStatement.doAction();
+		((ExpressionAction<Object>) failingStatement.getBaseEditionAction()).setExpression(new DataBinding<>("lastname.substring(99)"));
+
+		ActionScheme createSalesman = createActionSchemeCreatingSalesman("createFailingSalesman", failing);
+
+		int before = dbVMI.getFlexoConceptInstances().size();
+		ActionSchemeAction action = new ActionSchemeActionFactory(createSalesman, vmi).makeNewAction(vmi, null, _editor);
+		action.doAction();
+
+		assertTrue(action.hasActionExecutionFailed());
+		FMLExecutionFailure failure = FMLExecutionFailure.findFailure(action.getFailure());
+		assertNotNull("Not an FML failure: " + action.getFailure(), failure);
+		assertEquals(String.valueOf(failure), FMLNullReferenceError.class, failure.getClass());
+		assertEquals(before, dbVMI.getFlexoConceptInstances().size());
+	}
+
+	/**
+	 * A creation through {@link CreateHbnObject} runs its creation scheme on the new instance (CORE-D-73)
+	 */
+	@Test
+	@TestOrder(10)
+	public void createHbnObjectRunsItsSchemeOnTheNewInstance() throws Exception {
+		log("createHbnObjectRunsItsSchemeOnTheNewInstance");
+
+		// create() { lastname = "Doe"; }
+		CreationScheme setsName = createCreationScheme(salesmanConcept, "createDoe");
+		CreateEditionAction assignment = CreateEditionAction.actionType.makeNewAction(setsName.getControlGraph(), null, _editor);
+		assignment.setEditionActionClass(ExpressionAction.class);
+		assignment.setAssignation(new DataBinding<>("lastname"));
+		assignment.doAction();
+		((ExpressionAction<Object>) assignment.getBaseEditionAction()).setExpression(new DataBinding<>("\"Doe\""));
+
+		ActionScheme createSalesman = createActionSchemeCreatingSalesman("createDoeSalesman", setsName);
+
+		int before = dbVMI.getFlexoConceptInstances().size();
+		ActionSchemeAction action = new ActionSchemeActionFactory(createSalesman, vmi).makeNewAction(vmi, null, _editor);
+		action.doAction();
+
+		assertTrue(String.valueOf(action.getFailure()), action.hasActionExecutionSucceeded());
+		assertEquals(before + 1, dbVMI.getFlexoConceptInstances().size());
+		HbnFlexoConceptInstance created = (HbnFlexoConceptInstance) dbVMI.getFlexoConceptInstances()
+				.get(dbVMI.getFlexoConceptInstances().size() - 1);
+		assertSame(salesmanConcept, created.getFlexoConcept());
+		assertEquals("Doe", created.execute("lastname"));
+	}
+
+	/**
+	 * A failure of Hibernate (here a query on an unmapped entity) is a typed technology error (JDBC-F-1)
+	 */
+	@Test
+	@TestOrder(11)
+	public void failingQueryIsATechnologyError() throws Exception {
+		log("failingQueryIsATechnologyError");
+		// The concept Nobody is not mapped: the query performed for it fails in Hibernate
+		FlexoConcept nobody = createConcept(mappingVirtualModel, "Nobody");
+		dbVMI.getMappings().put(nobody, dbVMI.getMappings().get(salesmanConcept));
+		try {
+			dbVMI.getFlexoConceptInstances(nobody);
+			fail("The query on an unmapped entity did not fail");
+		} catch (FMLFailureTunnel e) {
+			// The select of FML unwraps it (FMLEvaluation)
+			assertTrue(String.valueOf(e.getFailure()), e.getFailure() instanceof FMLTechnologyError);
+			assertTrue(e.getFailure() instanceof HbnException);
+		} finally {
+			dbVMI.getMappings().remove(nobody);
+			mappingVirtualModel.removeFromFlexoConcepts(nobody);
+		}
+	}
+
+	private CreationScheme createCreationScheme(FlexoConcept concept, String name) {
+		CreateFlexoBehaviour action = CreateFlexoBehaviour.actionType.makeNewAction(concept, null, _editor);
+		action.setFlexoBehaviourClass(CreationScheme.class);
+		action.setFlexoBehaviourName(name);
+		action.doAction();
+		return (CreationScheme) action.getNewFlexoBehaviour();
+	}
+
+	/**
+	 * An action scheme of the root virtual model: {@code Salesman newSalesman = <CreateHbnObject>(db, scheme);}
+	 */
+	private ActionScheme createActionSchemeCreatingSalesman(String name, CreationScheme scheme) {
+		CreateFlexoBehaviour createBehaviour = CreateFlexoBehaviour.actionType.makeNewAction(rootVirtualModel, null, _editor);
+		createBehaviour.setFlexoBehaviourClass(ActionScheme.class);
+		createBehaviour.setFlexoBehaviourName(name);
+		createBehaviour.doAction();
+		ActionScheme actionScheme = (ActionScheme) createBehaviour.getNewFlexoBehaviour();
+
+		CreateEditionAction create = CreateEditionAction.actionType.makeNewAction(actionScheme.getControlGraph(), null, _editor);
+		create.setEditionActionClass(CreateHbnObject.class);
+		create.setDeclarationVariableName("newSalesman");
+		create.doAction();
+		CreateHbnObject createObject = (CreateHbnObject) ((DeclarationAction<?>) create.getNewEditionAction()).getAssignableAction();
+		createObject.setReceiver(new DataBinding<>("db"));
+		createObject.setFlexoConceptType(salesmanConcept);
+		createObject.setCreationScheme(scheme);
+		return actionScheme;
 	}
 
 	// ----------------------------------------------------------------------------------------------------------------------------------

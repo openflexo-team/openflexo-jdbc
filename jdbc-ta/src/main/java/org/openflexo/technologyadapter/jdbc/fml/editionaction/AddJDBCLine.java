@@ -41,9 +41,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openflexo.foundation.fml.rt.error.FMLTechnologyError;
+import org.openflexo.foundation.fml.rt.error.FMLResolutionError;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -59,6 +62,7 @@ import org.openflexo.technologyadapter.jdbc.JDBCModelSlot;
 import org.openflexo.technologyadapter.jdbc.fml.editionaction.AddJDBCLine.AddJDBCLineImpl;
 import org.openflexo.technologyadapter.jdbc.model.JDBCConnection;
 import org.openflexo.technologyadapter.jdbc.model.JDBCFactory;
+import org.openflexo.technologyadapter.jdbc.model.JDBCColumn;
 import org.openflexo.technologyadapter.jdbc.model.JDBCLine;
 import org.openflexo.technologyadapter.jdbc.model.JDBCTable;
 import org.openflexo.technologyadapter.jdbc.model.JDBCValue;
@@ -98,49 +102,33 @@ public interface AddJDBCLine extends TechnologySpecificActionDefiningReceiver<JD
 		private DataBinding<JDBCTable> table;
 
 		@Override
-		public JDBCLine execute(RunTimeEvaluationContext evaluationContext) {
+		public JDBCLine execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
-			/* I don't need the model slot nor the model slot instance here
-			if (getModelSlotInstance(evaluationContext) == null) {
-				logger.warning("Could not access model slot instance. Abort.");
-				return null;
+			JDBCTable table = FMLEvaluation.evaluate(getTable(), evaluationContext, this);
+			if (table == null) {
+				throw new FMLNullReferenceError("No JDBC table to insert the line in");
 			}
-			if (getModelSlotInstance(evaluationContext).getResourceData() == null) {
-				logger.warning("Could not access model adressed by model slot instance. Abort.");
-				return null;
-			}
-			*/
-			try {
-				JDBCTable table = getTable().getBindingValue(evaluationContext);
-				List<AddJDBCLineValue> values = getValues();
-				if (table != null && values.size() > 0) {
-
-					JDBCFactory factory = SQLHelper.getFactory(table.getSchema().getModel());
-					JDBCLine line = factory.newInstance(JDBCLine.class);
-					List<JDBCValue> jdbcValues = new ArrayList<>();
-					for (AddJDBCLineValue value : values) {
-						String name = value.getColumnName();
-						String columnValue = value.getValue().getBindingValue(evaluationContext);
-
-						if (name != null && columnValue != null) {
-							JDBCValue jdbcValue = factory.newInstance(JDBCValue.class, line, table.getColumn(name), columnValue);
-							jdbcValues.add(jdbcValue);
-						}
+			List<AddJDBCLineValue> values = getValues();
+			JDBCFactory factory = SQLHelper.getFactory(table.getSchema().getModel());
+			JDBCLine line = factory.newInstance(JDBCLine.class);
+			List<JDBCValue> jdbcValues = new ArrayList<>();
+			for (AddJDBCLineValue value : values) {
+				String name = value.getColumnName();
+				String columnValue = FMLEvaluation.evaluate(value.getValue(), evaluationContext, this);
+				if (name != null && columnValue != null) {
+					JDBCColumn column = table.getColumn(name);
+					if (column == null) {
+						throw new FMLResolutionError("No column " + name + " in the JDBC table " + table.getName());
 					}
-					if (jdbcValues.isEmpty()) {
-						logger.log(Level.WARNING, "Line to insert is empty (" + values + ")");
-						return null;
-					}
-
-					line.init(null, jdbcValues);
-					table.insert(line);
-					return line;
+					jdbcValues.add(factory.newInstance(JDBCValue.class, line, column, columnValue));
 				}
-			} catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
-				logger.log(Level.WARNING, "Can't evaluate binding", e);
 			}
-
-			return null;
+			if (jdbcValues.isEmpty()) {
+				throw new FMLTechnologyError("No value to insert in the JDBC table " + table.getName() + " (" + values + ")");
+			}
+			line.init(null, jdbcValues);
+			table.insert(line);
+			return line;
 		}
 
 		@Override

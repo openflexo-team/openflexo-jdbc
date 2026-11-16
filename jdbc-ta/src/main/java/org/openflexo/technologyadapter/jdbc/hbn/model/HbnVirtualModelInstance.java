@@ -82,7 +82,7 @@ import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
-import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
+import org.openflexo.foundation.fml.rt.error.FMLFailureTunnel;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.reflect.ReflectedVirtualModelInstance;
@@ -1099,14 +1099,9 @@ public interface HbnVirtualModelInstance
 				return new HashMap<>();
 			});
 
-			return mapForConcept.computeIfAbsent(identifier, (newId) -> {
-				try {
-					return getFactory().makeNewFlexoConceptInstance(concept, hbnMap, container, this, null);
-				} catch (FMLExecutionException e) {
-					e.printStackTrace();
-					return null;
-				}
-			});
+			// The factory runs no creation scheme and cannot fail (CORE-F-11)
+			return mapForConcept.computeIfAbsent(identifier,
+					(newId) -> getFactory().makeNewFlexoConceptInstance(concept, hbnMap, container, this, null, null));
 		}
 
 		/**
@@ -1135,15 +1130,16 @@ public interface HbnVirtualModelInstance
 			return mapForConcept.computeIfAbsent(identifier, (newId) -> {
 				Map<String, Object> hbnMap;
 				try {
-					hbnMap = (Map<String, Object>) getDefaultSession().get(concept.getName(), identifier);
-					return getFactory().makeNewFlexoConceptInstance(concept, hbnMap, container, this, null);
+					try {
+						hbnMap = (Map<String, Object>) getDefaultSession().get(concept.getName(), identifier);
+					} catch (RuntimeException e) {
+						throw hibernateFailure(e);
+					}
 				} catch (HbnException e) {
-					e.printStackTrace();
-					return null;
-				} catch (FMLExecutionException e) {
-					e.printStackTrace();
-					return null;
+					// A failure of Hibernate, a typed technology error, travels in the one unchecked tunnel (CORE-F-11)
+					throw new FMLFailureTunnel(e);
 				}
+				return getFactory().makeNewFlexoConceptInstance(concept, hbnMap, container, this, null, null);
 			});
 		}
 
@@ -1184,11 +1180,17 @@ public interface HbnVirtualModelInstance
 		public List<FlexoConceptInstance> getFlexoConceptInstances(FlexoConcept flexoConcept) {
 			if (flexoConcept != null && isConnected() && getMappings().containsKey(flexoConcept) && !queriedConcepts.contains(flexoConcept)) {
 				try {
-					Query<?> query = getDefaultSession().createQuery("select o from " + flexoConcept.getName() + " o");
-					getFlexoConceptInstances(query, null, flexoConcept);
+					try {
+						Query<?> query = getDefaultSession().createQuery("select o from " + flexoConcept.getName() + " o");
+						getFlexoConceptInstances(query, null, flexoConcept);
+					} catch (RuntimeException e) {
+						throw hibernateFailure(e);
+					}
 					queriedConcepts.add(flexoConcept);
 				} catch (HbnException e) {
-					logger.warning("Could not query instances for concept " + flexoConcept.getName() + ": " + e.getMessage());
+					// The select fails with a typed technology error, through the one unchecked tunnel; the concept is not marked as queried,
+					// so that the next read queries again (CORE-F-11, decided with the user)
+					throw new FMLFailureTunnel(e);
 				}
 			}
 			return super.getFlexoConceptInstances(flexoConcept);
@@ -1235,15 +1237,29 @@ public interface HbnVirtualModelInstance
 
 		@Override
 		public Transaction beginTransaction() throws HbnException {
-			if (getDefaultSession().getTransaction() == null) {
-				return getDefaultSession().beginTransaction();
+			try {
+				if (getDefaultSession().getTransaction() == null) {
+					return getDefaultSession().beginTransaction();
+				}
+				Transaction trans = getDefaultSession().getTransaction();
+				if (trans.isActive()) {
+					trans.commit();
+				}
+				trans.begin();
+				return trans;
+			} catch (RuntimeException e) {
+				throw hibernateFailure(e);
 			}
-			Transaction trans = getDefaultSession().getTransaction();
-			if (trans.isActive()) {
-				trans.commit();
+		}
+
+		/**
+		 * The {@link HbnException} for a failure of Hibernate, or supplied exception rethrown when it is not one (CORE-F-11)
+		 */
+		private static HbnException hibernateFailure(RuntimeException e) {
+			if (HbnException.isHibernateFailure(e)) {
+				return new HbnException(e);
 			}
-			trans.begin();
-			return trans;
+			throw e;
 		}
 
 		@Override
@@ -1251,7 +1267,11 @@ public interface HbnVirtualModelInstance
 			if (getDefaultSession().getTransaction() == null) {
 				throw new HbnException("No transaction associated to session");
 			}
-			getDefaultSession().getTransaction().commit();
+			try {
+				getDefaultSession().getTransaction().commit();
+			} catch (RuntimeException e) {
+				throw hibernateFailure(e);
+			}
 		}
 
 		@Override
@@ -1259,7 +1279,11 @@ public interface HbnVirtualModelInstance
 			if (getDefaultSession().getTransaction() == null) {
 				throw new HbnException("No transaction associated to session");
 			}
-			getDefaultSession().getTransaction().rollback();
+			try {
+				getDefaultSession().getTransaction().rollback();
+			} catch (RuntimeException e) {
+				throw hibernateFailure(e);
+			}
 		}
 
 	}

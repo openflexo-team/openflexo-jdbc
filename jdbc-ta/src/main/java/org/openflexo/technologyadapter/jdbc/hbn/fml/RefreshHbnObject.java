@@ -44,11 +44,13 @@ import java.util.logging.Logger;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DataBinding.BindingDefinitionType;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnException;
+import org.openflexo.foundation.fml.rt.error.FMLTypeError;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.ReturnException;
@@ -125,34 +127,30 @@ public interface RefreshHbnObject extends TechnologySpecificActionDefiningReceiv
 			return Void.class;
 		}
 
-		public HbnFlexoConceptInstance getObject(BindingEvaluationContext evaluationContext) {
-			if (getObject().isValid()) {
-				try {
-					return (HbnFlexoConceptInstance) getObject().getBindingValue(evaluationContext);
-				} catch (TypeMismatchException e) {
-					e.printStackTrace();
-				} catch (NullReferenceException e) {
-					e.printStackTrace();
-				} catch (ReflectiveOperationException e) {
-					e.printStackTrace();
-				}
+		public HbnFlexoConceptInstance getObject(BindingEvaluationContext evaluationContext) throws FMLExecutionException {
+			Object value = FMLEvaluation.evaluate(getObject(), evaluationContext, this);
+			if (value == null || value instanceof HbnFlexoConceptInstance) {
+				return (HbnFlexoConceptInstance) value;
 			}
-			return null;
+			throw new FMLTypeError("Not a Hibernate object: " + value);
 		}
 
 		@Override
 		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FMLExecutionException {
 
-			System.out.println("Refresh object " + getObject(evaluationContext));
-
-			// Unused HbnVirtualModelInstance vmi =
-			getReceiver(evaluationContext);
 			HbnFlexoConceptInstance object = getObject(evaluationContext);
-
-			// vmi.getDefaultSession().refresh(object.getFlexoConcept().getName(), (Object) object.getHbnSupportObject());
-
-			object.refresh();
-
+			if (object == null) {
+				throw new FMLNullReferenceError("No Hibernate object to refresh");
+			}
+			try {
+				object.refresh();
+			} catch (RuntimeException e) {
+				// A failure of Hibernate (a row deleted, an object not saved yet) is a typed technology error (CORE-F-11)
+				if (HbnException.isHibernateFailure(e)) {
+					throw new HbnException(e);
+				}
+				throw e;
+			}
 			return null;
 		}
 	}

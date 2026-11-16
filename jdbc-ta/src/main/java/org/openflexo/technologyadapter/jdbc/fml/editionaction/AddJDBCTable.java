@@ -35,14 +35,14 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -86,25 +86,15 @@ public interface AddJDBCTable extends TechnologySpecificActionDefiningReceiver<J
 		public JDBCTable execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
 			JDBCConnection connection = getReceiver(evaluationContext);
-
-			try {
-				if (connection != null) {
-					String name = getTableName().getBindingValue(evaluationContext);
-					if (name != null) {
-						// Create or retrieve this sheet
-						return retrieveOrCreateTable(connection, name);
-					}
-					logger.warning("Create a JDBC table requires a name");
-				}
-				else {
-					logger.warning("Create a JDBC table requires a JDBC connection");
-				}
-			} catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
-				logger.log(Level.WARNING, "Can't create JDBC table", e);
+			if (connection == null) {
+				throw new FMLNullReferenceError("No JDBC connection to create the table in");
 			}
-
-			return null;
-
+			String name = FMLEvaluation.evaluate(getTableName(), evaluationContext, this);
+			if (name == null) {
+				throw new FMLNullReferenceError("The name of the new JDBC table is null");
+			}
+			// Create or retrieve this table
+			return retrieveOrCreateTable(connection, name);
 		}
 
 		// Create an Excel Sheet or get the existing one.

@@ -35,6 +35,7 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -74,6 +75,10 @@ public interface AbstractSelectJDBCTable<AT> extends AbstractFetchRequest<JDBCMo
 		public List<JDBCTable> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
 			JDBCConnection connection = getReceiver(evaluationContext);
+			if (connection == null) {
+				// A null source (CORE-F-11)
+				throw new FMLNullReferenceError(getStringRepresentation() + ": no JDBC connection to select from");
+			}
 			List<JDBCTable> result = new ArrayList<>(connection.getSchema().getTables());
 			return filterWithConditions(result, evaluationContext);
 		}

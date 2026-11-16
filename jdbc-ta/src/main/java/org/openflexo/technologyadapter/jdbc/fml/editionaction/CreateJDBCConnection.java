@@ -44,6 +44,9 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.AbstractCreateResource;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
+import org.openflexo.foundation.fml.rt.error.FMLTechnologyError;
+import org.openflexo.foundation.fml.rt.error.FMLCancellation;
+import org.openflexo.foundation.fml.rt.error.FMLInternalError;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
@@ -182,9 +185,6 @@ public interface CreateJDBCConnection extends AbstractCreateResource<JDBCModelSl
 		public JDBCConnection execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
 			try {
-				String resourceName = getResourceName(evaluationContext);
-				String resourceURI = getResourceURI(evaluationContext);
-				FlexoResourceCenter<?> rc = getResourceCenter(evaluationContext);
 				JDBCTechnologyAdapter technologyAdapter = getServiceManager().getTechnologyAdapterService()
 						.getTechnologyAdapter(JDBCTechnologyAdapter.class);
 
@@ -197,12 +197,15 @@ public interface CreateJDBCConnection extends AbstractCreateResource<JDBCModelSl
 				connection.setDbType(getDbType() != null ? getDbType() : JDBCDbType.GENERIC);
 
 				return connection;
-			} catch (ModelDefinitionException | FileNotFoundException | ResourceLoadingCancelledException e) {
-				throw new FMLExecutionException(e);
-			} catch (SaveResourceException e) {
-				throw new FMLExecutionException(e);
-			} catch (FlexoException e) {
-				throw new FMLExecutionException(e);
+			} catch (FMLExecutionException e) {
+				// Already typed (a null name or resource center...): rethrown unchanged (CORE-F-11)
+				throw e;
+			} catch (ModelDefinitionException e) {
+				throw new FMLInternalError(e);
+			} catch (ResourceLoadingCancelledException e) {
+				throw new FMLCancellation("Loading of the new JDBC connection was cancelled", e);
+			} catch (FileNotFoundException | FlexoException e) {
+				throw new FMLTechnologyError("Cannot create the JDBC connection: " + e.getMessage(), e);
 			}
 
 		}

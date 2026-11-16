@@ -35,6 +35,8 @@
 
 package org.openflexo.technologyadapter.jdbc.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,8 +45,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.editionaction.AbstractFetchRequest;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.pamela.annotations.Getter;
@@ -91,20 +91,13 @@ public interface AbstractSelectJDBCColumn<AT> extends AbstractFetchRequest<JDBCM
 		@Override
 		public List<JDBCColumn> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
-			List<JDBCColumn> columns = new ArrayList<>();
-			JDBCTable table;
-			try {
-				table = getTable().getBindingValue(evaluationContext);
-
-				if (table != null) {
-					columns.addAll(table.getColumns());
-				}
-			} catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
-				logger.log(Level.WARNING, "Can't evaluate table", e);
+			JDBCTable table = FMLEvaluation.evaluate(getTable(), evaluationContext, this);
+			if (table == null) {
+				// A null source (CORE-F-11)
+				throw new FMLNullReferenceError(getStringRepresentation() + ": no JDBC table to select from");
 			}
-
+			List<JDBCColumn> columns = new ArrayList<>(table.getColumns());
 			return filterWithConditions(columns, evaluationContext);
-
 		}
 
 		@Override

@@ -45,6 +45,7 @@ import org.hibernate.Transaction;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.ReturnException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -129,16 +130,9 @@ public interface OpenTransaction extends TechnologySpecificActionDefiningReceive
 		@Override
 		public Transaction execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FMLExecutionException {
 
-			System.out.println("OpenTransaction for " + getReceiver(evaluationContext));
-
 			HbnVirtualModelInstance vmi = getReceiver(evaluationContext);
-
-			System.out.println("receiver: " + getReceiver() + " = " + vmi);
-			System.out.println("valid: " + getReceiver().isValid() + " reason: " + getReceiver().invalidBindingReason());
-
 			if (vmi == null) {
-				logger.warning("Could not OpenTransaction on null HbnVirtualModelInstance");
-				return null;
+				throw new FMLNullReferenceError("No Hibernate virtual model instance to open a transaction on");
 			}
 
 			Transaction returned = vmi.beginTransaction();

@@ -43,10 +43,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.hibernate.query.Query;
+import org.openflexo.foundation.fml.rt.error.FMLTechnologyError;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DataBinding.BindingDefinitionType;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceType;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -233,83 +235,36 @@ public interface AbstractPerformSQLQuery<AT>
 			}
 		}
 
-		public HbnVirtualModelInstance getVirtualModelInstance(RunTimeEvaluationContext evaluationContext) {
-			if (getReceiver() != null && getReceiver().isSet() && getReceiver().isValid()) {
-				try {
-					return getReceiver().getBindingValue(evaluationContext);
-				} catch (TypeMismatchException e) {
-					e.printStackTrace();
-				} catch (NullReferenceException e) {
-					e.printStackTrace();
-				} catch (ReflectiveOperationException e) {
-					e.printStackTrace();
-				}
-			}
-			return null;
-
+		public HbnVirtualModelInstance getVirtualModelInstance(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
+			return getReceiver() != null ? FMLEvaluation.evaluate(getReceiver(), evaluationContext, this) : null;
 		}
 
-		public FlexoConceptInstance getContainer(RunTimeEvaluationContext evaluationContext) {
-			if (getContainer() != null && getContainer().isSet() && getContainer().isValid()) {
-				try {
-					return getContainer().getBindingValue(evaluationContext);
-				} catch (TypeMismatchException e) {
-					e.printStackTrace();
-				} catch (NullReferenceException e) {
-					e.printStackTrace();
-				} catch (ReflectiveOperationException e) {
-					e.printStackTrace();
-				}
-			}
-			return null;
+		public FlexoConceptInstance getContainer(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
+			return getContainer() != null ? FMLEvaluation.evaluate(getContainer(), evaluationContext, this) : null;
 		}
 
 		@Override
-		public List<HbnFlexoConceptInstance> performExecute(RunTimeEvaluationContext evaluationContext) {
-
-			System.out.println("On doit executer un PerformSQLQuery");
+		public List<HbnFlexoConceptInstance> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
 			HbnVirtualModelInstance vmi = getVirtualModelInstance(evaluationContext);
+			if (vmi == null) {
+				// A null source (CORE-F-11)
+				throw new FMLNullReferenceError(getStringRepresentation() + ": no Hibernate virtual model instance to query");
+			}
 			FlexoConceptInstance container = getContainer(evaluationContext);
-
 			if (container == null) {
 				container = vmi;
 			}
-
-			if (vmi != null) {
-
-				try {
-
-					Query<?> sqlQ = vmi.getDefaultSession().createQuery("select o from " + getFlexoConceptType().getName() + " o");
-
-					return vmi.getFlexoConceptInstances(sqlQ, container, getFlexoConceptType());
-
-				} catch (HbnException e) {
-					e.printStackTrace();
-				}
-
-				return null;
-
-			}
-			logger.warning(
-					getStringRepresentation() + " : Cannot find virtual model instance on which to apply SelectFlexoConceptInstance");
-			logger.warning("getReceiver()=" + getReceiver());
-			/*logger.warning("evaluationContext=" + evaluationContext);
-			logger.warning("isSet=" + getVirtualModelInstance().isSet());
-			logger.warning("isValid=" + getVirtualModelInstance().isValid());
-			logger.warning("fci=" + evaluationContext.getFlexoConceptInstance());
-			logger.warning("vmi=" + evaluationContext.getVirtualModelInstance());
+			// A failure of Hibernate is an HbnException, an FMLTechnologyError
 			try {
-				logger.warning("value=" + getVirtualModelInstance().getBindingValue(evaluationContext));
-			} catch (TypeMismatchException e) {
-				e.printStackTrace();
-			} catch (NullReferenceException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}*/
-			// logger.warning(getOwner().getFMLRepresentation());
-			return null;
+				Query<?> sqlQ = vmi.getDefaultSession().createQuery("select o from " + getFlexoConceptType().getName() + " o");
+				return vmi.getFlexoConceptInstances(sqlQ, container, getFlexoConceptType());
+			} catch (RuntimeException e) {
+				if (HbnException.isHibernateFailure(e)) {
+					throw new HbnException(e);
+				}
+				throw e;
+			}
 		}
 
 		@Override

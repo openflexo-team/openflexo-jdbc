@@ -45,6 +45,8 @@ import org.hibernate.Transaction;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
+import org.openflexo.foundation.fml.rt.error.FMLTechnologyError;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.ReturnException;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -79,12 +81,12 @@ public interface RollbackTransaction extends TechnologySpecificActionDefiningRec
 		@Override
 		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FMLExecutionException {
 
-			System.out.println("Rollback transaction for " + getReceiver(evaluationContext));
-
 			HbnVirtualModelInstance vmi = getReceiver(evaluationContext);
-
+			if (vmi == null) {
+				throw new FMLNullReferenceError("No Hibernate virtual model instance to rollback the transaction of");
+			}
+			// A failure of Hibernate is an HbnException, an FMLTechnologyError
 			vmi.rollback();
-
 			return null;
 		}
 	}

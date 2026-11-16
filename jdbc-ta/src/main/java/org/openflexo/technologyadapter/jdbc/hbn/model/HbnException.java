@@ -39,16 +39,19 @@
 
 package org.openflexo.technologyadapter.jdbc.hbn.model;
 
-import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
+import org.openflexo.foundation.fml.rt.error.FMLTechnologyError;
+
+import jakarta.persistence.PersistenceException;
 
 /**
- * Exception thrown while configuring or executing Hibernate framework
+ * Exception thrown while configuring or executing Hibernate framework: a foreseen failure of the JDBC technology, typed for FML
+ * (CORE-F-11 phase 6)
  * 
  * @author sylvain
  *
  */
 @SuppressWarnings("serial")
-public class HbnException extends FMLExecutionException {
+public class HbnException extends FMLTechnologyError {
 
 	/**
 	 * Build new exception with supplied message
@@ -65,7 +68,31 @@ public class HbnException extends FMLExecutionException {
 	 * @param exception
 	 */
 	public HbnException(Exception exception) {
-		super(exception);
+		super(exception.getMessage() != null ? exception.getMessage() : exception.toString(), exception);
+	}
+
+	/**
+	 * Tell if supplied unchecked exception is a foreseen failure of Hibernate or of the database (a persistence failure, a query that
+	 * does not parse, a transaction in the wrong state), to be raised as an {@link HbnException} rather than as a defect of the platform
+	 * (CORE-F-11 phase 6): a {@link PersistenceException} (Hibernate's own exceptions included), or an {@link IllegalArgumentException} /
+	 * {@link IllegalStateException} thrown by Hibernate or the persistence API itself (JPA reports a query that does not parse and a
+	 * transaction in the wrong state that way). The same exceptions thrown by OpenFlexo code stay defects.
+	 */
+	public static boolean isHibernateFailure(RuntimeException e) {
+		if (e instanceof PersistenceException) {
+			return true;
+		}
+		if (e instanceof IllegalArgumentException || e instanceof IllegalStateException) {
+			if (e.getCause() instanceof PersistenceException) {
+				return true;
+			}
+			StackTraceElement[] stack = e.getStackTrace();
+			if (stack.length > 0) {
+				String thrower = stack[0].getClassName();
+				return thrower.startsWith("org.hibernate.") || thrower.startsWith("jakarta.persistence.");
+			}
+		}
+		return false;
 	}
 
 }

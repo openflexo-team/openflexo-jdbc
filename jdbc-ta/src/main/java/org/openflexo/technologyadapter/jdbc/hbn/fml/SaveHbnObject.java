@@ -44,11 +44,13 @@ import java.util.logging.Logger;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DataBinding.BindingDefinitionType;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.editionaction.EditionAction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
+import org.openflexo.technologyadapter.jdbc.hbn.model.HbnException;
+import org.openflexo.foundation.fml.rt.error.FMLTypeError;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.ReturnException;
@@ -116,31 +118,33 @@ public interface SaveHbnObject extends TechnologySpecificActionDefiningReceiver<
 			return Void.class;
 		}
 
-		public HbnFlexoConceptInstance getObject(BindingEvaluationContext evaluationContext) {
-			if (getObject().isValid()) {
-				try {
-					return (HbnFlexoConceptInstance) getObject().getBindingValue(evaluationContext);
-				} catch (TypeMismatchException e) {
-					e.printStackTrace();
-				} catch (NullReferenceException e) {
-					e.printStackTrace();
-				} catch (ReflectiveOperationException e) {
-					e.printStackTrace();
-				}
+		public HbnFlexoConceptInstance getObject(BindingEvaluationContext evaluationContext) throws FMLExecutionException {
+			Object value = FMLEvaluation.evaluate(getObject(), evaluationContext, this);
+			if (value == null || value instanceof HbnFlexoConceptInstance) {
+				return (HbnFlexoConceptInstance) value;
 			}
-			return null;
+			throw new FMLTypeError("Not a Hibernate object: " + value);
 		}
 
 		@Override
 		public Void execute(RunTimeEvaluationContext evaluationContext) throws ReturnException, FMLExecutionException {
 
-			System.out.println("Save object " + getObject(evaluationContext));
-
 			HbnVirtualModelInstance vmi = getReceiver(evaluationContext);
+			if (vmi == null) {
+				throw new FMLNullReferenceError("No Hibernate virtual model instance to save the object in");
+			}
 			HbnFlexoConceptInstance object = getObject(evaluationContext);
-
-			vmi.getDefaultSession().save(object.getFlexoConcept().getName(), object.getSupportObject());
-
+			if (object == null) {
+				throw new FMLNullReferenceError("No Hibernate object to save");
+			}
+			try {
+				vmi.getDefaultSession().save(object.getFlexoConcept().getName(), object.getSupportObject());
+			} catch (RuntimeException e) {
+				if (HbnException.isHibernateFailure(e)) {
+					throw new HbnException(e);
+				}
+				throw e;
+			}
 			return null;
 		}
 	}
