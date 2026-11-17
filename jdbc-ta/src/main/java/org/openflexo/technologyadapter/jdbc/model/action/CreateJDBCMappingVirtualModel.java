@@ -269,15 +269,15 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		addParameter(fmlFactory, creationScheme, "password", String.class, null);
 
 		AssignationAction<JDBCConnection> assignation = fmlFactory.newAssignationAction();
-		assignation.setAssignation(new DataBinding<>("db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
+		assignation.setAssignation(new DataBinding<>("this.db", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
 		CreateJDBCConnection action = fmlFactory.newInstance(CreateJDBCConnection.class);
 		action.setResourceName(
 				new DataBinding<>("\"db_\" + this.name", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		action.setResourceCenter(new DataBinding<>("this.resource.resourceCenter", creationScheme, FlexoResourceCenter.class,
 				DataBinding.BindingDefinitionType.GET));
-		action.setAddress(new DataBinding<>("parameters.address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setUser(new DataBinding<>("parameters.user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
-		action.setPassword(new DataBinding<>("parameters.password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setAddress(new DataBinding<>("address", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setUser(new DataBinding<>("user", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
+		action.setPassword(new DataBinding<>("password", creationScheme, String.class, DataBinding.BindingDefinitionType.GET));
 		// action.setDbType(new DataBinding("parameters.dbtype", creationScheme, JDBCDbType.class, DataBinding.BindingDefinitionType.GET));
 		assignation.setAssignableAction(action);
 
@@ -453,9 +453,9 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 		addParameter(factory, creationScheme, "line", JDBCLine.class, null);
 
 		AssignationAction<JDBCLine> assignation = factory.newAssignationAction();
-		assignation.setAssignation(new DataBinding<>("line", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
+		assignation.setAssignation(new DataBinding<>("this.line", creationScheme, Void.class, DataBinding.BindingDefinitionType.GET_SET));
 		ExpressionAction<JDBCLine> action = factory.newExpressionAction();
-		action.setExpression(new DataBinding<>("parameters.line", creationScheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
+		action.setExpression(new DataBinding<>("line", creationScheme, JDBCLine.class, DataBinding.BindingDefinitionType.GET));
 		assignation.setAssignableAction(action);
 
 		creationScheme.setControlGraph(assignation);

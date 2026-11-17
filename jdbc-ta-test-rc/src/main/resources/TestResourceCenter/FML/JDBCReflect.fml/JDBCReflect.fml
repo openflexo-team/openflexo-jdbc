@@ -14,7 +14,7 @@ public model JDBCReflect {
    JDBCMapping db with FMLJDBCModelSlot();
 
    create(required Resource<JDBCConnection> aConnection) {
-      connect db using parameters.aConnection;
+      connect db using aConnection;
    }
 
    List<Client> getAllClients() {

@@ -16,7 +16,7 @@ public model JDBCFreeAccess {
    JDBCConnection db with JDBCModelSlot();
 
    create(required Resource<JDBCConnection> aConnection) {
-      connect db using parameters.aConnection;
+      connect db using aConnection;
    }
 
    // --- Direct method navigation ---
@@ -58,7 +58,7 @@ public model JDBCFreeAccess {
       JDBCTable table with JDBCTableRole();
 
       create(required JDBCTable aTable) {
-         table = parameters.aTable;
+         table = aTable;
       }
 
       String tableName() {
