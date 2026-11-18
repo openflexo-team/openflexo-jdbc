@@ -13,6 +13,8 @@ Status legend: `TODO` · `IN PROGRESS` · `BLOCKED` · `DONE` · `DEFERRED`.
 
 ### JDBC-F-1 — The JDBC adapter raises typed FML errors instead of returning null after a warning or a printed stack  ·  `DONE`
 
+**GitHub:** [openflexo-team/openflexo-jdbc#5](https://github.com/openflexo-team/openflexo-jdbc/issues/5)
+
 **Problem.** Part of `CORE-F-11` phase 6 (`openflexo-core/BACKLOG.md`): the edition actions of the JDBC adapter caught the failures of
 their evaluations, logged them and went on with null; a missing table, connection or name gave a warning and null; `AddJDBCLine` declared
 no exception. `HbnException`, raised by every Hibernate failure, was an untyped `FMLExecutionException`, and the unchecked exceptions of
