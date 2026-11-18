@@ -108,7 +108,7 @@ public interface CreateHbnObject extends AbstractAddFlexoConceptInstance<HbnFlex
 				// No time yet to do it
 				vmi.getDefaultSession().save(getFlexoConceptType().getName(), returned.getHbnSupportObject());
 			} catch (HbnException e) {
-				throw new FlexoException(e);
+				throw new OpenflexoRuntimeException(e);
 			}*/
 
 			return returned;

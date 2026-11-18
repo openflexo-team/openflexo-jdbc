@@ -58,7 +58,7 @@ package org.openflexo.technologyadapter.jdbc;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
@@ -202,7 +202,7 @@ public interface FMLJDBCModelSlot
 				logger.warning("Unexpected ModelDefinitionException: " + e);
 				e.printStackTrace();
 				return null;
-			} catch (FlexoException e) {
+			} catch (OpenflexoRuntimeException e) {
 				logger.warning("Could not connect to database: " + e);
 				e.printStackTrace();
 				return null;

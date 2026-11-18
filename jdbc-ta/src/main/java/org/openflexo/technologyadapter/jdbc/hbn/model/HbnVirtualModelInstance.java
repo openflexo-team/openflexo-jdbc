@@ -76,7 +76,7 @@ import org.hibernate.mapping.Table;
 import org.hibernate.query.Query;
 import org.openflexo.technologyadapter.jdbc.hbn.HbnMetadataUtils;
 import org.openflexo.connie.type.TypeUtils;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.fml.AbstractProperty;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
@@ -203,7 +203,7 @@ public interface HbnVirtualModelInstance
 	 *             when something wrong happen
 	 * 
 	 */
-	public void connectToDB() throws FlexoException;
+	public void connectToDB() throws OpenflexoRuntimeException;
 
 	/**
 	 * Return boolean indicating if this {@link HbnVirtualModelInstance} is connected to database
@@ -495,7 +495,7 @@ public interface HbnVirtualModelInstance
 					e.printStackTrace();
 				} catch (ResourceLoadingCancelledException e) {
 					e.printStackTrace();
-				} catch (FlexoException e) {
+				} catch (OpenflexoRuntimeException e) {
 					e.printStackTrace();
 				}
 			}

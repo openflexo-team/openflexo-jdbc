@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openflexo.connie.type.CustomTypeFactory;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.VirtualModelInstanceType;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
@@ -128,7 +128,7 @@ public class HbnVirtualModelInstanceType extends VirtualModelInstanceType {
 			} catch (ResourceLoadingCancelledException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (FlexoException e) {
+			} catch (OpenflexoRuntimeException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
