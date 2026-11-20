@@ -260,7 +260,7 @@ public class TestJDBCVirtualModelOneToMany extends HsqlTestCase {
 
 		assertNotNull(mappingVirtualModel);
 
-		assertEquals(2, mappingVirtualModel.getFlexoConcepts().size());
+		assertEquals(2, mappingVirtualModel.getAllFlexoConcepts().size());
 		FlexoConcept clientConcept = mappingVirtualModel.getFlexoConcept("Client");
 		FlexoConcept salesmanConcept = mappingVirtualModel.getFlexoConcept("Salesman");
 		assertNotNull(clientConcept);

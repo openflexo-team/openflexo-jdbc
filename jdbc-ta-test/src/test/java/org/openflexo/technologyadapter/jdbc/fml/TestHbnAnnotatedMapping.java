@@ -445,7 +445,7 @@ public class TestHbnAnnotatedMapping extends HsqlTestCase {
 			assertTrue(e.getFailure() instanceof HbnException);
 		} finally {
 			dbVMI.getMappings().remove(nobody);
-			mappingVirtualModel.removeFromFlexoConcepts(nobody);
+			mappingVirtualModel.removeFromContents(nobody);
 		}
 	}
 

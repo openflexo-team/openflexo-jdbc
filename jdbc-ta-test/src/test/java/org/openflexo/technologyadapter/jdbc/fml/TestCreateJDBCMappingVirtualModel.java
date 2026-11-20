@@ -134,7 +134,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 
 	private static void checkVirtualModel(VirtualModel virtualModel) {
 		Assert.assertNotNull(virtualModel);
-		List<FlexoConcept> flexoConcepts = virtualModel.getFlexoConcepts();
+		List<FlexoConcept> flexoConcepts = virtualModel.getAllFlexoConcepts();
 		Assert.assertEquals(3, flexoConcepts.size());
 
 		FlexoConcept table1Concept = flexoConcepts.get(0);
@@ -199,7 +199,7 @@ public class TestCreateJDBCMappingVirtualModel extends HsqlTestCase {
 		log("Generate VirtualModel");
 		VirtualModel virtualModel = generateVirtualModel(project, viewPoint, jdbcBaseURL + ".", false);
 		Assert.assertNotNull(virtualModel);
-		Assert.assertEquals(0, virtualModel.getFlexoConcepts().size());
+		Assert.assertEquals(0, virtualModel.getAllFlexoConcepts().size());
 	}
 
 	/**

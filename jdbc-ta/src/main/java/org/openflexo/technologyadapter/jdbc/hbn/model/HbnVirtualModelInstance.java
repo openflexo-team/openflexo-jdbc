@@ -626,7 +626,7 @@ public interface HbnVirtualModelInstance
 
 			// Mapping is created in 3 passes, in order to facilitate cross references handling
 
-			for (FlexoConcept concept : getVirtualModel().getFlexoConcepts()) {
+			for (FlexoConcept concept : getVirtualModel().getAllFlexoConcepts()) {
 				// Table name comes from the @Table annotation when declared, otherwise defaults to the concept name
 				Identifier logicalName = metadataCollector.getDatabase().toIdentifier(JDBCMetaData.getTableName(concept));
 				Table table = namespace.locateTable(logicalName);

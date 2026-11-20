@@ -369,7 +369,7 @@ public class CreateJDBCMappingVirtualModel extends FlexoAction<CreateJDBCMapping
 
 	protected void addConcept(FMLModelFactory factory, VirtualModel model, JDBCTable table) {
 		FlexoConcept concept = factory.newFlexoConcept();
-		model.addToFlexoConcepts(concept);
+		model.addToContents(concept);
 
 		tableToConcepts.put(table, concept);
 
